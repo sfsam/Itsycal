@@ -7,19 +7,24 @@
 //
 
 #import "AppDelegate.h"
-
-@interface AppDelegate ()
-
-@property (weak) IBOutlet NSWindow *window;
-@end
+#import "WindowController.h"
+#import "ViewController.h"
 
 @implementation AppDelegate
-
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    // Insert code here to initialize your application
+{
+    WindowController *wc;
 }
 
-- (void)applicationWillTerminate:(NSNotification *)aNotification {
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+    wc = [WindowController new];
+    wc.contentViewController = [ViewController new];
+    [wc startup];
+    [wc showWindow:nil];
+}
+
+- (void)applicationWillTerminate:(NSNotification *)aNotification
+{
     // Insert code here to tear down your application
 }
 
