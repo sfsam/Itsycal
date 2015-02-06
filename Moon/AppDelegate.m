@@ -12,21 +12,25 @@
 
 @implementation AppDelegate
 {
-    NSWindowController *_wc;
+    NSWindowController  *_wc;
+    ViewController      *_vc;
 }
 
 + (void)initialize
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{
-        @"PinItsycal": @(NO),
-        @"ShowWeeks": @(NO)}];
+        @"PinItsycal":    @(NO),
+        @"ShowWeeks":     @(NO),
+        @"WeekStartDOW":  @0  // Sun=0, Mon=1,... (MoCalendar.h)
+    }];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    _vc = [ViewController new];
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
-    _wc.contentViewController = [ViewController new];
-    _wc.window.delegate = (ViewController *)_wc.contentViewController;
+    _wc.contentViewController = _vc;
+    _wc.window.delegate = _vc;
     [_wc showWindow:nil];
 }
 

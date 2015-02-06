@@ -57,7 +57,7 @@
     };
     _btnAdd = btn(@"btnAdd", @"New Event... ⌘N", @"n", @selector(addCalendarEvent:));
     _btnCal = btn(@"btnCal", @"Open Calendar... ⌘O", @"o", @selector(showCalendarApp:));
-    _btnOpt = btn(@"btnOpt", @"Options", @"", @selector(showOptions:));
+    _btnOpt = btn(@"btnOpt", @"Options", @"", @selector(showOptionsMenu:));
     
     // Layout MoCalendar and buttons
     
@@ -104,6 +104,7 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     _pin = [defaults boolForKey:@"PinItsycal"];
     _moCal.showWeeks = [defaults boolForKey:@"ShowWeeks"];
+    _moCal.weekStartDOW = [defaults integerForKey:@"WeekStartDOW"];
     
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:NSMaxX(_screenFrame)];
 }
@@ -140,23 +141,38 @@
     NSLog(@"%@", [(NSButton *)sender toolTip]);
 }
 
-- (void)showOptions:(id)sender
+- (void)showOptionsMenu:(id)sender
 {
-    NSMenu *menu = [[NSMenu alloc] initWithTitle:@"Options Menu"];
-    NSMenuItem *item;
+    NSMenu *optMenu = [[NSMenu alloc] initWithTitle:@"Options Menu"];
     NSInteger i = 0;
-    item = [menu insertItemWithTitle:NSLocalizedString(@"Pin Itsycal", @"") action:@selector(pin:) keyEquivalent:@"p" atIndex:i++];
+    NSMenuItem *item;
+    item = [optMenu insertItemWithTitle:NSLocalizedString(@"Pin Itsycal", @"") action:@selector(pin:) keyEquivalent:@"p" atIndex:i++];
     item.state = _pin ? NSOnState : NSOffState;
     item.keyEquivalentModifierMask = 0;
-    item = [menu insertItemWithTitle:NSLocalizedString(@"Show calendar weeks", @"") action:@selector(showWeeks:) keyEquivalent:@"w" atIndex:i++];
+    item = [optMenu insertItemWithTitle:NSLocalizedString(@"Show calendar weeks", @"") action:@selector(showWeeks:) keyEquivalent:@"w" atIndex:i++];
     item.state = _moCal.showWeeks ? NSOnState : NSOffState;
     item.keyEquivalentModifierMask = 0;
-    [menu insertItem:[NSMenuItem separatorItem] atIndex:i++];
-    [menu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(pin:) keyEquivalent:@"," atIndex:i++];
-    [menu insertItem:[NSMenuItem separatorItem] atIndex:i++];
-    [menu insertItemWithTitle:NSLocalizedString(@"Quit", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
+    
+    // Week Start submenu
+    NSMenu *weekStartMenu = [[NSMenu alloc] initWithTitle:@"Week Start Menu"];
+    NSInteger i2 = 0;
+    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Sunday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
+    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Monday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
+    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Tuesday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
+    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Wednesday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
+    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Thursday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
+    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Friday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
+    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Saturday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
+    [[weekStartMenu itemAtIndex:_moCal.weekStartDOW] setState:NSOnState];
+    item = [optMenu insertItemWithTitle:NSLocalizedString(@"First day of week", @"") action:NULL keyEquivalent:@"" atIndex:i++];
+    item.submenu = weekStartMenu;
+    
+    [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
+    [optMenu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(pin:) keyEquivalent:@"," atIndex:i++];
+    [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
+    [optMenu insertItemWithTitle:NSLocalizedString(@"Quit", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
     NSPoint pt = NSOffsetRect(_btnOpt.frame, -5, -10).origin;
-    [menu popUpMenuPositioningItem:nil atLocation:pt inView:self.view];
+    [optMenu popUpMenuPositioningItem:nil atLocation:pt inView:self.view];
 }
 
 - (void)pin:(id)sender
@@ -173,6 +189,13 @@
         _moCal.showWeeks = !_moCal.showWeeks;
         [[NSUserDefaults standardUserDefaults] setBool:_moCal.showWeeks forKey:@"ShowWeeks"];
     });
+}
+
+- (void)setFirstDayOfWeek:(id)sender
+{
+    NSMenuItem *item = (NSMenuItem *)sender;
+    _moCal.weekStartDOW = [item.menu indexOfItem:item];
+    [[NSUserDefaults standardUserDefaults] setInteger:_moCal.weekStartDOW forKey:@"WeekStartDOW"];
 }
 
 #pragma mark -
