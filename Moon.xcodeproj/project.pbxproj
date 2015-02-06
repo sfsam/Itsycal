@@ -35,6 +35,7 @@
 /* Begin PBXFileReference section */
 		922B6B8E1A855ACB00DEA9CD /* ViewController+LoginItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ViewController+LoginItem.h"; sourceTree = "<group>"; };
 		922B6B8F1A855ACB00DEA9CD /* ViewController+LoginItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ViewController+LoginItem.m"; sourceTree = "<group>"; };
+		922B6B911A856A7D00DEA9CD /* SBCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBCalendar.h; sourceTree = "<group>"; };
 		9242A55C1A82A136005AA4B3 /* Moon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9242A5601A82A136005AA4B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9242A5611A82A136005AA4B3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -103,17 +104,18 @@
 				9242A55F1A82A136005AA4B3 /* Supporting Files */,
 				9242A5661A82A136005AA4B3 /* Images.xcassets */,
 				9242A5681A82A136005AA4B3 /* MainMenu.xib */,
+				922B6B911A856A7D00DEA9CD /* SBCalendar.h */,
 				9242A5611A82A136005AA4B3 /* AppDelegate.h */,
 				9242A5621A82A136005AA4B3 /* AppDelegate.m */,
 				9242A5941A82BE5E005AA4B3 /* Itsycal.h */,
 				9242A5951A82BE5E005AA4B3 /* Itsycal.m */,
 				9242A5821A82A189005AA4B3 /* ViewController.h */,
 				9242A5831A82A189005AA4B3 /* ViewController.m */,
+				922B6B8E1A855ACB00DEA9CD /* ViewController+LoginItem.h */,
+				922B6B8F1A855ACB00DEA9CD /* ViewController+LoginItem.m */,
 				9242A5851A82A1A1005AA4B3 /* ItsycalWindow.h */,
 				9242A5861A82A1A1005AA4B3 /* ItsycalWindow.m */,
 				9242A5971A832D7A005AA4B3 /* MoCalendar */,
-				922B6B8E1A855ACB00DEA9CD /* ViewController+LoginItem.h */,
-				922B6B8F1A855ACB00DEA9CD /* ViewController+LoginItem.m */,
 			);
 			path = Moon;
 			sourceTree = "<group>";

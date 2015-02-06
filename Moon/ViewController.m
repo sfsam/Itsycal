@@ -11,6 +11,7 @@
 #import "Itsycal.h"
 #import "ItsycalWindow.h"
 #import "MoCalendar.h"
+#import "SBCalendar.h"
 
 @implementation ViewController
 {
@@ -138,7 +139,23 @@
 
 - (void)showCalendarApp:(id)sender
 {
-    NSLog(@"%@", [(NSButton *)sender toolTip]);
+    // Use the Scripting Bridge to open Calendar.app on the
+    // date selected in our calendar.
+    
+    SBCalendarApplication *calendarApp = [SBApplication applicationWithBundleIdentifier:@"com.apple.iCal"];
+    if (calendarApp == nil) {
+        NSString *message = NSLocalizedString(@"The Calendar application could not be found.", @"Alert box message when we fail to launch the Calendar application");
+        NSAlert *alert = [NSAlert new];
+        alert.messageText = message;
+        alert.alertStyle = NSCriticalAlertStyle;
+        [alert runModal];
+        return;
+    }
+    NSDateComponents *comp = [NSDateComponents new];
+    comp.year  = _moCal.selectedDate.year;
+    comp.month = _moCal.selectedDate.month+1; // _moCal zero-indexes month
+    comp.day   = _moCal.selectedDate.day;
+    [calendarApp viewCalendarAt:[_nsCal dateFromComponents:comp]];
 }
 
 - (void)showOptionsMenu:(id)sender
