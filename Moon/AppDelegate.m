@@ -7,20 +7,27 @@
 //
 
 #import "AppDelegate.h"
-#import "WindowController.h"
 #import "ViewController.h"
+#import "ItsycalWindow.h"
 
 @implementation AppDelegate
 {
-    WindowController *wc;
+    NSWindowController *_wc;
+}
+
++ (void)initialize
+{
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{
+        @"PinItsycal": @(NO),
+        @"ShowWeeks": @(NO)}];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    wc = [WindowController new];
-    wc.contentViewController = [ViewController new];
-    [wc startup];
-    [wc showWindow:nil];
+    _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
+    _wc.contentViewController = [ViewController new];
+    _wc.window.delegate = (ViewController *)_wc.contentViewController;
+    [_wc showWindow:nil];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification

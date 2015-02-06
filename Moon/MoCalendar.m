@@ -373,9 +373,6 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     else if ((keyChar == 'k' && noFlags) || (keyChar == NSUpArrowFunctionKey && shiftFlag)) {
         [self moveSelectionByDays:-7];
     }
-    else if (keyChar == 'w' && noFlags) {
-        self.showWeeks = !self.showWeeks;
-    }
     else if (keyChar == '1') {
         self.weekStartDOW = 1;
     }

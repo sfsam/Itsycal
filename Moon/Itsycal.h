@@ -7,5 +7,8 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "MoDate.h"
 
+MoDate Today(NSCalendar *cal);
 NSImage *ItsycalDateIcon(int day, NSImage *datesImage);
+

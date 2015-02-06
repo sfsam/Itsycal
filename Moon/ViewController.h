@@ -17,6 +17,6 @@
  
  */
 
-@interface ViewController : NSViewController
+@interface ViewController : NSViewController <NSWindowDelegate>
 
 @end
