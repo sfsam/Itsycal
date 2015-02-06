@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "ViewController+LoginItem.h"
 #import "Itsycal.h"
 #import "ItsycalWindow.h"
 #import "MoCalendar.h"
@@ -79,7 +80,6 @@
     
     // The order of the statements is important!
 
-    _pin = NO;
     _nsCal = [NSCalendar autoupdatingCurrentCalendar];
     
     MoDate today = self.todayDate;
@@ -168,6 +168,8 @@
     item.submenu = weekStartMenu;
     
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
+    item = [optMenu insertItemWithTitle:NSLocalizedString(@"Launch at login", @"") action:@selector(launchAtLogin:) keyEquivalent:@"" atIndex:i++];
+    item.state = [self isLoginItemEnabled] ? NSOnState : NSOffState;
     [optMenu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(pin:) keyEquivalent:@"," atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Quit", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
@@ -196,6 +198,13 @@
     NSMenuItem *item = (NSMenuItem *)sender;
     _moCal.weekStartDOW = [item.menu indexOfItem:item];
     [[NSUserDefaults standardUserDefaults] setInteger:_moCal.weekStartDOW forKey:@"WeekStartDOW"];
+}
+
+- (void)launchAtLogin:(id)sender
+{
+    NSMenuItem *item = (NSMenuItem *)sender;
+    BOOL enable = item.state ? NO : YES;
+    [self enableLoginItem:enable];
 }
 
 #pragma mark -

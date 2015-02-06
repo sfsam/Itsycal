@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		922B6B901A855ACB00DEA9CD /* ViewController+LoginItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B8F1A855ACB00DEA9CD /* ViewController+LoginItem.m */; };
 		9242A5631A82A136005AA4B3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5621A82A136005AA4B3 /* AppDelegate.m */; };
 		9242A5651A82A136005AA4B3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5641A82A136005AA4B3 /* main.m */; };
 		9242A5671A82A136005AA4B3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9242A5661A82A136005AA4B3 /* Images.xcassets */; };
@@ -32,6 +33,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		922B6B8E1A855ACB00DEA9CD /* ViewController+LoginItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ViewController+LoginItem.h"; sourceTree = "<group>"; };
+		922B6B8F1A855ACB00DEA9CD /* ViewController+LoginItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ViewController+LoginItem.m"; sourceTree = "<group>"; };
 		9242A55C1A82A136005AA4B3 /* Moon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9242A5601A82A136005AA4B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9242A5611A82A136005AA4B3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -109,6 +112,8 @@
 				9242A5851A82A1A1005AA4B3 /* ItsycalWindow.h */,
 				9242A5861A82A1A1005AA4B3 /* ItsycalWindow.m */,
 				9242A5971A832D7A005AA4B3 /* MoCalendar */,
+				922B6B8E1A855ACB00DEA9CD /* ViewController+LoginItem.h */,
+				922B6B8F1A855ACB00DEA9CD /* ViewController+LoginItem.m */,
 			);
 			path = Moon;
 			sourceTree = "<group>";
@@ -254,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9242A5921A82A40B005AA4B3 /* MoCalGrid.m in Sources */,
+				922B6B901A855ACB00DEA9CD /* ViewController+LoginItem.m in Sources */,
 				9242A5651A82A136005AA4B3 /* main.m in Sources */,
 				9242A5871A82A1A1005AA4B3 /* ItsycalWindow.m in Sources */,
 				9242A5901A82A40B005AA4B3 /* MoDate.c in Sources */,
@@ -448,6 +454,7 @@
 				9242A57B1A82A136005AA4B3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9242A57C1A82A136005AA4B3 /* Build configuration list for PBXNativeTarget "MoonTests" */ = {
 			isa = XCConfigurationList;
@@ -456,6 +463,7 @@
 				9242A57E1A82A136005AA4B3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
