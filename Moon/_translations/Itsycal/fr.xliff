@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
-    <file original="Moon/Base.lproj/MainMenu.xib" source-language="en" datatype="plaintext" target-language="de">
+    <file original="Moon/Base.lproj/MainMenu.xib" source-language="en" datatype="plaintext" target-language="fr">
         <header>
             <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
         </header>
@@ -35,7 +35,7 @@
             </trans-unit>
         </body>
     </file>
-    <file original="Moon/Info.plist" source-language="en" datatype="plaintext" target-language="de">
+    <file original="Moon/Info.plist" source-language="en" datatype="plaintext" target-language="fr">
         <header>
             <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
         </header>
@@ -51,59 +51,59 @@
             </trans-unit>
         </body>
     </file>
-    <file original="Moon/Localizable.strings" source-language="en" datatype="plaintext" target-language="de">
+    <file original="Moon/Localizable.strings" source-language="en" datatype="plaintext" target-language="fr">
         <header>
             <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
         </header>
         <body>
             <trans-unit id="Cancel">
                 <source>Cancel</source>
-                <target>Abbrechen</target>
+                <target>Annuler</target>
                 <note>Cancel action button in recording state</note>
             </trans-unit>
             <trans-unit id="Click to Record Shortcut">
                 <source>Click to Record Shortcut</source>
-                <target>Klicken, um Kurzbefehl eingeben</target>
+                <target>Cliquez pour enregistrer un raccourci</target>
                 <note>Empty shortcut button in normal state</note>
             </trans-unit>
             <trans-unit id="Click to record new shortcut">
                 <source>Click to record new shortcut</source>
-                <target>Klicken, um Kurzbefehl eingeben</target>
+                <target>Cliquez pour enregistrer un raccourci</target>
                 <note>Tooltip for non-empty shortcut button</note>
             </trans-unit>
             <trans-unit id="Delete shortcut">
                 <source>Delete shortcut</source>
-                <target>Löschen Tastaturkurzbefehl</target>
+                <target>Supprimer raccourci</target>
                 <note>Tooltip for hint button near the non-empty shortcut</note>
             </trans-unit>
             <trans-unit id="First day of week">
                 <source>First day of week</source>
-                <target>Erster Wochentag</target>
+                <target>Premier jour de la semaine</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Friday">
                 <source>Friday</source>
-                <target>Freitag</target>
+                <target>Vendredi</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Keyboard shortcut">
                 <source>Keyboard shortcut</source>
-                <target>Tastaturkurzbefehl</target>
+                <target>Raccourci clavier</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Launch at login">
                 <source>Launch at login</source>
-                <target>Starte Itsycal bei der Anmeldung</target>
+                <target>Lancer automatiquement à la connexion</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Monday">
                 <source>Monday</source>
-                <target>Montag</target>
+                <target>Lundi</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="New Event... ⌘N">
                 <source>New Event... ⌘N</source>
-                <target>Neues Ereignis … ⌘N</target>
+                <target>Nouvel événement… ⌘N</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="OK">
@@ -113,92 +113,92 @@
             </trans-unit>
             <trans-unit id="Open Calendar... ⌘O">
                 <source>Open Calendar... ⌘O</source>
-                <target>Kalender öffnen … ⌘O</target>
+                <target>Ouvrir l'application Calendrier… ⌘O</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Options">
                 <source>Options</source>
-                <target>Optionen</target>
+                <target>Options</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Pin Itsycal">
                 <source>Pin Itsycal</source>
                 <note>No comment provided by engineer.</note>
-                <target>Itsycal soll sichtbar bleiben</target>
+                <target>Maintenir Itsycal visible</target>
             </trans-unit>
             <trans-unit id="Preferences...">
                 <source>Preferences...</source>
-                <target>Einstellungen …</target>
+                <target>Préférences…</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Quit Itsycal">
                 <source>Quit Itsycal</source>
-                <target>Itsycal beenden</target>
+                <target>Quitter Itsycal</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Saturday">
                 <source>Saturday</source>
-                <target>Samstag</target>
+                <target>Samedi</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Show calendar weeks">
                 <source>Show calendar weeks</source>
-                <target>Kalenderwoche anzeigen</target>
+                <target>Afficher les numéros de semaine</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Space">
                 <source>Space</source>
-                <target>Leertaste</target>
+                <target>Espace</target>
                 <note>Shortcut glyph name for SPACE key</note>
             </trans-unit>
             <trans-unit id="Sunday">
                 <source>Sunday</source>
-                <target>Sonntag</target>
+                <target>Dimanche</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="The Calendar application could not be found.">
                 <source>The Calendar application could not be found.</source>
-                <target>Die Kalender-Anwendung konnte nicht gefunden werden.</target>
+                <target>L'application Calendrier est introuvable.</target>
                 <note>Alert box message when we fail to launch the Calendar application</note>
             </trans-unit>
             <trans-unit id="The key combination %@ cannot be used">
                 <source>The key combination %@ cannot be used</source>
-                <target>Die Tastenkombination %@ kann nicht benutzt werden!</target>
+                <target>La combinaison de touches %@ ne peut être utilisée</target>
                 <note>Title for alert when shortcut is already used</note>
             </trans-unit>
             <trans-unit id="This shortcut cannot be used because it is already used by the menu item ‘%@’.">
                 <source>This shortcut cannot be used because it is already used by the menu item ‘%@’.</source>
-                <target>Die Tastenkombination kann nicht benutzt werden, da sie bereits von dem Menüeintrag ‘%@’ benutzt wird.</target>
+                <target>La combinaison de touches ne peut être utilisée parce qu’elle est déjà utilisée par l’élément de menu ‘%@’.</target>
                 <note>Message for alert when shortcut is already used</note>
             </trans-unit>
             <trans-unit id="Thursday">
                 <source>Thursday</source>
-                <target>Donnerstag</target>
+                <target>Jeudi</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Tuesday">
                 <source>Tuesday</source>
-                <target>Dienstag</target>
+                <target>Mardi</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Type New Shortcut">
                 <source>Type New Shortcut</source>
-                <target>Kurzbefehl eingeben</target>
+                <target>Saisir un raccourci</target>
                 <note>Non-empty shortcut button in recording state</note>
             </trans-unit>
             <trans-unit id="Type Shortcut">
                 <source>Type Shortcut</source>
-                <target>Kurzbefehl eingeben</target>
+                <target>Saisir un raccourci</target>
                 <note>Empty shortcut button in recording state</note>
             </trans-unit>
             <trans-unit id="Use Old Shortcut">
                 <source>Use Old Shortcut</source>
-                <target>Alte Tastenkombination benutzen</target>
+                <target>Utiliser l’ancien raccourci</target>
                 <note>Cancel action button for non-empty shortcut in recording state</note>
             </trans-unit>
             <trans-unit id="Wednesday">
                 <source>Wednesday</source>
-                <target>Mittwoch</target>
+                <target>Mercredi</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
         </body>

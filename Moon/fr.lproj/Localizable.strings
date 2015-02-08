@@ -1,0 +1,87 @@
+/* Cancel action button in recording state */
+"Cancel" = "Annuler";
+
+/* Empty shortcut button in normal state */
+"Click to Record Shortcut" = "Cliquez pour enregistrer un raccourci";
+
+/* Tooltip for non-empty shortcut button */
+"Click to record new shortcut" = "Cliquez pour enregistrer un raccourci";
+
+/* Tooltip for hint button near the non-empty shortcut */
+"Delete shortcut" = "Supprimer raccourci";
+
+/* No comment provided by engineer. */
+"First day of week" = "Premier jour de la semaine";
+
+/* No comment provided by engineer. */
+"Friday" = "Vendredi";
+
+/* No comment provided by engineer. */
+"Keyboard shortcut" = "Raccourci clavier";
+
+/* No comment provided by engineer. */
+"Launch at login" = "Lancer automatiquement à la connexion";
+
+/* No comment provided by engineer. */
+"Monday" = "Lundi";
+
+/* No comment provided by engineer. */
+"New Event... ⌘N" = "Nouvel événement… ⌘N";
+
+/* Alert button when shortcut is already used */
+"OK" = "OK";
+
+/* No comment provided by engineer. */
+"Open Calendar... ⌘O" = "Ouvrir l'application Calendrier… ⌘O";
+
+/* No comment provided by engineer. */
+"Options" = "Options";
+
+/* No comment provided by engineer. */
+"Pin Itsycal" = "Maintenir Itsycal visible";
+
+/* No comment provided by engineer. */
+"Preferences..." = "Préférences…";
+
+/* No comment provided by engineer. */
+"Quit Itsycal" = "Quitter Itsycal";
+
+/* No comment provided by engineer. */
+"Saturday" = "Samedi";
+
+/* No comment provided by engineer. */
+"Show calendar weeks" = "Afficher les numéros de semaine";
+
+/* Shortcut glyph name for SPACE key */
+"Space" = "Espace";
+
+/* No comment provided by engineer. */
+"Sunday" = "Dimanche";
+
+/* Alert box message when we fail to launch the Calendar application */
+"The Calendar application could not be found." = "L'application Calendrier est introuvable.";
+
+/* Title for alert when shortcut is already used */
+"The key combination %@ cannot be used" = "La combinaison de touches %@ ne peut être utilisée";
+
+/* Message for alert when shortcut is already used */
+"This shortcut cannot be used because it is already used by the menu item ‘%@’." = "La combinaison de touches ne peut être utilisée parce qu’elle est déjà utilisée par l’élément de menu ‘%@’.";
+
+/* No comment provided by engineer. */
+"Thursday" = "Jeudi";
+
+/* No comment provided by engineer. */
+"Tuesday" = "Mardi";
+
+/* Non-empty shortcut button in recording state */
+"Type New Shortcut" = "Saisir un raccourci";
+
+/* Empty shortcut button in recording state */
+"Type Shortcut" = "Saisir un raccourci";
+
+/* Cancel action button for non-empty shortcut in recording state */
+"Use Old Shortcut" = "Utiliser l’ancien raccourci";
+
+/* No comment provided by engineer. */
+"Wednesday" = "Mercredi";
+
