@@ -1,17 +1,17 @@
 //
 //  ViewController.m
-//  Moon
+//  Itsycal2
 //
 //  Created by Sanjay Madan on 2/4/15.
 //  Copyright (c) 2015 mowglii.com. All rights reserved.
 //
 
 #import "ViewController.h"
-#import "ViewController+LoginItem.h"
 #import "Itsycal.h"
 #import "ItsycalWindow.h"
 #import "MoCalendar.h"
 #import "SBCalendar.h"
+#import "PrefsViewController.h"
 
 @implementation ViewController
 {
@@ -21,6 +21,8 @@
     NSButton      *_btnAdd, *_btnCal, *_btnOpt;
     NSRect         _menuItemFrame, _screenFrame;
     BOOL           _pin;
+    
+    NSWindowController *_prefsWC;
 }
 
 #pragma mark -
@@ -29,17 +31,13 @@
 - (void)loadView
 {
     // View controller content view
-    
     NSView *v = [NSView new];
     v.translatesAutoresizingMaskIntoConstraints = NO;
     
     // MoCalendar
-    
     _moCal = [MoCalendar new];
     _moCal.translatesAutoresizingMaskIntoConstraints = NO;
     [v addSubview:_moCal];
-    
-    // Add, Calendar.app and Options buttons
     
     // Convenience function to config buttons.
     NSButton* (^btn)(NSString*, NSString*, NSString*, SEL) = ^NSButton* (NSString *imageName, NSString *tip, NSString *key, SEL action) {
@@ -57,11 +55,11 @@
         [v addSubview:btn];
         return btn;
     };
+
+    // Add, Calendar.app and Options buttons
     _btnAdd = btn(@"btnAdd", @"New Event... ⌘N", @"n", @selector(addCalendarEvent:));
     _btnCal = btn(@"btnCal", @"Open Calendar... ⌘O", @"o", @selector(showCalendarApp:));
     _btnOpt = btn(@"btnOpt", @"Options", @"", @selector(showOptionsMenu:));
-    
-    // Layout MoCalendar and buttons
     
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*, NSLayoutFormatOptions) = ^(NSString *format, NSLayoutFormatOptions opts) {
@@ -77,6 +75,7 @@
 
 - (void)viewDidLoad
 {
+//    NSLog(@"%s", __FUNCTION__);
     [super viewDidLoad];
     
     // The order of the statements is important!
@@ -94,18 +93,20 @@
 
 - (void)viewWillAppear
 {
+//    NSLog(@"%s", __FUNCTION__);
     [super viewWillAppear];
     [self.itsycalWindow makeFirstResponder:_moCal];
 }
 
 - (void)viewDidAppear
 {
+//    NSLog(@"%s", __FUNCTION__);
     [super viewDidAppear];
 
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    _pin = [defaults boolForKey:@"PinItsycal"];
-    _moCal.showWeeks = [defaults boolForKey:@"ShowWeeks"];
-    _moCal.weekStartDOW = [defaults integerForKey:@"WeekStartDOW"];
+    _pin = [defaults boolForKey:kPinItsycal];
+    _moCal.showWeeks = [defaults boolForKey:kShowWeeks];
+    _moCal.weekStartDOW = [defaults integerForKey:kWeekStartDOW];
     
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:NSMaxX(_screenFrame)];
 }
@@ -119,6 +120,7 @@
     if (charsIgnoringModifiers.length != 1) return;
     NSUInteger flags = [theEvent modifierFlags];
     BOOL noFlags = !(flags & (NSCommandKeyMask | NSShiftKeyMask | NSAlternateKeyMask | NSControlKeyMask));
+    BOOL cmdFlag = (flags & NSCommandKeyMask) &&  !(flags & (NSShiftKeyMask | NSAlternateKeyMask | NSControlKeyMask));
     unichar keyChar = [charsIgnoringModifiers characterAtIndex:0];
     
     if (keyChar == 'p' && noFlags) {
@@ -126,6 +128,9 @@
     }
     else if (keyChar == 'w' && noFlags) {
         [self showWeeks:self];
+    }
+    else if (keyChar == ',' && cmdFlag) {
+        [self showPrefs:self];
     }
     else {
         [super keyDown:theEvent];
@@ -185,9 +190,7 @@
     item.submenu = weekStartMenu;
     
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
-    item = [optMenu insertItemWithTitle:NSLocalizedString(@"Launch at login", @"") action:@selector(launchAtLogin:) keyEquivalent:@"" atIndex:i++];
-    item.state = [self isLoginItemEnabled] ? NSOnState : NSOffState;
-    [optMenu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(pin:) keyEquivalent:@"," atIndex:i++];
+    [optMenu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Quit", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
     NSPoint pt = NSOffsetRect(_btnOpt.frame, -5, -10).origin;
@@ -197,7 +200,7 @@
 - (void)pin:(id)sender
 {
     _pin = !_pin;
-    [[NSUserDefaults standardUserDefaults] setBool:_pin forKey:@"PinItsycal"];
+    [[NSUserDefaults standardUserDefaults] setBool:_pin forKey:kPinItsycal];
 }
 
 - (void)showWeeks:(id)sender
@@ -206,7 +209,7 @@
     // setting _moCal.showWeeks which runs an animation.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         _moCal.showWeeks = !_moCal.showWeeks;
-        [[NSUserDefaults standardUserDefaults] setBool:_moCal.showWeeks forKey:@"ShowWeeks"];
+        [[NSUserDefaults standardUserDefaults] setBool:_moCal.showWeeks forKey:kShowWeeks];
     });
 }
 
@@ -214,14 +217,33 @@
 {
     NSMenuItem *item = (NSMenuItem *)sender;
     _moCal.weekStartDOW = [item.menu indexOfItem:item];
-    [[NSUserDefaults standardUserDefaults] setInteger:_moCal.weekStartDOW forKey:@"WeekStartDOW"];
+    [[NSUserDefaults standardUserDefaults] setInteger:_moCal.weekStartDOW forKey:kWeekStartDOW];
 }
 
-- (void)launchAtLogin:(id)sender
+- (void)showPrefs:(id)sender
 {
-    NSMenuItem *item = (NSMenuItem *)sender;
-    BOOL enable = item.state ? NO : YES;
-    [self enableLoginItem:enable];
+    // This statement makes the prefs panel act non-wonky.
+    [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+    
+    if (!_prefsWC) {
+        NSWindow *window = [[NSWindow alloc] initWithContentRect:NSZeroRect styleMask:(NSTitledWindowMask | NSClosableWindowMask) backing:NSBackingStoreBuffered defer:NO];
+        window.hidesOnDeactivate = YES;
+        _prefsWC = [[NSWindowController alloc] initWithWindow:window];
+        _prefsWC.contentViewController = [PrefsViewController new];
+        [window center];
+    }
+    // If the window is not visible, we must "close" it before showing it.
+    // This seems weird, but is the only way to ensure that -viewWillAppear
+    // and -viewDidAppear are called in the prefs VC. When the prefs window
+    // is hidden by being deactivated, it appears to have been closed to the
+    // user, but it didn't really "close" (it just hid). So we first properly
+    // "close" and then our view lifecycle methods are called in the VC.
+    // This feels like a hack.
+    if (!(_prefsWC.window.occlusionState & NSWindowOcclusionStateVisible)) {
+        [_prefsWC close];
+    }
+    [_prefsWC showWindow:self];
+    [_prefsWC.window center];
 }
 
 #pragma mark -
@@ -262,12 +284,7 @@
 
 - (void)statusItemClicked:(id)sender
 {
-    if ([self.itsycalWindow occlusionState] & NSWindowOcclusionStateVisible) {
-        [self hideItsycalWindow];
-    }
-    else {
-        [self showItsycalWindow];
-    }
+    [self toggleItsycalWindow];
 }
 
 - (void)updateMenubarIcon
@@ -284,6 +301,16 @@
 - (ItsycalWindow *)itsycalWindow
 {
     return (ItsycalWindow *)self.view.window;
+}
+
+- (void)toggleItsycalWindow
+{
+    if ([self.itsycalWindow occlusionState] & NSWindowOcclusionStateVisible) {
+        [self hideItsycalWindow];
+    }
+    else {
+        [self showItsycalWindow];
+    }
 }
 
 - (void)showItsycalWindow
@@ -312,6 +339,11 @@
     if (!_pin) {
         [self hideItsycalWindow];
     }
+}
+
+- (void)keyboardShortcutActivated
+{
+    [self toggleItsycalWindow];
 }
 
 #pragma mark -

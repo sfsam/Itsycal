@@ -1,14 +1,17 @@
 //
 //  AppDelegate.m
-//  Moon
+//  Itsycal2
 //
 //  Created by Sanjay Madan on 2/4/15.
 //  Copyright (c) 2015 mowglii.com. All rights reserved.
 //
 
 #import "AppDelegate.h"
-#import "ViewController.h"
+#import "Itsycal.h"
 #import "ItsycalWindow.h"
+#import "ViewController.h"
+#import "MASShortcutBinder.h"
+#import "MASShortcutMonitor.h"
 
 @implementation AppDelegate
 {
@@ -19,14 +22,19 @@
 + (void)initialize
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{
-        @"PinItsycal":    @(NO),
-        @"ShowWeeks":     @(NO),
-        @"WeekStartDOW":  @0  // Sun=0, Mon=1,... (MoCalendar.h)
+        kPinItsycal:   @(NO),
+        kShowWeeks:    @(NO),
+        kWeekStartDOW: @0 // Sun=0, Mon=1,... (MoCalendar.h)
     }];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    // Register keyboard shortcut.
+    [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
+         [_vc keyboardShortcutActivated];
+     }];
+    
     _vc = [ViewController new];
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
     _wc.contentViewController = _vc;
@@ -36,7 +44,7 @@
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
-    // Insert code here to tear down your application
+    [[MASShortcutMonitor sharedMonitor] unregisterAllShortcuts];
 }
 
 @end

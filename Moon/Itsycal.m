@@ -8,11 +8,11 @@
 
 #import "Itsycal.h"
 
-MoDate Today(NSCalendar *cal)
-{
-    NSDateComponents *c = [cal components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:[NSDate new]];
-    return MakeDate((int)c.year, (int)c.month, (int)c.day);
-}
+// NSUserDefaults keys
+NSString * const kPinItsycal = @"PinItsycal";
+NSString * const kShowWeeks = @"ShowWeeks";
+NSString * const kWeekStartDOW = @"WeekStartDOW";
+NSString * const kKeyboardShortcut = @"KeyboardShortcut";
 
 NSImage *ItsycalDateIcon(int day, NSImage *datesImage)
 {

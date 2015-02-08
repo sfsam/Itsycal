@@ -1,6 +1,6 @@
 //
 //  ItsycalWindow.m
-//  Cal
+//  Itsycal2
 //
 //  Created by Sanjay Madan on 12/14/14.
 //  Copyright (c) 2014 mowglii.com. All rights reserved.

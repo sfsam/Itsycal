@@ -9,6 +9,11 @@
 #import <Cocoa/Cocoa.h>
 #import "MoDate.h"
 
-MoDate Today(NSCalendar *cal);
+// NSUserDefaults keys
+extern NSString * const kPinItsycal;
+extern NSString * const kShowWeeks;
+extern NSString * const kWeekStartDOW;
+extern NSString * const kKeyboardShortcut;
+
 NSImage *ItsycalDateIcon(int day, NSImage *datesImage);
 
