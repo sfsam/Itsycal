@@ -218,7 +218,7 @@ NSString *const MASShortcutBinding = @"shortcutValue";
         }
         else
         {
-            [self drawInRect:self.bounds withTitle:NSLocalizedString(@"Record Shortcut", @"Empty shortcut button in normal state")
+            [self drawInRect:self.bounds withTitle:NSLocalizedString(@"Click to Record Shortcut", @"Empty shortcut button in normal state")
                    alignment:NSCenterTextAlignment state:NSOffState];
         }
     }

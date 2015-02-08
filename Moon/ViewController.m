@@ -46,7 +46,7 @@
         [btn setBordered:NO];
         [btn setTarget:self];
         [btn setAction:action];
-        [btn setToolTip:NSLocalizedString(tip, @"")];
+        [btn setToolTip:tip];
         [btn setImage:[NSImage imageNamed:imageName]];
         [btn setImagePosition:NSImageOnly];
         [btn setKeyEquivalent:key];
@@ -57,9 +57,9 @@
     };
 
     // Add, Calendar.app and Options buttons
-    _btnAdd = btn(@"btnAdd", @"New Event... ⌘N", @"n", @selector(addCalendarEvent:));
-    _btnCal = btn(@"btnCal", @"Open Calendar... ⌘O", @"o", @selector(showCalendarApp:));
-    _btnOpt = btn(@"btnOpt", @"Options", @"", @selector(showOptionsMenu:));
+    _btnAdd = btn(@"btnAdd", NSLocalizedString(@"New Event... ⌘N", @""), @"n", @selector(addCalendarEvent:));
+    _btnCal = btn(@"btnCal", NSLocalizedString(@"Open Calendar... ⌘O", @""), @"o", @selector(showCalendarApp:));
+    _btnOpt = btn(@"btnOpt", NSLocalizedString(@"Options", @""), @"", @selector(showOptionsMenu:));
     
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*, NSLayoutFormatOptions) = ^(NSString *format, NSLayoutFormatOptions opts) {
@@ -192,7 +192,7 @@
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
-    [optMenu insertItemWithTitle:NSLocalizedString(@"Quit", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
+    [optMenu insertItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
     NSPoint pt = NSOffsetRect(_btnOpt.frame, -5, -10).origin;
     [optMenu popUpMenuPositioningItem:nil atLocation:pt inView:self.view];
 }

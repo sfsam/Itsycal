@@ -94,7 +94,7 @@
     vcon(@"V:|-110-[_login]-(20)-[shortcutLabel]-(3)-[shortcutView(25)]-(20)-[copyright]-m-|");
     vcon(@"H:|-m-[_login]-(>=m)-|");
     vcon(@"H:|-(>=m)-[shortcutLabel]-(>=m)-|");
-    vcon(@"H:|-m-[shortcutView(>=200)]-(m)-|");
+    vcon(@"H:|-m-[shortcutView(>=220)]-(m)-|");
     vcon(@"H:|-(>=m)-[copyright]-(>=m)-|");
     
     // Leading-align title, link

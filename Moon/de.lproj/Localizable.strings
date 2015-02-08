@@ -1,0 +1,84 @@
+/* Cancel action button in recording state */
+"Cancel" = "Abbrechen";
+
+/* Empty shortcut button in normal state */
+"Click to Record Shortcut" = "Klicken, um Kurzbefehl eingeben";
+
+/* Tooltip for non-empty shortcut button */
+"Click to record new shortcut" = "Klicken, um Kurzbefehl eingeben";
+
+/* Tooltip for hint button near the non-empty shortcut */
+"Delete shortcut" = "Löschen Tastaturkurzbefehl";
+
+/* No comment provided by engineer. */
+"First day of week" = "Erster Wochentag";
+
+/* No comment provided by engineer. */
+"Friday" = "Freitag";
+
+/* No comment provided by engineer. */
+"Keyboard shortcut" = "Tastaturkurzbefehl";
+
+/* No comment provided by engineer. */
+"Launch at login" = "Starte Itsycal bei der Anmeldung";
+
+/* No comment provided by engineer. */
+"Monday" = "Montag";
+
+/* No comment provided by engineer. */
+"New Event... ⌘N" = "Neues Ereignis … ⌘N";
+
+/* Alert button when shortcut is already used */
+"OK" = "OK";
+
+/* No comment provided by engineer. */
+"Open Calendar... ⌘O" = "Kalender öffnen … ⌘O";
+
+/* No comment provided by engineer. */
+"Options" = "Optionen";
+
+/* No comment provided by engineer. */
+"Preferences..." = "Einstellungen …";
+
+/* No comment provided by engineer. */
+"Quit Itsycal" = "Itsycal beenden";
+
+/* No comment provided by engineer. */
+"Saturday" = "Samstag";
+
+/* No comment provided by engineer. */
+"Show calendar weeks" = "Kalenderwoche anzeigen";
+
+/* Shortcut glyph name for SPACE key */
+"Space" = "Leertaste";
+
+/* No comment provided by engineer. */
+"Sunday" = "Sonntag";
+
+/* Alert box message when we fail to launch the Calendar application */
+"The Calendar application could not be found." = "Die Kalender-Anwendung konnte nicht gefunden werden.";
+
+/* Title for alert when shortcut is already used */
+"The key combination %@ cannot be used" = "Die Tastenkombination %@ kann nicht benutzt werden!";
+
+/* Message for alert when shortcut is already used */
+"This shortcut cannot be used because it is already used by the menu item ‘%@’." = "Die Tastenkombination kann nicht benutzt werden, da sie bereits von dem Menüeintrag ‘%@’ benutzt wird.";
+
+/* No comment provided by engineer. */
+"Thursday" = "Donnerstag";
+
+/* No comment provided by engineer. */
+"Tuesday" = "Dienstag";
+
+/* Non-empty shortcut button in recording state */
+"Type New Shortcut" = "Kurzbefehl eingeben";
+
+/* Empty shortcut button in recording state */
+"Type Shortcut" = "Kurzbefehl eingeben";
+
+/* Cancel action button for non-empty shortcut in recording state */
+"Use Old Shortcut" = "Alte Tastenkombination benutzen";
+
+/* No comment provided by engineer. */
+"Wednesday" = "Mittwoch";
+
