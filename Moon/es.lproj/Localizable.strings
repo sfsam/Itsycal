@@ -65,7 +65,7 @@
 "The key combination %@ cannot be used" = "¡La combinación de teclas %@ no puede usarse!";
 
 /* Message for alert when shortcut is already used */
-"This shortcut cannot be used because it is already used by the menu item ‘%@’." = "La combinación de teclas “%@” no puede ser usada pues ya está en uso por el ítem de menú ‘%@’.";
+"This shortcut cannot be used because it is already used by the menu item ‘%@’." = "La combinación de teclas no puede ser usada pues ya está en uso por el ítem de menú ‘%@’.";
 
 /* No comment provided by engineer. */
 "Thursday" = "Jueves";

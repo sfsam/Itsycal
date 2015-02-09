@@ -64,6 +64,9 @@
 		922B6BD51A88359800DEA9CD /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		922B6BD61A88359800DEA9CD /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		922B6BD71A88359800DEA9CD /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		922B6BDB1A88667700DEA9CD /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
+		922B6BDC1A886C6900DEA9CD /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		922B6BDD1A886C6900DEA9CD /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		9242A55C1A82A136005AA4B3 /* Moon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9242A5601A82A136005AA4B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9242A5611A82A136005AA4B3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -232,6 +235,7 @@
 				Base,
 				fr,
 				es,
+				it,
 			);
 			mainGroup = 9242A5531A82A136005AA4B3;
 			productRefGroup = 9242A55D1A82A136005AA4B3 /* Products */;
@@ -293,6 +297,7 @@
 				922B6BBF1A87EDBD00DEA9CD /* de */,
 				922B6BD21A881DBF00DEA9CD /* fr */,
 				922B6BD71A88359800DEA9CD /* es */,
+				922B6BDB1A88667700DEA9CD /* it */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -303,6 +308,7 @@
 				922B6BC51A87EDBE00DEA9CD /* de */,
 				922B6BD31A8821A200DEA9CD /* fr */,
 				922B6BD61A88359800DEA9CD /* es */,
+				922B6BDC1A886C6900DEA9CD /* it */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -314,6 +320,7 @@
 				922B6BCC1A87FFF700DEA9CD /* de */,
 				922B6BD41A8821A300DEA9CD /* fr */,
 				922B6BD51A88359800DEA9CD /* es */,
+				922B6BDD1A886C6900DEA9CD /* it */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
