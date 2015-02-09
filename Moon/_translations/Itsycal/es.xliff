@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
+    <file original="Moon/Base.lproj/MainMenu.xib" source-language="en" datatype="plaintext" target-language="es">
+        <header>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
+        </header>
+        <body>
+            <trans-unit id="1Xt-HY-uBw.title">
+                <source>Moon</source>
+                <note>Class = "NSMenuItem"; title = "Moon"; ObjectID = "1Xt-HY-uBw";</note>
+            </trans-unit>
+            <trans-unit id="4sb-4s-VLi.title">
+                <source>Quit Moon</source>
+                <note>Class = "NSMenuItem"; title = "Quit Moon"; ObjectID = "4sb-4s-VLi";</note>
+            </trans-unit>
+            <trans-unit id="AYu-sK-qS6.title">
+                <source>Main Menu</source>
+                <note>Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6";</note>
+            </trans-unit>
+            <trans-unit id="DVo-aG-piG.title">
+                <source>Close</source>
+                <note>Class = "NSMenuItem"; title = "Close"; ObjectID = "DVo-aG-piG";</note>
+            </trans-unit>
+            <trans-unit id="bib-Uj-vzu.title">
+                <source>File</source>
+                <note>Class = "NSMenu"; title = "File"; ObjectID = "bib-Uj-vzu";</note>
+            </trans-unit>
+            <trans-unit id="dMs-cI-mzQ.title">
+                <source>File</source>
+                <note>Class = "NSMenuItem"; title = "File"; ObjectID = "dMs-cI-mzQ";</note>
+            </trans-unit>
+            <trans-unit id="uQy-DD-JDr.title">
+                <source>Moon</source>
+                <note>Class = "NSMenu"; title = "Moon"; ObjectID = "uQy-DD-JDr";</note>
+            </trans-unit>
+        </body>
+    </file>
+    <file original="Moon/Info.plist" source-language="en" datatype="plaintext" target-language="es">
+        <header>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
+        </header>
+        <body>
+            <trans-unit id="CFBundleName">
+                <source>$(PRODUCT_NAME)</source>
+            </trans-unit>
+            <trans-unit id="CFBundleShortVersionString">
+                <source>1.0</source>
+            </trans-unit>
+            <trans-unit id="NSHumanReadableCopyright">
+                <source>Copyright © 2015 mowglii.com</source>
+            </trans-unit>
+        </body>
+    </file>
+    <file original="Moon/Localizable.strings" source-language="en" datatype="plaintext" target-language="es">
+        <header>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
+        </header>
+        <body>
+            <trans-unit id="Cancel">
+                <source>Cancel</source>
+                <target>Cancelar</target>
+                <note>Cancel action button in recording state</note>
+            </trans-unit>
+            <trans-unit id="Click to Record Shortcut">
+                <source>Click to Record Shortcut</source>
+                <target>Haz click para elegir atajo</target>
+                <note>Empty shortcut button in normal state</note>
+            </trans-unit>
+            <trans-unit id="Click to record new shortcut">
+                <source>Click to record new shortcut</source>
+                <target>Haz click para elegir atajo</target>
+                <note>Tooltip for non-empty shortcut button</note>
+            </trans-unit>
+            <trans-unit id="Delete shortcut">
+                <source>Delete shortcut</source>
+                <target>Eliminar atajo de teclado</target>
+                <note>Tooltip for hint button near the non-empty shortcut</note>
+            </trans-unit>
+            <trans-unit id="First day of week">
+                <source>First day of week</source>
+                <target>Primer día de la semana</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Friday">
+                <source>Friday</source>
+                <target>Viernes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Keyboard shortcut">
+                <source>Keyboard shortcut</source>
+                <target>Atajo de teclado</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Launch at login">
+                <source>Launch at login</source>
+                <target>Abrir automáticamente al iniciar sesión</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Monday">
+                <source>Monday</source>
+                <target>Lunes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="New Event... ⌘N">
+                <source>New Event... ⌘N</source>
+                <target>Nuevo evento… ⌘N</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="OK">
+                <source>OK</source>
+                <target>OK</target>
+                <note>Alert button when shortcut is already used</note>
+            </trans-unit>
+            <trans-unit id="Open Calendar... ⌘O">
+                <source>Open Calendar... ⌘O</source>
+                <target>Abrir La aplicación del calendario… ⌘O</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Options">
+                <source>Options</source>
+                <target>Opciones</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Pin Itsycal">
+                <source>Pin Itsycal</source>
+                <target>Mantener Itsycal</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Preferences...">
+                <source>Preferences...</source>
+                <target>Preferencias…</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Quit Itsycal">
+                <source>Quit Itsycal</source>
+                <target>Cerrar Itsycal</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Saturday">
+                <source>Saturday</source>
+                <target>Sábado</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Show calendar weeks">
+                <source>Show calendar weeks</source>
+                <target>Mostrar semanas del calendario</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Space">
+                <source>Space</source>
+                <target>Espacio</target>
+                <note>Shortcut glyph name for SPACE key</note>
+            </trans-unit>
+            <trans-unit id="Sunday">
+                <source>Sunday</source>
+                <target>Domingo</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="The Calendar application could not be found.">
+                <source>The Calendar application could not be found.</source>
+                <target>La aplicación del calendario no se pudo encontrar.</target>
+                <note>Alert box message when we fail to launch the Calendar application</note>
+            </trans-unit>
+            <trans-unit id="The key combination %@ cannot be used">
+                <source>The key combination %@ cannot be used</source>
+                <target>¡La combinación de teclas %@ no puede usarse!</target>
+                <note>Title for alert when shortcut is already used</note>
+            </trans-unit>
+            <trans-unit id="This shortcut cannot be used because it is already used by the menu item ‘%@’.">
+                <source>This shortcut cannot be used because it is already used by the menu item ‘%@’.</source>
+                <target>La combinación de teclas “%@” no puede ser usada pues ya está en uso por el ítem de menú ‘%@’.</target>
+                <note>Message for alert when shortcut is already used</note>
+            </trans-unit>
+            <trans-unit id="Thursday">
+                <source>Thursday</source>
+                <target>Jueves</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Tuesday">
+                <source>Tuesday</source>
+                <target>Martes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Type New Shortcut">
+                <source>Type New Shortcut</source>
+                <target>Escribir atajo</target>
+                <note>Non-empty shortcut button in recording state</note>
+            </trans-unit>
+            <trans-unit id="Type Shortcut">
+                <source>Type Shortcut</source>
+                <target>Escribir atajo</target>
+                <note>Empty shortcut button in recording state</note>
+            </trans-unit>
+            <trans-unit id="Use Old Shortcut">
+                <source>Use Old Shortcut</source>
+                <target>Usar atajo anterior</target>
+                <note>Cancel action button for non-empty shortcut in recording state</note>
+            </trans-unit>
+            <trans-unit id="Wednesday">
+                <source>Wednesday</source>
+                <target>Miércoles</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
