@@ -8,11 +8,23 @@
 
 #import "Itsycal.h"
 
+// Bundle IDs
+NSString * const kItsycalBundleID = @"com.mowglii.Moon";
+NSString * const kItsycalExtraBundleID = @"com.mowglii.ItsycalExtra";
+
 // NSUserDefaults keys
 NSString * const kPinItsycal = @"PinItsycal";
 NSString * const kShowWeeks = @"ShowWeeks";
 NSString * const kWeekStartDOW = @"WeekStartDOW";
 NSString * const kKeyboardShortcut = @"KeyboardShortcut";
+
+// Menu extra notifications
+NSString * const ItsycalIsActiveNotification = @"ItsycalIsActiveNotification";
+NSString * const ItsycalDidUpdateIconNotification = @"ItsycalDidUpdateIconNotification";
+NSString * const ItsycalExtraIsActiveNotification = @"ItsycalMenuExtraIsActiveNotification";
+NSString * const ItsycalExtraClickedNotification = @"ItsycalMenuExtraClickedNotification";
+NSString * const ItsycalExtraDidMoveNotification = @"ItsycalMenuExtraDidMoveNotification";
+NSString * const ItsycalExtraWillUnloadNotification = @"ItsycalMenuExtraWillUnloadNotification";
 
 NSImage *ItsycalDateIcon(int day, NSImage *datesImage)
 {

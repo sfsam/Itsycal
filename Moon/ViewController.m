@@ -25,6 +25,15 @@
     NSWindowController *_prefsWC;
 }
 
+- (void)dealloc
+{
+    if (_statusItem) {
+        [self removeStatusItem];
+    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
+}
+
 #pragma mark -
 #pragma mark View lifecycle
 
@@ -78,6 +87,12 @@
 //    NSLog(@"%s", __FUNCTION__);
     [super viewDidLoad];
     
+    // Menu extra notifications
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraIsActive:) name:ItsycalExtraIsActiveNotification object:nil];
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraClicked:) name:ItsycalExtraClickedNotification object:nil];
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraMoved:) name:ItsycalExtraDidMoveNotification object:nil];
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraWillUnload:) name:ItsycalExtraWillUnloadNotification object:nil];
+
     // The order of the statements is important!
 
     _nsCal = [NSCalendar autoupdatingCurrentCalendar];
@@ -89,6 +104,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dayChanged:) name:NSCalendarDayChangedNotification object:nil];
 
     [self createStatusItem];
+    
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalIsActiveNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
 }
 
 - (void)viewWillAppear
@@ -108,7 +125,7 @@
     _moCal.showWeeks = [defaults boolForKey:kShowWeeks];
     _moCal.weekStartDOW = [defaults integerForKey:kWeekStartDOW];
     
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:NSMaxX(_screenFrame)];
+    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
 }
 
 #pragma mark -
@@ -257,7 +274,7 @@
     _statusItem.highlightMode = NO; // Deprecated in 10.10, but what is alternative?
     [self updateMenubarIcon];
     [self updateStatusItemPositionInfo];
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:NSMaxX(_screenFrame)];
+    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
     
     // Notification for when status item view moves
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidMoveNotification object:_statusItem.button.window];
@@ -270,21 +287,27 @@
     _statusItem = nil;
 }
 
+- (void)statusItemMoved:(NSNotification *)note
+{
+    [self updateStatusItemPositionInfo];
+    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+}
+
+- (void)statusItemClicked:(id)sender
+{
+    [self toggleItsycalWindow];
+}
+
 - (void)updateStatusItemPositionInfo
 {
     _menuItemFrame = [_statusItem.button.window convertRectToScreen:_statusItem.button.frame];
     _screenFrame = [[NSScreen mainScreen] frame];
 }
 
-- (void)statusItemMoved:(NSNotification *)note
+- (void)updateMenuExtraPositionInfoWithUserInfo:(NSDictionary *)userInfo
 {
-    [self updateStatusItemPositionInfo];
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:NSMaxX(_screenFrame)];
-}
-
-- (void)statusItemClicked:(id)sender
-{
-    [self toggleItsycalWindow];
+    _menuItemFrame = NSRectFromString(userInfo[@"menuItemFrame"]);
+    _screenFrame   = NSRectFromString(userInfo[@"screenFrame"]);
 }
 
 - (void)updateMenubarIcon
@@ -293,6 +316,40 @@
     NSImage *datesImage = [NSImage imageNamed:@"dates"];
     NSImage *icon = ItsycalDateIcon(day, datesImage);
     _statusItem.button.image = icon;
+    
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalDidUpdateIconNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
+}
+
+- (void)menuExtraIsActive:(NSNotification *)notification
+{
+    [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
+    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+    
+    [self removeStatusItem];
+    
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalDidUpdateIconNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
+}
+
+- (void)menuExtraClicked:(NSNotification *)notification
+{
+    [self toggleItsycalWindow];
+}
+
+- (void)menuExtraMoved:(NSNotification *)notification
+{
+    [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
+    // See -statusItemMoved: for an explanation of why we have a delay.
+    //mow_dispatch_after(0.1, ^{
+    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+    //});
+}
+
+- (void)menuExtraWillUnload:(NSNotification *)notification
+{
+    if ([self.itsycalWindow isVisible]) {
+        [self.itsycalWindow orderOut:nil];
+    }
+    [self createStatusItem];
 }
 
 #pragma mark -
@@ -331,7 +388,7 @@
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:NSMaxX(_screenFrame)];
+    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification

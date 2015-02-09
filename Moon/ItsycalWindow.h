@@ -10,6 +10,6 @@
 
 @interface ItsycalWindow : NSPanel
 
-- (void)positionRelativeToRect:(NSRect)rect screenMaxX:(CGFloat)screenMaxX;
+- (void)positionRelativeToRect:(NSRect)rect screenFrame:(NSRect)screenFrame;
 
 @end

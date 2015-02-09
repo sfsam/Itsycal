@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9219CC261A8990F700B6E159 /* MenuCracker.menu in Resources */ = {isa = PBXBuildFile; fileRef = 9219CC251A8990F700B6E159 /* MenuCracker.menu */; };
+		921CD1731A8934DC007B60C0 /* SystemUIPlugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 921CD1721A8934DC007B60C0 /* SystemUIPlugin.framework */; };
+		921CD1771A89355B007B60C0 /* ItsycalExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 921CD1761A89355B007B60C0 /* ItsycalExtra.m */; };
+		921CD1781A893880007B60C0 /* Itsycal.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5951A82BE5E005AA4B3 /* Itsycal.m */; };
+		921CD1801A8941BC007B60C0 /* dates.png in Resources */ = {isa = PBXBuildFile; fileRef = 921CD17F1A8941BC007B60C0 /* dates.png */; };
+		921CD1841A8979F8007B60C0 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 921CD1861A8979F8007B60C0 /* Localizable.strings */; };
+		9222B56D1A899B3500CCAC22 /* ItsycalExtra.menu in Resources */ = {isa = PBXBuildFile; fileRef = 921CD16B1A893420007B60C0 /* ItsycalExtra.menu */; };
 		922B6BA91A85950600DEA9CD /* MASDictionaryTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B941A85950600DEA9CD /* MASDictionaryTransformer.m */; };
 		922B6BAB1A85950600DEA9CD /* MASHotKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B971A85950600DEA9CD /* MASHotKey.m */; };
 		922B6BAD1A85950600DEA9CD /* MASShortcut.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B9B1A85950600DEA9CD /* MASShortcut.m */; };
@@ -32,7 +39,31 @@
 		9242A5961A82BE5E005AA4B3 /* Itsycal.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5951A82BE5E005AA4B3 /* Itsycal.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		921CD18B1A897C04007B60C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9242A5541A82A136005AA4B3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 921CD16A1A893420007B60C0;
+			remoteInfo = MoonExtra;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		9219CC251A8990F700B6E159 /* MenuCracker.menu */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = MenuCracker.menu; sourceTree = "<group>"; };
+		921CD16B1A893420007B60C0 /* ItsycalExtra.menu */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ItsycalExtra.menu; sourceTree = BUILT_PRODUCTS_DIR; };
+		921CD16E1A893420007B60C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		921CD1721A8934DC007B60C0 /* SystemUIPlugin.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemUIPlugin.framework; path = /System/Library/PrivateFrameworks/SystemUIPlugin.framework; sourceTree = "<absolute>"; };
+		921CD1741A89351E007B60C0 /* NSMenuExtra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSMenuExtra.h; sourceTree = "<group>"; };
+		921CD1751A89355B007B60C0 /* ItsycalExtra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItsycalExtra.h; sourceTree = "<group>"; };
+		921CD1761A89355B007B60C0 /* ItsycalExtra.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItsycalExtra.m; sourceTree = "<group>"; };
+		921CD17F1A8941BC007B60C0 /* dates.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dates.png; path = Moon/Images.xcassets/dates.imageset/dates.png; sourceTree = SOURCE_ROOT; };
+		921CD1811A894A45007B60C0 /* NSMenuExtraView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSMenuExtraView.h; sourceTree = "<group>"; };
+		921CD1851A8979F8007B60C0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		921CD1871A897A00007B60C0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		921CD1881A897A01007B60C0 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		921CD1891A897A02007B60C0 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
+		921CD18A1A897A03007B60C0 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		922B6B911A856A7D00DEA9CD /* SBCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBCalendar.h; sourceTree = "<group>"; };
 		922B6B931A85950600DEA9CD /* MASDictionaryTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MASDictionaryTransformer.h; path = _vendor/MASShortcut/MASDictionaryTransformer.h; sourceTree = "<group>"; };
 		922B6B941A85950600DEA9CD /* MASDictionaryTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MASDictionaryTransformer.m; path = _vendor/MASShortcut/MASDictionaryTransformer.m; sourceTree = "<group>"; };
@@ -91,6 +122,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		921CD1681A893420007B60C0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				921CD1731A8934DC007B60C0 /* SystemUIPlugin.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9242A5591A82A136005AA4B3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -101,6 +140,39 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9219CC241A8990F700B6E159 /* MenuCracker */ = {
+			isa = PBXGroup;
+			children = (
+				9219CC251A8990F700B6E159 /* MenuCracker.menu */,
+			);
+			name = MenuCracker;
+			path = _menucracker;
+			sourceTree = "<group>";
+		};
+		921CD16C1A893420007B60C0 /* ItsycalExtra */ = {
+			isa = PBXGroup;
+			children = (
+				921CD16D1A893420007B60C0 /* Supporting Files */,
+				921CD1751A89355B007B60C0 /* ItsycalExtra.h */,
+				921CD1761A89355B007B60C0 /* ItsycalExtra.m */,
+			);
+			name = ItsycalExtra;
+			path = MoonExtra;
+			sourceTree = "<group>";
+		};
+		921CD16D1A893420007B60C0 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				921CD1721A8934DC007B60C0 /* SystemUIPlugin.framework */,
+				921CD1861A8979F8007B60C0 /* Localizable.strings */,
+				921CD16E1A893420007B60C0 /* Info.plist */,
+				921CD17F1A8941BC007B60C0 /* dates.png */,
+				921CD1741A89351E007B60C0 /* NSMenuExtra.h */,
+				921CD1811A894A45007B60C0 /* NSMenuExtraView.h */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		922B6B921A8594E900DEA9CD /* MASShortcut */ = {
 			isa = PBXGroup;
 			children = (
@@ -129,6 +201,7 @@
 			isa = PBXGroup;
 			children = (
 				9242A55E1A82A136005AA4B3 /* Moon */,
+				921CD16C1A893420007B60C0 /* ItsycalExtra */,
 				9242A55D1A82A136005AA4B3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -137,6 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				9242A55C1A82A136005AA4B3 /* Moon.app */,
+				921CD16B1A893420007B60C0 /* ItsycalExtra.menu */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -144,6 +218,7 @@
 		9242A55E1A82A136005AA4B3 /* Moon */ = {
 			isa = PBXGroup;
 			children = (
+				9219CC241A8990F700B6E159 /* MenuCracker */,
 				922B6B921A8594E900DEA9CD /* MASShortcut */,
 				9242A55F1A82A136005AA4B3 /* Supporting Files */,
 				9242A5661A82A136005AA4B3 /* Images.xcassets */,
@@ -195,6 +270,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		921CD16A1A893420007B60C0 /* ItsycalExtra */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 921CD1711A893420007B60C0 /* Build configuration list for PBXNativeTarget "ItsycalExtra" */;
+			buildPhases = (
+				921CD1671A893420007B60C0 /* Sources */,
+				921CD1681A893420007B60C0 /* Frameworks */,
+				921CD1691A893420007B60C0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ItsycalExtra;
+			productName = MoonExtra;
+			productReference = 921CD16B1A893420007B60C0 /* ItsycalExtra.menu */;
+			productType = "com.apple.product-type.bundle";
+		};
 		9242A55B1A82A136005AA4B3 /* Moon */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9242A5791A82A136005AA4B3 /* Build configuration list for PBXNativeTarget "Moon" */;
@@ -206,6 +298,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				921CD18C1A897C04007B60C0 /* PBXTargetDependency */,
 			);
 			name = Moon;
 			productName = Moon;
@@ -221,6 +314,9 @@
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = mowglii.com;
 				TargetAttributes = {
+					921CD16A1A893420007B60C0 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
 					9242A55B1A82A136005AA4B3 = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
@@ -236,6 +332,7 @@
 				fr,
 				es,
 				it,
+				de,
 			);
 			mainGroup = 9242A5531A82A136005AA4B3;
 			productRefGroup = 9242A55D1A82A136005AA4B3 /* Products */;
@@ -243,25 +340,46 @@
 			projectRoot = "";
 			targets = (
 				9242A55B1A82A136005AA4B3 /* Moon */,
+				921CD16A1A893420007B60C0 /* ItsycalExtra */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		921CD1691A893420007B60C0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				921CD1801A8941BC007B60C0 /* dates.png in Resources */,
+				921CD1841A8979F8007B60C0 /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9242A55A1A82A136005AA4B3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9222B56D1A899B3500CCAC22 /* ItsycalExtra.menu in Resources */,
 				9242A5671A82A136005AA4B3 /* Images.xcassets in Resources */,
 				922B6BC41A87EDBE00DEA9CD /* InfoPlist.strings in Resources */,
 				922B6BBE1A87EDBD00DEA9CD /* Localizable.strings in Resources */,
 				9242A56A1A82A136005AA4B3 /* MainMenu.xib in Resources */,
+				9219CC261A8990F700B6E159 /* MenuCracker.menu in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		921CD1671A893420007B60C0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				921CD1771A89355B007B60C0 /* ItsycalExtra.m in Sources */,
+				921CD1781A893880007B60C0 /* Itsycal.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9242A5581A82A136005AA4B3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -290,7 +408,27 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		921CD18C1A897C04007B60C0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 921CD16A1A893420007B60C0 /* ItsycalExtra */;
+			targetProxy = 921CD18B1A897C04007B60C0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
+		921CD1861A8979F8007B60C0 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				921CD1851A8979F8007B60C0 /* en */,
+				921CD1871A897A00007B60C0 /* fr */,
+				921CD1881A897A01007B60C0 /* es */,
+				921CD1891A897A02007B60C0 /* it */,
+				921CD18A1A897A03007B60C0 /* de */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		922B6BC01A87EDBD00DEA9CD /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -328,6 +466,42 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		921CD16F1A893420007B60C0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = MoonExtra/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = menu;
+			};
+			name = Debug;
+		};
+		921CD1701A893420007B60C0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+				);
+				INFOPLIST_FILE = MoonExtra/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = menu;
+			};
+			name = Release;
+		};
 		9242A5771A82A136005AA4B3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -429,6 +603,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		921CD1711A893420007B60C0 /* Build configuration list for PBXNativeTarget "ItsycalExtra" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				921CD16F1A893420007B60C0 /* Debug */,
+				921CD1701A893420007B60C0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		9242A5571A82A136005AA4B3 /* Build configuration list for PBXProject "Moon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
