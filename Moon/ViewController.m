@@ -195,13 +195,12 @@
     // Week Start submenu
     NSMenu *weekStartMenu = [[NSMenu alloc] initWithTitle:@"Week Start Menu"];
     NSInteger i2 = 0;
-    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Sunday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
-    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Monday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
-    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Tuesday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
-    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Wednesday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
-    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Thursday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
-    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Friday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
-    [weekStartMenu insertItemWithTitle:NSLocalizedString(@"Saturday", @"") action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
+    for (NSString *d in @[NSLocalizedString(@"Sunday", @""), NSLocalizedString(@"Monday", @""),
+                          NSLocalizedString(@"Tuesday", @""), NSLocalizedString(@"Wednesday", @""),
+                          NSLocalizedString(@"Thursday", @""), NSLocalizedString(@"Friday", @""),
+                          NSLocalizedString(@"Saturday", @"")]) {
+        [weekStartMenu insertItemWithTitle:d action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
+    }
     [[weekStartMenu itemAtIndex:_moCal.weekStartDOW] setState:NSOnState];
     item = [optMenu insertItemWithTitle:NSLocalizedString(@"First day of week", @"") action:NULL keyEquivalent:@"" atIndex:i++];
     item.submenu = weekStartMenu;
@@ -289,23 +288,28 @@
 
 - (void)statusItemMoved:(NSNotification *)note
 {
+    NSLog(@"%s", __FUNCTION__);
     [self updateStatusItemPositionInfo];
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
 }
 
 - (void)statusItemClicked:(id)sender
 {
-    [self toggleItsycalWindow];
+    NSLog(@"%s", __FUNCTION__);
+    [self updateStatusItemPositionInfo];
+    [self menuIconClickedAction];
 }
 
 - (void)updateStatusItemPositionInfo
 {
+    NSLog(@"%s", __FUNCTION__);
     _menuItemFrame = [_statusItem.button.window convertRectToScreen:_statusItem.button.frame];
     _screenFrame = [[NSScreen mainScreen] frame];
 }
 
 - (void)updateMenuExtraPositionInfoWithUserInfo:(NSDictionary *)userInfo
 {
+    NSLog(@"%s", __FUNCTION__);
     _menuItemFrame = NSRectFromString(userInfo[@"menuItemFrame"]);
     _screenFrame   = NSRectFromString(userInfo[@"screenFrame"]);
 }
@@ -332,16 +336,16 @@
 
 - (void)menuExtraClicked:(NSNotification *)notification
 {
-    [self toggleItsycalWindow];
+    NSLog(@"%s", __FUNCTION__);
+    [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
+    [self menuIconClickedAction];
 }
 
 - (void)menuExtraMoved:(NSNotification *)notification
 {
+    NSLog(@"%s", __FUNCTION__);
     [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
-    // See -statusItemMoved: for an explanation of why we have a delay.
-    //mow_dispatch_after(0.1, ^{
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
-    //});
 }
 
 - (void)menuExtraWillUnload:(NSNotification *)notification
@@ -350,6 +354,22 @@
         [self.itsycalWindow orderOut:nil];
     }
     [self createStatusItem];
+}
+
+- (void)menuIconClickedAction
+{
+    NSLog(@"%s", __FUNCTION__);
+    // If there are multiple screens and Itsycal is showing
+    // on one and the user clicks the menu item on another,
+    // instead of a regular toggle, we want Itsycal to hide
+    // from it's old screen and show in the new one.
+    if (self.itsycalWindow.screen != [NSScreen mainScreen]) {
+        if ([self.itsycalWindow occlusionState] & NSWindowOcclusionStateVisible) {
+            [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+            return;
+        }
+    }
+    [self toggleItsycalWindow];
 }
 
 #pragma mark -
@@ -388,11 +408,13 @@
 
 - (void)windowDidResize:(NSNotification *)notification
 {
+    NSLog(@"%s", __FUNCTION__);
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
 {
+    NSLog(@"%s", __FUNCTION__);
     if (!_pin) {
         [self hideItsycalWindow];
     }
@@ -400,6 +422,15 @@
 
 - (void)keyboardShortcutActivated
 {
+    // First, get the position of the menubar icon. The
+    // user may now be on a different screen from the one
+    // they were on when the item was last positioned.
+    if (_statusItem) {
+        [self updateStatusItemPositionInfo];
+    }
+    else {
+        // query the menuextra for it's position and then update
+    }
     [self toggleItsycalWindow];
 }
 

@@ -12,8 +12,8 @@
 
 @implementation ItsycalExtra
 {
-    NSImage *_dates;
     BOOL _itsycalIsRunning;
+    NSImage *_dates;
 }
 
 - (id)initWithBundle:(NSBundle *)bundle
@@ -21,10 +21,10 @@
     self = [super initWithBundle:bundle];
     if (self) {
         _itsycalIsRunning = NO;
+        _dates = [[NSImage alloc] initWithContentsOfFile:[bundle pathForImageResource:@"dates"]];
         
         // Setup menu extra view with blank image.
         NSMenuExtraView *exView;
-        _dates = [[NSImage alloc] initWithContentsOfFile:[bundle pathForImageResource:@"dates"]];
         exView = [[NSMenuExtraView alloc] initWithFrame:self.view.frame menuExtra:self];
         exView.image = ItsycalDateIcon(0, _dates);
         self.view = exView;
@@ -87,11 +87,6 @@
 
 #pragma mark
 #pragma mark MenuExtra
-
-- (void)menuExtraClicked:(id)sender
-{
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalExtraClickedNotification object:nil userInfo:[self menuExtraPositionInfo] deliverImmediately:YES];
-}
 
 - (void)menuExtraMoved:(NSNotification *)notification
 {
