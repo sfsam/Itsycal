@@ -91,6 +91,9 @@
         }
     }
     else {
+        if (self.target && self.action) {
+            [self sendAction:self.action to:self.target];
+        }
         [super mouseUp:theEvent];
     }
 }

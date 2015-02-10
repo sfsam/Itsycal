@@ -15,6 +15,7 @@
 @implementation PrefsViewController
 {
     NSButton *_login;
+    MoTextField *_title;
 }
 
 #pragma mark -
@@ -47,12 +48,14 @@
     
     // Title
     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
-    MoTextField *title = txt([NSString stringWithFormat:@"Itsycal %@", infoDict[@"CFBundleShortVersionString"]]);
-    title.font = [NSFont boldSystemFontOfSize:13];
-    title.textColor = [NSColor lightGrayColor];
-    NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:title.stringValue];
+    _title = txt([NSString stringWithFormat:@"Itsycal %@", infoDict[@"CFBundleShortVersionString"]]);
+    _title.font = [NSFont boldSystemFontOfSize:13];
+    _title.textColor = [NSColor lightGrayColor];
+    NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:_title.stringValue];
     [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, 7)];
-    title.attributedStringValue = s;
+    _title.attributedStringValue = s;
+    _title.target = self;
+    _title.action = @selector(toggleTitle:);
     
     // Link
     MoTextField *link  = txt(@"mowglii.com/itsycal");
@@ -85,12 +88,12 @@
     
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, title, link, _login, shortcutLabel, shortcutView, copyright)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, shortcutLabel, shortcutView, copyright)]];
     };
     vcon(@"V:|-m-[appIcon(64)]");
-    vcon(@"H:|-m-[appIcon(64)]-[title]-(>=m)-|");
+    vcon(@"H:|-m-[appIcon(64)]-[_title]-(>=m)-|");
     vcon(@"H:[appIcon]-[link]-(>=m)-|");
-    vcon(@"V:|-36-[title]-1-[link]");
+    vcon(@"V:|-36-[_title]-1-[link]");
     vcon(@"V:|-110-[_login]-(20)-[shortcutLabel]-(3)-[shortcutView(25)]-(20)-[copyright]-m-|");
     vcon(@"H:|-m-[_login]-(>=m)-|");
     vcon(@"H:|-(>=m)-[shortcutLabel]-(>=m)-|");
@@ -98,7 +101,7 @@
     vcon(@"H:|-(>=m)-[copyright]-(>=m)-|");
     
     // Leading-align title, link
-    [v addConstraint:[NSLayoutConstraint constraintWithItem:title attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:link attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
+    [v addConstraint:[NSLayoutConstraint constraintWithItem:_title attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:link attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
     
     // Center shortcutLabel
     [v addConstraint:[NSLayoutConstraint constraintWithItem:shortcutLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:v attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
@@ -113,6 +116,21 @@
 {
     [super viewWillAppear];
     _login.state = [self isLoginItemEnabled] ? NSOnState : NSOffState;
+}
+
+#pragma mark -
+#pragma mark Toggle title
+
+- (void)toggleTitle:(id)sender
+{
+    static BOOL toggle = NO;
+    NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+    NSString *version = toggle ? @"CFBundleShortVersionString": @"CFBundleVersion";
+    NSString *str = [NSString stringWithFormat:@"Itsycal %@", infoDict[version]];
+    NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:str];
+    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, 7)];
+    _title.attributedStringValue = s;
+    toggle = !toggle;
 }
 
 #pragma mark -
