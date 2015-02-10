@@ -11,9 +11,10 @@
 		921CD1731A8934DC007B60C0 /* SystemUIPlugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 921CD1721A8934DC007B60C0 /* SystemUIPlugin.framework */; };
 		921CD1771A89355B007B60C0 /* ItsycalExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 921CD1761A89355B007B60C0 /* ItsycalExtra.m */; };
 		921CD1781A893880007B60C0 /* Itsycal.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5951A82BE5E005AA4B3 /* Itsycal.m */; };
-		921CD1801A8941BC007B60C0 /* dates.png in Resources */ = {isa = PBXBuildFile; fileRef = 921CD17F1A8941BC007B60C0 /* dates.png */; };
 		921CD1841A8979F8007B60C0 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 921CD1861A8979F8007B60C0 /* Localizable.strings */; };
 		9222B56D1A899B3500CCAC22 /* ItsycalExtra.menu in Resources */ = {isa = PBXBuildFile; fileRef = 921CD16B1A893420007B60C0 /* ItsycalExtra.menu */; };
+		9224B0411A8AB48600D63030 /* dates@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9224B0401A8AB48600D63030 /* dates@2x.png */; };
+		9224B0431A8AB4B500D63030 /* dates.png in Resources */ = {isa = PBXBuildFile; fileRef = 9224B0421A8AB4B500D63030 /* dates.png */; };
 		922B6BA91A85950600DEA9CD /* MASDictionaryTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B941A85950600DEA9CD /* MASDictionaryTransformer.m */; };
 		922B6BAB1A85950600DEA9CD /* MASHotKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B971A85950600DEA9CD /* MASHotKey.m */; };
 		922B6BAD1A85950600DEA9CD /* MASShortcut.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B9B1A85950600DEA9CD /* MASShortcut.m */; };
@@ -57,13 +58,14 @@
 		921CD1741A89351E007B60C0 /* NSMenuExtra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSMenuExtra.h; sourceTree = "<group>"; };
 		921CD1751A89355B007B60C0 /* ItsycalExtra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItsycalExtra.h; sourceTree = "<group>"; };
 		921CD1761A89355B007B60C0 /* ItsycalExtra.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItsycalExtra.m; sourceTree = "<group>"; };
-		921CD17F1A8941BC007B60C0 /* dates.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dates.png; path = Moon/Images.xcassets/dates.imageset/dates.png; sourceTree = SOURCE_ROOT; };
 		921CD1811A894A45007B60C0 /* NSMenuExtraView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSMenuExtraView.h; sourceTree = "<group>"; };
 		921CD1851A8979F8007B60C0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		921CD1871A897A00007B60C0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		921CD1881A897A01007B60C0 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		921CD1891A897A02007B60C0 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		921CD18A1A897A03007B60C0 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		9224B0401A8AB48600D63030 /* dates@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dates@2x.png"; path = "../Moon/Images.xcassets/dates.imageset/dates@2x.png"; sourceTree = "<group>"; };
+		9224B0421A8AB4B500D63030 /* dates.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dates.png; path = ../Moon/Images.xcassets/dates.imageset/dates.png; sourceTree = "<group>"; };
 		922B6B911A856A7D00DEA9CD /* SBCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBCalendar.h; sourceTree = "<group>"; };
 		922B6B931A85950600DEA9CD /* MASDictionaryTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MASDictionaryTransformer.h; path = _vendor/MASShortcut/MASDictionaryTransformer.h; sourceTree = "<group>"; };
 		922B6B941A85950600DEA9CD /* MASDictionaryTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MASDictionaryTransformer.m; path = _vendor/MASShortcut/MASDictionaryTransformer.m; sourceTree = "<group>"; };
@@ -166,7 +168,8 @@
 				921CD1721A8934DC007B60C0 /* SystemUIPlugin.framework */,
 				921CD1861A8979F8007B60C0 /* Localizable.strings */,
 				921CD16E1A893420007B60C0 /* Info.plist */,
-				921CD17F1A8941BC007B60C0 /* dates.png */,
+				9224B0421A8AB4B500D63030 /* dates.png */,
+				9224B0401A8AB48600D63030 /* dates@2x.png */,
 				921CD1741A89351E007B60C0 /* NSMenuExtra.h */,
 				921CD1811A894A45007B60C0 /* NSMenuExtraView.h */,
 			);
@@ -350,7 +353,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				921CD1801A8941BC007B60C0 /* dates.png in Resources */,
+				9224B0431A8AB4B500D63030 /* dates.png in Resources */,
+				9224B0411A8AB48600D63030 /* dates@2x.png in Resources */,
 				921CD1841A8979F8007B60C0 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

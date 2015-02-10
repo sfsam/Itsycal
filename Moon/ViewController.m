@@ -393,6 +393,7 @@
 - (void)showItsycalWindow
 {
     [self.itsycalWindow makeKeyAndOrderFront:self];
+    [self.itsycalWindow makeFirstResponder:_moCal];
 }
 
 - (void)hideItsycalWindow
