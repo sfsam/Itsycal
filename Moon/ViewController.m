@@ -18,9 +18,8 @@
     MoCalendar    *_moCal;
     NSCalendar    *_nsCal;
     NSStatusItem  *_statusItem;
-    NSButton      *_btnAdd, *_btnCal, *_btnOpt;
+    NSButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
     NSRect         _menuItemFrame, _screenFrame;
-    BOOL           _pin;
     
     NSWindowController *_prefsWC;
 }
@@ -69,15 +68,19 @@
     _btnAdd = btn(@"btnAdd", NSLocalizedString(@"New Event... ⌘N", @""), @"n", @selector(addCalendarEvent:));
     _btnCal = btn(@"btnCal", NSLocalizedString(@"Open Calendar... ⌘O", @""), @"o", @selector(showCalendarApp:));
     _btnOpt = btn(@"btnOpt", NSLocalizedString(@"Options", @""), @"", @selector(showOptionsMenu:));
+    _btnPin = btn(@"btnPin", NSLocalizedString(@"Pin Itsycal... P", @""), @"p", @selector(pin:));
+    _btnPin.keyEquivalentModifierMask = 0;
+    _btnPin.alternateImage = [NSImage imageNamed:@"btnPinAlt"];
+    [_btnPin setButtonType:NSToggleButton];
     
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*, NSLayoutFormatOptions) = ^(NSString *format, NSLayoutFormatOptions opts) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opts metrics:nil views:NSDictionaryOfVariableBindings(_moCal, _btnAdd, _btnCal, _btnOpt)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opts metrics:nil views:NSDictionaryOfVariableBindings(_moCal, _btnAdd, _btnCal, _btnOpt, _btnPin)]];
     };
     vcon(@"H:|[_moCal]|", 0);
-    vcon(@"V:|[_moCal]-(28)-|", 0);
-    vcon(@"V:[_moCal]-(10)-[_btnOpt]", 0);
-    vcon(@"H:|-(8)-[_btnAdd]-(>=0)-[_btnCal]-(12)-[_btnOpt]-(8)-|", NSLayoutFormatAlignAllCenterY);
+    vcon(@"V:|[_moCal]-28-|", 0);
+    vcon(@"V:[_moCal]-8-[_btnOpt]", 0);
+    vcon(@"H:|-6-[_btnAdd]-(>=0)-[_btnPin]-8-[_btnCal]-8-[_btnOpt]-6-|", NSLayoutFormatAlignAllCenterY);
     
     self.view = v;
 }
@@ -121,7 +124,7 @@
     [super viewDidAppear];
 
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    _pin = [defaults boolForKey:kPinItsycal];
+    _btnPin.state = [defaults boolForKey:kPinItsycal] ? NSOnState : NSOffState;
     _moCal.showWeeks = [defaults boolForKey:kShowWeeks];
     _moCal.weekStartDOW = [defaults integerForKey:kWeekStartDOW];
     
@@ -140,10 +143,7 @@
     BOOL cmdFlag = (flags & NSCommandKeyMask) &&  !(flags & (NSShiftKeyMask | NSAlternateKeyMask | NSControlKeyMask));
     unichar keyChar = [charsIgnoringModifiers characterAtIndex:0];
     
-    if (keyChar == 'p' && noFlags) {
-        [self pin:self];
-    }
-    else if (keyChar == 'w' && noFlags) {
+    if (keyChar == 'w' && noFlags) {
         [self showWeeks:self];
     }
     else if (keyChar == ',' && cmdFlag) {
@@ -185,9 +185,6 @@
     NSMenu *optMenu = [[NSMenu alloc] initWithTitle:@"Options Menu"];
     NSInteger i = 0;
     NSMenuItem *item;
-    item = [optMenu insertItemWithTitle:NSLocalizedString(@"Pin Itsycal", @"") action:@selector(pin:) keyEquivalent:@"p" atIndex:i++];
-    item.state = _pin ? NSOnState : NSOffState;
-    item.keyEquivalentModifierMask = 0;
     item = [optMenu insertItemWithTitle:NSLocalizedString(@"Show calendar weeks", @"") action:@selector(showWeeks:) keyEquivalent:@"w" atIndex:i++];
     item.state = _moCal.showWeeks ? NSOnState : NSOffState;
     item.keyEquivalentModifierMask = 0;
@@ -215,8 +212,8 @@
 
 - (void)pin:(id)sender
 {
-    _pin = !_pin;
-    [[NSUserDefaults standardUserDefaults] setBool:_pin forKey:kPinItsycal];
+    BOOL pin = (_btnPin.state == NSOnState) ? YES : NO;
+    [[NSUserDefaults standardUserDefaults] setBool:pin forKey:kPinItsycal];
 }
 
 - (void)showWeeks:(id)sender
@@ -409,14 +406,14 @@
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    NSLog(@"%s", __FUNCTION__);
+//    NSLog(@"%s", __FUNCTION__);
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
 {
-    NSLog(@"%s", __FUNCTION__);
-    if (!_pin) {
+//    NSLog(@"%s", __FUNCTION__);
+    if (_btnPin.state == NSOffState) {
         [self hideItsycalWindow];
     }
 }
