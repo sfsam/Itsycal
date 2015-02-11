@@ -88,7 +88,6 @@
 
 - (void)viewDidLoad
 {
-//    NSLog(@"%s", __FUNCTION__);
     [super viewDidLoad];
     
     // Menu extra notifications
@@ -114,14 +113,12 @@
 
 - (void)viewWillAppear
 {
-//    NSLog(@"%s", __FUNCTION__);
     [super viewWillAppear];
     [self.itsycalWindow makeFirstResponder:_moCal];
 }
 
 - (void)viewDidAppear
 {
-//    NSLog(@"%s", __FUNCTION__);
     [super viewDidAppear];
 
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -284,32 +281,21 @@
     _statusItem = nil;
 }
 
-- (void)statusItemMoved:(NSNotification *)note
+- (void)menuExtraIsActive:(NSNotification *)notification
 {
-    NSLog(@"%s", __FUNCTION__);
-    [self updateStatusItemPositionInfo];
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+    [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
+    
+    [self removeStatusItem];
+    
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalDidUpdateIconNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
 }
 
-- (void)statusItemClicked:(id)sender
+- (void)menuExtraWillUnload:(NSNotification *)notification
 {
-    NSLog(@"%s", __FUNCTION__);
-    [self updateStatusItemPositionInfo];
-    [self menuIconClickedAction];
-}
-
-- (void)updateStatusItemPositionInfo
-{
-    NSLog(@"%s", __FUNCTION__);
-    _menuItemFrame = [_statusItem.button.window convertRectToScreen:_statusItem.button.frame];
-    _screenFrame = [[NSScreen mainScreen] frame];
-}
-
-- (void)updateMenuExtraPositionInfoWithUserInfo:(NSDictionary *)userInfo
-{
-    NSLog(@"%s", __FUNCTION__);
-    _menuItemFrame = NSRectFromString(userInfo[@"menuItemFrame"]);
-    _screenFrame   = NSRectFromString(userInfo[@"screenFrame"]);
+    if ([self.itsycalWindow isVisible]) {
+        [self.itsycalWindow orderOut:nil];
+    }
+    [self createStatusItem];
 }
 
 - (void)updateMenubarIcon
@@ -322,48 +308,83 @@
     [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalDidUpdateIconNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
 }
 
-- (void)menuExtraIsActive:(NSNotification *)notification
+- (void)updateStatusItemPositionInfo
 {
-    [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
-    
-    [self removeStatusItem];
-    
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalDidUpdateIconNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
+    _menuItemFrame = [_statusItem.button.window convertRectToScreen:_statusItem.button.frame];
+    _screenFrame = [[NSScreen mainScreen] frame];
 }
 
-- (void)menuExtraClicked:(NSNotification *)notification
+- (void)updateMenuExtraPositionInfoWithUserInfo:(NSDictionary *)userInfo
 {
-    NSLog(@"%s", __FUNCTION__);
-    [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
-    [self menuIconClickedAction];
+    _menuItemFrame = NSRectFromString(userInfo[@"menuItemFrame"]);
+    _screenFrame   = NSRectFromString(userInfo[@"screenFrame"]);
+}
+
+- (void)statusItemMoved:(NSNotification *)note
+{
+    // Reposition itsycalWindow so that it remains
+    // centered under _statusItemView.
+    //
+    // We do the repositioning after a slight delay to account
+    // for the following scenario:
+    //  - The user has more than one screen.
+    //  - Itsycal is visible on one of them.
+    //  - The user clicks the menu item on the other screen.
+    //
+    // In this scenario, this method will be called because the
+    // user's click "moved" the status item window from one screen
+    // to another. If we repositioned the window immediately, it
+    // would be placed on the active screen and the logic in
+    // -statusItemClicked: would not be able to know that the click
+    // occurred in a different screen from the one where Itsycal
+    // was showing. The result would be Itsycal flashing in the
+    // new screen (because of this method's repositioning) and then
+    // hiding because that's the logic that would execute in the
+    // -statusItemClicked: method. The delay let's -menuItemClicked:
+    // handle this scenario first.
+    [self updateStatusItemPositionInfo];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+    });
 }
 
 - (void)menuExtraMoved:(NSNotification *)notification
 {
-    NSLog(@"%s", __FUNCTION__);
+    // see comment in -statusItemMoved:
     [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+    });
 }
 
-- (void)menuExtraWillUnload:(NSNotification *)notification
+- (void)statusItemClicked:(id)sender
 {
-    if ([self.itsycalWindow isVisible]) {
-        [self.itsycalWindow orderOut:nil];
-    }
-    [self createStatusItem];
+    [self updateStatusItemPositionInfo];
+    [self menuIconClickedAction];
+}
+
+- (void)menuExtraClicked:(NSNotification *)notification
+{
+    [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
+    [self menuIconClickedAction];
 }
 
 - (void)menuIconClickedAction
 {
-    NSLog(@"%s", __FUNCTION__);
     // If there are multiple screens and Itsycal is showing
     // on one and the user clicks the menu item on another,
     // instead of a regular toggle, we want Itsycal to hide
     // from it's old screen and show in the new one.
     if (self.itsycalWindow.screen != [NSScreen mainScreen]) {
         if ([self.itsycalWindow occlusionState] & NSWindowOcclusionStateVisible) {
-            [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+            // The slight delay before showing the window in the new
+            // position is to allow -windowDidResignKey: to execute
+            // first so that it doesn't hide the window we are
+            // trying to show.
+            [self.itsycalWindow orderOut:nil];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self showItsycalWindow];
+            });
             return;
         }
     }
@@ -381,7 +402,7 @@
 - (void)toggleItsycalWindow
 {
     if ([self.itsycalWindow occlusionState] & NSWindowOcclusionStateVisible) {
-        [self hideItsycalWindow];
+        [self.itsycalWindow orderOut:self];
     }
     else {
         [self showItsycalWindow];
@@ -390,32 +411,26 @@
 
 - (void)showItsycalWindow
 {
+    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
     [self.itsycalWindow makeKeyAndOrderFront:self];
     [self.itsycalWindow makeFirstResponder:_moCal];
-}
-
-- (void)hideItsycalWindow
-{
-    [self.itsycalWindow orderOut:self];
 }
 
 - (void)cancel:(id)sender
 {
     // User pressed 'esc'.
-    [self hideItsycalWindow];
+    [self.itsycalWindow orderOut:self];
 }
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-//    NSLog(@"%s", __FUNCTION__);
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
 {
-//    NSLog(@"%s", __FUNCTION__);
     if (_btnPin.state == NSOffState) {
-        [self hideItsycalWindow];
+        [self.itsycalWindow orderOut:self];
     }
 }
 
