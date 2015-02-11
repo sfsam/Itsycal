@@ -78,7 +78,7 @@
         [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opts metrics:nil views:NSDictionaryOfVariableBindings(_moCal, _btnAdd, _btnCal, _btnOpt, _btnPin)]];
     };
     vcon(@"H:|[_moCal]|", 0);
-    vcon(@"V:|[_moCal]-28-|", 0);
+    vcon(@"V:|[_moCal]-26-|", 0);
     vcon(@"V:[_moCal]-8-[_btnOpt]", 0);
     vcon(@"H:|-6-[_btnAdd]-(>=0)-[_btnPin]-8-[_btnCal]-8-[_btnOpt]-6-|", NSLayoutFormatAlignAllCenterY);
     
