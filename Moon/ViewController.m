@@ -12,13 +12,14 @@
 #import "MoCalendar.h"
 #import "SBCalendar.h"
 #import "PrefsViewController.h"
+#import "MoButton.h"
 
 @implementation ViewController
 {
     MoCalendar    *_moCal;
     NSCalendar    *_nsCal;
     NSStatusItem  *_statusItem;
-    NSButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
+    MoButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
     NSRect         _menuItemFrame, _screenFrame;
     
     NSWindowController *_prefsWC;
@@ -48,8 +49,8 @@
     [v addSubview:_moCal];
     
     // Convenience function to config buttons.
-    NSButton* (^btn)(NSString*, NSString*, NSString*, SEL) = ^NSButton* (NSString *imageName, NSString *tip, NSString *key, SEL action) {
-        NSButton *btn = [NSButton new];
+    MoButton* (^btn)(NSString*, NSString*, NSString*, SEL) = ^MoButton* (NSString *imageName, NSString *tip, NSString *key, SEL action) {
+        MoButton *btn = [MoButton new];
         [btn setButtonType:NSMomentaryChangeButton];
         [btn setBordered:NO];
         [btn setTarget:self];

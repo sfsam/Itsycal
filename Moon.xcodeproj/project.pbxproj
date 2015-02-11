@@ -15,6 +15,7 @@
 		9222B56D1A899B3500CCAC22 /* ItsycalExtra.menu in Resources */ = {isa = PBXBuildFile; fileRef = 921CD16B1A893420007B60C0 /* ItsycalExtra.menu */; };
 		9224B0411A8AB48600D63030 /* dates@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9224B0401A8AB48600D63030 /* dates@2x.png */; };
 		9224B0431A8AB4B500D63030 /* dates.png in Resources */ = {isa = PBXBuildFile; fileRef = 9224B0421A8AB4B500D63030 /* dates.png */; };
+		9224B0751A8BE75500D63030 /* MoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9224B0741A8BE75500D63030 /* MoButton.m */; };
 		922B6BA91A85950600DEA9CD /* MASDictionaryTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B941A85950600DEA9CD /* MASDictionaryTransformer.m */; };
 		922B6BAB1A85950600DEA9CD /* MASHotKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B971A85950600DEA9CD /* MASHotKey.m */; };
 		922B6BAD1A85950600DEA9CD /* MASShortcut.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B9B1A85950600DEA9CD /* MASShortcut.m */; };
@@ -66,6 +67,8 @@
 		921CD18A1A897A03007B60C0 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9224B0401A8AB48600D63030 /* dates@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "dates@2x.png"; path = "../Moon/Images.xcassets/dates.imageset/dates@2x.png"; sourceTree = "<group>"; };
 		9224B0421A8AB4B500D63030 /* dates.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dates.png; path = ../Moon/Images.xcassets/dates.imageset/dates.png; sourceTree = "<group>"; };
+		9224B0731A8BE75500D63030 /* MoButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoButton.h; sourceTree = "<group>"; };
+		9224B0741A8BE75500D63030 /* MoButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoButton.m; sourceTree = "<group>"; };
 		922B6B911A856A7D00DEA9CD /* SBCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBCalendar.h; sourceTree = "<group>"; };
 		922B6B931A85950600DEA9CD /* MASDictionaryTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MASDictionaryTransformer.h; path = _vendor/MASShortcut/MASDictionaryTransformer.h; sourceTree = "<group>"; };
 		922B6B941A85950600DEA9CD /* MASDictionaryTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MASDictionaryTransformer.m; path = _vendor/MASShortcut/MASDictionaryTransformer.m; sourceTree = "<group>"; };
@@ -240,6 +243,8 @@
 				922B6BB71A85CC7800DEA9CD /* PrefsViewController.m */,
 				922B6BB91A85E0EC00DEA9CD /* MoTextField.h */,
 				922B6BBA1A85E0EC00DEA9CD /* MoTextField.m */,
+				9224B0731A8BE75500D63030 /* MoButton.h */,
+				9224B0741A8BE75500D63030 /* MoButton.m */,
 			);
 			path = Moon;
 			sourceTree = "<group>";
@@ -401,6 +406,7 @@
 				922B6BB31A85950600DEA9CD /* MASShortcutValidator.m in Sources */,
 				9242A5931A82A40B005AA4B3 /* MoCalendar.m in Sources */,
 				9242A5911A82A40B005AA4B3 /* MoCalCell.m in Sources */,
+				9224B0751A8BE75500D63030 /* MoButton.m in Sources */,
 				9242A5841A82A189005AA4B3 /* ViewController.m in Sources */,
 				922B6BB41A85950600DEA9CD /* MASShortcutView.m in Sources */,
 				922B6BAD1A85950600DEA9CD /* MASShortcut.m in Sources */,

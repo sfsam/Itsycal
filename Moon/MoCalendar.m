@@ -9,6 +9,7 @@
 #import "MoCalendar.h"
 #import "MoCalCell.h"
 #import "MoCalGrid.h"
+#import "MoButton.h"
 
 static NSShadow *kShadow=nil;
 static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil;
@@ -21,9 +22,9 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     MoCalGrid *_weekGrid;
     MoCalGrid *_dowGrid;
     NSLayoutConstraint *_weeksConstraint;
-    NSButton *_btnPrev;
-    NSButton *_btnNext;
-    NSButton *_btnToday;
+    MoButton *_btnPrev;
+    MoButton *_btnNext;
+    MoButton *_btnToday;
     NSTrackingArea *_trackingArea;
     __weak MoCalCell *_hoveredCell;
     __weak MoCalCell *_selectedCell;
@@ -84,14 +85,15 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [_monthLabel setContentHuggingPriority:1 forOrientation:NSLayoutConstraintOrientationHorizontal];
     
     // Convenience function to make buttons.
-    NSButton* (^btn)(NSString*, SEL) = ^NSButton* (NSString *imageName, SEL action) {
-        NSButton *btn = [NSButton new];
+    MoButton* (^btn)(NSString*, SEL) = ^MoButton* (NSString *imageName, SEL action) {
+        MoButton *btn = [MoButton new];
         [btn setButtonType:NSMomentaryChangeButton];
         [btn setBordered:NO];
         [btn setImage:[NSImage imageNamed:imageName]];
         [btn setAlternateImage:[NSImage imageNamed:[imageName stringByAppendingString:@"Alt"]]];
         [btn setTarget:self];
         [btn setAction:action];
+        [btn setImagePosition:NSImageOnly];
         [btn setTranslatesAutoresizingMaskIntoConstraints:NO];
         [self addSubview:btn];
         return btn;
