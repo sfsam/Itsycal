@@ -21,6 +21,7 @@ NSString * const kKeyboardShortcut = @"KeyboardShortcut";
 // Menu extra notifications
 NSString * const ItsycalIsActiveNotification = @"ItsycalIsActiveNotification";
 NSString * const ItsycalDidUpdateIconNotification = @"ItsycalDidUpdateIconNotification";
+NSString * const ItsycalKeyboardShortcutNotification = @"ItsycalKeyboardShortcutNotification";
 NSString * const ItsycalExtraIsActiveNotification = @"ItsycalMenuExtraIsActiveNotification";
 NSString * const ItsycalExtraClickedNotification = @"ItsycalMenuExtraClickedNotification";
 NSString * const ItsycalExtraDidMoveNotification = @"ItsycalMenuExtraDidMoveNotification";

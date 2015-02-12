@@ -35,6 +35,7 @@
         // Register for Itsycal notifications.
         [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(itsycalIsActive:) name:ItsycalIsActiveNotification object:nil];
         [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menubarIconUpdated:) name:ItsycalDidUpdateIconNotification object:nil];
+        [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardShortcutActivated:) name:ItsycalKeyboardShortcutNotification object:nil];
         
         // If Itsycal is running, we want to know when it has terminated.
         [[NSWorkspace sharedWorkspace] addObserver:self forKeyPath:@"runningApplications" options:0 context:NULL];
@@ -105,13 +106,6 @@
 #pragma mark
 #pragma mark Distributed Notification handlers
 
-- (void)menubarIconUpdated:(NSNotification *)notification
-{
-    int day = (int)[notification.userInfo[@"day"] integerValue];
-    _itsycalIsRunning = YES;
-    [(NSMenuExtraView *)self.view setImage:ItsycalDateIcon(day, _dates)];
-}
-
 - (void)itsycalIsActive:(NSNotification *)notification
 {
     // Update our icon
@@ -119,6 +113,19 @@
     
     // Reply to Itsycal so it can remove it's status item
     [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalExtraIsActiveNotification object:nil userInfo:[self menuExtraPositionInfo] deliverImmediately:YES];
+}
+
+- (void)menubarIconUpdated:(NSNotification *)notification
+{
+    int day = (int)[notification.userInfo[@"day"] integerValue];
+    _itsycalIsRunning = YES;
+    [(NSMenuExtraView *)self.view setImage:ItsycalDateIcon(day, _dates)];
+}
+
+- (void)keyboardShortcutActivated:(NSNotification *)notification
+{
+    // Simulate a click on the menu extra.
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalExtraClickedNotification object:nil userInfo:[self menuExtraPositionInfo] deliverImmediately:YES];
 }
 
 #pragma mark

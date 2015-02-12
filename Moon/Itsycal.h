@@ -22,6 +22,7 @@ extern NSString * const kKeyboardShortcut;
 // Menu extra notifications
 extern NSString * const ItsycalIsActiveNotification;
 extern NSString * const ItsycalDidUpdateIconNotification;
+extern NSString * const ItsycalKeyboardShortcutNotification;
 extern NSString * const ItsycalExtraIsActiveNotification;
 extern NSString * const ItsycalExtraClickedNotification;
 extern NSString * const ItsycalExtraDidMoveNotification;

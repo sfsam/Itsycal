@@ -436,16 +436,18 @@
 
 - (void)keyboardShortcutActivated
 {
-    // First, get the position of the menubar icon. The
-    // user may now be on a different screen from the one
-    // they were on when the item was last positioned.
+    // The user hit the keyboard shortcut. This is the same
+    // as if the user had clicked the menubar icon. If the
+    // icon is the statusItem it is straightforward: just
+    // simulate a click on the statusItem. If the icon is the
+    // menuextra, we need to send it a message so it can
+    // simulate the click.
     if (_statusItem) {
-        [self updateStatusItemPositionInfo];
+        [self statusItemClicked:self];
     }
     else {
-        // query the menuextra for it's position and then update
+        [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalKeyboardShortcutNotification object:nil userInfo:nil deliverImmediately:YES];
     }
-    [self toggleItsycalWindow];
 }
 
 #pragma mark -
