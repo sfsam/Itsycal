@@ -39,9 +39,13 @@
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
     _wc.contentViewController = _vc;
     _wc.window.delegate = _vc;
-    [_wc showWindow:nil];
     
     [self loadMenuExtra];
+
+    // Give the menu extra a moment to load before showing the window.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [_wc showWindow:nil];
+    });
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
@@ -61,7 +65,7 @@ int CoreMenuExtraGetMenuExtra(CFStringRef identifier, void *menuExtra);
 int CoreMenuExtraAddMenuExtra(CFURLRef path, int position, int whoCares, int whoCares2, int whoCares3, int whoCares4);
 int CoreMenuExtraRemoveMenuExtra(void *menuExtra, int whoCares);
 
-// How long to wait for Extras to add once CoreMenuExtraAddMenuExtra returns?
+// How long to wait for Extras to add once CoreMenuExtraAddMenuExtra returns.
 static const int kWaitForExtraLoadMicroSec     = 10000000;
 static const int kWaitForExtraLoadStepMicroSec = 250000;
 
