@@ -39,6 +39,8 @@
 		9242A5921A82A40B005AA4B3 /* MoCalGrid.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A58D1A82A40B005AA4B3 /* MoCalGrid.m */; };
 		9242A5931A82A40B005AA4B3 /* MoCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A58F1A82A40B005AA4B3 /* MoCalendar.m */; };
 		9242A5961A82BE5E005AA4B3 /* Itsycal.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5951A82BE5E005AA4B3 /* Itsycal.m */; };
+		927145021A8DF1F300745411 /* VarelaRoundNeo-Bold.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 927145001A8DF1F300745411 /* VarelaRoundNeo-Bold.otf */; };
+		927145031A8DF1F300745411 /* VarelaRoundNeo-Regular.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 927145011A8DF1F300745411 /* VarelaRoundNeo-Regular.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +52,20 @@
 			remoteInfo = MoonExtra;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		927144FF1A8DF1AE00745411 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Fonts;
+			dstSubfolderSpec = 7;
+			files = (
+				927145021A8DF1F300745411 /* VarelaRoundNeo-Bold.otf in CopyFiles */,
+				927145031A8DF1F300745411 /* VarelaRoundNeo-Regular.otf in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		9219CC251A8990F700B6E159 /* MenuCracker.menu */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = MenuCracker.menu; sourceTree = "<group>"; };
@@ -124,6 +140,8 @@
 		9242A58F1A82A40B005AA4B3 /* MoCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoCalendar.m; sourceTree = "<group>"; };
 		9242A5941A82BE5E005AA4B3 /* Itsycal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Itsycal.h; sourceTree = "<group>"; };
 		9242A5951A82BE5E005AA4B3 /* Itsycal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Itsycal.m; sourceTree = "<group>"; };
+		927145001A8DF1F300745411 /* VarelaRoundNeo-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "VarelaRoundNeo-Bold.otf"; sourceTree = "<group>"; };
+		927145011A8DF1F300745411 /* VarelaRoundNeo-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "VarelaRoundNeo-Regular.otf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,6 +244,7 @@
 			children = (
 				9219CC241A8990F700B6E159 /* MenuCracker */,
 				922B6B921A8594E900DEA9CD /* MASShortcut */,
+				927145041A8DF20000745411 /* Fonts */,
 				9242A55F1A82A136005AA4B3 /* Supporting Files */,
 				9242A5661A82A136005AA4B3 /* Images.xcassets */,
 				9242A5681A82A136005AA4B3 /* MainMenu.xib */,
@@ -275,6 +294,16 @@
 			name = MoCalendar;
 			sourceTree = "<group>";
 		};
+		927145041A8DF20000745411 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				927145001A8DF1F300745411 /* VarelaRoundNeo-Bold.otf */,
+				927145011A8DF1F300745411 /* VarelaRoundNeo-Regular.otf */,
+			);
+			name = Fonts;
+			path = ..;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -302,6 +331,7 @@
 				9242A5581A82A136005AA4B3 /* Sources */,
 				9242A5591A82A136005AA4B3 /* Frameworks */,
 				9242A55A1A82A136005AA4B3 /* Resources */,
+				927144FF1A8DF1AE00745411 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -604,6 +634,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = Moon/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
