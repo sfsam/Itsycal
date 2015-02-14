@@ -16,6 +16,7 @@
 
 @implementation ViewController
 {
+    EventCenter   *_ec;
     MoCalendar    *_moCal;
     NSCalendar    *_nsCal;
     NSStatusItem  *_statusItem;
@@ -107,6 +108,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dayChanged:) name:NSCalendarDayChangedNotification object:nil];
 
     [self createStatusItem];
+    
+    _ec = [[EventCenter alloc] initWithCalendar:_nsCal delegate:self];
     
     [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalIsActiveNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
 }
@@ -210,7 +213,7 @@
 
 - (void)pin:(id)sender
 {
-    BOOL pin = (_btnPin.state == NSOnState) ? YES : NO;
+    BOOL pin = _btnPin.state == NSOnState;
     [[NSUserDefaults standardUserDefaults] setBool:pin forKey:kPinItsycal];
 }
 
@@ -238,8 +241,10 @@
     
     if (!_prefsWC) {
         NSPanel *panel = [[NSPanel alloc] initWithContentRect:NSZeroRect styleMask:(NSTitledWindowMask | NSClosableWindowMask) backing:NSBackingStoreBuffered defer:NO];
+        PrefsViewController *prefsVC = [PrefsViewController new];
+        prefsVC.ec = _ec;
         _prefsWC = [[NSWindowController alloc] initWithWindow:panel];
-        _prefsWC.contentViewController = [PrefsViewController new];
+        _prefsWC.contentViewController = prefsVC;
         [panel center];
     }
     // If the window is not visible, we must "close" it before showing it.
@@ -447,6 +452,15 @@
     else {
         [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalKeyboardShortcutNotification object:nil userInfo:nil deliverImmediately:YES];
     }
+}
+
+#pragma mark -
+#pragma mark EventCenter
+
+- (void)eventCenterSourcesAndCalendarsChanged
+{
+    NSLog(@"%s", __FUNCTION__);
+    NSLog(@"%@", _ec.sourcesAndCalendars);
 }
 
 #pragma mark -

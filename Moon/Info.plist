@@ -34,5 +34,7 @@
 	<string>NSApplication</string>
 	<key>ATSApplicationFontsPath</key>
 	<string>Fonts</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</string>
 </dict>
 </plist>

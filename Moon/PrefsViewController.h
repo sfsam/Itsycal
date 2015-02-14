@@ -8,6 +8,22 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface PrefsViewController : NSViewController
+@class EventCenter;
+
+@interface PrefsViewController : NSViewController <NSTableViewDataSource, NSTableViewDelegate>
+
+@property (nonatomic, weak) EventCenter *ec;
+
+@end
+
+@interface SourceCellView : NSView
+
+@property (nonatomic) NSTextField *textField;
+
+@end
+
+@interface CalendarCellView : NSView
+
+@property (nonatomic) NSButton *checkbox;
 
 @end

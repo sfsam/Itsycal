@@ -11,11 +11,16 @@
 #import "MASShortcutView.h"
 #import "MASShortcutView+Bindings.h"
 #import "MoTextField.h"
+#import "EventCenter.h"
+
+static NSString * const kSourceCellId = @"SourceCell";
+static NSString * const kCalendarCellId = @"CalendarCell";
 
 @implementation PrefsViewController
 {
-    NSButton *_login;
     MoTextField *_title;
+    NSButton *_login;
+    NSTableView *_calendarsTV;
 }
 
 #pragma mark -
@@ -46,7 +51,7 @@
         return txt;
     };
     
-    // Title
+    // Title and version
     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
     _title = txt([NSString stringWithFormat:@"Itsycal %@", infoDict[@"CFBundleShortVersionString"]]);
     _title.font = [NSFont boldSystemFontOfSize:13];
@@ -57,7 +62,7 @@
     _title.target = self;
     _title.action = @selector(toggleTitle:);
     
-    // Link
+    // Mowglii link
     MoTextField *link  = txt(@"mowglii.com/itsycal");
     link.font = [NSFont boldSystemFontOfSize:12];
     link.linkEnabled = YES;
@@ -74,6 +79,7 @@
     
     // Shortcut label
     MoTextField *shortcutLabel = txt(NSLocalizedString(@"Keyboard shortcut", @""));
+    shortcutLabel.font = [NSFont systemFontOfSize:12];
     
     // Shortcut view
     MASShortcutView *shortcutView = [MASShortcutView new];
@@ -82,22 +88,41 @@
     shortcutView.associatedUserDefaultsKey = kKeyboardShortcut;
     [v addSubview:shortcutView];
     
+    // Calendars table view
+    _calendarsTV = [NSTableView new];
+    _calendarsTV.headerView = nil;
+    _calendarsTV.allowsColumnResizing = NO;
+    _calendarsTV.intercellSpacing = NSMakeSize(0, 0);
+    _calendarsTV.dataSource = self;
+    _calendarsTV.delegate = self;
+    [_calendarsTV addTableColumn:[[NSTableColumn alloc] initWithIdentifier:@"SourcesAndCalendars"]];
+    [v addSubview:_calendarsTV];
+
+    // Calendars enclosing scrollview
+    NSScrollView *tvContainer = [NSScrollView new];
+    tvContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    tvContainer.scrollerStyle = NSScrollerStyleLegacy;
+    tvContainer.hasVerticalScroller = YES;
+    tvContainer.documentView = _calendarsTV;
+    [v addSubview:tvContainer];
+    
     // Copyright
     MoTextField *copyright = txt(infoDict[@"NSHumanReadableCopyright"]);
-    copyright.textColor = [NSColor lightGrayColor];
+    copyright.textColor = [NSColor grayColor];
     
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, shortcutLabel, shortcutView, copyright)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, shortcutLabel, shortcutView, tvContainer, copyright)]];
     };
     vcon(@"V:|-m-[appIcon(64)]");
     vcon(@"H:|-m-[appIcon(64)]-[_title]-(>=m)-|");
     vcon(@"H:[appIcon]-[link]-(>=m)-|");
     vcon(@"V:|-36-[_title]-1-[link]");
-    vcon(@"V:|-110-[_login]-(20)-[shortcutLabel]-(3)-[shortcutView(25)]-(20)-[copyright]-m-|");
+    vcon(@"V:|-110-[_login]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(220)]-20-[copyright]-m-|");
     vcon(@"H:|-m-[_login]-(>=m)-|");
     vcon(@"H:|-(>=m)-[shortcutLabel]-(>=m)-|");
-    vcon(@"H:|-m-[shortcutView(>=220)]-(m)-|");
+    vcon(@"H:|-m-[shortcutView(>=220)]-m-|");
+    vcon(@"H:|-m-[tvContainer]-m-|");
     vcon(@"H:|-(>=m)-[copyright]-(>=m)-|");
     
     // Leading-align title, link
@@ -116,6 +141,7 @@
 {
     [super viewWillAppear];
     _login.state = [self isLoginItemEnabled] ? NSOnState : NSOffState;
+    [_calendarsTV reloadData];
 }
 
 #pragma mark -
@@ -138,7 +164,7 @@
 
 - (void)launchAtLogin:(NSButton *)login
 {
-    [self enableLoginItem:login.state == NSOnState ? YES : NO];
+    [self enableLoginItem:login.state == NSOnState];
 }
 
 - (BOOL)isLoginItemEnabled
@@ -190,6 +216,119 @@
         }
         CFRelease(loginItemsRef);
     }
+}
+
+#pragma mark -
+#pragma mark Calendar
+
+- (void)calendarClicked:(NSButton *)checkbox
+{
+    NSInteger row = checkbox.tag;
+    BOOL selected = checkbox.state == NSOnState;
+    [self.ec.sourcesAndCalendars[row] setSelected:selected];
+    [self.ec updateSelectedCalendars];
+}
+
+
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
+{
+    // If access is denied, return 1 row for a message about granting access.
+    return self.ec.calendarAccessGranted ? [self.ec.sourcesAndCalendars count] : 1;
+}
+
+- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
+{
+    // If access is denied, row height is the height of the tableview
+    // so we can show some helpful message text.
+    return self.ec.calendarAccessGranted ? 24.0 : 200.0;
+}
+
+- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
+{
+    return NO;
+}
+
+- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
+{
+    // If calendar access was denied, show a helpful message.
+    // We repurpose the SourceCellView for this since it is
+    // basically just a textfield with nice margins.
+    if (!self.ec.calendarAccessGranted) {
+        SourceCellView *message = [tableView makeViewWithIdentifier:kSourceCellId owner:self];
+        if (!message) message = [SourceCellView new];
+        message.textField.lineBreakMode = NSLineBreakByWordWrapping;
+        message.textField.font = [NSFont systemFontOfSize:12];
+        message.textField.stringValue = NSLocalizedString(@"Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy", @"");
+        return message;
+    }
+    
+    // Show a list of sources and calendars with checkboxes.
+    
+    NSView *v = nil;
+    id obj = self.ec.sourcesAndCalendars[row];
+    
+    if ([obj isKindOfClass:[NSString class]]) {
+        SourceCellView *source = [tableView makeViewWithIdentifier:kSourceCellId owner:self];
+        if (!source) source = [SourceCellView new];
+        source.textField.stringValue = (NSString *)obj;
+        v = source;
+    }
+    else {
+        CalendarInfo *info = obj;
+        CalendarCellView *calendar = [tableView makeViewWithIdentifier:kCalendarCellId owner:self];
+        if (!calendar) calendar = [CalendarCellView new];
+        calendar.checkbox.target = self;
+        calendar.checkbox.action = @selector(calendarClicked:);
+        calendar.checkbox.state = info.selected == NSOnState;
+        calendar.checkbox.tag = row;
+        calendar.checkbox.attributedTitle = [[NSAttributedString alloc] initWithString:info.title attributes:@{NSForegroundColorAttributeName: info.color, NSFontAttributeName: [NSFont boldSystemFontOfSize:12]}];
+        v = calendar;
+    }
+    return v;
+}
+
+@end
+
+#pragma mark -
+#pragma mark Source and Calendar cell views
+
+@implementation SourceCellView
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.identifier = kSourceCellId;
+        _textField = [NSTextField new];
+        _textField.translatesAutoresizingMaskIntoConstraints = NO;
+        _textField.font = [NSFont boldSystemFontOfSize:12];
+        _textField.editable = NO;
+        _textField.bezeled = NO;
+        _textField.stringValue = @"";
+        [self addSubview:_textField];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-4-[_textField]-4-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-4-[_textField]-2-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
+    }
+    return self;
+}
+
+@end
+
+@implementation CalendarCellView
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.identifier = kCalendarCellId;
+        _checkbox = [NSButton new];
+        _checkbox.translatesAutoresizingMaskIntoConstraints = NO;
+        [_checkbox setButtonType:NSSwitchButton];
+        [self addSubview:_checkbox];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[_checkbox]-4-|" options:0 metrics:nil views:@{@"_checkbox": _checkbox}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-4-[_checkbox]" options:0 metrics:nil views:@{@"_checkbox": _checkbox}]];
+    }
+    return self;
 }
 
 @end
