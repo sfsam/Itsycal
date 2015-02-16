@@ -237,11 +237,10 @@
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
     
     if (!_prefsWC) {
-        NSWindow *window = [[NSWindow alloc] initWithContentRect:NSZeroRect styleMask:(NSTitledWindowMask | NSClosableWindowMask) backing:NSBackingStoreBuffered defer:NO];
-        window.hidesOnDeactivate = YES;
-        _prefsWC = [[NSWindowController alloc] initWithWindow:window];
+        NSPanel *panel = [[NSPanel alloc] initWithContentRect:NSZeroRect styleMask:(NSTitledWindowMask | NSClosableWindowMask) backing:NSBackingStoreBuffered defer:NO];
+        _prefsWC = [[NSWindowController alloc] initWithWindow:panel];
         _prefsWC.contentViewController = [PrefsViewController new];
-        [window center];
+        [panel center];
     }
     // If the window is not visible, we must "close" it before showing it.
     // This seems weird, but is the only way to ensure that -viewWillAppear
