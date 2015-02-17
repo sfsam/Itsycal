@@ -9,7 +9,6 @@
 #import "ViewController.h"
 #import "Itsycal.h"
 #import "ItsycalWindow.h"
-#import "MoCalendar.h"
 #import "SBCalendar.h"
 #import "PrefsViewController.h"
 #import "MoButton.h"
@@ -47,6 +46,7 @@
     // MoCalendar
     _moCal = [MoCalendar new];
     _moCal.translatesAutoresizingMaskIntoConstraints = NO;
+    _moCal.delegate = self;
     [v addSubview:_moCal];
     
     // Convenience function to config buttons.
@@ -99,7 +99,7 @@
 
     // The order of the statements is important!
 
-    _nsCal = [NSCalendar autoupdatingCurrentCalendar];
+    _nsCal = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     
     MoDate today = self.todayDate;
     [_moCal setTodayDate:today];
@@ -110,7 +110,7 @@
     [self createStatusItem];
     
     _ec = [[EventCenter alloc] initWithCalendar:_nsCal delegate:self];
-    
+
     [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalIsActiveNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
 }
 
@@ -304,11 +304,11 @@
 
 - (void)updateMenubarIcon
 {
-    int day = _moCal.todayDate.day;
-    NSImage *datesImage = [NSImage imageNamed:@"dates"];
-    NSImage *icon = ItsycalDateIcon(day, datesImage);
-    _statusItem.button.image = icon;
-    
+    if (_statusItem) {
+        int day = _moCal.todayDate.day;
+        NSImage *datesImage = [NSImage imageNamed:@"dates"];
+        _statusItem.button.image = ItsycalDateIcon(day, datesImage);
+    }
     [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalDidUpdateIconNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
 }
 
@@ -455,12 +455,46 @@
 }
 
 #pragma mark -
-#pragma mark EventCenter
+#pragma mark MoCalendarDelegate
+
+- (void)calendarUpdated:(MoCalendar *)cal
+{
+    [_moCal reloadData];
+    [_ec fetchEvents];
+}
+
+- (void)calendarSelectionChanged:(MoCalendar *)cal
+{
+
+}
+
+- (NSArray *)eventsForDate:(MoDate)date
+{
+    return [_ec eventsForDate:date];
+}
+
+#pragma mark -
+#pragma mark EventCenterDelegate
 
 - (void)eventCenterSourcesAndCalendarsChanged
 {
-    NSLog(@"%s", __FUNCTION__);
-    NSLog(@"%@", _ec.sourcesAndCalendars);
+//    NSLog(@"%s", __FUNCTION__);
+//    NSLog(@"%@", _ec.sourcesAndCalendars);
+}
+
+- (void)eventCenterEventsChanged
+{
+    [_moCal reloadData];
+}
+
+- (MoDate)fetchStartDate
+{
+    return AddDaysToDate(-40, _moCal.monthDate);
+}
+
+- (MoDate)fetchEndDate
+{
+    return AddDaysToDate(80, _moCal.monthDate);
 }
 
 #pragma mark -

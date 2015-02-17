@@ -10,13 +10,14 @@
 
 @implementation MoCalCell
 
-static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor=nil;
+static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor=nil, *kDotColor=nil;
 
 + (void)initialize
 {
     kTodayCellColor = [NSColor colorWithCalibratedRed:0.4 green:0.6 blue:1 alpha:1];
     kHoveredCellColor = [NSColor colorWithCalibratedRed:0.2 green:0.2 blue:0.3 alpha:0.2];
     kSelectedCellColor = [NSColor colorWithCalibratedRed:0.3 green:0.3 blue:0.4 alpha:0.7];
+    kDotColor = [NSColor colorWithCalibratedWhite:0.15 alpha:0.9];
 }
 
 - (instancetype)init
@@ -64,6 +65,14 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
     }
 }
 
+- (void)setHasEvent:(BOOL)hasEvent
+{
+    if (hasEvent != _hasEvent) {
+        _hasEvent = hasEvent;
+        [self setNeedsDisplay:YES];
+    }
+}
+
 - (void)drawRect:(NSRect)dirtyRect
 {
     if (self.isToday) {
@@ -82,6 +91,13 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
         [kHoveredCellColor set];
         NSRect r = NSInsetRect(self.bounds, 2, 2);
         [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] fill];
+    }
+    if (self.hasEvent) {
+        [kDotColor set];
+        NSRect r = NSMakeRect(0, 0, 3, 3);
+        r.origin.x = self.bounds.origin.x + kMoCalCellWidth/2.0 - 1.5;
+        r.origin.y = self.bounds.origin.y + 5;
+        [[NSBezierPath bezierPathWithOvalInRect:r] fill];
     }
 }
 

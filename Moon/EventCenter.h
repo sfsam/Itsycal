@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "MoDate.h"
 
 // =========================================================================
 // EventCenter
@@ -20,7 +21,7 @@
 
 @interface EventCenter : NSObject
 
-// Did the user grant calnedar access?
+// Did the user grant calendar access?
 @property (nonatomic) BOOL calendarAccessGranted;
 
 // Sorted array of 2 types: NSStrings and CalendarInfo objects.
@@ -35,6 +36,9 @@
 
 - (instancetype)initWithCalendar:(NSCalendar *)calendar delegate:(id<EventCenterDelegate>)delegate;
 
+- (void)fetchEvents;
+- (NSArray *)eventsForDate:(MoDate)date;
+
 // When the user selects/unselects calendars in Prefs, we update
 // the list of selected calendars.
 - (void)updateSelectedCalendars;
@@ -48,6 +52,9 @@
 @protocol EventCenterDelegate <NSObject>
 
 - (void)eventCenterSourcesAndCalendarsChanged;
+- (void)eventCenterEventsChanged;
+- (MoDate)fetchStartDate;
+- (MoDate)fetchEndDate;
 
 @end
 
@@ -57,10 +64,27 @@
 
 @interface CalendarInfo : NSObject
 
-@property (nonatomic, copy) NSString *title;
-@property (nonatomic, copy) NSString *identifier;
-@property (nonatomic, copy) NSColor  *color;
-@property (nonatomic) BOOL selected;
+@property (nonatomic) NSString *title;
+@property (nonatomic) NSString *identifier;
+@property (nonatomic) NSColor  *color;
+@property (nonatomic) BOOL      selected;
+
+@end
+
+// =========================================================================
+// EventInfo
+// =========================================================================
+
+@interface EventInfo : NSObject
+
+@property (nonatomic) NSString *title;
+@property (nonatomic) NSString *calendarIdentifier;
+@property (nonatomic) NSColor  *calendarColor;
+@property (nonatomic) NSDate   *startDate;
+@property (nonatomic) NSDate   *endDate;
+@property (nonatomic) BOOL      isStartDate;
+@property (nonatomic) BOOL      isEndDate;
+@property (nonatomic) BOOL      isAllDay;
 
 @end
 

@@ -9,6 +9,12 @@
 #import <AppKit/AppKit.h>
 #import "MoDate.h"
 
+@protocol MoCalendarDelegate;
+
+// =========================================================================
+// MoCalendar
+// =========================================================================
+
 @interface MoCalendar : NSView
 
 // The month this calendar displays.
@@ -30,6 +36,8 @@
 // Is the week of the year column showing?
 @property (nonatomic) BOOL showWeeks;
 
+@property (nonatomic, weak) id<MoCalendarDelegate> delegate;
+
 - (IBAction)showPreviousMonth:(id)sender;
 - (IBAction)showNextMonth:(id)sender;
 - (IBAction)showPreviousYear:(id)sender;
@@ -41,3 +49,16 @@
 - (void)unhighlightCells;
 
 @end
+
+// =========================================================================
+// MoCalendarDelegate
+// =========================================================================
+
+@protocol MoCalendarDelegate <NSObject>
+
+- (void)calendarUpdated:(MoCalendar *)cal;
+- (void)calendarSelectionChanged:(MoCalendar *)cal;
+- (NSArray *)eventsForDate:(MoDate)date;
+
+@end
+

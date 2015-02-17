@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "MoCalendar.h"
 #import "EventCenter.h"
 
 /*
@@ -18,7 +19,7 @@
  
  */
 
-@interface ViewController : NSViewController <NSWindowDelegate, EventCenterDelegate>
+@interface ViewController : NSViewController <NSWindowDelegate, MoCalendarDelegate, EventCenterDelegate>
 
 - (void)keyboardShortcutActivated;
 

@@ -302,11 +302,15 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
         }
     }
     [self setNeedsDisplay:YES];
+    
+    [self.delegate calendarUpdated:self];
 }
 
 - (void)reloadData
 {
-
+    for (MoCalCell *c in _dateGrid.cells) {
+        c.hasEvent = [self.delegate eventsForDate:c.date] != nil;
+    }
 }
 
 - (void)highlightCellsFromDate:(MoDate)startDate toDate:(MoDate)endDate withColor:(NSColor *)color
