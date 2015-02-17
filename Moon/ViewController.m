@@ -11,6 +11,7 @@
 #import "ItsycalWindow.h"
 #import "SBCalendar.h"
 #import "PrefsViewController.h"
+#import "TooltipViewController.h"
 #import "MoButton.h"
 
 @implementation ViewController
@@ -102,8 +103,9 @@
     _nsCal = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     
     MoDate today = self.todayDate;
-    [_moCal setTodayDate:today];
-    [_moCal setSelectedDate:today];
+    _moCal.todayDate = today;
+    _moCal.selectedDate = today;
+    _moCal.tooltipVC = [TooltipViewController new];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dayChanged:) name:NSCalendarDayChangedNotification object:nil];
 
@@ -468,9 +470,9 @@
 
 }
 
-- (NSArray *)eventsForDate:(MoDate)date
+- (BOOL)dateHasDot:(MoDate)date
 {
-    return [_ec eventsForDate:date];
+    return [_ec eventsForDate:date] != nil;
 }
 
 #pragma mark -

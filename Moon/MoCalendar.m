@@ -21,10 +21,9 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     MoCalGrid *_dateGrid;
     MoCalGrid *_weekGrid;
     MoCalGrid *_dowGrid;
+    MoCalToolTipWC *_tooltipWC;
+    MoButton *_btnPrev, *_btnNext, *_btnToday;
     NSLayoutConstraint *_weeksConstraint;
-    MoButton *_btnPrev;
-    MoButton *_btnNext;
-    MoButton *_btnToday;
     NSTrackingArea *_trackingArea;
     __weak MoCalCell *_hoveredCell;
     __weak MoCalCell *_selectedCell;
@@ -69,14 +68,15 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
 - (void)commonInitForMoCalendar
 {
     _formatter = [NSDateFormatter new];
+    _tooltipWC = [MoCalToolTipWC new];
     
     _monthLabel = [NSTextField new];
-    [_monthLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [_monthLabel setFont:[NSFont fontWithName:@"VarelaRoundNeo-Bold" size:13]];
-    [_monthLabel setTextColor:kDarkTextColor];
-    [_monthLabel setBezeled:NO];
-    [_monthLabel setEditable:NO];
-    [_monthLabel setDrawsBackground:NO];
+    _monthLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _monthLabel.font = [NSFont fontWithName:@"VarelaRoundNeo-Bold" size:13];
+    _monthLabel.textColor = kDarkTextColor;
+    _monthLabel.bezeled = NO;
+    _monthLabel.editable = NO;
+    _monthLabel.drawsBackground = NO;
     
     // Make long labels compress and show ellipsis instead of forcing the window wider.
     // Prevent short label from pulling buttons leftward toward it.
@@ -115,11 +115,11 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     void (^vcon)(NSString*, NSLayoutFormatOptions) = ^(NSString *format, NSLayoutFormatOptions opts) {
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opts metrics:nil views:NSDictionaryOfVariableBindings(_monthLabel, _btnPrev, _btnToday, _btnNext, _dowGrid, _weekGrid, _dateGrid)]];
     };
-    vcon(@"H:|-(8)-[_monthLabel]-(4)-[_btnPrev]-(2)-[_btnToday]-(2)-[_btnNext]-(6)-|", NSLayoutFormatAlignAllCenterY);
+    vcon(@"H:|-8-[_monthLabel]-4-[_btnPrev]-2-[_btnToday]-2-[_btnNext]-6-|", NSLayoutFormatAlignAllCenterY);
     vcon(@"H:[_dowGrid]|", 0);
     vcon(@"H:[_weekGrid][_dateGrid]|", 0);
-    vcon(@"V:|-(-3)-[_monthLabel]-(4)-[_dowGrid][_dateGrid]-(1)-|", 0);
-    vcon(@"V:[_weekGrid]-(1)-|", 0);
+    vcon(@"V:|-(-3)-[_monthLabel]-4-[_dowGrid][_dateGrid]-1-|", 0);
+    vcon(@"V:[_weekGrid]-1-|", 0);
     
     _weeksConstraint = [NSLayoutConstraint constraintWithItem:_weekGrid attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0];
     [self addConstraint:_weeksConstraint];
@@ -212,6 +212,26 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
         [ctx setDuration:0.1];
         [_weeksConstraint.animator setConstant:constant];
     } completionHandler:NULL];
+}
+
+- (void)setTooltipVC:(NSViewController<MoCalTooltipProvider> *)tooltipVC
+{
+    _tooltipVC = tooltipVC;
+    _tooltipWC.vc = tooltipVC;
+
+    NSView *contentView = _tooltipWC.window.contentView;
+    
+    // Remove all subviews of tooltip window's contentView.
+    [contentView setSubviews:@[]];
+
+    // Add the tooltopVC's view as a subview of the tooltip
+    // window's contentView.
+    if (tooltipVC != nil) {
+        tooltipVC.view.translatesAutoresizingMaskIntoConstraints = NO;
+        [contentView addSubview:tooltipVC.view];
+        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[v]|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
+        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[v]|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
+    }
 }
 
 - (IBAction)showPreviousMonth:(id)sender
@@ -309,8 +329,9 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
 - (void)reloadData
 {
     for (MoCalCell *c in _dateGrid.cells) {
-        c.hasEvent = [self.delegate eventsForDate:c.date] != nil;
+        c.hasDot = [self.delegate dateHasDot:c.date];
     }
+    [_tooltipWC endTooltip];
 }
 
 - (void)highlightCellsFromDate:(MoDate)startDate toDate:(MoDate)endDate withColor:(NSColor *)color
@@ -382,6 +403,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     else {
         [super keyDown:theEvent];
     }
+    [_tooltipWC endTooltip];
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
@@ -392,6 +414,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     if (clickedCell && clickedCell != _selectedCell) {
         [self setMonthDate:self.monthDate selectedDate:clickedCell.date];
     }
+    [_tooltipWC endTooltip];
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent
@@ -403,6 +426,17 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
         _hoveredCell.isHovered = NO;
         _hoveredCell = hoveredCell;
         _hoveredCell.isHovered = YES;
+        
+        if (_hoveredCell.hasDot && _tooltipVC != nil) {
+            NSRect rect = [self convertRect:_hoveredCell.frame fromView:_dateGrid];
+            rect = NSOffsetRect(rect, self.frame.origin.x, self.frame.origin.y);
+            rect = [self.window convertRectToScreen:rect];
+            [_tooltipWC showTooltipForDate:_hoveredCell.date relativeToRect:rect];
+        }
+        else {
+            [_tooltipWC endTooltip];
+        }
+
     }
 }
 
@@ -410,6 +444,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
 {
     _hoveredCell.isHovered = NO;
     _hoveredCell = nil;
+    [_tooltipWC endTooltip];
     [self setNeedsDisplay:YES];
 }
 

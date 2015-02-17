@@ -19,6 +19,6 @@
 @property (nonatomic) BOOL isToday;
 @property (nonatomic) BOOL isHovered;
 @property (nonatomic) BOOL isSelected;
-@property (nonatomic) BOOL hasEvent;
+@property (nonatomic) BOOL hasDot;
 
 @end

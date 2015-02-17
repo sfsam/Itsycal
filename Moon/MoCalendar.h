@@ -8,6 +8,7 @@
 
 #import <AppKit/AppKit.h>
 #import "MoDate.h"
+#import "MoCalToolTipWC.h"
 
 @protocol MoCalendarDelegate;
 
@@ -36,6 +37,9 @@
 // Is the week of the year column showing?
 @property (nonatomic) BOOL showWeeks;
 
+// An optional view controller for tooltips.
+@property (nonatomic) NSViewController<MoCalTooltipProvider> *tooltipVC;
+
 @property (nonatomic, weak) id<MoCalendarDelegate> delegate;
 
 - (IBAction)showPreviousMonth:(id)sender;
@@ -43,7 +47,6 @@
 - (IBAction)showPreviousYear:(id)sender;
 - (IBAction)showNextYear:(id)sender;
 - (IBAction)showTodayMonth:(id)sender;
-- (void)updateCalendar;
 - (void)reloadData;
 - (void)highlightCellsFromDate:(MoDate)startDate toDate:(MoDate)endDate withColor:(NSColor *)color;
 - (void)unhighlightCells;
@@ -58,7 +61,7 @@
 
 - (void)calendarUpdated:(MoCalendar *)cal;
 - (void)calendarSelectionChanged:(MoCalendar *)cal;
-- (NSArray *)eventsForDate:(MoDate)date;
+- (BOOL)dateHasDot:(MoDate)date;
 
 @end
 

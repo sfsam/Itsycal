@@ -65,10 +65,10 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
     }
 }
 
-- (void)setHasEvent:(BOOL)hasEvent
+- (void)setHasDot:(BOOL)hasDot
 {
-    if (hasEvent != _hasEvent) {
-        _hasEvent = hasEvent;
+    if (hasDot != _hasDot) {
+        _hasDot = hasDot;
         [self setNeedsDisplay:YES];
     }
 }
@@ -92,7 +92,7 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
         NSRect r = NSInsetRect(self.bounds, 2, 2);
         [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] fill];
     }
-    if (self.hasEvent) {
+    if (self.hasDot) {
         [kDotColor set];
         NSRect r = NSMakeRect(0, 0, 3, 3);
         r.origin.x = self.bounds.origin.x + kMoCalCellWidth/2.0 - 1.5;
