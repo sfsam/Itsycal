@@ -33,9 +33,12 @@
 - (void)setImage:(NSImage *)image
 {
     _img = image;
+    // Create a 'darkened' version of the image. We will use
+    // this as the alternate image if the user doesn't
+    // provide one of their own.
     _imgDarkened = [NSImage imageWithSize:_img.size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
         [_img drawInRect:dstRect];
-        [[NSColor colorWithCalibratedRed:0.3 green:0.5 blue:0.9 alpha:1] set];
+        [[NSColor colorWithCalibratedRed:0.4 green:0.6 blue:1 alpha:1] set];
         NSRectFillUsingOperation(dstRect, NSCompositeSourceAtop);
         return YES;
     }];
@@ -49,8 +52,9 @@
 - (void)updateLayer
 {
     // Animate state changes and highlighting by crossfading
-    // between _img and _imgAlt, if it was provided. If not,
-    // use _imgDarkened.
+    // between _img and img2. img2 is either the alternate
+    // image, if the user provided one, or the darkened version
+    // of _img we created.
     NSImage *img2 = _imgAlt ? _imgAlt : _imgDarkened;
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
         context.duration = 0.3;
