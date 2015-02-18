@@ -37,6 +37,9 @@
 - (instancetype)initWithCalendar:(NSCalendar *)calendar delegate:(id<EventCenterDelegate>)delegate;
 
 - (void)fetchEvents;
+
+// An array of EventInfo objects for date. The array is
+// sorted with all-day events first, then by startTime.
 - (NSArray *)eventsForDate:(MoDate)date;
 
 // When the user selects/unselects calendars in Prefs, we update

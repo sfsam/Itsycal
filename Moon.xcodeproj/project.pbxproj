@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9200F0151A940BF800CA36A9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9200F0171A940BF800CA36A9 /* InfoPlist.strings */; };
 		9219CC261A8990F700B6E159 /* MenuCracker.menu in Resources */ = {isa = PBXBuildFile; fileRef = 9219CC251A8990F700B6E159 /* MenuCracker.menu */; };
 		921CD1731A8934DC007B60C0 /* SystemUIPlugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 921CD1721A8934DC007B60C0 /* SystemUIPlugin.framework */; };
 		921CD1771A89355B007B60C0 /* ItsycalExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 921CD1761A89355B007B60C0 /* ItsycalExtra.m */; };
@@ -71,6 +72,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9200F0161A940BF800CA36A9 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		9200F0181A940C0800CA36A9 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		9200F0191A940C1700CA36A9 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		9200F01A1A940C2100CA36A9 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		9219CC251A8990F700B6E159 /* MenuCracker.menu */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = MenuCracker.menu; sourceTree = "<group>"; };
 		921CD16B1A893420007B60C0 /* ItsycalExtra.menu */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ItsycalExtra.menu; sourceTree = BUILT_PRODUCTS_DIR; };
 		921CD16E1A893420007B60C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -196,6 +201,7 @@
 		921CD16D1A893420007B60C0 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				9200F0171A940BF800CA36A9 /* InfoPlist.strings */,
 				921CD1721A8934DC007B60C0 /* SystemUIPlugin.framework */,
 				921CD1861A8979F8007B60C0 /* Localizable.strings */,
 				921CD16E1A893420007B60C0 /* Info.plist */,
@@ -406,6 +412,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9224B0431A8AB4B500D63030 /* dates.png in Resources */,
+				9200F0151A940BF800CA36A9 /* InfoPlist.strings in Resources */,
 				9224B0411A8AB48600D63030 /* dates@2x.png in Resources */,
 				921CD1841A8979F8007B60C0 /* Localizable.strings in Resources */,
 			);
@@ -477,6 +484,17 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		9200F0171A940BF800CA36A9 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9200F0161A940BF800CA36A9 /* de */,
+				9200F0181A940C0800CA36A9 /* es */,
+				9200F0191A940C1700CA36A9 /* fr */,
+				9200F01A1A940C2100CA36A9 /* it */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		921CD1861A8979F8007B60C0 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (

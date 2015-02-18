@@ -44,7 +44,7 @@
                 <source>$(PRODUCT_NAME)</source>
             </trans-unit>
             <trans-unit id="CFBundleShortVersionString">
-                <source>1.0</source>
+                <source>0.9.0</source>
             </trans-unit>
             <trans-unit id="NSHumanReadableCopyright">
                 <source>Copyright © 2015 mowglii.com</source>
@@ -56,6 +56,11 @@
             <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
         </header>
         <body>
+            <trans-unit id="Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy">
+                <source>Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</source>
+                <note>No comment provided by engineer.</note>
+                <target>Acceso denegado.\n\nItsycal es más útil cuando se puede mostrar eventos de su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad</target>
+            </trans-unit>
             <trans-unit id="Cancel">
                 <source>Cancel</source>
                 <target>Cancelar</target>
@@ -121,9 +126,9 @@
                 <target>Opciones</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
-            <trans-unit id="Pin Itsycal">
-                <source>Pin Itsycal</source>
-                <target>Mantener Itsycal</target>
+            <trans-unit id="Pin Itsycal... P">
+                <source>Pin Itsycal... P</source>
+                <target>Mantener Itsycal… P</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Preferences...">
@@ -200,6 +205,33 @@
                 <source>Wednesday</source>
                 <target>Miércoles</target>
                 <note>No comment provided by engineer.</note>
+            </trans-unit>
+        </body>
+    </file>
+    <file original="MoonExtra/Info.plist" source-language="en" datatype="plaintext" target-language="es">
+        <header>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
+        </header>
+        <body>
+            <trans-unit id="CFBundleName">
+                <source>$(PRODUCT_NAME)</source>
+            </trans-unit>
+            <trans-unit id="CFBundleShortVersionString">
+                <source>1.0</source>
+            </trans-unit>
+            <trans-unit id="NSHumanReadableCopyright">
+                <source>Copyright © 2015 mowglii.com. All rights reserved.</source>
+            </trans-unit>
+        </body>
+    </file>
+    <file original="MoonExtra/en.lproj/Localizable.strings" source-language="en" datatype="plaintext" target-language="es">
+        <header>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
+        </header>
+        <body>
+            <trans-unit id="Open Itsycal...">
+                <source>Open Itsycal…</source>
+                <target>Abrir Itsycal…</target>
             </trans-unit>
         </body>
     </file>

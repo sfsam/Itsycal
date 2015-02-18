@@ -461,6 +461,8 @@
 
 - (void)calendarUpdated:(MoCalendar *)cal
 {
+    // Attempt to reload cached events. If this works,
+    // the display will update fast. Then fetch.
     [_moCal reloadData];
     [_ec fetchEvents];
 }

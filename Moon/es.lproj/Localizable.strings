@@ -1,3 +1,6 @@
+/* No comment provided by engineer. */
+"Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Acceso denegado.\n\nItsycal es más útil cuando se puede mostrar eventos de su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad";
+
 /* Cancel action button in recording state */
 "Cancel" = "Cancelar";
 
