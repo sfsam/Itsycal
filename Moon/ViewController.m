@@ -11,6 +11,7 @@
 #import "ItsycalWindow.h"
 #import "SBCalendar.h"
 #import "PrefsViewController.h"
+#import "AgendaViewController.h"
 #import "TooltipViewController.h"
 #import "MoButton.h"
 
@@ -22,8 +23,8 @@
     NSStatusItem  *_statusItem;
     MoButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
     NSRect         _menuItemFrame, _screenFrame;
-    
-    NSWindowController *_prefsWC;
+    AgendaViewController  *_agendaVC;
+    NSWindowController    *_prefsWC;
 }
 
 - (void)dealloc
@@ -67,7 +68,7 @@
         return btn;
     };
 
-    // Add, Calendar.app and Options buttons
+    // Add event, Calendar.app, and Options buttons
     _btnAdd = btn(@"btnAdd", NSLocalizedString(@"New Event... ⌘N", @""), @"n", @selector(addCalendarEvent:));
     _btnCal = btn(@"btnCal", NSLocalizedString(@"Open Calendar... ⌘O", @""), @"o", @selector(showCalendarApp:));
     _btnOpt = btn(@"btnOpt", NSLocalizedString(@"Options", @""), @"", @selector(showOptionsMenu:));
@@ -76,13 +77,19 @@
     _btnPin.alternateImage = [NSImage imageNamed:@"btnPinAlt"];
     [_btnPin setButtonType:NSToggleButton];
     
+    // Agenda
+    _agendaVC = [AgendaViewController new];
+    NSView *agenda = _agendaVC.view;
+    [v addSubview:agenda];
+    
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*, NSLayoutFormatOptions) = ^(NSString *format, NSLayoutFormatOptions opts) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opts metrics:nil views:NSDictionaryOfVariableBindings(_moCal, _btnAdd, _btnCal, _btnOpt, _btnPin)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opts metrics:nil views:NSDictionaryOfVariableBindings(_moCal, _btnAdd, _btnCal, _btnOpt, _btnPin, agenda)]];
     };
     vcon(@"H:|[_moCal]|", 0);
-    vcon(@"V:|[_moCal]-26-|", 0);
-    vcon(@"V:[_moCal]-8-[_btnOpt]", 0);
+    vcon(@"H:|[agenda]|", 0);
+    vcon(@"V:|[_moCal]-30-[agenda]|", 0);
+    vcon(@"V:[_moCal]-6-[_btnOpt]", 0);
     vcon(@"H:|-6-[_btnAdd]-(>=0)-[_btnPin]-8-[_btnCal]-8-[_btnOpt]-6-|", NSLayoutFormatAlignAllCenterY);
     
     self.view = v;
@@ -472,7 +479,7 @@
 
 - (void)calendarSelectionChanged:(MoCalendar *)cal
 {
-
+    [self updateAgenda];
 }
 
 - (BOOL)dateHasDot:(MoDate)date
@@ -483,15 +490,10 @@
 #pragma mark -
 #pragma mark EventCenterDelegate
 
-- (void)eventCenterSourcesAndCalendarsChanged
-{
-//    NSLog(@"%s", __FUNCTION__);
-//    NSLog(@"%@", _ec.sourcesAndCalendars);
-}
-
 - (void)eventCenterEventsChanged
 {
     [_moCal reloadData];
+    [self updateAgenda];
 }
 
 - (MoDate)fetchStartDate
@@ -502,6 +504,16 @@
 - (MoDate)fetchEndDate
 {
     return AddDaysToDate(80, _moCal.monthDate);
+}
+
+#pragma mark -
+#pragma mark Agenda
+
+- (void)updateAgenda
+{
+    NSInteger daysToShow = 5;
+    _agendaVC.events = [_ec datesAndEventsForDate:_moCal.selectedDate days:daysToShow];
+    [_agendaVC reloadData];
 }
 
 #pragma mark -

@@ -229,8 +229,8 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     if (tooltipVC != nil) {
         tooltipVC.view.translatesAutoresizingMaskIntoConstraints = NO;
         [contentView addSubview:tooltipVC.view];
-        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[v]|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
-        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[v]|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
+        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-1-[v]-1-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
+        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-2-[v]-3-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
     }
 }
 
@@ -480,6 +480,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
         _selectedCell = [_dateGrid cellWithDate:selectedDate];
         _selectedCell.isSelected = YES;
         [self setNeedsDisplay:YES];
+        [self.delegate calendarSelectionChanged:self];
     }
 }
 

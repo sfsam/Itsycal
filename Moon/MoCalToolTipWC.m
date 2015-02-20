@@ -108,7 +108,7 @@ static CGFloat kToolipWindowWidth = 200;
 {
     // A yellow rounded rect with a light gray border.
     NSRect r = NSInsetRect(self.bounds, 1, 1);
-    NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:2 yRadius:2];
+    NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:4 yRadius:4];
     [[NSColor colorWithWhite:0 alpha:0.25] setStroke];
     [[NSColor colorWithRed:1 green:1 blue:0.95 alpha:1] setFill];
     [p setLineWidth: 2];

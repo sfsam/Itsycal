@@ -109,8 +109,6 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     }
     _sourcesAndCalendars = [NSArray arrayWithArray:sourcesAndCalendars];
     [defaults setObject:cleanSelectedCalendars forKey:kSelectedCalendars];
-    
-    [self.delegate eventCenterSourcesAndCalendarsChanged];
 }
 
 - (void)updateSelectedCalendars
@@ -142,6 +140,23 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSDate *nsDate = [_cal startOfDayForDate:[self nsDateFromMoDate:date]];
     return _filteredEventsForDate[nsDate];
 }
+
+- (NSArray *)datesAndEventsForDate:(MoDate)date days:(NSInteger)days
+{
+    NSMutableArray *datesAndEvents = [NSMutableArray new];
+    MoDate endDate = AddDaysToDate((int)days, date);
+    while (CompareDates(date, endDate) < 0) {
+        NSDate *nsDate = [_cal startOfDayForDate:[self nsDateFromMoDate:date]];
+        NSArray *events = _filteredEventsForDate[nsDate];
+        if (events != nil) {
+            [datesAndEvents addObject:nsDate];
+            [datesAndEvents addObjectsFromArray:events];
+        }
+        date = AddDaysToDate(1, date);
+    }
+    return datesAndEvents;
+}
+
 
 - (void)fetchEvents
 {

@@ -285,10 +285,10 @@
 				9224B0741A8BE75500D63030 /* MoButton.m */,
 				922232CB1A8DF672003BFAD9 /* EventCenter.h */,
 				922232CC1A8DF672003BFAD9 /* EventCenter.m */,
-				925B47191A93CD2A00E0329A /* TooltipViewController.h */,
-				925B471A1A93CD2A00E0329A /* TooltipViewController.m */,
 				92CDDE791A955D7F00D7675C /* AgendaViewController.h */,
 				92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */,
+				925B47191A93CD2A00E0329A /* TooltipViewController.h */,
+				925B471A1A93CD2A00E0329A /* TooltipViewController.m */,
 			);
 			path = Moon;
 			sourceTree = "<group>";

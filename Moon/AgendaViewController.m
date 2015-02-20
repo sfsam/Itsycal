@@ -40,6 +40,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
     _tv.backgroundColor = [NSColor clearColor];
+    _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
     _tv.delegate = self;
     [_tv addTableColumn:[[NSTableColumn alloc] initWithIdentifier:kColumnIdentifier]];
@@ -80,7 +81,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     for (NSInteger row = 0; row < rows; ++row) {
         height += NSHeight([_tv rectOfRow:row]);
     }
-    _tvHeight.constant = height + 3; // 3=bottom padding; it looks better
+    _tvHeight.constant = height;
     [self.view setNeedsLayout:YES];
 }
 
@@ -115,7 +116,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     static AgendaEventCell *cell = nil;
     if (cell == nil) { cell = [AgendaEventCell new]; }
     
-    CGFloat height = 20; // AgendaDateCell height;
+    CGFloat height = 18; // AgendaDateCell height;
     id obj = self.events[row];
     if ([obj isKindOfClass:[EventInfo class]]) {
         cell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
@@ -144,19 +145,21 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     self = [super init];
     if (self) {
+        self.wantsLayer = YES; // for text to be smooth
         self.identifier = kDateCellIdentifier;
         _dateFormatter = [NSDateFormatter new];
         [_dateFormatter setLocalizedDateFormatFromTemplate:@"EEE d M y"];
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
         _textField.font = [NSFont boldSystemFontOfSize:11];
+        _textField.textColor = [NSColor colorWithWhite:0 alpha:0.9];
         _textField.editable = NO;
         _textField.bezeled = NO;
         _textField.drawsBackground = NO;
         _textField.stringValue = @"";
         [self addSubview:_textField];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[_textField]-8-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-4-[_textField]-2-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-2-[_textField]" options:0 metrics:nil views:@{@"_textField": _textField}]];
     }
     return self;
 }
@@ -165,6 +168,20 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     _date = date;
     _textField.stringValue = [_dateFormatter stringFromDate:date];
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    // Since this view is layer-backed (so that font smoothing works
+    // properly), we must fill with a color. Otherwise, the view
+    // will be black.
+    [[NSColor colorWithRed:0.95 green:0.95 blue:0.97 alpha:1] set];
+    NSRectFillUsingOperation(self.bounds, NSCompositeSourceOver);
+    
+    // Line at top of cell
+    NSRect r = NSMakeRect(0, NSHeight(self.bounds)-1, NSWidth(self.bounds), 1);
+    [[NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1] set];
+    NSRectFillUsingOperation(r, NSCompositeSourceOver);
 }
 
 @end
@@ -198,7 +215,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField.stringValue = @"";
         [self addSubview:_textField];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-18-[_textField]-8-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-4-[_textField]-2-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-3-[_textField]-3-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
     }
     return self;
 }
@@ -254,7 +271,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     // The height of the textfield (which may have word-wrapped)
     // plus the height of the top and bottom marigns.
-    return [_textField intrinsicContentSize].height + 6; // 6=4+2=top+bottom margin
+    return [_textField intrinsicContentSize].height + 6; // 6=3+3=top+bottom margin
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -264,9 +281,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // view will be black.
     [[NSColor clearColor] set];
     NSRectFillUsingOperation(self.bounds, NSCompositeSourceOver);
+
     // Draw a colored circle
     [[self.eventInfo.calendarColor blendedColorWithFraction:0.3 ofColor:[NSColor whiteColor]] set];
-    NSRect circleRect = NSMakeRect(6, NSMaxY(self.frame)-15, 8, 8);
+    NSRect circleRect = NSMakeRect(6, NSMaxY(self.frame)-14, 8, 8);
     [[NSBezierPath bezierPathWithOvalInRect:circleRect] fill];
 }
 
