@@ -170,12 +170,12 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
     static NSShadow *shadow = nil;
     if (shadow == nil) {
         shadow = [NSShadow new];
-        shadow.shadowColor = [NSColor colorWithCalibratedWhite:0 alpha:0.5];
+        shadow.shadowColor = [NSColor colorWithWhite:0 alpha:0.5];
         shadow.shadowBlurRadius = kShadowWidth;
         shadow.shadowOffset = NSMakeSize(0, -1);
     }
     [shadow set];
-    [[NSColor colorWithDeviceWhite:0 alpha:0.2] setStroke];
+    [[NSColor colorWithWhite:0 alpha:0.2] setStroke];
     [[NSColor whiteColor] setFill];
     [rectPath appendBezierPath:arrowPath];
     [rectPath setLineWidth:2*kBorderWidth];

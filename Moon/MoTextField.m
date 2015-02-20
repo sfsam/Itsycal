@@ -17,7 +17,7 @@
 {
     self = [super initWithFrame:frameRect];
     if (self) {
-        _linkColor = [NSColor colorWithCalibratedRed:0.3f green:0.4f blue:0.8f alpha:1.f];
+        _linkColor = [NSColor colorWithRed:0.3 green:0.4 blue:0.8 alpha:1];
         _originalColor = self.textColor;
     }
     return self;
@@ -27,7 +27,7 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        _linkColor = [NSColor colorWithCalibratedRed:0.3f green:0.4f blue:0.8f alpha:1.f];
+        _linkColor = [NSColor colorWithRed:0.3 green:0.4 blue:0.8 alpha:1];
         _originalColor = self.textColor;
     }
     return self;

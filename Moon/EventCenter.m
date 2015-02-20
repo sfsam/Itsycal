@@ -139,7 +139,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // TODO: Do we need to check if theDate is in the range
     //       of events we've already fetched?
 
-    NSDate *nsDate = [self nsDateFromMoDate:date];
+    NSDate *nsDate = [_cal startOfDayForDate:[self nsDateFromMoDate:date]];
     return _filteredEventsForDate[nsDate];
 }
 

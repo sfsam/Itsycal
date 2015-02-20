@@ -14,10 +14,10 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
 
 + (void)initialize
 {
-    kTodayCellColor = [NSColor colorWithCalibratedRed:0.4 green:0.6 blue:1 alpha:1];
-    kHoveredCellColor = [NSColor colorWithCalibratedRed:0.2 green:0.2 blue:0.3 alpha:0.2];
-    kSelectedCellColor = [NSColor colorWithCalibratedRed:0.3 green:0.3 blue:0.4 alpha:0.7];
-    kDotColor = [NSColor colorWithCalibratedWhite:0.15 alpha:0.9];
+    kTodayCellColor = [NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:1];
+    kHoveredCellColor = [NSColor colorWithRed:0.2 green:0.2 blue:0.3 alpha:0.2];
+    kSelectedCellColor = [NSColor colorWithRed:0.3 green:0.3 blue:0.4 alpha:0.7];
+    kDotColor = [NSColor colorWithWhite:0.15 alpha:0.9];
 }
 
 - (instancetype)init

@@ -105,13 +105,16 @@
     MoDate today = self.todayDate;
     _moCal.todayDate = today;
     _moCal.selectedDate = today;
-    _moCal.tooltipVC = [TooltipViewController new];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dayChanged:) name:NSCalendarDayChangedNotification object:nil];
 
     [self createStatusItem];
     
     _ec = [[EventCenter alloc] initWithCalendar:_nsCal delegate:self];
+    
+    TooltipViewController *tooltipVC = [TooltipViewController new];
+    tooltipVC.ec = _ec;
+    _moCal.tooltipVC = tooltipVC;
 
     [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalIsActiveNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
 }

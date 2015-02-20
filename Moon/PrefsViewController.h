@@ -15,15 +15,3 @@
 @property (nonatomic, weak) EventCenter *ec;
 
 @end
-
-@interface SourceCellView : NSView
-
-@property (nonatomic) NSTextField *textField;
-
-@end
-
-@interface CalendarCellView : NSView
-
-@property (nonatomic) NSButton *checkbox;
-
-@end

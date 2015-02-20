@@ -45,6 +45,7 @@
 		925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B471A1A93CD2A00E0329A /* TooltipViewController.m */; };
 		927145021A8DF1F300745411 /* VarelaRoundNeo-Bold.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 927145001A8DF1F300745411 /* VarelaRoundNeo-Bold.otf */; };
 		927145031A8DF1F300745411 /* VarelaRoundNeo-Regular.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 927145011A8DF1F300745411 /* VarelaRoundNeo-Regular.otf */; };
+		92CDDE7B1A955D7F00D7675C /* AgendaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -157,6 +158,8 @@
 		925B471D1A93E3D800E0329A /* MoCalTooltipProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoCalTooltipProvider.h; sourceTree = "<group>"; };
 		927145001A8DF1F300745411 /* VarelaRoundNeo-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "VarelaRoundNeo-Bold.otf"; sourceTree = "<group>"; };
 		927145011A8DF1F300745411 /* VarelaRoundNeo-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "VarelaRoundNeo-Regular.otf"; sourceTree = "<group>"; };
+		92CDDE791A955D7F00D7675C /* AgendaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AgendaViewController.h; sourceTree = "<group>"; };
+		92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AgendaViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -284,6 +287,8 @@
 				922232CC1A8DF672003BFAD9 /* EventCenter.m */,
 				925B47191A93CD2A00E0329A /* TooltipViewController.h */,
 				925B471A1A93CD2A00E0329A /* TooltipViewController.m */,
+				92CDDE791A955D7F00D7675C /* AgendaViewController.h */,
+				92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */,
 			);
 			path = Moon;
 			sourceTree = "<group>";
@@ -310,9 +315,9 @@
 				9242A58D1A82A40B005AA4B3 /* MoCalGrid.m */,
 				9242A58E1A82A40B005AA4B3 /* MoCalendar.h */,
 				9242A58F1A82A40B005AA4B3 /* MoCalendar.m */,
+				925B471D1A93E3D800E0329A /* MoCalTooltipProvider.h */,
 				925B47161A93B63100E0329A /* MoCalToolTipWC.h */,
 				925B47171A93B63100E0329A /* MoCalToolTipWC.m */,
-				925B471D1A93E3D800E0329A /* MoCalTooltipProvider.h */,
 			);
 			name = MoCalendar;
 			sourceTree = "<group>";
@@ -455,6 +460,7 @@
 				9242A5651A82A136005AA4B3 /* main.m in Sources */,
 				925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */,
 				9242A5871A82A1A1005AA4B3 /* ItsycalWindow.m in Sources */,
+				92CDDE7B1A955D7F00D7675C /* AgendaViewController.m in Sources */,
 				922B6BBB1A85E0EC00DEA9CD /* MoTextField.m in Sources */,
 				922B6BB81A85CC7800DEA9CD /* PrefsViewController.m in Sources */,
 				9242A5901A82A40B005AA4B3 /* MoDate.c in Sources */,

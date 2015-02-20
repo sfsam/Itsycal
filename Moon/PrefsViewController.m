@@ -16,6 +16,14 @@
 static NSString * const kSourceCellId = @"SourceCell";
 static NSString * const kCalendarCellId = @"CalendarCell";
 
+@interface SourceCellView : NSView
+@property (nonatomic) NSTextField *textField;
+@end
+
+@interface CalendarCellView : NSView
+@property (nonatomic) NSButton *checkbox;
+@end
+
 @implementation PrefsViewController
 {
     MoTextField *_title;
@@ -96,7 +104,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     _calendarsTV.dataSource = self;
     _calendarsTV.delegate = self;
     [_calendarsTV addTableColumn:[[NSTableColumn alloc] initWithIdentifier:@"SourcesAndCalendars"]];
-    [v addSubview:_calendarsTV];
 
     // Calendars enclosing scrollview
     NSScrollView *tvContainer = [NSScrollView new];
@@ -292,6 +299,10 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 #pragma mark -
 #pragma mark Source and Calendar cell views
 
+// =========================================================================
+// SourceCellView
+// =========================================================================
+
 @implementation SourceCellView
 
 - (instancetype)init
@@ -313,6 +324,10 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 }
 
 @end
+
+// =========================================================================
+// CalendarCellView
+// =========================================================================
 
 @implementation CalendarCellView
 

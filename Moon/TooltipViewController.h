@@ -7,8 +7,13 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "AgendaViewController.h"
 #import "MoCalTooltipProvider.h"
 
-@interface TooltipViewController : NSViewController <MoCalTooltipProvider>
+@class EventCenter;
+
+@interface TooltipViewController : AgendaViewController <MoCalTooltipProvider>
+
+@property (nonatomic, weak) EventCenter *ec;
 
 @end
