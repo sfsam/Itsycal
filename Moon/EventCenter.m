@@ -91,8 +91,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // NSUserDefaults. We do this in case the user has resynced their
     // calendars and the calendar identifiers have changed.
     NSMutableArray *sourcesAndCalendars = [NSMutableArray new];
-    __block NSString *currentSourceTitle = @"";
-    [calendars enumerateObjectsUsingBlock:^(EKCalendar *calendar, NSUInteger idx, BOOL *stop) {
+    NSString *currentSourceTitle = @"";
+    for (EKCalendar *calendar in calendars) {
         if (![calendar.source.title isEqualToString:currentSourceTitle]) {
             [sourcesAndCalendars addObject:calendar.source.title];
             currentSourceTitle = calendar.source.title;
@@ -106,7 +106,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         if (calInfo.selected) {
             [cleanSelectedCalendars addObject:calInfo.identifier];
         }
-    }];
+    }
     _sourcesAndCalendars = [NSArray arrayWithArray:sourcesAndCalendars];
     [defaults setObject:cleanSelectedCalendars forKey:kSelectedCalendars];
     
@@ -118,12 +118,12 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // The user has selected/unselected a calendar in Prefs.
     // Update the kSelectedCalendars array in NSUserDefaults.
     NSMutableArray *selectedCalendars = [NSMutableArray new];
-    [self.sourcesAndCalendars enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    for (id obj in self.sourcesAndCalendars) {
         if ([obj isKindOfClass:[CalendarInfo class]] &&
             [(CalendarInfo *)obj selected]) {
             [selectedCalendars addObject:[(CalendarInfo *)obj identifier]];
         }
-    }];
+    }
     [[NSUserDefaults standardUserDefaults] setObject:selectedCalendars forKey:kSelectedCalendars];
     
     // Filter events based on new calendar selection.
@@ -218,16 +218,21 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         date  = [_cal startOfDayForDate:date];
         while ([date compare:final] == NSOrderedAscending) {
             
+            NSDate *nextDate = [_cal dateByAddingUnit:NSCalendarUnitDay value:1 toDate:date options:0];
+            nextDate = [_cal startOfDayForDate:nextDate];
+            
             // Make an EventInfo object...
             EventInfo *info = [EventInfo new];
             info.title       = event.title;
             info.startDate   = event.startDate;
             info.endDate     = event.endDate;
-            info.isStartDate = [_cal isDate:date inSameDayAsDate:event.startDate];
-            info.isEndDate   = [_cal isDate:date inSameDayAsDate:event.endDate];
+            info.isStartDate = ([_cal isDate:date inSameDayAsDate:event.startDate] &&
+                                [event.endDate compare:nextDate] == NSOrderedDescending);
+            info.isEndDate   = ([_cal isDate:date inSameDayAsDate:event.endDate] &&
+                                [event.startDate compare:date] == NSOrderedAscending);
             info.isAllDay    = (event.allDay ||
-                                (![_cal isDate:event.startDate inSameDayAsDate:date] &&
-                                 ![_cal isDate:event.endDate inSameDayAsDate:date]));
+                                ([event.startDate compare:date] == NSOrderedAscending &&
+                                 [event.endDate compare:nextDate] == NSOrderedDescending));
             info.calendarColor = event.calendar.color;
             info.calendarIdentifier = event.calendar.calendarIdentifier;
             
@@ -237,8 +242,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             }
             [eventsForDate[date] addObject:info];
             
-            date = [_cal dateByAddingUnit:NSCalendarUnitDay value:1 toDate:date options:0];
-            date = [_cal startOfDayForDate:date];
+            date = nextDate;
         }
     }
     

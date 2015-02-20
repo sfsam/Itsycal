@@ -85,8 +85,8 @@
 @property (nonatomic) NSColor  *calendarColor;
 @property (nonatomic) NSDate   *startDate;
 @property (nonatomic) NSDate   *endDate;
-@property (nonatomic) BOOL      isStartDate;
-@property (nonatomic) BOOL      isEndDate;
+@property (nonatomic) BOOL      isStartDate; // event starts, but doesn't end, on this date
+@property (nonatomic) BOOL      isEndDate;   // event ends, but doesn't start, on this date
 @property (nonatomic) BOOL      isAllDay;
 
 @end
