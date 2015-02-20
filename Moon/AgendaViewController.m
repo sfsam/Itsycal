@@ -22,6 +22,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @property (nonatomic, readonly) CGFloat height;
 @end
 
+#pragma mark -
+#pragma mark AgendaViewController
+
+// =========================================================================
+// AgendaViewController
+// =========================================================================
+
 @implementation AgendaViewController
 {
     NSTableView *_tv;

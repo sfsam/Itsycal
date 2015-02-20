@@ -1,6 +1,6 @@
 //
 //  ItsycalWindow.m
-//  Itsycal2
+//  Itsycal
 //
 //  Created by Sanjay Madan on 12/14/14.
 //  Copyright (c) 2014 mowglii.com. All rights reserved.
@@ -20,6 +20,13 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
 @interface ItsycalWindowFrameView : NSView
 @property (nonatomic, assign) CGFloat arrowMidX;
 @end
+
+#pragma mark -
+#pragma mark ItsycalWindow
+
+// =========================================================================
+// ItsycalWindow
+// =========================================================================
 
 @implementation ItsycalWindow
 {
@@ -138,6 +145,10 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
 
 #pragma mark -
 #pragma mark ItsycalWindowFrameView
+
+// =========================================================================
+// ItsycalWindowFrameView
+// =========================================================================
 
 @implementation ItsycalWindowFrameView
 
