@@ -14,9 +14,13 @@ NSString * const kItsycalExtraBundleID = @"com.mowglii.ItsycalExtra";
 
 // NSUserDefaults keys
 NSString * const kPinItsycal = @"PinItsycal";
+NSString * const kShowEventDays = @"ShowEventDays";
 NSString * const kShowWeeks = @"ShowWeeks";
 NSString * const kWeekStartDOW = @"WeekStartDOW";
 NSString * const kKeyboardShortcut = @"KeyboardShortcut";
+
+// Preferences notifications
+NSString * const kDaysToShowPreferenceChanged = @"DaysToShowPreferenceChanged";
 
 // Menu extra notifications
 NSString * const ItsycalIsActiveNotification = @"ItsycalIsActiveNotification";

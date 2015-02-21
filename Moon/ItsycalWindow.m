@@ -39,7 +39,7 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
     if (self) {
         [self setBackgroundColor:[NSColor clearColor]];
         [self setOpaque:NO];
-        [self setLevel:NSFloatingWindowLevel];
+        [self setLevel:NSMainMenuWindowLevel];
         [self setMovableByWindowBackground:NO];
         [self setHasShadow:NO];
         // Fade out when -[NSWindow orderOut:] is called.

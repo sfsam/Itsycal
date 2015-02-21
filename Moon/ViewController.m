@@ -99,6 +99,9 @@
 {
     [super viewDidLoad];
     
+    // Preferences notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(daysToShowPreferenceChanged:) name:kDaysToShowPreferenceChanged object:nil];
+
     // Menu extra notifications
     [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraIsActive:) name:ItsycalExtraIsActiveNotification object:nil];
     [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraClicked:) name:ItsycalExtraClickedNotification object:nil];
@@ -511,9 +514,15 @@
 
 - (void)updateAgenda
 {
-    NSInteger daysToShow = 5;
-    _agendaVC.events = [_ec datesAndEventsForDate:_moCal.selectedDate days:daysToShow];
+    NSInteger days = [[NSUserDefaults standardUserDefaults] integerForKey:kShowEventDays];
+    days = MIN(MAX(days, 0), 7); // days is in range 0..7
+    _agendaVC.events = [_ec datesAndEventsForDate:_moCal.selectedDate days:days];
     [_agendaVC reloadData];
+}
+
+- (void)daysToShowPreferenceChanged:(NSNotification *)note
+{
+    [self updateAgenda];
 }
 
 #pragma mark -

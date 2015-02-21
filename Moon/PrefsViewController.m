@@ -29,6 +29,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     MoTextField *_title;
     NSButton *_login;
     NSTableView *_calendarsTV;
+    NSPopUpButton *_daysPopup;
 }
 
 #pragma mark -
@@ -113,28 +114,51 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     tvContainer.documentView = _calendarsTV;
     [v addSubview:tvContainer];
     
+    // Agenda days label
+    MoTextField *daysLabel = txt(NSLocalizedString(@"Event list shows:", @""));
+    daysLabel.font = [NSFont systemFontOfSize:12];
+    
+    // Agenda days popup
+    _daysPopup = [NSPopUpButton new];
+    _daysPopup.translatesAutoresizingMaskIntoConstraints = NO;
+    _daysPopup.target = self;
+    _daysPopup.action = @selector(showEventDays:);
+    [_daysPopup addItemsWithTitles:@[NSLocalizedString(@"No events", @""),
+                                     NSLocalizedString(@"1 day", @""),
+                                     NSLocalizedString(@"2 days", @""),
+                                     NSLocalizedString(@"3 days", @""),
+                                     NSLocalizedString(@"4 days", @""),
+                                     NSLocalizedString(@"5 days", @""),
+                                     NSLocalizedString(@"6 days", @""),
+                                     NSLocalizedString(@"7 days", @""),]];
+    [v addSubview:_daysPopup];
+    
     // Copyright
     MoTextField *copyright = txt(infoDict[@"NSHumanReadableCopyright"]);
     copyright.textColor = [NSColor grayColor];
     
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, shortcutLabel, shortcutView, tvContainer, copyright)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
     };
     vcon(@"V:|-m-[appIcon(64)]");
     vcon(@"H:|-m-[appIcon(64)]-[_title]-(>=m)-|");
     vcon(@"H:[appIcon]-[link]-(>=m)-|");
     vcon(@"V:|-36-[_title]-1-[link]");
-    vcon(@"V:|-110-[_login]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(220)]-20-[copyright]-m-|");
+    vcon(@"V:|-110-[_login]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
     vcon(@"H:|-m-[_login]-(>=m)-|");
     vcon(@"H:|-(>=m)-[shortcutLabel]-(>=m)-|");
     vcon(@"H:|-m-[shortcutView(>=220)]-m-|");
     vcon(@"H:|-m-[tvContainer]-m-|");
+    vcon(@"H:|-m-[daysLabel]-[_daysPopup]-(>=m)-|");
     vcon(@"H:|-(>=m)-[copyright]-(>=m)-|");
     
     // Leading-align title, link
     [v addConstraint:[NSLayoutConstraint constraintWithItem:_title attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:link attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
     
+    // Baselines of daysLabel and daysPopup
+    [v addConstraint:[NSLayoutConstraint constraintWithItem:daysLabel attribute:NSLayoutAttributeBaseline relatedBy:NSLayoutRelationEqual toItem:_daysPopup attribute:NSLayoutAttributeBaseline multiplier:1 constant:0]];
+
     // Center shortcutLabel
     [v addConstraint:[NSLayoutConstraint constraintWithItem:shortcutLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:v attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
 
@@ -149,6 +173,11 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [super viewWillAppear];
     _login.state = [self isLoginItemEnabled] ? NSOnState : NSOffState;
     [_calendarsTV reloadData];
+    NSInteger days = [[NSUserDefaults standardUserDefaults] integerForKey:kShowEventDays];
+    [_daysPopup selectItemAtIndex:MIN(MAX(days, 0), 7)]; // days is in range 0..7
+    
+    _calendarsTV.enabled = self.ec.calendarAccessGranted;
+    _daysPopup.enabled = self.ec.calendarAccessGranted;
 }
 
 #pragma mark -
@@ -228,6 +257,13 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 #pragma mark -
 #pragma mark Calendar
 
+- (void)showEventDays:(id)sender
+{
+    NSInteger days = [_daysPopup indexOfItem:_daysPopup.selectedItem];
+    [[NSUserDefaults standardUserDefaults] setInteger:days forKey:kShowEventDays];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kDaysToShowPreferenceChanged object:nil];
+}
+
 - (void)calendarClicked:(NSButton *)checkbox
 {
     NSInteger row = checkbox.tag;
@@ -247,7 +283,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 {
     // If access is denied, row height is the height of the tableview
     // so we can show some helpful message text.
-    return self.ec.calendarAccessGranted ? 24.0 : 200.0;
+    return self.ec.calendarAccessGranted ? 24.0 : 170.0;
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex

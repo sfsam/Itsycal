@@ -157,7 +157,6 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     return datesAndEvents;
 }
 
-
 - (void)fetchEvents
 {
     MoDate startDate = [self.delegate fetchStartDate];
@@ -291,13 +290,6 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         }
     }
     _filteredEventsForDate = [filteredEventsForDates copy];
-    
-//    for (NSDate *d in _filteredEventsForDates) {
-//        NSLog(@"%@", d);
-//        for (EventInfo *e in _filteredEventsForDates[d]) {
-//            NSLog(@"    %@", e.title);
-//        }
-//    }
 }
 
 #pragma mark -

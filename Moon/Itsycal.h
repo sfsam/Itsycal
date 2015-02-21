@@ -15,9 +15,13 @@ extern NSString * const kItsycalExtraBundleID;
 
 // NSUserDefaults keys
 extern NSString * const kPinItsycal;
+extern NSString * const kShowEventDays;
 extern NSString * const kShowWeeks;
 extern NSString * const kWeekStartDOW;
 extern NSString * const kKeyboardShortcut;
+
+// Preferences notifications
+extern NSString * const kDaysToShowPreferenceChanged;
 
 // Menu extra notifications
 extern NSString * const ItsycalIsActiveNotification;
