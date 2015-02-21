@@ -88,7 +88,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     for (NSInteger row = 0; row < rows; ++row) {
         height += NSHeight([_tv rectOfRow:row]);
     }
-    _tvHeight.constant = height;
+    // Limit view height to a max of 500.
+    _tvHeight.constant = MIN(height, 500);
     [self.view setNeedsLayout:YES];
 }
 

@@ -279,10 +279,7 @@
 				9242A5971A832D7A005AA4B3 /* MoCalendar */,
 				922B6BB61A85CC7800DEA9CD /* PrefsViewController.h */,
 				922B6BB71A85CC7800DEA9CD /* PrefsViewController.m */,
-				922B6BB91A85E0EC00DEA9CD /* MoTextField.h */,
-				922B6BBA1A85E0EC00DEA9CD /* MoTextField.m */,
-				9224B0731A8BE75500D63030 /* MoButton.h */,
-				9224B0741A8BE75500D63030 /* MoButton.m */,
+				92CDDE7C1A97FFE700D7675C /* MoCode */,
 				922232CB1A8DF672003BFAD9 /* EventCenter.h */,
 				922232CC1A8DF672003BFAD9 /* EventCenter.m */,
 				92CDDE791A955D7F00D7675C /* AgendaViewController.h */,
@@ -330,6 +327,17 @@
 			);
 			name = Fonts;
 			path = ..;
+			sourceTree = "<group>";
+		};
+		92CDDE7C1A97FFE700D7675C /* MoCode */ = {
+			isa = PBXGroup;
+			children = (
+				922B6BB91A85E0EC00DEA9CD /* MoTextField.h */,
+				922B6BBA1A85E0EC00DEA9CD /* MoTextField.m */,
+				9224B0731A8BE75500D63030 /* MoButton.h */,
+				9224B0741A8BE75500D63030 /* MoButton.m */,
+			);
+			name = MoCode;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
