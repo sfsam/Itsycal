@@ -25,7 +25,6 @@
     NSRect         _menuItemFrame, _screenFrame;
     AgendaViewController  *_agendaVC;
     NSWindowController    *_prefsWC;
-    NSLayoutConstraint    *_bottomConstraint;
 }
 
 - (void)dealloc
@@ -90,14 +89,8 @@
     vcon(@"H:|[_moCal]|", 0);
     vcon(@"H:|[agenda]|", 0);
     vcon(@"H:|-6-[_btnAdd]-(>=0)-[_btnPin]-10-[_btnCal]-10-[_btnOpt]-6-|", NSLayoutFormatAlignAllCenterY);
-    vcon(@"V:|[_moCal]-6-[_btnOpt]", 0);
-    vcon(@"V:[agenda]|", 0);
-    
-    // Space between bottom of _moCal and top of agenda. When the agenda
-    // has no items, we reduce this space so that the bottom of the window
-    // is a bit higher and closer to the buttons. This eliminates the chin.
-    _bottomConstraint = [NSLayoutConstraint constraintWithItem:agenda attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_moCal attribute:NSLayoutAttributeBottom multiplier:1 constant:30];
-    [v addConstraint:_bottomConstraint];
+    vcon(@"V:[_moCal]-6-[_btnOpt]", 0);
+    vcon(@"V:|[_moCal]-30-[agenda]-(-6)-|", 0);
     
     self.view = v;
 }
@@ -525,7 +518,6 @@
     days = MIN(MAX(days, 0), 7); // days is in range 0..7
     _agendaVC.events = [_ec datesAndEventsForDate:_moCal.selectedDate days:days];
     [_agendaVC reloadData];
-    _bottomConstraint.constant = _agendaVC.events.count == 0 ? 24 : 30;
 }
 
 - (void)daysToShowPreferenceChanged:(NSNotification *)note
