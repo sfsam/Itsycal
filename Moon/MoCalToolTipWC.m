@@ -87,8 +87,7 @@ static CGFloat kToolipWindowWidth = 200;
         self.movableByWindowBackground = NO;
         self.ignoresMouseEvents = YES;
         self.hasShadow = YES;
-        // Fade out when -[NSWindow orderOut:] is called.
-        self.animationBehavior = NSWindowAnimationBehaviorUtilityWindow;
+
         // Draw tooltip background and fix tooltip width.
         self.contentView = [MoCalTooltipContentView new];
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:kToolipWindowWidth]];
