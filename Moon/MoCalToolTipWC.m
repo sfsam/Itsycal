@@ -23,7 +23,8 @@ static CGFloat kToolipWindowWidth = 200;
 
 @implementation MoCalToolTipWC
 {
-    NSRect _positioningRect;
+    NSTimer *_fadeTimer;
+    NSRect   _positioningRect;
 }
 
 - (instancetype)init
@@ -38,20 +39,16 @@ static CGFloat kToolipWindowWidth = 200;
         [self.vc toolTipForDate:date];
     }
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(showTooltip) object:nil];
-    NSTimeInterval delay = self.window.occlusionState & NSWindowOcclusionStateVisible ? 0 : 1;
-    [self performSelector:@selector(showTooltip) withObject:nil afterDelay:delay];
-}
-
-- (void)endTooltip
-{
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(showTooltip) object:nil];
-    [self.window orderOut:nil];
-}
-
-- (void)showTooltip
-{
-    [self positionTooltip];
-    [self showWindow:self];
+    if (self.window.occlusionState & NSWindowOcclusionStateVisible) {
+        // Switching from one tooltip to another
+        [_fadeTimer invalidate];
+        _fadeTimer = nil;
+        [self performSelector:@selector(showTooltip) withObject:nil afterDelay:0];
+    }
+    else {
+        // Showing a tooltip for the first time
+        [self performSelector:@selector(showTooltip) withObject:nil afterDelay:1];
+    }
 }
 
 - (void)positionTooltip
@@ -64,6 +61,41 @@ static CGFloat kToolipWindowWidth = 200;
         frame.origin.x = NSMaxX(primaryScreen.frame) - NSWidth(frame) - 5;
     }
     [self.window setFrame:frame display:YES animate:NO];
+}
+
+- (void)showTooltip
+{
+    [self positionTooltip];
+    [self showWindow:self];
+    [self.window setAlphaValue:1];
+}
+
+- (void)endTooltip
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(showTooltip) object:nil];
+    [_fadeTimer invalidate];
+    _fadeTimer = nil;
+    [self.window orderOut:nil];
+}
+
+- (void)hideTooltip
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(showTooltip) object:nil];
+    if (self.window.occlusionState & NSWindowOcclusionStateVisible &&
+        _fadeTimer == nil) {
+        _fadeTimer = [NSTimer scheduledTimerWithTimeInterval:1/30. target:self selector:@selector(tick:) userInfo:nil repeats:YES];
+    }
+}
+
+- (void)tick:(id)sender
+{
+    CGFloat alpha = self.window.alphaValue - 0.07;
+    if (alpha <= 0) {
+        [self endTooltip];
+    }
+    else {
+        self.window.alphaValue = alpha;
+    }
 }
 
 @end

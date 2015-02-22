@@ -15,6 +15,7 @@
 @property (nonatomic) NSViewController<MoCalTooltipProvider> *vc;
 
 - (void)showTooltipForDate:(MoDate)date relativeToRect:(NSRect)rect;
+- (void)hideTooltip;
 - (void)endTooltip;
 
 @end

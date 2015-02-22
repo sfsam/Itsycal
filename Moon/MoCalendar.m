@@ -420,7 +420,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     if (clickedCell && clickedCell != _selectedCell) {
         [self setMonthDate:self.monthDate selectedDate:clickedCell.date];
     }
-    [_tooltipWC endTooltip];
+    [_tooltipWC hideTooltip];
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent
@@ -440,7 +440,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
             [_tooltipWC showTooltipForDate:_hoveredCell.date relativeToRect:rect];
         }
         else {
-            [_tooltipWC endTooltip];
+            [_tooltipWC hideTooltip];
         }
 
     }
@@ -450,7 +450,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
 {
     _hoveredCell.isHovered = NO;
     _hoveredCell = nil;
-    [_tooltipWC endTooltip];
+    [_tooltipWC hideTooltip];
     [self setNeedsDisplay:YES];
 }
 
