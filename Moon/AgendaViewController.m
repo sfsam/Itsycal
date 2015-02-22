@@ -7,6 +7,7 @@
 //
 
 #import "AgendaViewController.h"
+#import "MoTableView.h"
 #import "EventCenter.h"
 
 static NSString *kColumnIdentifier    = @"Column";
@@ -31,7 +32,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 @implementation AgendaViewController
 {
-    NSTableView *_tv;
+    MoTableView *_tv;
     NSLayoutConstraint *_tvHeight;
 }
 
@@ -42,11 +43,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
     v.translatesAutoresizingMaskIntoConstraints = NO;
 
     // Calendars table view
-    _tv = [NSTableView new];
+    _tv = [MoTableView new];
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
     _tv.backgroundColor = [NSColor clearColor];
+    _tv.floatsGroupRows = YES;
     _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
     _tv.delegate = self;
@@ -55,8 +57,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Calendars enclosing scrollview
     NSScrollView *tvContainer = [NSScrollView new];
     tvContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    tvContainer.documentView = _tv;
     tvContainer.drawsBackground = NO;
+    tvContainer.hasVerticalScroller = YES;
+    tvContainer.documentView = _tv;
     
     [v addSubview:tvContainer];
     [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tv]|" options:0 metrics:nil views:@{@"tv": tvContainer}]];
@@ -78,6 +81,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)reloadData
 {
     [_tv reloadData];
+    [_tv scrollRowToVisible:0];
+    [[_tv enclosingScrollView] flashScrollers];
     [self sizeViewToFitTableview];
 }
 
@@ -134,6 +139,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return height;
 }
 
+- (BOOL)tableView:(NSTableView *)tableView isGroupRow:(NSInteger)row
+{
+    return [self.events[row] isKindOfClass:[NSDate class]];
+}
+
 @end
 
 #pragma mark -
@@ -159,7 +169,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [_dateFormatter setLocalizedDateFormatFromTemplate:@"EEE d M y"];
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
-        _textField.font = [NSFont boldSystemFontOfSize:11];
+        _textField.font = [NSFont fontWithName:@"Lucida Grande Bold" size:11];
         _textField.textColor = [NSColor colorWithWhite:0 alpha:0.9];
         _textField.editable = NO;
         _textField.bezeled = NO;
@@ -183,12 +193,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Since this view is layer-backed (so that font smoothing works
     // properly), we must fill with a color. Otherwise, the view
     // will be black.
-    [[NSColor colorWithRed:0.95 green:0.95 blue:0.97 alpha:1] set];
-    NSRectFillUsingOperation(self.bounds, NSCompositeSourceOver);
+    NSRect r = self.bounds;
+    [[NSColor colorWithRed:0.93 green:0.93 blue:0.94 alpha:1] set];
+    NSRectFillUsingOperation(r, NSCompositeSourceOver);
     
-    // Line at top of cell
-    NSRect r = NSMakeRect(0, NSHeight(self.bounds)-1, NSWidth(self.bounds), 1);
-    [[NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1] set];
+    r.size.height -= 1;
+    [[NSColor colorWithRed:0.96 green:0.96 blue:0.97 alpha:1] set];
     NSRectFillUsingOperation(r, NSCompositeSourceOver);
 }
 
@@ -214,7 +224,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [_timeFormatter setLocalizedDateFormatFromTemplate:@"h:mm a"];
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
-        _textField.font = [NSFont systemFontOfSize:11];
+        _textField.font = [NSFont fontWithName:@"Lucida Grande" size:11];
         _textField.textColor = [NSColor colorWithWhite:0 alpha:0.6];
         _textField.lineBreakMode = NSLineBreakByWordWrapping;
         _textField.editable = NO;
@@ -223,7 +233,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField.stringValue = @"";
         [self addSubview:_textField];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-18-[_textField]-8-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-3-[_textField]-3-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-3-[_textField]" options:0 metrics:nil views:@{@"_textField": _textField}]];
     }
     return self;
 }

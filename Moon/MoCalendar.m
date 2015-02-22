@@ -12,7 +12,7 @@
 #import "MoButton.h"
 
 static NSShadow *kShadow=nil;
-static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil;
+static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kBorderColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil;
 
 @implementation MoCalendar
 {
@@ -39,12 +39,13 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     kShadow.shadowColor = [NSColor colorWithWhite:0 alpha:0.3];
     kShadow.shadowBlurRadius = 2;
     kShadow.shadowOffset = NSMakeSize(0, -1);
+    kBorderColor = [NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1];
     kOutlineColor = [NSColor colorWithRed:0.7 green:0.7 blue:0.73 alpha:1];
-    kLightTextColor = [NSColor colorWithWhite:0.33 alpha:1];
+    kLightTextColor = [NSColor colorWithWhite:0.15 alpha:0.6];
     kDarkTextColor  = [NSColor colorWithWhite:0.15 alpha:1];
     kBackgroundColor = [NSColor whiteColor];
-    kWeeksBackgroundColor = [NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1];
-    kDatesBackgroundColor = [NSColor colorWithRed:0.93 green:0.93 blue:0.95 alpha:1];
+    kWeeksBackgroundColor = [NSColor colorWithRed:0.88 green:0.88 blue:0.9 alpha:1];
+    kDatesBackgroundColor = [NSColor colorWithRed:0.96 green:0.96 blue:0.97 alpha:1];
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
@@ -105,6 +106,11 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     _dateGrid = [[MoCalGrid alloc] initWithRows:6 columns:7 horizontalMargin:6 verticalMargin:6];
     _weekGrid = [[MoCalGrid alloc] initWithRows:6 columns:1 horizontalMargin:0 verticalMargin:6];
     _dowGrid  = [[MoCalGrid alloc] initWithRows:1 columns:7 horizontalMargin:6 verticalMargin:0];
+    
+    for (MoCalCell *cell in _dowGrid.cells) {
+        cell.textField.font = [NSFont fontWithName:@"VarelaRoundNeo-Bold" size:11];
+        cell.textField.textColor = kDarkTextColor;
+    }
     
     [self addSubview:_monthLabel];
     [self addSubview:_dateGrid];
@@ -525,7 +531,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     }
     NSRectFillUsingOperation(self.bounds, NSCompositeSourceOver);
     
-    [kOutlineColor set];
+    [kBorderColor set];
     NSRectFillUsingOperation(NSMakeRect(0, 0, NSWidth(self.bounds), NSMaxY(_dateGrid.frame)+1), NSCompositeSourceOver);
     
     [kWeeksBackgroundColor set];

@@ -9,8 +9,8 @@
 #import <AppKit/AppKit.h>
 #import "MoDate.h"
 
-#define kMoCalCellWidth  (25)
-#define kMoCalCellHeight (25)
+#define kMoCalCellWidth  (23)
+#define kMoCalCellHeight (23)
 
 @interface MoCalCell : NSView
 

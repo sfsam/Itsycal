@@ -89,7 +89,7 @@
     };
     vcon(@"H:|[_moCal]|", 0);
     vcon(@"H:|[agenda]|", 0);
-    vcon(@"H:|-6-[_btnAdd]-(>=0)-[_btnPin]-8-[_btnCal]-8-[_btnOpt]-6-|", NSLayoutFormatAlignAllCenterY);
+    vcon(@"H:|-6-[_btnAdd]-(>=0)-[_btnPin]-10-[_btnCal]-10-[_btnOpt]-6-|", NSLayoutFormatAlignAllCenterY);
     vcon(@"V:|[_moCal]-6-[_btnOpt]", 0);
     vcon(@"V:[agenda]|", 0);
     

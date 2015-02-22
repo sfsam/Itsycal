@@ -17,7 +17,6 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
     kTodayCellColor = [NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:1];
     kHoveredCellColor = [NSColor colorWithRed:0.2 green:0.2 blue:0.3 alpha:0.2];
     kSelectedCellColor = [NSColor colorWithRed:0.3 green:0.3 blue:0.4 alpha:0.7];
-    kDotColor = [NSColor colorWithRed:0.33 green:0.4 blue:0.45 alpha:0.9];
 }
 
 - (instancetype)init
@@ -93,9 +92,9 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
         [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] fill];
     }
     if (self.hasDot) {
-        [kDotColor set];
-        NSRect r = NSMakeRect(0, 0, 4, 4);
-        r.origin.x = self.bounds.origin.x + kMoCalCellWidth/2.0 - 2;
+        [self.textField.textColor set];
+        NSRect r = NSMakeRect(0, 0, 3, 3);
+        r.origin.x = self.bounds.origin.x + kMoCalCellWidth/2.0 - 1.5;
         r.origin.y = self.bounds.origin.y + 5;
         [[NSBezierPath bezierPathWithOvalInRect:r] fill];
     }
