@@ -163,7 +163,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     self = [super init];
     if (self) {
-        self.wantsLayer = YES; // for text to be smooth
         self.identifier = kDateCellIdentifier;
         _dateFormatter = [NSDateFormatter new];
         [_dateFormatter setLocalizedDateFormatFromTemplate:@"EEE d M y"];
@@ -190,13 +189,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    // Since this view is layer-backed (so that font smoothing works
-    // properly), we must fill with a color. Otherwise, the view
-    // will be black.
     NSRect r = self.bounds;
     [[NSColor colorWithRed:0.93 green:0.93 blue:0.94 alpha:1] set];
     NSRectFillUsingOperation(r, NSCompositeSourceOver);
-    
+
     r.size.height -= 1;
     [[NSColor colorWithRed:0.96 green:0.96 blue:0.97 alpha:1] set];
     NSRectFillUsingOperation(r, NSCompositeSourceOver);
@@ -218,7 +214,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     self = [super init];
     if (self) {
-        self.wantsLayer = YES; // for text to be smooth
+        self.wantsLayer = YES; // for text to be smooth (why is this needed?)
         self.identifier = kEventCellIdentifier;
         _timeFormatter = [NSDateFormatter new];
         [_timeFormatter setLocalizedDateFormatFromTemplate:@"h:mm a"];

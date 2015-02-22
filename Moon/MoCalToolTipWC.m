@@ -87,7 +87,7 @@ static CGFloat kToolipWindowWidth = 200;
     }
 }
 
-- (void)tick:(id)sender
+- (void)tick:(NSTimer *)timer
 {
     CGFloat alpha = self.window.alphaValue - 0.07;
     if (alpha <= 0) {
