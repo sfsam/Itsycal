@@ -56,10 +56,45 @@
             <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
         </header>
         <body>
+            <trans-unit id="1 day">
+                <source>1 day</source>
+                <note>No comment provided by engineer.</note>
+                <target>1 jour</target>
+            </trans-unit>
+            <trans-unit id="2 days">
+                <source>2 days</source>
+                <note>No comment provided by engineer.</note>
+                <target>2 jours</target>
+            </trans-unit>
+            <trans-unit id="3 days">
+                <source>3 days</source>
+                <note>No comment provided by engineer.</note>
+                <target>3 jours</target>
+            </trans-unit>
+            <trans-unit id="4 days">
+                <source>4 days</source>
+                <note>No comment provided by engineer.</note>
+                <target>4 jours</target>
+            </trans-unit>
+            <trans-unit id="5 days">
+                <source>5 days</source>
+                <note>No comment provided by engineer.</note>
+                <target>5 jours</target>
+            </trans-unit>
+            <trans-unit id="6 days">
+                <source>6 days</source>
+                <note>No comment provided by engineer.</note>
+                <target>6 jours</target>
+            </trans-unit>
+            <trans-unit id="7 days">
+                <source>7 days</source>
+                <note>No comment provided by engineer.</note>
+                <target>7 jours</target>
+            </trans-unit>
             <trans-unit id="Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy">
                 <source>Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</source>
-                <note>No comment provided by engineer.</note>
                 <target>L'accès au calendrier refusée.\n\nItsycal est plus utile quand il peut afficher les événements de vos calendriers. Vous pouvez modifier ce paramètre dans les Préférences Système › Sécurité et confidentialité › Confidentialité.</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Cancel">
                 <source>Cancel</source>
@@ -80,6 +115,11 @@
                 <source>Delete shortcut</source>
                 <target>Supprimer raccourci</target>
                 <note>Tooltip for hint button near the non-empty shortcut</note>
+            </trans-unit>
+            <trans-unit id="Event list shows:">
+                <source>Event list shows:</source>
+                <note>No comment provided by engineer.</note>
+                <target>La liste des événements affiche:</target>
             </trans-unit>
             <trans-unit id="First day of week">
                 <source>First day of week</source>
@@ -110,6 +150,11 @@
                 <source>New Event... ⌘N</source>
                 <target>Nouvel événement… ⌘N</target>
                 <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="No events">
+                <source>No events</source>
+                <note>No comment provided by engineer.</note>
+                <target>aucun événement</target>
             </trans-unit>
             <trans-unit id="OK">
                 <source>OK</source>
@@ -205,6 +250,11 @@
                 <source>Wednesday</source>
                 <target>Mercredi</target>
                 <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="ends">
+                <source>ends</source>
+                <note>Spanning event ends</note>
+                <target>prend fin le</target>
             </trans-unit>
         </body>
     </file>

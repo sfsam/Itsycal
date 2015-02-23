@@ -1,4 +1,25 @@
 /* No comment provided by engineer. */
+"1 day" = "1 jour";
+
+/* No comment provided by engineer. */
+"2 days" = "2 jours";
+
+/* No comment provided by engineer. */
+"3 days" = "3 jours";
+
+/* No comment provided by engineer. */
+"4 days" = "4 jours";
+
+/* No comment provided by engineer. */
+"5 days" = "5 jours";
+
+/* No comment provided by engineer. */
+"6 days" = "6 jours";
+
+/* No comment provided by engineer. */
+"7 days" = "7 jours";
+
+/* No comment provided by engineer. */
 "Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "L'accès au calendrier refusée.\n\nItsycal est plus utile quand il peut afficher les événements de vos calendriers. Vous pouvez modifier ce paramètre dans les Préférences Système › Sécurité et confidentialité › Confidentialité.";
 
 /* Cancel action button in recording state */
@@ -12,6 +33,9 @@
 
 /* Tooltip for hint button near the non-empty shortcut */
 "Delete shortcut" = "Supprimer raccourci";
+
+/* No comment provided by engineer. */
+"Event list shows:" = "La liste des événements affiche:";
 
 /* No comment provided by engineer. */
 "First day of week" = "Premier jour de la semaine";
@@ -30,6 +54,9 @@
 
 /* No comment provided by engineer. */
 "New Event... ⌘N" = "Nouvel événement… ⌘N";
+
+/* No comment provided by engineer. */
+"No events" = "aucun événement";
 
 /* Alert button when shortcut is already used */
 "OK" = "OK";
@@ -87,4 +114,7 @@
 
 /* No comment provided by engineer. */
 "Wednesday" = "Mercredi";
+
+/* Spanning event ends */
+"ends" = "prend fin le";
 
