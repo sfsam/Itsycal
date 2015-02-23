@@ -13,6 +13,7 @@
 
 - (void)toolTipForDate:(MoDate)date
 {
+    self.backgroundColor = [NSColor colorWithRed:1 green:1 blue:0.95 alpha:1];
     self.events = [self.ec eventsForDate:date];
     [self reloadData];
 }

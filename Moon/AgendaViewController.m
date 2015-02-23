@@ -46,8 +46,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
-    _tv.backgroundColor = [NSColor clearColor];
-    _tv.hoverColor = [NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:0.1];
+    _tv.backgroundColor = [NSColor whiteColor];
+    _tv.hoverColor = [NSColor colorWithWhite:0.98 alpha:1];
     _tv.floatsGroupRows = YES;
     _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
@@ -76,6 +76,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     [super viewWillAppear];
     [_tv reloadData];
+}
+
+- (void)setBackgroundColor:(NSColor *)backgroundColor
+{
+    _backgroundColor = backgroundColor;
+    _tv.backgroundColor = backgroundColor;
 }
 
 - (void)reloadData
@@ -190,7 +196,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField.drawsBackground = NO;
         _textField.stringValue = @"";
         [self addSubview:_textField];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[_textField]-8-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-4-[_textField]-4-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-2-[_textField]" options:0 metrics:nil views:@{@"_textField": _textField}]];
     }
     return self;
@@ -229,7 +235,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     self = [super init];
     if (self) {
-        self.wantsLayer = YES; // for text to be smooth (why is this needed?)
         self.identifier = kEventCellIdentifier;
         _timeFormatter = [NSDateFormatter new];
         [_timeFormatter setLocalizedDateFormatFromTemplate:@"h:mm a"];
@@ -243,7 +248,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField.drawsBackground = NO;
         _textField.stringValue = @"";
         [self addSubview:_textField];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-18-[_textField]-8-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-16-[_textField]-8-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-3-[_textField]" options:0 metrics:nil views:@{@"_textField": _textField}]];
     }
     return self;
@@ -293,7 +298,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [super setFrame:frame];
     // Setting preferredMaxLayoutWidth on _textfield allows us
     // to calculate its height after word-wrapping.
-    _textField.preferredMaxLayoutWidth = NSWidth(frame) - 26; // 26=18+8=left+right margin
+    _textField.preferredMaxLayoutWidth = NSWidth(frame) - 24; // 24=16+8=left+right margin
 }
 
 - (CGFloat)height
@@ -305,15 +310,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    // Since this view is layer-backed (so that font smoothing works
-    // properly), we must fill with a clear color. Otherwise, the
-    // view will be black.
-    [[NSColor clearColor] set];
-    NSRectFillUsingOperation(self.bounds, NSCompositeSourceOver);
-
     // Draw a colored circle
     [[self.eventInfo.calendarColor blendedColorWithFraction:0.3 ofColor:[NSColor whiteColor]] set];
-    NSRect circleRect = NSMakeRect(6, NSMaxY(self.frame)-14, 8, 8);
+    NSRect circleRect = NSMakeRect(4, NSMaxY(self.frame)-14, 8, 8);
     [[NSBezierPath bezierPathWithOvalInRect:circleRect] fill];
 }
 

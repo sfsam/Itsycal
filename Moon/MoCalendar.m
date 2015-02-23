@@ -235,7 +235,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     if (tooltipVC != nil) {
         tooltipVC.view.translatesAutoresizingMaskIntoConstraints = NO;
         [contentView addSubview:tooltipVC.view];
-        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-1-[v]-1-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
+        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-3-[v]-3-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
         [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-2-[v]-3-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
     }
 }
@@ -553,7 +553,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [NSGraphicsContext restoreGraphicsState];
     
     if (_highlightPath) {
-        NSColor *outlineColor = [_highlightColor shadowWithLevel:0.5];
+        NSColor *outlineColor = [_highlightColor blendedColorWithFraction:0.6 ofColor:[NSColor blackColor]];
         [[outlineColor colorWithAlphaComponent:0.3] setStroke];
         [[_highlightColor colorWithAlphaComponent:0.2] setFill];
         [_highlightPath stroke];
