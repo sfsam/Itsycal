@@ -76,13 +76,21 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)viewWillLayout
 {
     // Calculate height of view based on _tv row heights.
+    // We set the view's height using preferredContentSize.
     NSInteger rows = [_tv numberOfRows];
     CGFloat height = 0;
     for (NSInteger row = 0; row < rows; ++row) {
         height += NSHeight([_tv rectOfRow:row]);
     }
     // Limit view height to a max of 500.
-    self.preferredContentSize = NSMakeSize(NSWidth(_tv.frame), MIN(height, 500));
+    height = MIN(height, 500);
+    // If height is 0, we make it 0.001 which is effectively the
+    // same dimension. When preferredContentSize is zero, it is
+    // ignored, so we use a non-zero value that has the same
+    // effect. Without this, the size won't shrink to zero when
+    // transitioning from an agenda with events to one without.
+    height = MAX(height, 0.001);
+    self.preferredContentSize = NSMakeSize(NSWidth(_tv.frame), height);
 }
 
 - (void)updateViewConstraints
