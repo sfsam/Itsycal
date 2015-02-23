@@ -32,7 +32,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @implementation AgendaViewController
 {
     MoTableView *_tv;
-    NSLayoutConstraint *_tvHeight;
 }
 
 - (void)loadView
@@ -65,10 +64,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tv]|" options:0 metrics:nil views:@{@"tv": tvContainer}]];
     [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[tv]|" options:0 metrics:nil views:@{@"tv": tvContainer}]];
     
-    // _tvHeight will be set after data loads so the view is the same height as the tableview.
-    _tvHeight = [NSLayoutConstraint constraintWithItem:v attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:0];
-    [v addConstraint:_tvHeight];
-    
     self.view = v;
 }
 
@@ -76,6 +71,29 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     [super viewWillAppear];
     [_tv reloadData];
+}
+
+- (void)viewWillLayout
+{
+    // Calculate height of view based on _tv row heights.
+    NSInteger rows = [_tv numberOfRows];
+    CGFloat height = 0;
+    for (NSInteger row = 0; row < rows; ++row) {
+        height += NSHeight([_tv rectOfRow:row]);
+    }
+    // Limit view height to a max of 500.
+    self.preferredContentSize = NSMakeSize(NSWidth(_tv.frame), MIN(height, 500));
+}
+
+- (void)updateViewConstraints
+{
+    // Tell _tv that row heights need to be recalculated.
+    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [_tv numberOfRows])];
+    [NSAnimationContext beginGrouping];
+    [[NSAnimationContext currentContext] setDuration:0];
+    [_tv noteHeightOfRowsWithIndexesChanged:indexSet];
+    [NSAnimationContext endGrouping];
+    [super updateViewConstraints];
 }
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
@@ -89,20 +107,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [_tv reloadData];
     [_tv scrollRowToVisible:0];
     [[_tv enclosingScrollView] flashScrollers];
-    [self sizeViewToFitTableview];
-}
-
-- (void)sizeViewToFitTableview
-{
-    NSInteger rows = [_tv numberOfRows];
-    CGFloat height = 0;
-    for (NSInteger row = 0; row < rows; ++row) {
-        height += NSHeight([_tv rectOfRow:row]);
-    }
-    // Limit view height to a max of 500.
-    _tvHeight.constant = MIN(height, 500);
     [self.view setNeedsLayout:YES];
 }
+
+#pragma mark -
+#pragma mark TableView delegate/datasource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
