@@ -7,11 +7,22 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "MoTableView.h"
 
-@interface AgendaViewController : NSViewController <NSTableViewDataSource, NSTableViewDelegate>
+@protocol AgendaDelegate;
+
+@interface AgendaViewController : NSViewController <NSTableViewDataSource, NSTableViewDelegate, MoTableViewDelegate>
 
 @property (nonatomic) NSArray *events;
+@property (nonatomic, weak) id<AgendaDelegate> delegate;
 
 - (void)reloadData;
+
+@end
+
+@protocol AgendaDelegate <NSObject>
+
+@optional
+- (void)agendaHoveredOverRow:(NSInteger)row;
 
 @end

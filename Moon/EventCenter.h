@@ -52,6 +52,10 @@
 // the list of selected calendars.
 - (void)updateSelectedCalendars;
 
+// Utilities
+- (NSDate *)nsDateFromMoDate:(MoDate)moDate;
+- (MoDate)moDateFromNSDate:(NSDate *)nsDate;
+
 @end
 
 // =========================================================================

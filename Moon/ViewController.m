@@ -11,7 +11,6 @@
 #import "ItsycalWindow.h"
 #import "SBCalendar.h"
 #import "PrefsViewController.h"
-#import "AgendaViewController.h"
 #import "TooltipViewController.h"
 #import "MoButton.h"
 
@@ -79,6 +78,7 @@
     
     // Agenda
     _agendaVC = [AgendaViewController new];
+    _agendaVC.delegate = self;
     NSView *agenda = _agendaVC.view;
     [v addSubview:agenda];
     
@@ -90,7 +90,7 @@
     vcon(@"H:|[agenda]|", 0);
     vcon(@"H:|-6-[_btnAdd]-(>=0)-[_btnPin]-10-[_btnCal]-10-[_btnOpt]-6-|", NSLayoutFormatAlignAllCenterY);
     vcon(@"V:[_moCal]-6-[_btnOpt]", 0);
-    vcon(@"V:|[_moCal]-30-[agenda]-(-6)-|", 0);
+    vcon(@"V:|[_moCal]-30-[agenda]-(-2)-|", 0);
     
     self.view = v;
 }
@@ -466,6 +466,22 @@
     }
     else {
         [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalKeyboardShortcutNotification object:nil userInfo:nil deliverImmediately:YES];
+    }
+}
+
+#pragma mark -
+#pragma mark AgendaDelegate
+
+- (void)agendaHoveredOverRow:(NSInteger)row
+{
+    if (row == -1) {
+        [_moCal unhighlightCells];
+    }
+    else {
+        EventInfo *info = _agendaVC.events[row];
+        MoDate startDate = [_ec moDateFromNSDate:info.startDate];
+        MoDate endDate = [_ec moDateFromNSDate:info.endDate];
+        [_moCal highlightCellsFromDate:startDate toDate:endDate withColor:info.calendarColor];
     }
 }
 

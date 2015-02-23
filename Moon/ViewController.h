@@ -9,17 +9,9 @@
 #import <Cocoa/Cocoa.h>
 #import "MoCalendar.h"
 #import "EventCenter.h"
+#import "AgendaViewController.h"
 
-/*
- 
- ViewController has these responsibilities:
- - manage the MoCalendar view
- - manage the Add, Calendar, Options buttons
- - manage the agenda view controller
- 
- */
-
-@interface ViewController : NSViewController <NSWindowDelegate, MoCalendarDelegate, EventCenterDelegate>
+@interface ViewController : NSViewController <NSWindowDelegate, AgendaDelegate, MoCalendarDelegate, EventCenterDelegate>
 
 - (void)keyboardShortcutActivated;
 

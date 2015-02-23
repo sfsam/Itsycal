@@ -7,7 +7,6 @@
 //
 
 #import "AgendaViewController.h"
-#import "MoTableView.h"
 #import "EventCenter.h"
 
 static NSString *kColumnIdentifier    = @"Column";
@@ -48,6 +47,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
     _tv.backgroundColor = [NSColor clearColor];
+    _tv.hoverColor = [NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:0.1];
     _tv.floatsGroupRows = YES;
     _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
@@ -142,6 +142,21 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (BOOL)tableView:(NSTableView *)tableView isGroupRow:(NSInteger)row
 {
     return [self.events[row] isKindOfClass:[NSDate class]];
+}
+
+- (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
+{
+    return NO; // disable selection
+}
+
+- (void)tableView:(MoTableView *)tableView didHoverOverRow:(NSInteger)row
+{
+    if (row == -1 || [self tableView:_tv isGroupRow:row]) {
+        row = -1;
+    }
+    if (self.delegate && [self.delegate respondsToSelector:@selector(agendaHoveredOverRow:)]) {
+        [self.delegate agendaHoveredOverRow:row];
+    }
 }
 
 @end
