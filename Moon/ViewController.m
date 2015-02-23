@@ -481,6 +481,10 @@
         EventInfo *info = _agendaVC.events[row];
         MoDate startDate = [_ec moDateFromNSDate:info.startDate];
         MoDate endDate = [_ec moDateFromNSDate:info.endDate];
+        // Fixup for endDates that are at midnight
+        if ([info.endDate compare:[_nsCal startOfDayForDate:info.endDate]] == NSOrderedSame) {
+            endDate = AddDaysToDate(-1, endDate);
+        }
         [_moCal highlightCellsFromDate:startDate toDate:endDate withColor:info.calendarColor];
     }
 }
