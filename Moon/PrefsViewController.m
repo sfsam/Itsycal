@@ -16,13 +16,23 @@
 static NSString * const kSourceCellId = @"SourceCell";
 static NSString * const kCalendarCellId = @"CalendarCell";
 
+// Fonts render better with an opaque background. Yuck.
+@interface OpaqueView : NSView @end
+
+// Cell views for the Sources and Calendars table view.
 @interface SourceCellView : NSView
 @property (nonatomic) NSTextField *textField;
 @end
-
 @interface CalendarCellView : NSView
 @property (nonatomic) NSButton *checkbox;
 @end
+
+#pragma mark -
+#pragma mark PrefsViewController
+
+// =========================================================================
+// PrefsViewController
+// =========================================================================
 
 @implementation PrefsViewController
 {
@@ -38,7 +48,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 - (void)loadView
 {
     // View controller content view
-    NSView *v = [NSView new];
+    NSView *v = [OpaqueView new];
     v.translatesAutoresizingMaskIntoConstraints = NO;
  
     // App Icon
@@ -50,7 +60,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     // Convenience function for making text fields.
     MoTextField* (^txt)(NSString*) = ^MoTextField* (NSString *stringValue) {
         MoTextField *txt = [MoTextField new];
-        txt.font = [NSFont systemFontOfSize:11];
+        txt.font = [NSFont systemFontOfSize:12];
         txt.translatesAutoresizingMaskIntoConstraints = NO;
         txt.editable = NO;
         txt.bezeled = NO;
@@ -88,7 +98,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     // Shortcut label
     MoTextField *shortcutLabel = txt(NSLocalizedString(@"Keyboard shortcut", @""));
-    shortcutLabel.font = [NSFont systemFontOfSize:12];
     
     // Shortcut view
     MASShortcutView *shortcutView = [MASShortcutView new];
@@ -116,7 +125,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     // Agenda days label
     MoTextField *daysLabel = txt(NSLocalizedString(@"Event list shows:", @""));
-    daysLabel.font = [NSFont systemFontOfSize:12];
     
     // Agenda days popup
     _daysPopup = [NSPopUpButton new];
@@ -328,6 +336,25 @@ static NSString * const kCalendarCellId = @"CalendarCell";
         v = calendar;
     }
     return v;
+}
+
+@end
+
+#pragma mark -
+#pragma mark OpaqueView
+
+// =========================================================================
+// OpaqueView
+// =========================================================================
+
+@implementation OpaqueView
+
+- (BOOL)isOpaque { return YES; }
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    [[NSColor colorWithWhite:0.95 alpha:1] set];
+    NSRectFill(self.bounds);
 }
 
 @end
