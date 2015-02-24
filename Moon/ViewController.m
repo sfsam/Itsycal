@@ -99,9 +99,6 @@
 {
     [super viewDidLoad];
     
-    // Preferences notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(daysToShowPreferenceChanged:) name:kDaysToShowPreferenceChanged object:nil];
-
     // Menu extra notifications
     [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraIsActive:) name:ItsycalExtraIsActiveNotification object:nil];
     [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraClicked:) name:ItsycalExtraClickedNotification object:nil];
@@ -116,8 +113,6 @@
     _moCal.todayDate = today;
     _moCal.selectedDate = today;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dayChanged:) name:NSCalendarDayChangedNotification object:nil];
-
     [self createStatusItem];
     
     _ec = [[EventCenter alloc] initWithCalendar:_nsCal delegate:self];
@@ -126,6 +121,20 @@
     tooltipVC.ec = _ec;
     _moCal.tooltipVC = tooltipVC;
 
+    // Day changed notification
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        MoDate today = self.todayDate;
+        _moCal.todayDate = today;
+        _moCal.selectedDate = today;
+        [self updateMenubarIcon];
+    }];
+    
+    // Preferences notifications
+    [[NSNotificationCenter defaultCenter] addObserverForName:kDaysToShowPreferenceChanged object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [self updateAgenda];
+    }];
+    
+    // Tell the menu extra that Itsycal is alive
     [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalIsActiveNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
 }
 
@@ -540,11 +549,6 @@
     [_agendaVC reloadData];
 }
 
-- (void)daysToShowPreferenceChanged:(NSNotification *)note
-{
-    [self updateAgenda];
-}
-
 #pragma mark -
 #pragma mark Time
 
@@ -552,19 +556,6 @@
 {
     NSDateComponents *c = [_nsCal components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:[NSDate new]];
     return MakeDate((int)c.year, (int)c.month-1, (int)c.day);
-}
-
-- (void)dayChanged:(NSNotification *)note
-{
-    // App will crash without explicitly dispatching to the
-    // main thread because the notification system calls this
-    // selector from a background thread.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        MoDate today = self.todayDate;
-        [_moCal setTodayDate:today];
-        [_moCal setSelectedDate:today];
-        [self updateMenubarIcon];
-    });
 }
 
 @end
