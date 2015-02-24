@@ -556,10 +556,15 @@
 
 - (void)dayChanged:(NSNotification *)note
 {
-    MoDate today = self.todayDate;
-    [_moCal setTodayDate:today];
-    [_moCal setSelectedDate:today];
-    [self updateMenubarIcon];
+    // App will crash without explicitly dispatching to the
+    // main thread because the notification system calls this
+    // selector from a background thread.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        MoDate today = self.todayDate;
+        [_moCal setTodayDate:today];
+        [_moCal setSelectedDate:today];
+        [self updateMenubarIcon];
+    });
 }
 
 @end
