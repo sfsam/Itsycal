@@ -97,19 +97,14 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
+    [self fileNotifications];
     
-    // Menu extra notifications
-    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraIsActive:) name:ItsycalExtraIsActiveNotification object:nil];
-    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraClicked:) name:ItsycalExtraClickedNotification object:nil];
-    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraMoved:) name:ItsycalExtraDidMoveNotification object:nil];
-    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraWillUnload:) name:ItsycalExtraWillUnloadNotification object:nil];
-
-    // The order of the statements is important!
+    // The order of the statements is important! Subsequent statments
+    // depend on previous ones.
 
     _nsCal = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     
-    MoDate today = self.todayDate;
+    MoDate today = [self todayDate];
     _moCal.todayDate = today;
     _moCal.selectedDate = today;
     
@@ -121,19 +116,6 @@
     tooltipVC.ec = _ec;
     _moCal.tooltipVC = tooltipVC;
 
-    // Day changed notification
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        MoDate today = self.todayDate;
-        _moCal.todayDate = today;
-        _moCal.selectedDate = today;
-        [self updateMenubarIcon];
-    }];
-    
-    // Preferences notifications
-    [[NSNotificationCenter defaultCenter] addObserverForName:kDaysToShowPreferenceChanged object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateAgenda];
-    }];
-    
     // Tell the menu extra that Itsycal is alive
     [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalIsActiveNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
 }
@@ -556,6 +538,31 @@
 {
     NSDateComponents *c = [_nsCal components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:[NSDate new]];
     return MakeDate((int)c.year, (int)c.month-1, (int)c.day);
+}
+
+#pragma mark -
+#pragma mark Notifications
+
+- (void)fileNotifications
+{
+    // Menu extra notifications
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraIsActive:) name:ItsycalExtraIsActiveNotification object:nil];
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraClicked:) name:ItsycalExtraClickedNotification object:nil];
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraMoved:) name:ItsycalExtraDidMoveNotification object:nil];
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraWillUnload:) name:ItsycalExtraWillUnloadNotification object:nil];
+    
+    // Day changed notification
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        MoDate today = [self todayDate];
+        _moCal.todayDate = today;
+        _moCal.selectedDate = today;
+        [self updateMenubarIcon];
+    }];
+    
+    // Preferences notifications
+    [[NSNotificationCenter defaultCenter] addObserverForName:kDaysToShowPreferenceChanged object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [self updateAgenda];
+    }];
 }
 
 @end
