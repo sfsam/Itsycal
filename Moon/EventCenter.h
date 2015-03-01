@@ -80,7 +80,7 @@
 @interface CalendarInfo : NSObject
 
 @property (nonatomic) EKCalendar *calendar;
-@property (nonatomic) BOOL        selected;
+@property (nonatomic) BOOL selected;
 
 @end
 
@@ -90,14 +90,10 @@
 
 @interface EventInfo : NSObject
 
-@property (nonatomic) NSString *title;
-@property (nonatomic) NSString *calendarIdentifier;
-@property (nonatomic) NSColor  *calendarColor;
-@property (nonatomic) NSDate   *startDate;
-@property (nonatomic) NSDate   *endDate;
-@property (nonatomic) BOOL      isStartDate; // event starts, but doesn't end, on this date
-@property (nonatomic) BOOL      isEndDate;   // event ends, but doesn't start, on this date
-@property (nonatomic) BOOL      isAllDay;    // event is all-day, or is spanning this date
+@property (nonatomic) EKEvent *event;
+@property (nonatomic) BOOL isStartDate; // event starts, but doesn't end, on this date
+@property (nonatomic) BOOL isEndDate;   // event ends, but doesn't start, on this date
+@property (nonatomic) BOOL isAllDay;    // event is all-day, or spans across this date
 
 @end
 

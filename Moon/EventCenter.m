@@ -240,9 +240,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             
             // Make an EventInfo object...
             EventInfo *info = [EventInfo new];
-            info.title       = event.title;
-            info.startDate   = event.startDate;
-            info.endDate     = event.endDate;
+            info.event       = event;
             info.isStartDate = ([_cal isDate:date inSameDayAsDate:event.startDate] &&
                                 [event.endDate compare:nextDate] == NSOrderedDescending);
             info.isEndDate   = ([_cal isDate:date inSameDayAsDate:event.endDate] &&
@@ -250,9 +248,6 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             info.isAllDay    = (event.allDay ||
                                 ([event.startDate compare:date] == NSOrderedAscending &&
                                  [event.endDate compare:nextDate] == NSOrderedDescending));
-            info.calendarColor = event.calendar.color;
-            info.calendarIdentifier = event.calendar.calendarIdentifier;
-            
             // ...and add it to the array in eventsForDate.
             if (eventsForDate[date] == nil) {
                 eventsForDate[date] = [NSMutableArray new];
@@ -270,7 +265,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         [eventsForDate[date] sortUsingComparator:^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
             if      (e1.isAllDay == YES) { return NSOrderedAscending;  }
             else if (e2.isAllDay == YES) { return NSOrderedDescending; }
-            else    { return [e1.startDate compare:e2.startDate]; }
+            else    { return [e1.event.startDate compare:e2.event.startDate]; }
         }];
     }
     
@@ -284,7 +279,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSArray *selectedCalendars = [[NSUserDefaults standardUserDefaults] arrayForKey:kSelectedCalendars];
     for (NSDate *date in _eventsForDate) {
         for (EventInfo *info in _eventsForDate[date]) {
-            if ([selectedCalendars containsObject:info.calendarIdentifier]) {
+            if ([selectedCalendars containsObject:info.event.calendar.calendarIdentifier]) {
                 if (filteredEventsForDates[date] == nil) {
                     filteredEventsForDates[date] = [NSMutableArray new];
                 }

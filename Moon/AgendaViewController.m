@@ -274,18 +274,18 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)setEventInfo:(EventInfo *)info
 {
     _eventInfo = info;
-    NSString *title = info == nil ? @"" : info.title;
+    NSString *title = info == nil ? @"" : info.event.title;
     NSString *duration = @"";
     if (info.isAllDay == NO) {
         if (info.isStartDate == YES) {
-            duration = [NSString stringWithFormat:@"\n%@", [_timeFormatter stringFromDate:info.startDate]];
+            duration = [NSString stringWithFormat:@"\n%@", [_timeFormatter stringFromDate:info.event.startDate]];
         }
         else if (info.isEndDate == YES) {
             NSString *ends = NSLocalizedString(@"ends", @"Spanning event ends");
-            duration = [NSString stringWithFormat:@"\n%@ %@", ends, [_timeFormatter stringFromDate:info.endDate]];
+            duration = [NSString stringWithFormat:@"\n%@ %@", ends, [_timeFormatter stringFromDate:info.event.endDate]];
         }
         else {
-            duration = [NSString stringWithFormat:@"\n%@ - %@", [_timeFormatter stringFromDate:info.startDate], [_timeFormatter stringFromDate:info.endDate]];
+            duration = [NSString stringWithFormat:@"\n%@ - %@", [_timeFormatter stringFromDate:info.event.startDate], [_timeFormatter stringFromDate:info.event.endDate]];
             // For events in "en" locales that use AM/PM format, remove
             // redundant AM or PM: "2 PM - 3 PM" => "2 - 3 PM"
             if ([duration hasSuffix:@"AM"]) {
@@ -328,7 +328,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)drawRect:(NSRect)dirtyRect
 {
     // Draw a colored circle
-    [[self.eventInfo.calendarColor blendedColorWithFraction:0.3 ofColor:[NSColor whiteColor]] set];
+    [[self.eventInfo.event.calendar.color blendedColorWithFraction:0.3 ofColor:[NSColor whiteColor]] set];
     NSRect circleRect = NSMakeRect(4, NSMaxY(self.frame)-14, 8, 8);
     [[NSBezierPath bezierPathWithOvalInRect:circleRect] fill];
 }

@@ -494,13 +494,13 @@
     }
     else {
         EventInfo *info = _agendaVC.events[row];
-        MoDate startDate = [_ec moDateFromNSDate:info.startDate];
-        MoDate endDate = [_ec moDateFromNSDate:info.endDate];
+        MoDate startDate = [_ec moDateFromNSDate:info.event.startDate];
+        MoDate endDate = [_ec moDateFromNSDate:info.event.endDate];
         // Fixup for endDates that are at midnight
-        if ([info.endDate compare:[_nsCal startOfDayForDate:info.endDate]] == NSOrderedSame) {
+        if ([info.event.endDate compare:[_nsCal startOfDayForDate:info.event.endDate]] == NSOrderedSame) {
             endDate = AddDaysToDate(-1, endDate);
         }
-        [_moCal highlightCellsFromDate:startDate toDate:endDate withColor:info.calendarColor];
+        [_moCal highlightCellsFromDate:startDate toDate:endDate withColor:info.event.calendar.color];
     }
 }
 
