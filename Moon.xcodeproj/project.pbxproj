@@ -43,6 +43,8 @@
 		9242A5961A82BE5E005AA4B3 /* Itsycal.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5951A82BE5E005AA4B3 /* Itsycal.m */; };
 		925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B47171A93B63100E0329A /* MoCalToolTipWC.m */; };
 		925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B471A1A93CD2A00E0329A /* TooltipViewController.m */; };
+		92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92658E611A9DBD8E002AE86C /* EventViewController.m */; };
+		92658E651A9DBDF5002AE86C /* MoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92658E641A9DBDF5002AE86C /* MoView.m */; };
 		9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9278CADA1A990462004B6BB9 /* MoTableView.m */; };
 		9297F0EF1A9AFB72005287D9 /* VarelaRoundNeo-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9297F0ED1A9AFB72005287D9 /* VarelaRoundNeo-Bold.otf */; };
 		9297F0F01A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9297F0EE1A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf */; };
@@ -159,6 +161,10 @@
 		925B47191A93CD2A00E0329A /* TooltipViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TooltipViewController.h; sourceTree = "<group>"; };
 		925B471A1A93CD2A00E0329A /* TooltipViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TooltipViewController.m; sourceTree = "<group>"; };
 		925B471D1A93E3D800E0329A /* MoCalTooltipProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoCalTooltipProvider.h; sourceTree = "<group>"; };
+		92658E601A9DBD8E002AE86C /* EventViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventViewController.h; sourceTree = "<group>"; };
+		92658E611A9DBD8E002AE86C /* EventViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventViewController.m; sourceTree = "<group>"; };
+		92658E631A9DBDF5002AE86C /* MoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoView.h; sourceTree = "<group>"; };
+		92658E641A9DBDF5002AE86C /* MoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoView.m; sourceTree = "<group>"; };
 		9278CAD91A990462004B6BB9 /* MoTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoTableView.h; sourceTree = "<group>"; };
 		9278CADA1A990462004B6BB9 /* MoTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoTableView.m; sourceTree = "<group>"; };
 		9297F0ED1A9AFB72005287D9 /* VarelaRoundNeo-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "VarelaRoundNeo-Bold.otf"; path = "Moon/_fonts/VarelaRoundNeo-Bold.otf"; sourceTree = "<group>"; };
@@ -290,6 +296,8 @@
 				92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */,
 				925B47191A93CD2A00E0329A /* TooltipViewController.h */,
 				925B471A1A93CD2A00E0329A /* TooltipViewController.m */,
+				92658E601A9DBD8E002AE86C /* EventViewController.h */,
+				92658E611A9DBD8E002AE86C /* EventViewController.m */,
 			);
 			path = Moon;
 			sourceTree = "<group>";
@@ -343,6 +351,8 @@
 				9224B0741A8BE75500D63030 /* MoButton.m */,
 				9278CAD91A990462004B6BB9 /* MoTableView.h */,
 				9278CADA1A990462004B6BB9 /* MoTableView.m */,
+				92658E631A9DBDF5002AE86C /* MoView.h */,
+				92658E641A9DBDF5002AE86C /* MoView.m */,
 			);
 			name = MoCode;
 			sourceTree = "<group>";
@@ -472,6 +482,7 @@
 				9242A5921A82A40B005AA4B3 /* MoCalGrid.m in Sources */,
 				922B6BA91A85950600DEA9CD /* MASDictionaryTransformer.m in Sources */,
 				922B6BB51A85950600DEA9CD /* MASShortcutView+Bindings.m in Sources */,
+				92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */,
 				922B6BB01A85950600DEA9CD /* MASShortcutMonitor.m in Sources */,
 				922232CD1A8DF672003BFAD9 /* EventCenter.m in Sources */,
 				9242A5651A82A136005AA4B3 /* main.m in Sources */,
@@ -488,6 +499,7 @@
 				9242A5931A82A40B005AA4B3 /* MoCalendar.m in Sources */,
 				9242A5911A82A40B005AA4B3 /* MoCalCell.m in Sources */,
 				9224B0751A8BE75500D63030 /* MoButton.m in Sources */,
+				92658E651A9DBDF5002AE86C /* MoView.m in Sources */,
 				9242A5841A82A189005AA4B3 /* ViewController.m in Sources */,
 				922B6BB41A85950600DEA9CD /* MASShortcutView.m in Sources */,
 				922B6BAD1A85950600DEA9CD /* MASShortcut.m in Sources */,

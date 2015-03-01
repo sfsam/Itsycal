@@ -7,7 +7,6 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
-#import <EventKit/EventKit.h>
 #import "EventCenter.h"
 
 // NSUserDefaults key for array of selected calendar IDs.
@@ -20,7 +19,6 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 @implementation EventCenter
 {
     NSCalendar           *_cal;
-    EKEventStore         *_store;
     NSMutableDictionary  *_eventsForDate;
     NSDictionary         *_filteredEventsForDate;
     dispatch_queue_t      _queue;
@@ -66,6 +64,12 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusAuthorized;
 }
 
+- (NSString *)defaultCalendarIdentifier
+{
+    EKCalendar *cal = [_store defaultCalendarForNewEvents];
+    return cal.calendarIdentifier;
+}
+
 #pragma mark -
 #pragma mark Calendars
 
@@ -98,13 +102,11 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             currentSourceTitle = calendar.source.title;
         }
         CalendarInfo *calInfo = [CalendarInfo new];
-        calInfo.title      = calendar.title;
-        calInfo.identifier = calendar.calendarIdentifier;
-        calInfo.color      = calendar.color;
-        calInfo.selected   = selectedCalendars ? [selectedCalendars containsObject:calInfo.identifier] : NO;
+        calInfo.calendar = calendar;
+        calInfo.selected = selectedCalendars ? [selectedCalendars containsObject:calendar.calendarIdentifier] : NO;
         [sourcesAndCalendars addObject:calInfo];
         if (calInfo.selected) {
-            [cleanSelectedCalendars addObject:calInfo.identifier];
+            [cleanSelectedCalendars addObject:calendar.calendarIdentifier];
         }
     }
     _sourcesAndCalendars = [NSArray arrayWithArray:sourcesAndCalendars];
@@ -119,7 +121,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     for (id obj in self.sourcesAndCalendars) {
         if ([obj isKindOfClass:[CalendarInfo class]] &&
             [(CalendarInfo *)obj selected]) {
-            [selectedCalendars addObject:[(CalendarInfo *)obj identifier]];
+            CalendarInfo *info = obj;
+            [selectedCalendars addObject:info.calendar.calendarIdentifier];
         }
     }
     [[NSUserDefaults standardUserDefaults] setObject:selectedCalendars forKey:kSelectedCalendars];

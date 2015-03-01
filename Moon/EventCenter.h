@@ -7,22 +7,25 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <EventKit/EventKit.h>
 #import "MoDate.h"
 
 // =========================================================================
 // EventCenter
-// Provide calendar and event data. Currently implemented using EventKit,
-// but the interface and data it provides is only Foundation types. So, it
-// could be reimplemented in the future using native CalDAV without changes
-// to the clients.
+// Provide calendar and event data.
 // =========================================================================
 
 @protocol EventCenterDelegate;
 
 @interface EventCenter : NSObject
 
+// The event store
+@property (nonatomic) EKEventStore *store;
+
 // Did the user grant calendar access?
-@property (nonatomic) BOOL calendarAccessGranted;
+@property (nonatomic, readonly) BOOL calendarAccessGranted;
+
+@property (nonatomic, readonly) NSString *defaultCalendarIdentifier;
 
 // Sorted array of 2 types: NSStrings and CalendarInfo objects.
 // The NSStrings are the names of calendar sources.
@@ -76,10 +79,8 @@
 
 @interface CalendarInfo : NSObject
 
-@property (nonatomic) NSString *title;
-@property (nonatomic) NSString *identifier;
-@property (nonatomic) NSColor  *color;
-@property (nonatomic) BOOL      selected;
+@property (nonatomic) EKCalendar *calendar;
+@property (nonatomic) BOOL        selected;
 
 @end
 
@@ -96,7 +97,7 @@
 @property (nonatomic) NSDate   *endDate;
 @property (nonatomic) BOOL      isStartDate; // event starts, but doesn't end, on this date
 @property (nonatomic) BOOL      isEndDate;   // event ends, but doesn't start, on this date
-@property (nonatomic) BOOL      isAllDay;
+@property (nonatomic) BOOL      isAllDay;    // event is all-day, or is spanning this date
 
 @end
 

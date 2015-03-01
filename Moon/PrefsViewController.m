@@ -10,14 +10,12 @@
 #import "Itsycal.h"
 #import "MASShortcutView.h"
 #import "MASShortcutView+Bindings.h"
+#import "MoView.h"
 #import "MoTextField.h"
 #import "EventCenter.h"
 
 static NSString * const kSourceCellId = @"SourceCell";
 static NSString * const kCalendarCellId = @"CalendarCell";
-
-// Fonts render better with an opaque background. Yuck.
-@interface OpaqueView : NSView @end
 
 // Cell views for the Sources and Calendars table view.
 @interface SourceCellView : NSView
@@ -48,7 +46,9 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 - (void)loadView
 {
     // View controller content view
-    NSView *v = [OpaqueView new];
+    MoView *v = [MoView new];
+    v.backgroundColor = [NSColor colorWithWhite:0.92 alpha:1];
+    v.viewIsOpaque = YES;
     v.translatesAutoresizingMaskIntoConstraints = NO;
  
     // App Icon
@@ -332,29 +332,10 @@ static NSString * const kCalendarCellId = @"CalendarCell";
         calendar.checkbox.action = @selector(calendarClicked:);
         calendar.checkbox.state = info.selected == NSOnState;
         calendar.checkbox.tag = row;
-        calendar.checkbox.attributedTitle = [[NSAttributedString alloc] initWithString:info.title attributes:@{NSForegroundColorAttributeName: info.color, NSFontAttributeName: [NSFont boldSystemFontOfSize:12]}];
+        calendar.checkbox.attributedTitle = [[NSAttributedString alloc] initWithString:info.calendar.title attributes:@{NSForegroundColorAttributeName: info.calendar.color, NSFontAttributeName: [NSFont boldSystemFontOfSize:12]}];
         v = calendar;
     }
     return v;
-}
-
-@end
-
-#pragma mark -
-#pragma mark OpaqueView
-
-// =========================================================================
-// OpaqueView
-// =========================================================================
-
-@implementation OpaqueView
-
-- (BOOL)isOpaque { return YES; }
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-    [[NSColor colorWithWhite:0.95 alpha:1] set];
-    NSRectFill(self.bounds);
 }
 
 @end
