@@ -10,7 +10,6 @@
 #import "Itsycal.h"
 #import "MASShortcutView.h"
 #import "MASShortcutView+Bindings.h"
-#import "MoView.h"
 #import "MoTextField.h"
 #import "EventCenter.h"
 
@@ -46,9 +45,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 - (void)loadView
 {
     // View controller content view
-    MoView *v = [MoView new];
-    v.backgroundColor = [NSColor colorWithWhite:0.92 alpha:1];
-    v.viewIsOpaque = YES;
+    NSView *v = [NSView new];
     v.translatesAutoresizingMaskIntoConstraints = NO;
  
     // App Icon

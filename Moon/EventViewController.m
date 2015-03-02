@@ -8,7 +8,6 @@
 
 #import "EventViewController.h"
 #import "EventCenter.h"
-#import "MoView.h"
 
 @implementation EventViewController
 {
@@ -21,9 +20,7 @@
 - (void)loadView
 {
     // View controller content view
-    MoView *v = [MoView new];
-    v.backgroundColor = [NSColor colorWithWhite:0.92 alpha:1];
-    v.viewIsOpaque = YES;
+    NSView *v = [NSView new];
     v.translatesAutoresizingMaskIntoConstraints = NO;
 
     // Convenience function for making text fields.
