@@ -58,38 +58,48 @@
         <body>
             <trans-unit id="1 day">
                 <source>1 day</source>
-                <note>No comment provided by engineer.</note>
                 <target>1 giorno</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="2 days">
                 <source>2 days</source>
-                <note>No comment provided by engineer.</note>
                 <target>2 giorni</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="3 days">
                 <source>3 days</source>
-                <note>No comment provided by engineer.</note>
                 <target>3 giorni</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="4 days">
                 <source>4 days</source>
-                <note>No comment provided by engineer.</note>
                 <target>4 giorni</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="5 days">
                 <source>5 days</source>
-                <note>No comment provided by engineer.</note>
                 <target>5 giorni</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="6 days">
                 <source>6 days</source>
-                <note>No comment provided by engineer.</note>
                 <target>6 giorni</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="7 days">
                 <source>7 days</source>
-                <note>No comment provided by engineer.</note>
                 <target>7 giorni</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Add Location">
+                <source>Add Location</source>
+                <note>No comment provided by engineer.</note>
+                <target>Aggiungi posizione</target>
+            </trans-unit>
+            <trans-unit id="All-day:">
+                <source>All-day:</source>
+                <note>No comment provided by engineer.</note>
+                <target>tutto il giorno:</target>
             </trans-unit>
             <trans-unit id="Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy">
                 <source>Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</source>
@@ -116,10 +126,15 @@
                 <target>Elimina l'abbreviazione</target>
                 <note>Tooltip for hint button near the non-empty shortcut</note>
             </trans-unit>
+            <trans-unit id="Ends:">
+                <source>Ends:</source>
+                <note>No comment provided by engineer.</note>
+                <target>fine:</target>
+            </trans-unit>
             <trans-unit id="Event list shows:">
                 <source>Event list shows:</source>
-                <note>No comment provided by engineer.</note>
                 <target>Mostra lista eventi:</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="First day of week">
                 <source>First day of week</source>
@@ -146,6 +161,11 @@
                 <target>Lunedì</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
+            <trans-unit id="New Event">
+                <source>New Event</source>
+                <note>No comment provided by engineer.</note>
+                <target>Nuovo evento</target>
+            </trans-unit>
             <trans-unit id="New Event... ⌘N">
                 <source>New Event... ⌘N</source>
                 <target>Nuovo evento… ⌘N</target>
@@ -153,8 +173,8 @@
             </trans-unit>
             <trans-unit id="No events">
                 <source>No events</source>
-                <note>No comment provided by engineer.</note>
                 <target>Nessun evento</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="OK">
                 <source>OK</source>
@@ -191,6 +211,11 @@
                 <target>Sabato</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
+            <trans-unit id="Save Event">
+                <source>Save Event</source>
+                <note>No comment provided by engineer.</note>
+                <target>Salvare Evento</target>
+            </trans-unit>
             <trans-unit id="Show calendar weeks">
                 <source>Show calendar weeks</source>
                 <target>Mostra le settimane del calendario</target>
@@ -200,6 +225,11 @@
                 <source>Space</source>
                 <target>Spazio</target>
                 <note>Shortcut glyph name for SPACE key</note>
+            </trans-unit>
+            <trans-unit id="Starts:">
+                <source>Starts:</source>
+                <note>No comment provided by engineer.</note>
+                <target>inizio:</target>
             </trans-unit>
             <trans-unit id="Sunday">
                 <source>Sunday</source>
@@ -253,8 +283,8 @@
             </trans-unit>
             <trans-unit id="ends">
                 <source>ends</source>
-                <note>Spanning event ends</note>
                 <target>termina il</target>
+                <note>Spanning event ends</note>
             </trans-unit>
         </body>
     </file>

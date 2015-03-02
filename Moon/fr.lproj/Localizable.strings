@@ -20,6 +20,12 @@
 "7 days" = "7 jours";
 
 /* No comment provided by engineer. */
+"Add Location" = "Ajouter un lieu";
+
+/* No comment provided by engineer. */
+"All-day:" = "jour entier:";
+
+/* No comment provided by engineer. */
 "Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "L'accès au calendrier refusée.\n\nItsycal est plus utile quand il peut afficher les événements de vos calendriers. Vous pouvez modifier ce paramètre dans les Préférences Système › Sécurité et confidentialité › Confidentialité.";
 
 /* Cancel action button in recording state */
@@ -33,6 +39,9 @@
 
 /* Tooltip for hint button near the non-empty shortcut */
 "Delete shortcut" = "Supprimer raccourci";
+
+/* No comment provided by engineer. */
+"Ends:" = "se termine:";
 
 /* No comment provided by engineer. */
 "Event list shows:" = "La liste des événements affiche:";
@@ -51,6 +60,9 @@
 
 /* No comment provided by engineer. */
 "Monday" = "Lundi";
+
+/* No comment provided by engineer. */
+"New Event" = "Nouvel événement";
 
 /* No comment provided by engineer. */
 "New Event... ⌘N" = "Nouvel événement… ⌘N";
@@ -80,10 +92,16 @@
 "Saturday" = "Samedi";
 
 /* No comment provided by engineer. */
+"Save Event" = "Enregistrer l'événement";
+
+/* No comment provided by engineer. */
 "Show calendar weeks" = "Afficher les numéros de semaine";
 
 /* Shortcut glyph name for SPACE key */
 "Space" = "Espace";
+
+/* No comment provided by engineer. */
+"Starts:" = "commence:";
 
 /* No comment provided by engineer. */
 "Sunday" = "Dimanche";

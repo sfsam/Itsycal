@@ -15,7 +15,7 @@
     NSTextField *_title, *_location;
     NSButton *_allDayCheckbox, *_saveButton;
     NSDatePicker *_startDate, *_endDate;
-    NSPopUpButton *_repPopup, *_calPopup;
+    NSPopUpButton *_calPopup;
 }
 
 - (void)loadView
@@ -64,7 +64,6 @@
     NSTextField *allDayLabel = txt(NSLocalizedString(@"All-day:", @""), NO);
     NSTextField *startsLabel = txt(NSLocalizedString(@"Starts:", @""), NO);
     NSTextField *endsLabel   = txt(NSLocalizedString(@"Ends:", @""), NO);
-//    NSTextField *repLabel    = txt(NSLocalizedString(@"Repeat:", @""), NO);
     
     // Pickers
     NSDatePicker* (^picker)() = ^NSDatePicker* () {
@@ -82,18 +81,10 @@
     _startDate.action = @selector(startDateChanged:);
     _endDate   = picker();
     
-    // Repeat and calendar popups
-//    _repPopup = [NSPopUpButton new];
-//    _repPopup.translatesAutoresizingMaskIntoConstraints = NO;
-//    [_repPopup addItemsWithTitles:@[NSLocalizedString(@"None", @"Repeat none"),
-//                                    NSLocalizedString(@"Every Day", @""),
-//                                    NSLocalizedString(@"Every Week", @""),
-//                                    NSLocalizedString(@"Every Month", @""),
-//                                    NSLocalizedString(@"Every Year", @"")]];
+    // Calendar popup
     _calPopup = [NSPopUpButton new];
     _calPopup.translatesAutoresizingMaskIntoConstraints = NO;
     _calPopup.menu.autoenablesItems = NO;
-//    [v addSubview:_repPopup];
     [v addSubview:_calPopup];
     
     // Save button
@@ -119,7 +110,6 @@
     vcon(@"H:|-[allDayLabel]-[_allDayCheckbox]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:|-[startsLabel]-[_startDate]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:|-[endsLabel]-[_endDate]-|", NSLayoutFormatAlignAllBaseline);
-//    vcon(@"H:|-[repLabel]-[_repPopup]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:[_calPopup]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:[_saveButton]-|", 0);
     
@@ -160,7 +150,6 @@
     _startDate.dateValue = initialStart;
     _endDate.minDate     = initialStart; // !! Must set minDate before dateValue !!
     _endDate.dateValue   = initialEnd;
-//    [_repPopup selectItemAtIndex:0]; // Repeat popup set to None
     
     // Function to make colored dots for calendar popup.
     NSImage* (^coloredDot)(NSColor *) = ^NSImage* (NSColor *color) {
