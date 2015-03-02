@@ -69,6 +69,7 @@
     NSDatePicker* (^picker)() = ^NSDatePicker* () {
         NSDatePicker *picker = [NSDatePicker new];
         picker.translatesAutoresizingMaskIntoConstraints = NO;
+        picker.datePickerStyle = NSTextFieldDatePickerStyle;
         picker.bezeled  = NO;
         picker.bordered = NO;
         picker.drawsBackground = NO;
@@ -125,6 +126,9 @@
 - (void)viewWillAppear
 {
     [super viewWillAppear];
+
+    self.view.window.styleMask = NSTitledWindowMask | NSClosableWindowMask;
+    self.view.window.defaultButtonCell = _saveButton.cell;
     
     // If self.calSelectedDate is today, the initialStart is set to
     // the next whole hour. Otherwise, 8am of self.calselectedDate.
@@ -150,6 +154,7 @@
     _startDate.dateValue = initialStart;
     _endDate.minDate     = initialStart; // !! Must set minDate before dateValue !!
     _endDate.dateValue   = initialEnd;
+    _saveButton.enabled  = NO;
     
     // Function to make colored dots for calendar popup.
     NSImage* (^coloredDot)(NSColor *) = ^NSImage* (NSColor *color) {
@@ -190,6 +195,12 @@
         }
     }
     [self.view.window makeFirstResponder:_title];
+}
+
+- (void)cancel:(id)sender
+{
+    // User pressed 'esc'.
+    [[self presentingViewController] dismissViewController:self];
 }
 
 - (void)controlTextDidChange:(NSNotification *)obj
@@ -246,7 +257,7 @@
     // Commit the event.
     NSError *error = NULL;
     if ([self.ec.store saveEvent:event span:EKSpanThisEvent commit:YES error:&error]) {
-        [self.view.window.windowController close];
+        [[self presentingViewController] dismissViewController:self];
     }
     else {
         [[NSAlert alertWithError:error] runModal];

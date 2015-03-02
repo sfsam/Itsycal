@@ -23,8 +23,7 @@
     NSStatusItem  *_statusItem;
     MoButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
     NSRect         _menuItemFrame, _screenFrame;
-    NSWindowController  *_eventWC;
-    NSWindowController  *_prefsWC;
+    NSWindowController    *_prefsWC;
     AgendaViewController  *_agendaVC;
     EventViewController   *_eventVC;
 }
@@ -168,27 +167,15 @@
 {
     // This statement makes the event panel act non-wonky.
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
-    
-    if (!_eventWC) {
-        NSPanel *panel = [[NSPanel alloc] initWithContentRect:NSZeroRect styleMask:(NSTitledWindowMask | NSClosableWindowMask) backing:NSBackingStoreBuffered defer:NO];
+
+    if (!_eventVC) {
         _eventVC = [EventViewController new];
         _eventVC.ec = _ec;
         _eventVC.cal = _nsCal;
-        _eventWC = [[NSWindowController alloc] initWithWindow:panel];
-        _eventWC.contentViewController = _eventVC;
-    }
-    // If the panel is not visible, we must "close" it before showing it.
-    // This seems weird, but is the only way to ensure that -viewWillAppear
-    // and -viewDidAppear are called in the VC. When the panel is hidden by
-    // being deactivated, it appears to the user to have been closed, but it
-    // didn't properly "close" (it just hid). So we first properly close it
-    // and then our view lifecycle methods are called in the VC. Yuck.
-    if (!(_eventWC.window.occlusionState & NSWindowOcclusionStateVisible)) {
-        [_eventWC close];
+        _eventVC.title = @"";
     }
     _eventVC.calSelectedDate = [_ec nsDateFromMoDate:_moCal.selectedDate];
-    [_eventWC showWindow:self];
-    [_eventWC.window center];
+    [self presentViewControllerAsModalWindow:_eventVC];
 }
 
 - (void)showCalendarApp:(id)sender
