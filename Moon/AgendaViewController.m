@@ -246,6 +246,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     NSTextField *_textField;
     NSDateFormatter *_timeFormatter;
+    NSDateIntervalFormatter *_intervalFormatter;
 }
 
 - (instancetype)init
@@ -255,6 +256,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self.identifier = kEventCellIdentifier;
         _timeFormatter = [NSDateFormatter new];
         [_timeFormatter setLocalizedDateFormatFromTemplate:@"h:mm a"];
+        _intervalFormatter = [NSDateIntervalFormatter new];
+        _intervalFormatter.dateStyle = NSDateIntervalFormatterNoStyle;
+        _intervalFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
         _textField.font = [NSFont fontWithName:@"Lucida Grande" size:11];
@@ -285,20 +289,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
             duration = [NSString stringWithFormat:@"\n%@ %@", ends, [_timeFormatter stringFromDate:info.event.endDate]];
         }
         else {
-            duration = [NSString stringWithFormat:@"\n%@ - %@", [_timeFormatter stringFromDate:info.event.startDate], [_timeFormatter stringFromDate:info.event.endDate]];
-            // For events in "en" locales that use AM/PM format, remove
-            // redundant AM or PM: "2 PM - 3 PM" => "2 - 3 PM"
-            if ([duration hasSuffix:@"AM"]) {
-                duration = [duration stringByReplacingOccurrencesOfString:@" AM - " withString:@" - "];
-            }
-            else if ([duration hasSuffix:@"PM"]) {
-                duration = [duration stringByReplacingOccurrencesOfString:@" PM - " withString:@" - "];
-            }
+            duration = [NSString stringWithFormat:@"\n%@", [_intervalFormatter stringFromDate:info.event.startDate toDate:info.event.endDate]];
         }
         // If the locale is English and we are in 12 hour time,
         // remove :00 from the time. Effect is 3:00 PM -> 3 PM.
-        NSString *localeIdentifier = [[NSLocale currentLocale] localeIdentifier];
-        if ([localeIdentifier hasPrefix:@"en"]) {
+        if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
             if ([[_timeFormatter dateFormat] rangeOfString:@"a"].location != NSNotFound) {
                 duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
             }
