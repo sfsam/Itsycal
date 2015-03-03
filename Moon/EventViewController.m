@@ -11,10 +11,10 @@
 
 @implementation EventViewController
 {
-    NSTextField *_title, *_location;
+    NSTextField *_title, *_location, *_repEndLabel;
     NSButton *_allDayCheckbox, *_saveButton;
-    NSDatePicker *_startDate, *_endDate;
-    NSPopUpButton *_calPopup;
+    NSDatePicker *_startDate, *_endDate, *_repEndDate;
+    NSPopUpButton *_repPopup, *_repEndPopup, *_calPopup;
 }
 
 - (void)loadView
@@ -61,6 +61,7 @@
     NSTextField *allDayLabel = txt(NSLocalizedString(@"All-day:", @""), NO);
     NSTextField *startsLabel = txt(NSLocalizedString(@"Starts:", @""), NO);
     NSTextField *endsLabel   = txt(NSLocalizedString(@"Ends:", @""), NO);
+    NSTextField *repLabel    = txt(NSLocalizedString(@"Repeat:", @""), NO);
     
     // Pickers
     NSDatePicker* (^picker)() = ^NSDatePicker* () {
@@ -77,8 +78,34 @@
     _startDate = picker();
     _startDate.target = self;
     _startDate.action = @selector(startDateChanged:);
-    _endDate   = picker();
+    _endDate    = picker();
     
+    // Repeat
+    _repPopup = [NSPopUpButton new];
+    _repPopup.translatesAutoresizingMaskIntoConstraints = NO;
+    [_repPopup addItemsWithTitles:@[NSLocalizedString(@"None", @"Repeat none"),
+                                    NSLocalizedString(@"Every Day", @""),
+                                    NSLocalizedString(@"Every Week", @""),
+                                    NSLocalizedString(@"Every 2 Weeks", @""),
+                                    NSLocalizedString(@"Every Month", @""),
+                                    NSLocalizedString(@"Every Year", @"")]];
+    _repPopup.target = self;
+    _repPopup.action = @selector(repPopupChanged:);
+    [v addSubview:_repPopup];
+    
+    _repEndLabel = txt(NSLocalizedString(@"End Repeat:", @""), NO);
+
+    _repEndPopup = [NSPopUpButton new];
+    _repEndPopup.translatesAutoresizingMaskIntoConstraints = NO;
+    [_repEndPopup addItemsWithTitles:@[NSLocalizedString(@"Never", @"Repeat ends never"),
+                                       NSLocalizedString(@"On Date", @"")]];
+    _repEndPopup.target = self;
+    _repEndPopup.action = @selector(repEndPopupChanged:);
+    [v addSubview:_repEndPopup];
+    
+    _repEndDate = picker();
+    _repEndDate.datePickerElements = NSYearMonthDayDatePickerElementFlag;
+
     // Calendar popup
     _calPopup = [NSPopUpButton new];
     _calPopup.translatesAutoresizingMaskIntoConstraints = NO;
@@ -90,7 +117,6 @@
     _saveButton.translatesAutoresizingMaskIntoConstraints = NO;
     _saveButton.bezelStyle = NSRoundedBezelStyle;
     _saveButton.title = NSLocalizedString(@"Save Event", @"");
-    _saveButton.keyEquivalent = @"\r"; // Make it the default button.
     _saveButton.enabled = NO; // we'll enable when the form is valid.
     _saveButton.target = self;
     _saveButton.action = @selector(saveEvent:);
@@ -98,16 +124,18 @@
 
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*, NSLayoutFormatOptions) = ^(NSString *format, NSLayoutFormatOptions opt) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opt metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, _calPopup, _saveButton)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opt metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _calPopup, _saveButton)]];
     };
     vcon(@"V:|-[_title]-[_location]-15-[_allDayCheckbox]", 0);
-    vcon(@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_calPopup]", NSLayoutFormatAlignAllLeading);
+    vcon(@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_calPopup]", NSLayoutFormatAlignAllLeading);
     vcon(@"V:[_calPopup]-[_saveButton]-|", 0);
     vcon(@"H:|-[_title(>=200)]-|", 0);
     vcon(@"H:|-[_location]-|", 0);
     vcon(@"H:|-[allDayLabel]-[_allDayCheckbox]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:|-[startsLabel]-[_startDate]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:|-[endsLabel]-[_endDate]-|", NSLayoutFormatAlignAllBaseline);
+    vcon(@"H:|-[repLabel]-[_repPopup]-|", NSLayoutFormatAlignAllBaseline);
+    vcon(@"H:|-[_repEndLabel]-[_repEndPopup]-[_repEndDate]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:[_calPopup]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:[_saveButton]-|", 0);
     
@@ -151,6 +179,13 @@
     _startDate.dateValue = initialStart;
     _endDate.minDate     = initialStart; // !! Must set minDate before dateValue !!
     _endDate.dateValue   = initialEnd;
+    _repEndLabel.hidden  = YES;
+    _repEndPopup.hidden  = YES;
+    _repEndDate.hidden   = YES;
+    _repEndDate.minDate  = initialStart;
+    _repEndDate.dateValue = initialEnd;
+    [_repPopup selectItemAtIndex:0];     // 'None' selected
+    [_repEndPopup selectItemAtIndex:0];  // 'Never' selected
     _saveButton.enabled  = NO;
     
     // Function to make colored dots for calendar popup.
@@ -221,9 +256,29 @@
 - (void)startDateChanged:(NSDatePicker *)startPicker
 {
     // Make sure endDate is never before startDate.
+    // Make sure repeatEndDate is never before endDate.
     // Default endDate is one hour after startDate.
-    _endDate.minDate = _startDate.dateValue;
+    _endDate.minDate    = _startDate.dateValue;
+    _repEndDate.minDate = _startDate.dateValue;
     _endDate.dateValue = [self.cal dateByAddingUnit:NSCalendarUnitHour value:1 toDate:_startDate.dateValue options:0];
+}
+
+- (void)repPopupChanged:(id)sender
+{
+    NSInteger repIndex = [_repPopup indexOfItem:_repPopup.selectedItem];
+    NSInteger repEndIndex = [_repEndPopup indexOfItem:_repEndPopup.selectedItem];
+    if (repIndex == 0) {
+        [_repEndPopup selectItemAtIndex:0];
+    }
+    _repEndLabel.hidden = repIndex == 0;
+    _repEndPopup.hidden = repIndex == 0;
+    _repEndDate.hidden  = repIndex == 0 || repEndIndex == 0;
+}
+
+- (void)repEndPopupChanged:(id)sender
+{
+    NSInteger repEndIndex = [_repEndPopup indexOfItem:_repEndPopup.selectedItem];
+    _repEndDate.hidden = repEndIndex == 0;
 }
 
 - (void)saveEvent:(id)sender
@@ -251,13 +306,52 @@
     event.endDate   = endDate;
     event.calendar  = calInfo.calendar;
     
+    // Recurrence rule.
+    EKRecurrenceFrequency frequency;
+    NSInteger interval = 1;
+    NSInteger repIndex = [_repPopup indexOfItem:_repPopup.selectedItem];
+    switch (repIndex) {
+        case 1: // Every Day
+            frequency = EKRecurrenceFrequencyDaily;
+            break;
+        case 2: // Every Week
+            frequency = EKRecurrenceFrequencyWeekly;
+            break;
+        case 3: // Every 2 Weeks
+            frequency = EKRecurrenceFrequencyWeekly;
+            interval  = 2;
+            break;
+        case 4: // Every Month
+            frequency = EKRecurrenceFrequencyMonthly;
+            break;
+        case 5: // Every Year
+            frequency = EKRecurrenceFrequencyYearly;
+            break;
+        default:
+            frequency = EKRecurrenceFrequencyDaily;
+            break;
+    }
+    EKRecurrenceEnd  *recurrenceEnd = nil;
+    NSInteger repEndIndex = [_repEndPopup indexOfItem:_repEndPopup.selectedItem];
+    if (repEndIndex != 0) {
+        recurrenceEnd = [EKRecurrenceEnd recurrenceEndWithEndDate:_repEndDate.dateValue];
+    }
+    EKRecurrenceRule *recurrence = nil;
+    if (repIndex != 0) {
+        recurrence = [[EKRecurrenceRule alloc] initRecurrenceWithFrequency:frequency interval:interval end:recurrenceEnd];
+    }
+    if (recurrence != nil) {
+        event.recurrenceRules = @[recurrence];
+    }
+    
     // Commit the event.
     NSError *error = NULL;
-    if ([self.ec.store saveEvent:event span:EKSpanThisEvent commit:YES error:&error]) {
-        [[self presentingViewController] dismissViewController:self];
+    BOOL saved = [self.ec.store saveEvent:event span:EKSpanThisEvent commit:YES error:&error];
+    if (saved == NO && error != nil) {
+        [[NSAlert alertWithError:error] runModal];
     }
     else {
-        [[NSAlert alertWithError:error] runModal];
+        [[self presentingViewController] dismissViewController:self];
     }
 }
 

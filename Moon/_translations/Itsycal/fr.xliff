@@ -93,13 +93,13 @@
             </trans-unit>
             <trans-unit id="Add Location">
                 <source>Add Location</source>
-                <note>No comment provided by engineer.</note>
                 <target>Ajouter un lieu</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="All-day:">
                 <source>All-day:</source>
+                <target>Jour entier:</target>
                 <note>No comment provided by engineer.</note>
-                <target>jour entier:</target>
             </trans-unit>
             <trans-unit id="Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy">
                 <source>Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</source>
@@ -126,15 +126,45 @@
                 <target>Supprimer raccourci</target>
                 <note>Tooltip for hint button near the non-empty shortcut</note>
             </trans-unit>
+            <trans-unit id="End Repeat:">
+                <source>End Repeat:</source>
+                <note>No comment provided by engineer.</note>
+                <target>Fin de la récurrence:</target>
+            </trans-unit>
             <trans-unit id="Ends:">
                 <source>Ends:</source>
+                <target>Se termine:</target>
                 <note>No comment provided by engineer.</note>
-                <target>se termine:</target>
             </trans-unit>
             <trans-unit id="Event list shows:">
                 <source>Event list shows:</source>
                 <target>La liste des événements affiche:</target>
                 <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Every 2 Weeks">
+                <source>Every 2 Weeks</source>
+                <note>No comment provided by engineer.</note>
+                <target>toutes les deux semaines</target>
+            </trans-unit>
+            <trans-unit id="Every Day">
+                <source>Every Day</source>
+                <note>No comment provided by engineer.</note>
+                <target>tous les jours</target>
+            </trans-unit>
+            <trans-unit id="Every Month">
+                <source>Every Month</source>
+                <note>No comment provided by engineer.</note>
+                <target>tous les mois</target>
+            </trans-unit>
+            <trans-unit id="Every Week">
+                <source>Every Week</source>
+                <note>No comment provided by engineer.</note>
+                <target>toutes les semaines</target>
+            </trans-unit>
+            <trans-unit id="Every Year">
+                <source>Every Year</source>
+                <note>No comment provided by engineer.</note>
+                <target>tous les ans</target>
             </trans-unit>
             <trans-unit id="First day of week">
                 <source>First day of week</source>
@@ -161,10 +191,15 @@
                 <target>Lundi</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
+            <trans-unit id="Never">
+                <source>Never</source>
+                <note>Repeat ends never</note>
+                <target>jamais</target>
+            </trans-unit>
             <trans-unit id="New Event">
                 <source>New Event</source>
-                <note>No comment provided by engineer.</note>
                 <target>Nouvel événement</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="New Event... ⌘N">
                 <source>New Event... ⌘N</source>
@@ -176,10 +211,20 @@
                 <target>aucun événement</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
+            <trans-unit id="None">
+                <source>None</source>
+                <note>Repeat none</note>
+                <target>jamais</target>
+            </trans-unit>
             <trans-unit id="OK">
                 <source>OK</source>
                 <target>OK</target>
                 <note>Alert button when shortcut is already used</note>
+            </trans-unit>
+            <trans-unit id="On Date">
+                <source>On Date</source>
+                <note>No comment provided by engineer.</note>
+                <target>le</target>
             </trans-unit>
             <trans-unit id="Open Calendar... ⌘O">
                 <source>Open Calendar... ⌘O</source>
@@ -206,6 +251,11 @@
                 <target>Quitter Itsycal</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
+            <trans-unit id="Repeat:">
+                <source>Repeat:</source>
+                <note>No comment provided by engineer.</note>
+                <target>Récurrence:</target>
+            </trans-unit>
             <trans-unit id="Saturday">
                 <source>Saturday</source>
                 <target>Samedi</target>
@@ -213,8 +263,8 @@
             </trans-unit>
             <trans-unit id="Save Event">
                 <source>Save Event</source>
-                <note>No comment provided by engineer.</note>
                 <target>Enregistrer l'événement</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Show calendar weeks">
                 <source>Show calendar weeks</source>
@@ -228,8 +278,8 @@
             </trans-unit>
             <trans-unit id="Starts:">
                 <source>Starts:</source>
+                <target>Commence:</target>
                 <note>No comment provided by engineer.</note>
-                <target>commence:</target>
             </trans-unit>
             <trans-unit id="Sunday">
                 <source>Sunday</source>

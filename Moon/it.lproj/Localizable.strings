@@ -23,7 +23,7 @@
 "Add Location" = "Aggiungi posizione";
 
 /* No comment provided by engineer. */
-"All-day:" = "tutto il giorno:";
+"All-day:" = "Tutto il giorno:";
 
 /* No comment provided by engineer. */
 "Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "L'accesso al calendario negato.\n\nItsycal è più utile quando è in grado di visualizzare eventi dai calendari. È possibile modificare questa impostazione in Preferenze di Sistema › Sicurezza e Privacy › Privacy.";
@@ -41,10 +41,28 @@
 "Delete shortcut" = "Elimina l'abbreviazione";
 
 /* No comment provided by engineer. */
-"Ends:" = "fine:";
+"End Repeat:" = "Fine ripetizione:";
+
+/* No comment provided by engineer. */
+"Ends:" = "Termina:";
 
 /* No comment provided by engineer. */
 "Event list shows:" = "Mostra lista eventi:";
+
+/* No comment provided by engineer. */
+"Every 2 Weeks" = "Ogni 2 settimane";
+
+/* No comment provided by engineer. */
+"Every Day" = "Ogni giorno";
+
+/* No comment provided by engineer. */
+"Every Month" = "Ogni mese";
+
+/* No comment provided by engineer. */
+"Every Week" = "Ogni settimana";
+
+/* No comment provided by engineer. */
+"Every Year" = "Ogni anno";
 
 /* No comment provided by engineer. */
 "First day of week" = "Primo giorno della settimana";
@@ -61,6 +79,9 @@
 /* No comment provided by engineer. */
 "Monday" = "Lunedì";
 
+/* Repeat ends never */
+"Never" = "Mai";
+
 /* No comment provided by engineer. */
 "New Event" = "Nuovo evento";
 
@@ -70,8 +91,14 @@
 /* No comment provided by engineer. */
 "No events" = "Nessun evento";
 
+/* Repeat none */
+"None" = "Mai";
+
 /* Alert button when shortcut is already used */
 "OK" = "OK";
+
+/* No comment provided by engineer. */
+"On Date" = "In data";
 
 /* No comment provided by engineer. */
 "Open Calendar... ⌘O" = "Apri l'applicazione Calendario… ⌘O";
@@ -89,6 +116,9 @@
 "Quit Itsycal" = "Esci da Itsycal";
 
 /* No comment provided by engineer. */
+"Repeat:" = "Ripetizione:";
+
+/* No comment provided by engineer. */
 "Saturday" = "Sabato";
 
 /* No comment provided by engineer. */
@@ -101,7 +131,7 @@
 "Space" = "Spazio";
 
 /* No comment provided by engineer. */
-"Starts:" = "inizio:";
+"Starts:" = "Inizia:";
 
 /* No comment provided by engineer. */
 "Sunday" = "Domenica";
