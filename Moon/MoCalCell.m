@@ -88,7 +88,9 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
     }
     else if (self.isHovered) {
         [kHoveredCellColor set];
-        NSRect r = NSInsetRect(self.bounds, 2, 2);
+        NSRect r = NSInsetRect(self.bounds, 2.5, 2.5);
+        [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] stroke];
+        [[kHoveredCellColor colorWithAlphaComponent:0.1] set];
         [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] fill];
     }
     if (self.hasDot) {

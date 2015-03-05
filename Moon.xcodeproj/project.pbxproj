@@ -49,6 +49,7 @@
 		9297F0F01A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9297F0EE1A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf */; };
 		9297F0F11A9AFBE1005287D9 /* VarelaRoundNeo-Bold.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9297F0ED1A9AFB72005287D9 /* VarelaRoundNeo-Bold.otf */; };
 		9297F0F21A9AFBE1005287D9 /* VarelaRoundNeo-Regular.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9297F0EE1A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf */; };
+		92B3C0431AA7EF43008A5C05 /* MoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92B3C0421AA7EF43008A5C05 /* MoView.m */; };
 		92CDDE7B1A955D7F00D7675C /* AgendaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -166,6 +167,8 @@
 		9278CADA1A990462004B6BB9 /* MoTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoTableView.m; sourceTree = "<group>"; };
 		9297F0ED1A9AFB72005287D9 /* VarelaRoundNeo-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "VarelaRoundNeo-Bold.otf"; path = "Moon/_fonts/VarelaRoundNeo-Bold.otf"; sourceTree = "<group>"; };
 		9297F0EE1A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "VarelaRoundNeo-Regular.otf"; path = "Moon/_fonts/VarelaRoundNeo-Regular.otf"; sourceTree = "<group>"; };
+		92B3C0411AA7EF43008A5C05 /* MoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoView.h; sourceTree = "<group>"; };
+		92B3C0421AA7EF43008A5C05 /* MoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoView.m; sourceTree = "<group>"; };
 		92CDDE791A955D7F00D7675C /* AgendaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AgendaViewController.h; sourceTree = "<group>"; };
 		92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AgendaViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -348,6 +351,8 @@
 				9224B0741A8BE75500D63030 /* MoButton.m */,
 				9278CAD91A990462004B6BB9 /* MoTableView.h */,
 				9278CADA1A990462004B6BB9 /* MoTableView.m */,
+				92B3C0411AA7EF43008A5C05 /* MoView.h */,
+				92B3C0421AA7EF43008A5C05 /* MoView.m */,
 			);
 			name = MoCode;
 			sourceTree = "<group>";
@@ -494,6 +499,7 @@
 				9242A5931A82A40B005AA4B3 /* MoCalendar.m in Sources */,
 				9242A5911A82A40B005AA4B3 /* MoCalCell.m in Sources */,
 				9224B0751A8BE75500D63030 /* MoButton.m in Sources */,
+				92B3C0431AA7EF43008A5C05 /* MoView.m in Sources */,
 				9242A5841A82A189005AA4B3 /* ViewController.m in Sources */,
 				922B6BB41A85950600DEA9CD /* MASShortcutView.m in Sources */,
 				922B6BAD1A85950600DEA9CD /* MASShortcut.m in Sources */,

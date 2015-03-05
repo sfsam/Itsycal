@@ -10,6 +10,7 @@
 #import "Itsycal.h"
 #import "MASShortcutView.h"
 #import "MASShortcutView+Bindings.h"
+#import "MoView.h"
 #import "MoTextField.h"
 #import "EventCenter.h"
 
@@ -45,8 +46,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 - (void)loadView
 {
     // View controller content view
-    NSView *v = [NSView new];
-    v.translatesAutoresizingMaskIntoConstraints = NO;
+    MoView *v = [MoView new];
  
     // App Icon
     NSImageView *appIcon = [[NSImageView alloc] initWithFrame:NSZeroRect];
