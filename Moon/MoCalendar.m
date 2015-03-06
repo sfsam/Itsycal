@@ -124,7 +124,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     vcon(@"H:|-8-[_monthLabel]-4-[_btnPrev]-2-[_btnToday]-2-[_btnNext]-6-|", NSLayoutFormatAlignAllCenterY);
     vcon(@"H:[_dowGrid]|", 0);
     vcon(@"H:[_weekGrid][_dateGrid]|", 0);
-    vcon(@"V:|-(-3)-[_monthLabel]-4-[_dowGrid][_dateGrid]-1-|", 0);
+    vcon(@"V:|-(-3)-[_monthLabel]-1-[_dowGrid][_dateGrid]-1-|", 0);
     vcon(@"V:[_weekGrid]-1-|", 0);
     
     _weeksConstraint = [NSLayoutConstraint constraintWithItem:_weekGrid attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0];

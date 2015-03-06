@@ -14,11 +14,11 @@
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate"/>
         <menu title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
             <items>
-                <menuItem title="Moon" id="1Xt-HY-uBw">
+                <menuItem title="Itsycal" id="1Xt-HY-uBw">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Moon" systemMenu="apple" id="uQy-DD-JDr">
+                    <menu key="submenu" title="Itsycal" systemMenu="apple" id="uQy-DD-JDr">
                         <items>
-                            <menuItem title="Quit Moon" keyEquivalent="q" id="4sb-4s-VLi">
+                            <menuItem title="Quit Itsycal" keyEquivalent="q" id="4sb-4s-VLi">
                                 <connections>
                                     <action selector="terminate:" target="-1" id="Te7-pn-YzF"/>
                                 </connections>

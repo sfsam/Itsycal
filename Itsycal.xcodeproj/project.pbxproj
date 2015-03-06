@@ -135,7 +135,7 @@
 		922B6BDB1A88667700DEA9CD /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		922B6BDC1A886C6900DEA9CD /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		922B6BDD1A886C6900DEA9CD /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/MainMenu.strings; sourceTree = "<group>"; };
-		9242A55C1A82A136005AA4B3 /* Moon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9242A55C1A82A136005AA4B3 /* Itsycal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Itsycal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9242A5601A82A136005AA4B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9242A5611A82A136005AA4B3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9242A5621A82A136005AA4B3 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -254,7 +254,7 @@
 		9242A5531A82A136005AA4B3 = {
 			isa = PBXGroup;
 			children = (
-				9242A55E1A82A136005AA4B3 /* Moon */,
+				9242A55E1A82A136005AA4B3 /* Itsycal */,
 				921CD16C1A893420007B60C0 /* ItsycalExtra */,
 				9242A55D1A82A136005AA4B3 /* Products */,
 			);
@@ -263,13 +263,13 @@
 		9242A55D1A82A136005AA4B3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9242A55C1A82A136005AA4B3 /* Moon.app */,
+				9242A55C1A82A136005AA4B3 /* Itsycal.app */,
 				921CD16B1A893420007B60C0 /* ItsycalExtra.menu */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		9242A55E1A82A136005AA4B3 /* Moon */ = {
+		9242A55E1A82A136005AA4B3 /* Itsycal */ = {
 			isa = PBXGroup;
 			children = (
 				9219CC241A8990F700B6E159 /* MenuCracker */,
@@ -299,6 +299,7 @@
 				92658E601A9DBD8E002AE86C /* EventViewController.h */,
 				92658E611A9DBD8E002AE86C /* EventViewController.m */,
 			);
+			name = Itsycal;
 			path = Moon;
 			sourceTree = "<group>";
 		};
@@ -377,9 +378,9 @@
 			productReference = 921CD16B1A893420007B60C0 /* ItsycalExtra.menu */;
 			productType = "com.apple.product-type.bundle";
 		};
-		9242A55B1A82A136005AA4B3 /* Moon */ = {
+		9242A55B1A82A136005AA4B3 /* Itsycal */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9242A5791A82A136005AA4B3 /* Build configuration list for PBXNativeTarget "Moon" */;
+			buildConfigurationList = 9242A5791A82A136005AA4B3 /* Build configuration list for PBXNativeTarget "Itsycal" */;
 			buildPhases = (
 				9242A5581A82A136005AA4B3 /* Sources */,
 				9242A5591A82A136005AA4B3 /* Frameworks */,
@@ -391,9 +392,9 @@
 			dependencies = (
 				921CD18C1A897C04007B60C0 /* PBXTargetDependency */,
 			);
-			name = Moon;
+			name = Itsycal;
 			productName = Moon;
-			productReference = 9242A55C1A82A136005AA4B3 /* Moon.app */;
+			productReference = 9242A55C1A82A136005AA4B3 /* Itsycal.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -413,7 +414,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 9242A5571A82A136005AA4B3 /* Build configuration list for PBXProject "Moon" */;
+			buildConfigurationList = 9242A5571A82A136005AA4B3 /* Build configuration list for PBXProject "Itsycal" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -430,7 +431,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				9242A55B1A82A136005AA4B3 /* Moon */,
+				9242A55B1A82A136005AA4B3 /* Itsycal */,
 				921CD16A1A893420007B60C0 /* ItsycalExtra */,
 			);
 		};
@@ -727,7 +728,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9242A5571A82A136005AA4B3 /* Build configuration list for PBXProject "Moon" */ = {
+		9242A5571A82A136005AA4B3 /* Build configuration list for PBXProject "Itsycal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9242A5771A82A136005AA4B3 /* Debug */,
@@ -736,7 +737,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9242A5791A82A136005AA4B3 /* Build configuration list for PBXNativeTarget "Moon" */ = {
+		9242A5791A82A136005AA4B3 /* Build configuration list for PBXNativeTarget "Itsycal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9242A57A1A82A136005AA4B3 /* Debug */,
