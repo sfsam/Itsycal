@@ -354,6 +354,11 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     if (startCell && endCell) {
         _highlightPath = [self bezierPathWithStartCell:startCell endCell:endCell radius:2 inset:2.5 useRects:YES];
         _highlightColor = color;
+        // Normalize location of _highlightPath. We will tranlsate it
+        // again in drawRect to the correct location.
+        NSAffineTransform *t = [NSAffineTransform new];
+        [t translateXBy:-NSMinX(_dateGrid.frame) yBy:0];
+        [_highlightPath transformUsingAffineTransform:t];
         [self setNeedsDisplay:YES];
     }
 }
@@ -553,11 +558,18 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [NSGraphicsContext restoreGraphicsState];
     
     if (_highlightPath) {
+        // Tranlsate the highlight path. It's location will depend
+        // on whether we are showing weeks or not because they add
+        // an additional column.
+        NSAffineTransform *t = [NSAffineTransform new];
+        [t translateXBy:NSMinX(_dateGrid.frame) yBy:0];
+        NSBezierPath *highlightPath = [_highlightPath copy];
+        [highlightPath transformUsingAffineTransform:t];
         NSColor *outlineColor = [_highlightColor blendedColorWithFraction:0.6 ofColor:[NSColor blackColor]];
         [[outlineColor colorWithAlphaComponent:0.3] setStroke];
         [[_highlightColor colorWithAlphaComponent:0.2] setFill];
-        [_highlightPath stroke];
-        [_highlightPath fill];
+        [highlightPath stroke];
+        [highlightPath fill];
     }
 }
 
