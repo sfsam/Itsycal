@@ -101,6 +101,11 @@
                 <target>Jour entier:</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
+            <trans-unit id="Are you sure you want to delete this event?">
+                <source>Are you sure you want to delete this event?</source>
+                <note>No comment provided by engineer.</note>
+                <target>Êtes-vous sûr de vouloir supprimer cet événement ?</target>
+            </trans-unit>
             <trans-unit id="Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy">
                 <source>Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</source>
                 <target>L'accès au calendrier refusée.\n\nItsycal est plus utile quand il peut afficher les événements de vos calendriers. Vous pouvez modifier ce paramètre dans les Préférences Système › Sécurité et confidentialité › Confidentialité.</target>
@@ -121,15 +126,35 @@
                 <target>Cliquez pour enregistrer un raccourci</target>
                 <note>Tooltip for non-empty shortcut button</note>
             </trans-unit>
+            <trans-unit id="Delete All Future Events">
+                <source>Delete All Future Events</source>
+                <note>No comment provided by engineer.</note>
+                <target>Supprimer tous les événements futurs</target>
+            </trans-unit>
+            <trans-unit id="Delete Only This Event">
+                <source>Delete Only This Event</source>
+                <note>No comment provided by engineer.</note>
+                <target>Seulement cette occurrence</target>
+            </trans-unit>
+            <trans-unit id="Delete This Event">
+                <source>Delete This Event</source>
+                <note>No comment provided by engineer.</note>
+                <target>Supprimer</target>
+            </trans-unit>
             <trans-unit id="Delete shortcut">
                 <source>Delete shortcut</source>
                 <target>Supprimer raccourci</target>
                 <note>Tooltip for hint button near the non-empty shortcut</note>
             </trans-unit>
+            <trans-unit id="Do you want to delete this and all future occurrences of this event, or only the selected occurrence?">
+                <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
+                <note>No comment provided by engineer.</note>
+                <target>Souhaitez-vous supprimer cet événement ainsi que toutes ses occurrences futures ou uniquement celle sélectionnée ?</target>
+            </trans-unit>
             <trans-unit id="End Repeat:">
                 <source>End Repeat:</source>
-                <note>No comment provided by engineer.</note>
                 <target>Fin de la récurrence:</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Ends:">
                 <source>Ends:</source>
@@ -143,28 +168,28 @@
             </trans-unit>
             <trans-unit id="Every 2 Weeks">
                 <source>Every 2 Weeks</source>
-                <note>No comment provided by engineer.</note>
                 <target>toutes les deux semaines</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Every Day">
                 <source>Every Day</source>
-                <note>No comment provided by engineer.</note>
                 <target>tous les jours</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Every Month">
                 <source>Every Month</source>
-                <note>No comment provided by engineer.</note>
                 <target>tous les mois</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Every Week">
                 <source>Every Week</source>
-                <note>No comment provided by engineer.</note>
                 <target>toutes les semaines</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Every Year">
                 <source>Every Year</source>
-                <note>No comment provided by engineer.</note>
                 <target>tous les ans</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="First day of week">
                 <source>First day of week</source>
@@ -193,8 +218,8 @@
             </trans-unit>
             <trans-unit id="Never">
                 <source>Never</source>
-                <note>Repeat ends never</note>
                 <target>jamais</target>
+                <note>Repeat ends never</note>
             </trans-unit>
             <trans-unit id="New Event">
                 <source>New Event</source>
@@ -213,8 +238,8 @@
             </trans-unit>
             <trans-unit id="None">
                 <source>None</source>
-                <note>Repeat none</note>
                 <target>jamais</target>
+                <note>Repeat none</note>
             </trans-unit>
             <trans-unit id="OK">
                 <source>OK</source>
@@ -223,8 +248,8 @@
             </trans-unit>
             <trans-unit id="On Date">
                 <source>On Date</source>
-                <note>No comment provided by engineer.</note>
                 <target>le</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Open Calendar... ⌘O">
                 <source>Open Calendar... ⌘O</source>
@@ -253,8 +278,8 @@
             </trans-unit>
             <trans-unit id="Repeat:">
                 <source>Repeat:</source>
-                <note>No comment provided by engineer.</note>
                 <target>Récurrence:</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Saturday">
                 <source>Saturday</source>
@@ -330,6 +355,11 @@
                 <source>Wednesday</source>
                 <target>Mercredi</target>
                 <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="You're deleting an event.">
+                <source>You're deleting an event.</source>
+                <note>No comment provided by engineer.</note>
+                <target>Vous vous apprêtez à supprimer un événement.</target>
             </trans-unit>
             <trans-unit id="ends">
                 <source>ends</source>

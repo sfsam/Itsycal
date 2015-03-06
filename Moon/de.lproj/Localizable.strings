@@ -26,6 +26,9 @@
 "All-day:" = "Ganztägig:";
 
 /* No comment provided by engineer. */
+"Are you sure you want to delete this event?" = "Sind Sie sicher, dass Sie dieses Ereignis entfernen möchten ?";
+
+/* No comment provided by engineer. */
 "Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Kalenderzugriff verweigert.\n\nItsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden können. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.";
 
 /* Cancel action button in recording state */
@@ -37,8 +40,20 @@
 /* Tooltip for non-empty shortcut button */
 "Click to record new shortcut" = "Klicken, um Kurzbefehl eingeben";
 
+/* No comment provided by engineer. */
+"Delete All Future Events" = "Alle zukünftigen Ereignisse löschen";
+
+/* No comment provided by engineer. */
+"Delete Only This Event" = "Nur dieses Ereignis löschen";
+
+/* No comment provided by engineer. */
+"Delete This Event" = "Löschen";
+
 /* Tooltip for hint button near the non-empty shortcut */
 "Delete shortcut" = "Löschen Tastaturkurzbefehl";
+
+/* No comment provided by engineer. */
+"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Möchten Sie dieses und all zukünftigen Vorkommen dieses Ereignisses löschen oder nur das ausgewählte Vorkommen ?";
 
 /* No comment provided by engineer. */
 "End Repeat:" = "Beenden:";
@@ -162,6 +177,9 @@
 
 /* No comment provided by engineer. */
 "Wednesday" = "Mittwoch";
+
+/* No comment provided by engineer. */
+"You're deleting an event." = "Sie löschen ein Ereignis.";
 
 /* Spanning event ends */
 "ends" = "Endet um";

@@ -26,6 +26,9 @@
 "All-day:" = "Jour entier:";
 
 /* No comment provided by engineer. */
+"Are you sure you want to delete this event?" = "Êtes-vous sûr de vouloir supprimer cet événement ?";
+
+/* No comment provided by engineer. */
 "Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "L'accès au calendrier refusée.\n\nItsycal est plus utile quand il peut afficher les événements de vos calendriers. Vous pouvez modifier ce paramètre dans les Préférences Système › Sécurité et confidentialité › Confidentialité.";
 
 /* Cancel action button in recording state */
@@ -37,8 +40,20 @@
 /* Tooltip for non-empty shortcut button */
 "Click to record new shortcut" = "Cliquez pour enregistrer un raccourci";
 
+/* No comment provided by engineer. */
+"Delete All Future Events" = "Supprimer tous les événements futurs";
+
+/* No comment provided by engineer. */
+"Delete Only This Event" = "Seulement cette occurrence";
+
+/* No comment provided by engineer. */
+"Delete This Event" = "Supprimer";
+
 /* Tooltip for hint button near the non-empty shortcut */
 "Delete shortcut" = "Supprimer raccourci";
+
+/* No comment provided by engineer. */
+"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Souhaitez-vous supprimer cet événement ainsi que toutes ses occurrences futures ou uniquement celle sélectionnée ?";
 
 /* No comment provided by engineer. */
 "End Repeat:" = "Fin de la récurrence:";
@@ -162,6 +177,9 @@
 
 /* No comment provided by engineer. */
 "Wednesday" = "Mercredi";
+
+/* No comment provided by engineer. */
+"You're deleting an event." = "Vous vous apprêtez à supprimer un événement.";
 
 /* Spanning event ends */
 "ends" = "prend fin le";
