@@ -10,4 +10,6 @@
 
 @interface MoButton : NSButton
 
+@property (nonatomic) NSColor *backgroundColor;
+
 @end

@@ -21,9 +21,12 @@
 
 @end
 
+@class EKEvent;
+
 @protocol AgendaDelegate <NSObject>
 
 @optional
 - (void)agendaHoveredOverRow:(NSInteger)row;
+- (void)agendaWantsToDeleteEvent:(EKEvent *)event;
 
 @end

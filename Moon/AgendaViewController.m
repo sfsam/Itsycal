@@ -8,6 +8,7 @@
 
 #import "AgendaViewController.h"
 #import "EventCenter.h"
+#import "MoButton.h"
 
 static NSString *kColumnIdentifier    = @"Column";
 static NSString *kDateCellIdentifier  = @"DateCell";
@@ -20,6 +21,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @interface AgendaEventCell : NSView
 @property (nonatomic, weak) EventInfo *eventInfo;
 @property (nonatomic, readonly) CGFloat height;
+@property (nonatomic) MoButton *btnDelete;
 @end
 
 #pragma mark -
@@ -126,7 +128,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return self.events == nil ? 0 : self.events.count;
 }
 
-- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
+- (NSView *)tableView:(MoTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
     NSView *v = nil;
     id obj = self.events[row];
@@ -141,6 +143,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
         if (cell == nil) cell = [AgendaEventCell new];
         cell.eventInfo = obj;
+        BOOL allowsModification = cell.eventInfo.event.calendar.allowsContentModifications;
+        cell.btnDelete.hidden = (tableView.hoverRow == row && allowsModification) ? NO : YES;
+        cell.btnDelete.tag = row;
+        cell.btnDelete.target = self;
+        cell.btnDelete.action = @selector(btnDeleteClicked:);
         v = cell;
     }
     return v;
@@ -172,13 +179,32 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return NO; // disable selection
 }
 
-- (void)tableView:(MoTableView *)tableView didHoverOverRow:(NSInteger)row
+- (void)tableView:(MoTableView *)tableView didHoverOverRow:(NSInteger)hoveredRow
 {
-    if (row == -1 || [self tableView:_tv isGroupRow:row]) {
-        row = -1;
+    if (hoveredRow == -1 || [self tableView:_tv isGroupRow:hoveredRow]) {
+        hoveredRow = -1;
+    }
+    // Hide all delete buttons except for hoveredRow.
+    for (NSInteger row = 0; row < [_tv numberOfRows]; row++) {
+        if (![self tableView:_tv isGroupRow:row]) {
+            AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
+            BOOL allowsModification = cell.eventInfo.event.calendar.allowsContentModifications;
+            cell.btnDelete.hidden = (row == hoveredRow && allowsModification) ? NO : YES;
+        }
     }
     if (self.delegate && [self.delegate respondsToSelector:@selector(agendaHoveredOverRow:)]) {
-        [self.delegate agendaHoveredOverRow:row];
+        [self.delegate agendaHoveredOverRow:hoveredRow];
+    }
+}
+
+#pragma mark -
+#pragma mark Delete event
+
+- (void)btnDeleteClicked:(MoButton *)btn
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToDeleteEvent:)]) {
+        EventInfo *info = self.events[btn.tag];
+        [self.delegate agendaWantsToDeleteEvent:info.event];
     }
 }
 
@@ -268,9 +294,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField.bezeled = NO;
         _textField.drawsBackground = NO;
         _textField.stringValue = @"";
+        _btnDelete = [MoButton new];
+        _btnDelete.image = [NSImage imageNamed:@"btnDel"];
+        _btnDelete.backgroundColor = [NSColor colorWithDeviceWhite:0.98 alpha:1];
         [self addSubview:_textField];
+        [self addSubview:_btnDelete];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-16-[_textField]-8-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-3-[_textField]" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[_btnDelete]-6-|" options:0 metrics:nil views:@{@"_btnDelete": _btnDelete}]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_btnDelete attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
     }
     return self;
 }

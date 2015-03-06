@@ -17,6 +17,9 @@
 {
     self = [super initWithFrame:frameRect];
     if (self) {
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+        self.bordered = NO;
+        self.imagePosition = NSImageOnly;
         self.wantsLayer = YES;
         self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawCrossfade;
     }
@@ -51,6 +54,10 @@
 
 - (void)updateLayer
 {
+    if (self.backgroundColor) {
+        self.layer.backgroundColor = self.backgroundColor.CGColor;
+    }
+    
     // Animate state changes and highlighting by crossfading
     // between _img and img2. img2 is either the alternate
     // image, if the user provided one, or the darkened version

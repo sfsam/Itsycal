@@ -56,15 +56,12 @@
     MoButton* (^btn)(NSString*, NSString*, NSString*, SEL) = ^MoButton* (NSString *imageName, NSString *tip, NSString *key, SEL action) {
         MoButton *btn = [MoButton new];
         [btn setButtonType:NSMomentaryChangeButton];
-        [btn setBordered:NO];
         [btn setTarget:self];
         [btn setAction:action];
         [btn setToolTip:tip];
         [btn setImage:[NSImage imageNamed:imageName]];
-        [btn setImagePosition:NSImageOnly];
         [btn setKeyEquivalent:key];
         [btn setKeyEquivalentModifierMask:NSCommandKeyMask];
-        [btn setTranslatesAutoresizingMaskIntoConstraints:NO];
         [v addSubview:btn];
         return btn;
     };
@@ -165,7 +162,6 @@
 
 - (void)addCalendarEvent:(id)sender
 {
-    // This statement makes the event panel act non-wonky.
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
 
     if (!_eventVC) {
@@ -254,7 +250,6 @@
 
 - (void)showPrefs:(id)sender
 {
-    // This statement makes the prefs panel act non-wonky.
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
     
     if (!_prefsWC) {
@@ -488,6 +483,42 @@
             endDate = AddDaysToDate(-1, endDate);
         }
         [_moCal highlightCellsFromDate:startDate toDate:endDate withColor:info.event.calendar.color];
+    }
+}
+
+- (void)agendaWantsToDeleteEvent:(EKEvent *)event
+{
+    [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+
+    BOOL eventRepeats = event.hasRecurrenceRules;
+    
+    // Ask the user to confirm they want to delete this event (or future events).
+    NSAlert *alert = [NSAlert new];
+    if (eventRepeats == YES) {
+        alert.messageText = NSLocalizedString(@"You're deleting an event.", @"");
+        alert.informativeText = NSLocalizedString(@"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?", @"");
+        [alert addButtonWithTitle:NSLocalizedString(@"Delete Only This Event", @"")];
+        [alert addButtonWithTitle:NSLocalizedString(@"Delete All Future Events", @"")];
+    }
+    else {
+        alert.messageText = NSLocalizedString(@"Are you sure you want to delete this event?", @"");
+        [alert addButtonWithTitle:NSLocalizedString(@"Delete This Event", @"")];
+    }
+    [alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"")];
+    NSModalResponse response = [alert runModal];
+    
+    // Return if the user chose 'Cancel'.
+    if ((eventRepeats == YES && response == NSAlertThirdButtonReturn) ||
+        (eventRepeats == NO && response == NSAlertSecondButtonReturn)) {
+        return;
+    }
+    
+    // Delete this event (or future events).
+    NSError *error = NULL;
+    EKSpan span = (eventRepeats && response == NSAlertSecondButtonReturn) ? EKSpanFutureEvents : EKSpanThisEvent;
+    BOOL result = [_ec.store removeEvent:event span:span commit:YES error:&error];
+    if (result == NO && error != nil) {
+        [[NSAlert alertWithError:error] runModal];
     }
 }
 
