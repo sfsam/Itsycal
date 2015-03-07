@@ -9,7 +9,7 @@
 #import "Itsycal.h"
 
 // Bundle IDs
-NSString * const kItsycalBundleID = @"com.mowglii.Itsycal";
+NSString * const kItsycalBundleID = @"com.mowglii.ItsycalApp";
 NSString * const kItsycalExtraBundleID = @"com.mowglii.ItsycalExtra";
 
 // NSUserDefaults keys
