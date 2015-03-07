@@ -6,7 +6,6 @@
 //  Copyright (c) 2015 mowglii.com. All rights reserved.
 //
 
-#import <QuartzCore/QuartzCore.h>
 #import "EventCenter.h"
 
 // NSUserDefaults key for array of selected calendar IDs.
@@ -177,9 +176,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             MoDate currentStartDate = [self.delegate fetchStartDate];
             if (CompareDates(startDate, currentStartDate) == 0) {
                 
-                CFTimeInterval t = CACurrentMediaTime();
                 [self fetchEventsWithStartDate:startDate endDate:endDate];
-                NSLog(@"t=%f", CACurrentMediaTime() - t);
                 
                 // We do a similar check here since the fetch we just completed
                 // is slow. It may be the case that the user has navigated away
