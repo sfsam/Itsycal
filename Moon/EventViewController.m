@@ -23,10 +23,9 @@
     // View controller content view
     MoView *v = [MoView new];
     
-    // Convenience function for making text fields.
+    // TextField maker
     NSTextField* (^txt)(NSString*, BOOL) = ^NSTextField* (NSString *stringValue, BOOL isEditable) {
         NSTextField *txt = [NSTextField new];
-        txt.font = [NSFont systemFontOfSize:12];
         txt.translatesAutoresizingMaskIntoConstraints = NO;
         txt.editable = isEditable;
         txt.bezeled = isEditable;
@@ -43,6 +42,28 @@
         return txt;
     };
 
+    // DatePicker maker
+    NSDatePicker* (^picker)() = ^NSDatePicker* () {
+        NSDatePicker *picker = [NSDatePicker new];
+        picker.translatesAutoresizingMaskIntoConstraints = NO;
+        picker.datePickerStyle = NSTextFieldDatePickerStyle;
+        picker.bezeled  = NO;
+        picker.bordered = NO;
+        picker.drawsBackground = NO;
+        picker.datePickerElements = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
+        [v addSubview:picker];
+        return picker;
+    };
+
+    // PopUpButton maker
+    NSPopUpButton* (^popup)() = ^NSPopUpButton* () {
+        NSPopUpButton *pop = [NSPopUpButton new];
+        pop.translatesAutoresizingMaskIntoConstraints = NO;
+        pop.target = self;
+        [v addSubview:pop];
+        return pop;
+    };
+    
     // Title and location text fields
     _title = txt(NSLocalizedString(@"New Event", @""), YES);
     _title.delegate = self;
@@ -57,60 +78,38 @@
     [_allDayCheckbox setButtonType:NSSwitchButton];
     [v addSubview:_allDayCheckbox];
     
-    // Labels
+    // Static labels
     NSTextField *allDayLabel = txt(NSLocalizedString(@"All-day:", @""), NO);
     NSTextField *startsLabel = txt(NSLocalizedString(@"Starts:", @""), NO);
     NSTextField *endsLabel   = txt(NSLocalizedString(@"Ends:", @""), NO);
     NSTextField *repLabel    = txt(NSLocalizedString(@"Repeat:", @""), NO);
+    _repEndLabel             = txt(NSLocalizedString(@"End Repeat:", @""), NO);
     
-    // Pickers
-    NSDatePicker* (^picker)() = ^NSDatePicker* () {
-        NSDatePicker *picker = [NSDatePicker new];
-        picker.translatesAutoresizingMaskIntoConstraints = NO;
-        picker.datePickerStyle = NSTextFieldDatePickerStyle;
-        picker.bezeled  = NO;
-        picker.bordered = NO;
-        picker.drawsBackground = NO;
-        picker.datePickerElements = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
-        [v addSubview:picker];
-        return picker;
-    };
+    // Date pickers
     _startDate = picker();
     _startDate.target = self;
     _startDate.action = @selector(startDateChanged:);
     _endDate    = picker();
+    _repEndDate = picker();
+    _repEndDate.datePickerElements = NSYearMonthDayDatePickerElementFlag;
     
-    // Repeat
-    _repPopup = [NSPopUpButton new];
-    _repPopup.translatesAutoresizingMaskIntoConstraints = NO;
+    // Popups
+    _repPopup = popup();
+    _repPopup.action = @selector(repPopupChanged:);
     [_repPopup addItemsWithTitles:@[NSLocalizedString(@"None", @"Repeat none"),
                                     NSLocalizedString(@"Every Day", @""),
                                     NSLocalizedString(@"Every Week", @""),
                                     NSLocalizedString(@"Every 2 Weeks", @""),
                                     NSLocalizedString(@"Every Month", @""),
                                     NSLocalizedString(@"Every Year", @"")]];
-    _repPopup.target = self;
-    _repPopup.action = @selector(repPopupChanged:);
-    [v addSubview:_repPopup];
     
-    _repEndLabel = txt(NSLocalizedString(@"End Repeat:", @""), NO);
-
-    _repEndPopup = [NSPopUpButton new];
-    _repEndPopup.translatesAutoresizingMaskIntoConstraints = NO;
+    _repEndPopup = popup();
+    _repEndPopup.action = @selector(repEndPopupChanged:);
     [_repEndPopup addItemsWithTitles:@[NSLocalizedString(@"Never", @"Repeat ends never"),
                                        NSLocalizedString(@"On Date", @"")]];
-    _repEndPopup.target = self;
-    _repEndPopup.action = @selector(repEndPopupChanged:);
-    [v addSubview:_repEndPopup];
     
-    _repEndDate = picker();
-    _repEndDate.datePickerElements = NSYearMonthDayDatePickerElementFlag;
-
-    // Calendar popup
-    _calPopup = [NSPopUpButton new];
-    _calPopup.translatesAutoresizingMaskIntoConstraints = NO;
+    _calPopup = popup();
     _calPopup.menu.autoenablesItems = NO;
-    [v addSubview:_calPopup];
     
     // Save button
     _saveButton = [NSButton new];
@@ -128,7 +127,7 @@
     };
     vcon(@"V:|-[_title]-[_location]-15-[_allDayCheckbox]", 0);
     vcon(@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_calPopup]", NSLayoutFormatAlignAllLeading);
-    vcon(@"V:[_calPopup]-[_saveButton]-|", 0);
+    vcon(@"V:[_calPopup]-20-[_saveButton]-|", 0);
     vcon(@"H:|-[_title(>=200)]-|", 0);
     vcon(@"H:|-[_location]-|", 0);
     vcon(@"H:|-[allDayLabel]-[_allDayCheckbox]-|", NSLayoutFormatAlignAllBaseline);
@@ -200,29 +199,31 @@
     // Populate calendar popup.
     NSString *defaultCalendarIdentifier = [self.ec defaultCalendarIdentifier];
     NSArray *sourcesAndCalendars = [self.ec sourcesAndCalendars];
+    EKSource *currentSource = nil;
     [_calPopup.menu removeAllItems];
     for (id obj in sourcesAndCalendars) {
-        NSMenuItem *item = [NSMenuItem new];
-        // Add item for Source
-        if ([obj isKindOfClass:[NSString class]]) {
-            if (_calPopup.menu.itemArray.count != 0) {
-                [_calPopup.menu addItem:[NSMenuItem separatorItem]];
-            }
-            item.title = obj;
-            item.enabled = NO;
-            [_calPopup.menu addItem:item];
-        }
-        // Add item for Calendar if calendar can be modified
-        else {
-            CalendarInfo *info = obj;
-            if (info.calendar.allowsContentModifications) {
-                item.title = info.calendar.title;
-                item.image = coloredDot(info.calendar.color);
-                item.tag = [sourcesAndCalendars indexOfObject:obj];
-                [_calPopup.menu addItem:item];
-                if ([info.calendar.calendarIdentifier isEqualToString:defaultCalendarIdentifier]) {
-                    [_calPopup selectItemWithTag:item.tag];
+        if ([obj isKindOfClass:[NSString class]]) continue; // Skip Sources
+        CalendarInfo *calInfo = obj;
+        // Only add menu items for calendars that can be modified.
+        if (calInfo.calendar.allowsContentModifications) {
+            // Add a Source item to the menu if necessary.
+            if (![calInfo.calendar.source isEqualTo:currentSource]) {
+                if (_calPopup.menu.itemArray.count != 0) {
+                    [_calPopup.menu addItem:[NSMenuItem separatorItem]];
                 }
+                NSMenuItem *sourceItem = [NSMenuItem new];
+                sourceItem.title   = calInfo.calendar.source.title;
+                sourceItem.enabled = NO;
+                [_calPopup.menu addItem:sourceItem];
+                currentSource = calInfo.calendar.source;
+            }
+            NSMenuItem *calItem = [NSMenuItem new];
+            calItem.title = calInfo.calendar.title;
+            calItem.image = coloredDot(calInfo.calendar.color);
+            calItem.tag   = [sourcesAndCalendars indexOfObject:obj];
+            [_calPopup.menu addItem:calItem];
+            if ([calInfo.calendar.calendarIdentifier isEqualToString:defaultCalendarIdentifier]) {
+                [_calPopup selectItemWithTag:calItem.tag];
             }
         }
     }
