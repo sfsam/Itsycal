@@ -75,14 +75,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [_tv reloadData];
 }
 
-- (void)viewWillLayout
+- (void)viewDidLayout
 {
     // Calculate height of view based on _tv row heights.
     // We set the view's height using preferredContentSize.
     NSInteger rows = [_tv numberOfRows];
     CGFloat height = 0;
     for (NSInteger row = 0; row < rows; ++row) {
-        height += NSHeight([_tv rectOfRow:row]);
+        height += [self tableView:_tv heightOfRow:row];
     }
     // Limit view height to a max of 500.
     height = MIN(height, 500);
