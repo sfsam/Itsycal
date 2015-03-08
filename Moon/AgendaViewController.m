@@ -288,7 +288,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
         _textField.font = [NSFont fontWithName:@"Lucida Grande" size:11];
-        _textField.textColor = [NSColor darkGrayColor];
+        _textField.textColor = [NSColor colorWithWhite:0.5 alpha:1];
         _textField.lineBreakMode = NSLineBreakByWordWrapping;
         _textField.editable = NO;
         _textField.bezeled = NO;
@@ -354,9 +354,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    // Draw a colored circle
-    [[self.eventInfo.event.calendar.color blendedColorWithFraction:0.3 ofColor:[NSColor whiteColor]] set];
+    // Draw a colored circle with a slightly darker border.
+    [[self.eventInfo.event.calendar.color blendedColorWithFraction:0.1 ofColor:[NSColor whiteColor]] set];
     NSRect circleRect = NSMakeRect(4, NSMaxY(self.frame)-14, 8, 8);
+    [[NSBezierPath bezierPathWithOvalInRect:circleRect] fill];
+    [[self.eventInfo.event.calendar.color blendedColorWithFraction:0.3 ofColor:[NSColor whiteColor]] set];
+    circleRect = NSInsetRect(circleRect, 1, 1);
     [[NSBezierPath bezierPathWithOvalInRect:circleRect] fill];
 }
 
