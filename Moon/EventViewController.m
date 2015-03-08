@@ -306,6 +306,7 @@
     event.startDate = startDate;
     event.endDate   = endDate;
     event.calendar  = calInfo.calendar;
+    event.timeZone  = [NSTimeZone localTimeZone];
     
     // Recurrence rule.
     EKRecurrenceFrequency frequency;
