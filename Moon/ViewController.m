@@ -170,7 +170,7 @@
         _eventVC.cal = _nsCal;
         _eventVC.title = @"";
     }
-    _eventVC.calSelectedDate = [_ec nsDateFromMoDate:_moCal.selectedDate];
+    _eventVC.calSelectedDate = MakeNSDateWithDate(_moCal.selectedDate, _nsCal);
     [self presentViewControllerAsModalWindow:_eventVC];
 }
 
@@ -476,8 +476,8 @@
     }
     else {
         EventInfo *info = _agendaVC.events[row];
-        MoDate startDate = [_ec moDateFromNSDate:info.event.startDate];
-        MoDate endDate = [_ec moDateFromNSDate:info.event.endDate];
+        MoDate startDate = MakeDateWithNSDate(info.event.startDate, _nsCal);
+        MoDate endDate   = MakeDateWithNSDate(info.event.endDate,   _nsCal);
         // Fixup for endDates that are at midnight
         if ([info.event.endDate compare:[_nsCal startOfDayForDate:info.event.endDate]] == NSOrderedSame) {
             endDate = AddDaysToDate(-1, endDate);

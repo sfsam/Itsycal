@@ -26,6 +26,19 @@ MoDate MakeDate(NSInteger year, NSInteger month, NSInteger day)
     return date;
 }
 
+MoDate MakeDateWithNSDate(NSDate *nsDate, NSCalendar *calendar)
+{
+    NSInteger year, month, day;
+    [calendar getEra:NULL year:&year month:&month day:&day fromDate:nsDate];
+    return MakeDate(year, month-1, day);
+}
+
+NSDate *MakeNSDateWithDate(MoDate moDate, NSCalendar *calendar)
+{
+    NSDate *nsDate = [calendar dateWithEra:1 year:moDate.year month:moDate.month+1 day:moDate.day hour:0 minute:0 second:0 nanosecond:0];
+    return [calendar startOfDayForDate:nsDate];
+}
+
 NSInteger IsValidDate(MoDate date)
 {
     return IsValidDate2(date.year, date.month, date.day);

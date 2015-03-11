@@ -47,6 +47,22 @@ typedef struct {
 MoDate MakeDate(NSInteger year, NSInteger month, NSInteger day);
 
 //
+// Make a date
+// nsDate    the date as an NSDate
+// calendar  the calendar to use to interpret nsDate
+// return    a date including julian day
+//
+MoDate MakeDateWithNSDate(NSDate *nsDate, NSCalendar *calendar);
+
+//
+// Make an NSDate
+// moDate    the date as a MoDate
+// calendar  the calendar with which to create the resulting NSDate
+// return    an NSDate
+//
+NSDate *MakeNSDateWithDate(MoDate moDate, NSCalendar *calendar);
+
+//
 // The number of days in a month
 // year, month  the year and month
 // return       the number of days in that month

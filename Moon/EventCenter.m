@@ -139,7 +139,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // TODO: Do we need to check if theDate is in the range
     //       of events we've already fetched?
 
-    NSDate *nsDate = [_cal startOfDayForDate:[self nsDateFromMoDate:date]];
+    NSDate *nsDate = MakeNSDateWithDate(date, _cal);
     return _filteredEventsForDate[nsDate];
 }
 
@@ -148,7 +148,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSMutableArray *datesAndEvents = [NSMutableArray new];
     MoDate endDate = AddDaysToDate(days, date);
     while (CompareDates(date, endDate) < 0) {
-        NSDate *nsDate = [_cal startOfDayForDate:[self nsDateFromMoDate:date]];
+        NSDate *nsDate = MakeNSDateWithDate(date, _cal);
         NSArray *events = _filteredEventsForDate[nsDate];
         if (events != nil) {
             [datesAndEvents addObject:nsDate];
@@ -203,8 +203,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 
 - (void)fetchEventsWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate
 {
-    NSDate *startDate = [self nsDateFromMoDate:startMoDate];
-    NSDate *endDate   = [self nsDateFromMoDate:endMoDate];
+    NSDate *startDate = MakeNSDateWithDate(startMoDate, _cal);
+    NSDate *endDate   = MakeNSDateWithDate(endMoDate,   _cal);
     NSPredicate *predicate = [_store predicateForEventsWithStartDate:startDate endDate:endDate calendars:nil];
     NSArray *events = [_store eventsMatchingPredicate:predicate];
     NSMutableDictionary *eventsForDate = [NSMutableDictionary new];
@@ -299,21 +299,6 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 
     [self fetchSourcesAndCalendars];
     [self fetchEvents];
-}
-
-#pragma mark -
-#pragma mark Utilities
-
-- (NSDate *)nsDateFromMoDate:(MoDate)moDate
-{
-    return [_cal dateWithEra:1 year:moDate.year month:moDate.month+1 day:moDate.day hour:0 minute:0 second:0 nanosecond:0];
-}
-
-- (MoDate)moDateFromNSDate:(NSDate *)nsDate
-{
-    NSInteger year, month, day;
-    [_cal getEra:NULL year:&year month:&month day:&day fromDate:nsDate];
-    return MakeDate(year, month-1, day);
 }
 
 @end
