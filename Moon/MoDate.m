@@ -41,17 +41,12 @@ NSDate *MakeNSDateWithDate(MoDate moDate, NSCalendar *calendar)
 
 NSInteger IsValidDate(MoDate date)
 {
-    return IsValidDate2(date.year, date.month, date.day);
-}
-
-NSInteger IsValidDate2(NSInteger year, NSInteger month, NSInteger day)
-{
-    if  (year  < MIN_MODATE_YEAR ||
-         year  > MAX_MODATE_YEAR ||
-         month <  0 ||
-         month > 11 ||
-         day   <  1 ||
-         day   > DaysInMonth(year, month)) {
+    if  (date.year  < MIN_MODATE_YEAR ||
+         date.year  > MAX_MODATE_YEAR ||
+         date.month <  0 ||
+         date.month > 11 ||
+         date.day   <  1 ||
+         date.day   > DaysInMonth(date.year, date.month)) {
         return 0;
     }
     return 1;
@@ -59,30 +54,12 @@ NSInteger IsValidDate2(NSInteger year, NSInteger month, NSInteger day)
 
 NSInteger CompareDates(MoDate date1, MoDate date2)
 {
-    // -1 => date1 is ealier
-    //  1 => date1 is later
-    //  0 => dates are the same
-    if (date1.julian == NO_JULIAN || date2.julian == NO_JULIAN) {
-        return CompareDates2(date1.year, date1.month, date1.day,
-                             date2.year, date2.month, date2.day);
-    }
-    if      (date1.julian < date2.julian) { return -1; }
-    else if (date1.julian > date2.julian) { return  1; }
-    else                                  { return  0; }
-}
-
-NSInteger CompareDates2(NSInteger y1, NSInteger m1, NSInteger d1, NSInteger y2, NSInteger m2, NSInteger d2)
-{
-    // -1 => date1 is ealier
-    //  1 => date1 is later
-    //  0 => dates are the same
-    if      (y1 < y2) { return -1; }
-    else if (y1 > y2) { return  1; }
-    else if (m1 < m2) { return -1; }
-    else if (m1 > m2) { return  1; }
-    else if (d1 < d2) { return -1; }
-    else if (d1 > d2) { return  1; }
-    else              { return  0; }
+    // result < 0  => date1 is ealier
+    // result > 0  => date1 is later
+    // result = 0  => dates are the same
+    NSInteger j1 = date1.julian == NO_JULIAN ? MakeJulian(date1.year, date1.month, date1.day) : date1.julian;
+    NSInteger j2 = date2.julian == NO_JULIAN ? MakeJulian(date2.year, date2.month, date2.day) : date2.julian;
+    return j1 - j2;
 }
 
 NSInteger DaysInMonth(NSInteger year, NSInteger month)

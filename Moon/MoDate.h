@@ -70,31 +70,15 @@ NSInteger DaysInMonth(NSInteger year, NSInteger month);
 NSInteger IsValidDate(MoDate date);
 
 //
-// Is a date valid?
-// y, m, d  the year, month, day
-// return   1 if y-m-d is valid, else 0
-//
-NSInteger IsValidDate2(NSInteger y, NSInteger m, NSInteger d);
-
-//
 // Compare two dates
 // date1    the first date
 // date2    the second date
-// return  -1 if the first date is earlier,
-//          1 if the first date is later,
-//          0 if the dates are the same
+// return   the difference in days between date1 and date2
+//          < 0 if date1 is earlier,
+//          > 0 if date1 is later,
+//            0 if the dates are the same
 //
 NSInteger CompareDates(MoDate date1, MoDate date2);
-
-//
-// Compare two dates
-// y1, m1, d1  the year, month, day of the first date
-// y2, m2, d2  the year, month, day of the second date
-// return      -1 if the first date is earlier,
-//              1 if the first date is later,
-//              0 if the dates are the same
-//
-NSInteger CompareDates2(NSInteger y1, NSInteger m1, NSInteger d1, NSInteger y2, NSInteger m2, NSInteger d2);
 
 //
 // Get the number of ISO 8601 weeks in a year
