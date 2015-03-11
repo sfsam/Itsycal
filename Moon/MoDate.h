@@ -32,13 +32,6 @@ typedef struct {
     NSInteger julian; // Julian Day
 } MoDate;
 
-typedef struct {
-    NSInteger year;     // MIN_MODATE_YEAR...MAX_MODATE_YEAR
-    NSInteger month;    // 0...11
-    NSInteger weeks[6]; // 1...53 ISO 8601 weeks
-    MoDate dates[6][7];
-} MoMonth;
-
 //
 // Make a date
 // year, month day  the components of the date
@@ -153,13 +146,3 @@ MoDate AddDaysToDate(NSInteger days, MoDate date);
 //         MoDate struct is 1
 //
 MoDate AddMonthsToMonth(NSInteger months, MoDate date);
-
-//
-// Make a monthly calendar for a particular month
-// year          the year of the date [1583+]
-// month         the month of the date [0..11]
-// weekStartDOW  the day of the week on which the week
-//               starts [0..6]; 0=Sunday, 1=Monday...
-// return        the monthly calendar
-//
-MoMonth MakeMonth(NSInteger year, NSInteger month, NSInteger weekStartDOW);
