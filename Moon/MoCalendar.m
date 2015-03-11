@@ -274,9 +274,9 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     // Month/year and DOW labels
     NSArray *months = [_formatter shortMonthSymbols];
     NSArray *dows = [_formatter veryShortWeekdaySymbols];
-    NSString *month = [NSString stringWithFormat:@"%@ %d", months[self.monthDate.month], self.monthDate.year];
+    NSString *month = [NSString stringWithFormat:@"%@ %zd", months[self.monthDate.month], self.monthDate.year];
     [_monthLabel setStringValue:month];
-    for (int i = 0; i < 7; i++) {
+    for (NSInteger i = 0; i < 7; i++) {
         NSString *dow = [NSString stringWithFormat:@"%@", dows[(i + self.weekStartDOW)%7]];
         [[_dowGrid.cells[i] textField] setStringValue:dow];
     }
@@ -286,22 +286,22 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     
     // Get the DOW for the first of the month.
     // en.wikipedia.org/wiki/Julian_day#Finding_day_of_week_given_Julian_day_number
-    int monthStartDOW = (firstOfMonth.julian + 1)%7;
+    NSInteger monthStartDOW = (firstOfMonth.julian + 1)%7;
     
     // On which column [0..6] in the monthly calendar does this date fall?
-    int monthStartColumn = DOW_COL(self.weekStartDOW, monthStartDOW);
+    NSInteger monthStartColumn = DOW_COL(self.weekStartDOW, monthStartDOW);
     
     // Get the date for the first column of the monthly calendar.
     MoDate date = AddDaysToDate(-monthStartColumn, firstOfMonth);
     
     // On which column [0..6] in the monthly calendar does Monday fall?
-    int mondayColumn = DOW_COL(self.weekStartDOW, 1); // 1=Monday
+    NSInteger mondayColumn = DOW_COL(self.weekStartDOW, 1); // 1=Monday
     
     // Fill in the calendar grid sequentially.
-    for (int row = 0; row < 6; row++) {
-        for (int col = 0; col < 7; col++) {
+    for (NSInteger row = 0; row < 6; row++) {
+        for (NSInteger col = 0; col < 7; col++) {
             MoCalCell *cell = _dateGrid.cells[row * 7 + col];
-            cell.textField.stringValue = [NSString stringWithFormat:@"%d", date.day];
+            cell.textField.stringValue = [NSString stringWithFormat:@"%zd", date.day];
             cell.date = date;
             cell.isToday = CompareDates(date, self.todayDate) == 0;
             if (date.month == self.monthDate.month) {
@@ -322,7 +322,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
             // calculate the week number for this row.
             if (col == mondayColumn) {
                 [_weekGrid.cells[row] textField].textColor = kLightTextColor;
-                [_weekGrid.cells[row] textField].stringValue = [NSString stringWithFormat:@"%d", WeekOfYear(date.year, date.month, date.day)];
+                [_weekGrid.cells[row] textField].stringValue = [NSString stringWithFormat:@"%zd", WeekOfYear(date.year, date.month, date.day)];
             }
             date = AddDaysToDate(1, date);
         }
@@ -495,7 +495,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     }
 }
 
-- (void)moveSelectionByDays:(int)days
+- (void)moveSelectionByDays:(NSInteger)days
 {
     MoDate newSelectedDate = AddDaysToDate(days, self.selectedDate);
     MoDate firstCellDate = [(MoCalCell *)_dateGrid.cells.firstObject date];

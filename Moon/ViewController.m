@@ -317,7 +317,7 @@
 - (void)updateMenubarIcon
 {
     if (_statusItem) {
-        int day = _moCal.todayDate.day;
+        NSInteger day = _moCal.todayDate.day;
         NSImage *datesImage = [NSImage imageNamed:@"dates"];
         _statusItem.button.image = ItsycalDateIcon(day, datesImage);
     }
@@ -579,7 +579,7 @@
 - (MoDate)todayDate
 {
     NSDateComponents *c = [_nsCal components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:[NSDate new]];
-    return MakeDate((int)c.year, (int)c.month-1, (int)c.day);
+    return MakeDate(c.year, c.month-1, c.day);
 }
 
 #pragma mark -

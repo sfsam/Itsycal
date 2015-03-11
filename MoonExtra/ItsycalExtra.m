@@ -117,7 +117,7 @@
 
 - (void)menubarIconUpdated:(NSNotification *)notification
 {
-    int day = (int)[notification.userInfo[@"day"] integerValue];
+    NSInteger day = [notification.userInfo[@"day"] integerValue];
     _itsycalIsRunning = YES;
     [(NSMenuExtraView *)self.view setImage:ItsycalDateIcon(day, _dates)];
 }

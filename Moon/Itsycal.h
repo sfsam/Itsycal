@@ -32,5 +32,5 @@ extern NSString * const ItsycalExtraClickedNotification;
 extern NSString * const ItsycalExtraDidMoveNotification;
 extern NSString * const ItsycalExtraWillUnloadNotification;
 
-NSImage *ItsycalDateIcon(int day, NSImage *datesImage);
+NSImage *ItsycalDateIcon(NSInteger day, NSImage *datesImage);
 

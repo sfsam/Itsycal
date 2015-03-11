@@ -146,7 +146,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 - (NSArray *)datesAndEventsForDate:(MoDate)date days:(NSInteger)days
 {
     NSMutableArray *datesAndEvents = [NSMutableArray new];
-    MoDate endDate = AddDaysToDate((int)days, date);
+    MoDate endDate = AddDaysToDate(days, date);
     while (CompareDates(date, endDate) < 0) {
         NSDate *nsDate = [_cal startOfDayForDate:[self nsDateFromMoDate:date]];
         NSArray *events = _filteredEventsForDate[nsDate];
@@ -313,7 +313,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 {
     NSInteger year, month, day;
     [_cal getEra:NULL year:&year month:&month day:&day fromDate:nsDate];
-    return MakeDate((int)year, (int)month-1, (int)day);
+    return MakeDate(year, month-1, day);
 }
 
 @end

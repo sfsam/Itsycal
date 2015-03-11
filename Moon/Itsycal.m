@@ -31,7 +31,7 @@ NSString * const ItsycalExtraClickedNotification = @"ItsycalMenuExtraClickedNoti
 NSString * const ItsycalExtraDidMoveNotification = @"ItsycalMenuExtraDidMoveNotification";
 NSString * const ItsycalExtraWillUnloadNotification = @"ItsycalMenuExtraWillUnloadNotification";
 
-NSImage *ItsycalDateIcon(int day, NSImage *datesImage)
+NSImage *ItsycalDateIcon(NSInteger day, NSImage *datesImage)
 {
     day = (day < 0 || day > 31) ? 0 : day;
     CGFloat width = 19, height = 14;

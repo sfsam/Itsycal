@@ -1,25 +1,22 @@
 //
-//  MoDate.c
+//  MoDate.m
 //
 //
 //  Created by Sanjay Madan on 11/13/14.
 //  Copyright (c) 2014 mowglii.com. All rights reserved.
 //
 
-// !!! Type 'int' must be at least 32 bits wide on your system
-// !!! These functions are for Gregorian dates (year 1583+)
+#import "MoDate.h"
 
-#include "MoDate.h"
-
-static const int kDaysInMonth[12] = {
+static const NSInteger kDaysInMonth[12] = {
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
-static const int kMonthDaysSoFar[12] = {
+static const NSInteger kMonthDaysSoFar[12] = {
     0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
 };
 
-MoDate MakeDate(int year, int month, int day)
+MoDate MakeDate(NSInteger year, NSInteger month, NSInteger day)
 {
     MoDate date;
     date.year = year;
@@ -29,12 +26,12 @@ MoDate MakeDate(int year, int month, int day)
     return date;
 }
 
-int IsValidDate(MoDate date)
+NSInteger IsValidDate(MoDate date)
 {
     return IsValidDate2(date.year, date.month, date.day);
 }
 
-int IsValidDate2(int year, int month, int day)
+NSInteger IsValidDate2(NSInteger year, NSInteger month, NSInteger day)
 {
     if  (year  < MIN_MODATE_YEAR ||
          year  > MAX_MODATE_YEAR ||
@@ -47,7 +44,7 @@ int IsValidDate2(int year, int month, int day)
     return 1;
 }
 
-int CompareDates(MoDate date1, MoDate date2)
+NSInteger CompareDates(MoDate date1, MoDate date2)
 {
     // -1 => date1 is ealier
     //  1 => date1 is later
@@ -61,7 +58,7 @@ int CompareDates(MoDate date1, MoDate date2)
     else                                  { return  0; }
 }
 
-int CompareDates2(int y1, int m1, int d1, int y2, int m2, int d2)
+NSInteger CompareDates2(NSInteger y1, NSInteger m1, NSInteger d1, NSInteger y2, NSInteger m2, NSInteger d2)
 {
     // -1 => date1 is ealier
     //  1 => date1 is later
@@ -75,12 +72,12 @@ int CompareDates2(int y1, int m1, int d1, int y2, int m2, int d2)
     else              { return  0; }
 }
 
-int DaysInMonth(int year, int month)
+NSInteger DaysInMonth(NSInteger year, NSInteger month)
 {
     return (month == 1 && IS_LEAP_YEAR(year)) ? 29 : kDaysInMonth[month];
 }
 
-int WeeksInYear(int year)
+NSInteger WeeksInYear(NSInteger year)
 {
     // How many ISO 8601 weeks are there in a year?
     // A year has 53 weeks if it starts on Thursday -OR-
@@ -92,10 +89,10 @@ int WeeksInYear(int year)
     // DOW algorithm by Michael Keith and Tom Craver
     // Result is [0..6]; 0=Sunday, 1=Monday...
     // stackoverflow.com/a/21235587/111418
-    int y = year;
-    int m = 1; // January
-    int d = 1;
-    int jan1DOW = (d+=m<3?y--:y-2,23*m/9+d+4+y/4-y/100+y/400)%7;
+    NSInteger y = year;
+    NSInteger m = 1; // January
+    NSInteger d = 1;
+    NSInteger jan1DOW = (d+=m<3?y--:y-2,23*m/9+d+4+y/4-y/100+y/400)%7;
     
     // Is Jan1 a Thursday OR a Wednesday in a leap year?
     if (jan1DOW == 4 || (jan1DOW == 3 && IS_LEAP_YEAR(year))) {
@@ -104,16 +101,16 @@ int WeeksInYear(int year)
     return 52;
 }
 
-int WeekOfYear(int year, int month, int day)
+NSInteger WeekOfYear(NSInteger year, NSInteger month, NSInteger day)
 {
     // First, calculate the day of the year.
-    int dayOfYear = kMonthDaysSoFar[month] + day;
+    NSInteger dayOfYear = kMonthDaysSoFar[month] + day;
     if (month > 1 && IS_LEAP_YEAR(year)) {
         dayOfYear += 1;
     }
     // Next, calculate the week number.
     // en.wikipedia.org/wiki/ISO_week_date#Calculation
-    int week = (dayOfYear + 9)/7;
+    NSInteger week = (dayOfYear + 9)/7;
     if (week > WeeksInYear(year)) {
         return 1;
     }
@@ -123,7 +120,7 @@ int WeekOfYear(int year, int month, int day)
     return week;
 }
 
-int MakeJulian(int year, int month, int day)
+NSInteger MakeJulian(NSInteger year, NSInteger month, NSInteger day)
 {
     // Algorithm 199
     // Conversions Between Calendar Date and Julian Day Number
@@ -141,12 +138,12 @@ int MakeJulian(int year, int month, int day)
         month += 9;
         year -= 1;
     }
-    int c = year/100;
-    int ya = year - 100*c;
+    NSInteger c = year/100;
+    NSInteger ya = year - 100*c;
     return 146097*c/4 + 1461*ya/4 + (153*month + 2)/5 + day + 1721119;
 }
 
-MoDate MakeGregorian(int julian)
+MoDate MakeGregorian(NSInteger julian)
 {
     // Algorithm 199
     // Conversions Between Calendar Date and Julian Day Number
@@ -158,13 +155,13 @@ MoDate MakeGregorian(int julian)
     result.julian = julian;
     
     julian -= 1721119;
-    int y = (4*julian - 1)/146097;
+    NSInteger y = (4*julian - 1)/146097;
     julian = 4*julian - 1 - 146097*y;
-    int d = julian/4;
+    NSInteger d = julian/4;
     julian = (4*d + 3)/1461;
     d = 4*d + 3 - 1461*julian;
     d = (d + 4)/4;
-    int m = (5*d - 3)/153;
+    NSInteger m = (5*d - 3)/153;
     d = 5*d - 3 - 153*m;
     d = (d + 5)/5;
     y = 100*y + julian;
@@ -185,7 +182,7 @@ MoDate MakeGregorian(int julian)
     return result;
 }
 
-MoDate AddDaysToDate(int days, MoDate date)
+MoDate AddDaysToDate(NSInteger days, MoDate date)
 {
     if (date.julian == NO_JULIAN) {
         date.julian = MakeJulian(date.year, date.month, date.day);
@@ -193,10 +190,10 @@ MoDate AddDaysToDate(int days, MoDate date)
     return MakeGregorian(date.julian + days);
 }
 
-MoDate AddMonthsToMonth(int months, MoDate date)
+MoDate AddMonthsToMonth(NSInteger months, MoDate date)
 {
-    int newYear  = date.year  + months/12;
-    int newMonth = date.month + months%12;
+    NSInteger newYear  = date.year  + months/12;
+    NSInteger newMonth = date.month + months%12;
     if (newMonth > 11) {
         newMonth -= 12;
         newYear  += 1;
@@ -208,7 +205,7 @@ MoDate AddMonthsToMonth(int months, MoDate date)
     return MakeDate(newYear, newMonth, 1);
 }
 
-MoMonth MakeMonth(int year, int month, int weekStartDOW)
+MoMonth MakeMonth(NSInteger year, NSInteger month, NSInteger weekStartDOW)
 {
     MoMonth result;
     result.year  = year;
@@ -219,20 +216,20 @@ MoMonth MakeMonth(int year, int month, int weekStartDOW)
 
     // Get the DOW for the first of the month.
     // en.wikipedia.org/wiki/Julian_day#Finding_day_of_week_given_Julian_day_number
-    int monthStartDOW = (firstOfMonth.julian + 1)%7;
+    NSInteger monthStartDOW = (firstOfMonth.julian + 1)%7;
     
     // On which column [0..6] in the monthly calendar does this date fall?
-    int monthStartColumn = DOW_COL(weekStartDOW, monthStartDOW);
+    NSInteger monthStartColumn = DOW_COL(weekStartDOW, monthStartDOW);
 
     // Get the date for the first column of the monthly calendar.
     MoDate date = AddDaysToDate(-monthStartColumn, firstOfMonth);
     
     // On which column [0..6] in the monthly calendar does Monday fall?
-    int mondayColumn = DOW_COL(weekStartDOW, 1); // 1=Monday
+    NSInteger mondayColumn = DOW_COL(weekStartDOW, 1); // 1=Monday
 
     // Fill in the calendar grid sequentially.
-    for (int row = 0; row < 6; row++) {
-        for (int col = 0; col < 7; col++) {
+    for (NSInteger row = 0; row < 6; row++) {
+        for (NSInteger col = 0; col < 7; col++) {
             result.dates[row][col] = date;
             // ISO 8601 weeks are defined to start on Monday (and
             // really only make sense if weekStartDOW is Monday).
