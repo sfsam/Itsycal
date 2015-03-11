@@ -25,6 +25,13 @@
 #define NO_JULIAN              (-1) // When Julian Day is undefined
 #define MIN_MODATE_YEAR        (1583)
 #define MAX_MODATE_YEAR        (3333)
+
+//
+// A Gregorian date
+// We use a struct rather than a class because it has
+// copy (value vs reference) semantics and is easier to
+// reason about in use.
+//
 typedef struct {
     NSInteger year;   // MIN_MODATE_YEAR...MAX_MODATE_YEAR
     NSInteger month;  // 0...11
@@ -65,9 +72,9 @@ NSInteger DaysInMonth(NSInteger year, NSInteger month);
 //
 // Is a date valid?
 // date    the date
-// return  1 if date is valid, else 0
+// return  YES if date is valid, else NO
 //
-NSInteger IsValidDate(MoDate date);
+BOOL IsValidDate(MoDate date);
 
 //
 // Compare two dates

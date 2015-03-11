@@ -39,7 +39,7 @@ NSDate *MakeNSDateWithDate(MoDate moDate, NSCalendar *calendar)
     return [calendar startOfDayForDate:nsDate];
 }
 
-NSInteger IsValidDate(MoDate date)
+BOOL IsValidDate(MoDate date)
 {
     if  (date.year  < MIN_MODATE_YEAR ||
          date.year  > MAX_MODATE_YEAR ||
@@ -47,9 +47,9 @@ NSInteger IsValidDate(MoDate date)
          date.month > 11 ||
          date.day   <  1 ||
          date.day   > DaysInMonth(date.year, date.month)) {
-        return 0;
+        return NO;
     }
-    return 1;
+    return YES;
 }
 
 NSInteger CompareDates(MoDate date1, MoDate date2)
