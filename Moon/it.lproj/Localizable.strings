@@ -31,6 +31,9 @@
 /* No comment provided by engineer. */
 "Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "L'accesso al calendario negato.\n\nItsycal è più utile quando è in grado di visualizzare eventi dai calendari. È possibile modificare questa impostazione in Preferenze di Sistema › Sicurezza e Privacy › Privacy.";
 
+/* No comment provided by engineer. */
+"Calendar access was denied." = "L'accesso al calendario negato.";
+
 /* Cancel action button in recording state */
 "Cancel" = "Annulla";
 
@@ -84,6 +87,9 @@
 
 /* No comment provided by engineer. */
 "Friday" = "Venerdì";
+
+/* No comment provided by engineer. */
+"Itsycal is more useful when it can add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal è più utile quando può aggiungere eventi al calendario. È possibile modificare questa impostazione in Preferenze di Sistema › Sicurezza e Privacy › Privacy.";
 
 /* No comment provided by engineer. */
 "Keyboard shortcut" = "Abbreviazione da tastiera";

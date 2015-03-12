@@ -31,6 +31,9 @@
 /* No comment provided by engineer. */
 "Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Kalenderzugriff verweigert.\n\nItsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden können. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.";
 
+/* No comment provided by engineer. */
+"Calendar access was denied." = "Kalenderzugriff verweigert.";
+
 /* Cancel action button in recording state */
 "Cancel" = "Abbrechen";
 
@@ -53,7 +56,7 @@
 "Delete shortcut" = "Löschen Tastaturkurzbefehl";
 
 /* No comment provided by engineer. */
-"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Möchten Sie dieses und all zukünftigen Vorkommen dieses Ereignisses löschen oder nur das ausgewählte Vorkommen ?";
+"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Möchten Sie dieses und all zukünftigen Vorkommen dieses Ereignisses löschen oder nur das ausgewählte Vorkommen?";
 
 /* No comment provided by engineer. */
 "End Repeat:" = "Beenden:";
@@ -84,6 +87,9 @@
 
 /* No comment provided by engineer. */
 "Friday" = "Freitag";
+
+/* No comment provided by engineer. */
+"Itsycal is more useful when it can add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal ist nützlicher, wenn es Veranstaltungen zu Ihrem Kalender hinzuzufügen. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.";
 
 /* No comment provided by engineer. */
 "Keyboard shortcut" = "Tastaturkurzbefehl";
