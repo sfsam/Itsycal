@@ -45,7 +45,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     kDarkTextColor  = [NSColor colorWithWhite:0.15 alpha:1];
     kBackgroundColor = [NSColor whiteColor];
     kWeeksBackgroundColor = [NSColor colorWithRed:0.88 green:0.88 blue:0.9 alpha:1];
-    kDatesBackgroundColor = [NSColor colorWithRed:0.94 green:0.94 blue:0.95 alpha:1];
+    kDatesBackgroundColor = [NSColor colorWithRed:0.95 green:0.95 blue:0.96 alpha:1];
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect

@@ -258,7 +258,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSRectFillUsingOperation(r, NSCompositeSourceOver);
 
     r.size.height -= 1;
-    [[NSColor colorWithRed:0.94 green:0.94 blue:0.95 alpha:1] set];
+    [[NSColor colorWithRed:0.95 green:0.95 blue:0.96 alpha:1] set];
     NSRectFillUsingOperation(r, NSCompositeSourceOver);
 }
 
