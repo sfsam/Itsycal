@@ -44,7 +44,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     kLightTextColor = [NSColor colorWithWhite:0.15 alpha:0.6];
     kDarkTextColor  = [NSColor colorWithWhite:0.15 alpha:1];
     kBackgroundColor = [NSColor whiteColor];
-    kWeeksBackgroundColor = [NSColor colorWithRed:0.88 green:0.88 blue:0.9 alpha:1];
+    kWeeksBackgroundColor = [NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1];
     kDatesBackgroundColor = [NSColor colorWithRed:0.95 green:0.95 blue:0.96 alpha:1];
 }
 

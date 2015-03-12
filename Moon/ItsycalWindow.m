@@ -15,7 +15,7 @@ static const CGFloat kBorderWidth  = 1;
 static const CGFloat kShadowWidth  = 12;
 static const CGFloat kWindowTopMargin    = kCornerRadius + kBorderWidth + kArrowHeight;
 static const CGFloat kWindowSideMargin   = kBorderWidth  + kShadowWidth;
-static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShadowWidth;
+static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShadowWidth + kShadowWidth/2;
 
 @interface ItsycalWindowFrameView : NSView
 @property (nonatomic, assign) CGFloat arrowMidX;
@@ -163,8 +163,8 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
     // The rectangular part of frame view must be inset and
     // offset to make room for the arrow and drop shadow.
     NSRect rect = NSInsetRect(self.bounds, kWindowSideMargin, 0);
-    rect.origin.y = kShadowWidth + kBorderWidth;
-    rect.size.height -= (kArrowHeight + kShadowWidth + 2*kBorderWidth);
+    rect.origin.y = kBorderWidth + kShadowWidth + kShadowWidth/2;
+    rect.size.height -= (kArrowHeight + kShadowWidth + kShadowWidth/2 + 2*kBorderWidth);
     NSBezierPath *rectPath = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:kCornerRadius yRadius:kCornerRadius];
     
     // The arrow is in the middle of the frame view.
@@ -183,7 +183,7 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
         shadow = [NSShadow new];
         shadow.shadowColor = [NSColor colorWithWhite:0 alpha:0.5];
         shadow.shadowBlurRadius = kShadowWidth;
-        shadow.shadowOffset = NSMakeSize(0, -1);
+        shadow.shadowOffset = NSMakeSize(0, -kShadowWidth/2);
     }
     [shadow set];
     [[NSColor colorWithWhite:0 alpha:0.4] setStroke];
