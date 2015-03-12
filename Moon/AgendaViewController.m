@@ -254,11 +254,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)drawRect:(NSRect)dirtyRect
 {
     NSRect r = self.bounds;
-    [[NSColor colorWithRed:0.93 green:0.93 blue:0.94 alpha:1] set];
+    [[NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1] set];
     NSRectFillUsingOperation(r, NSCompositeSourceOver);
 
     r.size.height -= 1;
-    [[NSColor colorWithRed:0.96 green:0.96 blue:0.97 alpha:1] set];
+    [[NSColor colorWithRed:0.94 green:0.94 blue:0.95 alpha:1] set];
     NSRectFillUsingOperation(r, NSCompositeSourceOver);
 }
 
