@@ -174,7 +174,7 @@
     if (_ec.calendarAccessGranted == NO) {
         NSAlert *alert = [NSAlert new];
         alert.messageText = NSLocalizedString(@"Calendar access was denied.", @"");
-        alert.informativeText = NSLocalizedString(@"Itsycal is more useful when it can add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy.", @"");
+        alert.informativeText = NSLocalizedString(@"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy.", @"");
         [alert runModal];
         return;
     }
