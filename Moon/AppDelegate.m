@@ -42,11 +42,6 @@
     _wc.window.delegate = _vc;
     
     [self loadMenuExtra];
-
-    // Give the menu extra a moment to load before showing the window.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [_wc showWindow:nil];
-    });
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
