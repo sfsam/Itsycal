@@ -214,16 +214,22 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // to an array of events that fall on that date.
     for (EKEvent *event in events) {
 
-// TODO: COMMENTING THIS OUT FOR NOW BECAUSE IT IS INEXPLICABLY SLOW.
-//       IT IS JUST AS SLOW EVEN IF THE BODY OF THE LOOP IS REMOVED.
-//
-//        // Skip events the current user has declined.
-//        for (EKParticipant *participant in event.attendees) {
-//            if (participant.isCurrentUser &&
-//                participant.participantStatus == EKParticipantStatusDeclined) {
-//                return; // this is like 'continue' in a for-loop
-//            }
-//        }
+        // Skip events the current user has declined.
+        // This code is very slow. Apparently, loading the 'attendees'
+        // property is time consuming. We avoid some of that by first
+        // checking the 'hasAttendees' property. But events that do
+        // have attendees will be slow to process.
+        BOOL skipEventBecauseUserDeclinedIt = NO;
+        if (event.hasAttendees) {
+            for (EKParticipant *participant in event.attendees) {
+                if (participant.isCurrentUser &&
+                    participant.participantStatus == EKParticipantStatusDeclined) {
+                    skipEventBecauseUserDeclinedIt = YES;
+                    break; // break out of inner loop and...
+                }
+            }
+        }
+        if (skipEventBecauseUserDeclinedIt) continue; // ...continue outer loop
 
         // Iterate through the days this event spans. We only care about
         // days for this event that are between startDate and endDate.
