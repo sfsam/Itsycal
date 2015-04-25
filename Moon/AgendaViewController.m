@@ -335,6 +335,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:string];
     [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, title.length)];
     _textField.attributedStringValue = s;
+    _textField.toolTip = info.event.location;
 }
 
 - (void)setFrame:(NSRect)frame

@@ -29,10 +29,10 @@
 "Are you sure you want to delete this event?" = "Êtes-vous sûr de vouloir supprimer cet événement ?";
 
 /* No comment provided by engineer. */
-"Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "L'accès au calendrier refusée.\n\nItsycal est plus utile quand il peut afficher les événements de vos calendriers. Vous pouvez modifier ce paramètre dans les Préférences Système › Sécurité et confidentialité › Confidentialité.";
+"Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "L'accès au calendrier est refusée.\n\nItsycal est plus utile quand il peut afficher les événements de vos calendriers. Vous pouvez modifier ce paramètre dans les Préférences Système › Sécurité et confidentialité › Confidentialité.";
 
 /* No comment provided by engineer. */
-"Calendar access was denied." = "L'accès au calendrier refusée.";
+"Calendar access was denied." = "L'accès au calendrier est refusée.";
 
 /* Cancel action button in recording state */
 "Cancel" = "Annuler";
@@ -86,7 +86,7 @@
 "First day of week" = "Premier jour de la semaine";
 
 /* No comment provided by engineer. */
-"Friday" = "Vendredi";
+"Friday" = "vendredi";
 
 /* No comment provided by engineer. */
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal est plus utile lorsque vous lui permettent d'ajouter des événements à vos calendriers. Vous pouvez modifier ce paramètre dans les Préférences Système › Sécurité et confidentialité › Confidentialité.";
@@ -98,7 +98,7 @@
 "Launch at login" = "Lancer automatiquement à la connexion";
 
 /* No comment provided by engineer. */
-"Monday" = "Lundi";
+"Monday" = "lundi";
 
 /* Repeat ends never */
 "Never" = "jamais";
@@ -140,7 +140,7 @@
 "Repeat:" = "Récurrence:";
 
 /* No comment provided by engineer. */
-"Saturday" = "Samedi";
+"Saturday" = "samedi";
 
 /* No comment provided by engineer. */
 "Save Event" = "Enregistrer l'événement";
@@ -155,7 +155,7 @@
 "Starts:" = "Commence:";
 
 /* No comment provided by engineer. */
-"Sunday" = "Dimanche";
+"Sunday" = "dimanche";
 
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "L'application Calendrier est introuvable.";
@@ -167,10 +167,10 @@
 "This shortcut cannot be used because it is already used by the menu item ‘%@’." = "La combinaison de touches ne peut être utilisée parce qu’elle est déjà utilisée par l’élément de menu ‘%@’.";
 
 /* No comment provided by engineer. */
-"Thursday" = "Jeudi";
+"Thursday" = "jeudi";
 
 /* No comment provided by engineer. */
-"Tuesday" = "Mardi";
+"Tuesday" = "mardi";
 
 /* Non-empty shortcut button in recording state */
 "Type New Shortcut" = "Saisir un raccourci";
@@ -182,7 +182,7 @@
 "Use Old Shortcut" = "Utiliser l’ancien raccourci";
 
 /* No comment provided by engineer. */
-"Wednesday" = "Mercredi";
+"Wednesday" = "mercredi";
 
 /* No comment provided by engineer. */
 "You're deleting an event." = "Vous vous apprêtez à supprimer un événement.";
