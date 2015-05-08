@@ -287,12 +287,7 @@
     // Set startDate and endDate.
     NSDate *startDate = _startDate.dateValue;
     NSDate *endDate   = _endDate.dateValue;
-    if (_allDayCheckbox.state == NSOnState) {
-        startDate = [self.cal startOfDayForDate:_startDate.dateValue];
-        endDate   = [self.cal dateByAddingUnit:NSCalendarUnitDay value:1 toDate:endDate options:0];
-        endDate   = [self.cal startOfDayForDate:endDate];
-    }
-
+    
     // Get the calendar.
     NSInteger index = _calPopup.selectedItem.tag;
     NSArray *sourcesAndCalendars = [self.ec sourcesAndCalendars];
@@ -306,7 +301,12 @@
     event.startDate = startDate;
     event.endDate   = endDate;
     event.calendar  = calInfo.calendar;
-    event.timeZone  = [NSTimeZone localTimeZone];
+    // !Important! timeZone MUST be nil if it is an allDay event.
+    // If you set timeZone after setting allDay, the start and end dates
+    // will be wrong and it won't be an allDay event anymore.
+    // Alternatively, we could have set timeZone before setting allDay
+    // because setting allDay == YES sets timeZone to nil.
+    event.timeZone  = event.isAllDay ? nil : [NSTimeZone localTimeZone];
     
     // Recurrence rule.
     EKRecurrenceFrequency frequency;
