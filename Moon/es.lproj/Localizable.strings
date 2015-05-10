@@ -37,6 +37,9 @@
 /* Cancel action button in recording state */
 "Cancel" = "Cancelar";
 
+/* No comment provided by engineer. */
+"Check for updates..." = "Buscar actualizaciones…";
+
 /* Empty shortcut button in normal state */
 "Click to Record Shortcut" = "Haz click para elegir atajo";
 

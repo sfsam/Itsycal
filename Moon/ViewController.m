@@ -14,6 +14,7 @@
 #import "PrefsViewController.h"
 #import "TooltipViewController.h"
 #import "MoButton.h"
+#import "Sparkle/SUUpdater.h"
 
 @implementation ViewController
 {
@@ -235,6 +236,8 @@
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
+    [optMenu insertItemWithTitle:NSLocalizedString(@"Check for updates...", @"") action:@selector(checkForUpdates:) keyEquivalent:@"" atIndex:i++];
+    [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
     NSPoint pt = NSOffsetRect(_btnOpt.frame, -5, -10).origin;
     [optMenu popUpMenuPositioningItem:nil atLocation:pt inView:self.view];
@@ -286,6 +289,11 @@
     }
     [_prefsWC showWindow:self];
     [_prefsWC.window center];
+}
+
+- (void)checkForUpdates:(id)sender
+{
+    [[SUUpdater sharedUpdater] checkForUpdates:self];
 }
 
 #pragma mark -

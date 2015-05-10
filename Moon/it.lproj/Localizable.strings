@@ -37,6 +37,9 @@
 /* Cancel action button in recording state */
 "Cancel" = "Annulla";
 
+/* No comment provided by engineer. */
+"Check for updates..." = "Controlla aggiornamenti…";
+
 /* Empty shortcut button in normal state */
 "Click to Record Shortcut" = "Fai clic per registrare l'abbreviazione";
 
