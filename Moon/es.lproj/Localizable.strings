@@ -1,26 +1,53 @@
 /* No comment provided by engineer. */
-"1 day" = "1 dìa";
+"1 day" = "1 día";
 
 /* No comment provided by engineer. */
-"2 days" = "2 dìas";
+"1 day before" = "1 día antes";
 
 /* No comment provided by engineer. */
-"3 days" = "3 dìas";
+"1 hour before" = "1 hora antes";
 
 /* No comment provided by engineer. */
-"4 days" = "4 dìas";
+"2 days" = "2 días";
 
 /* No comment provided by engineer. */
-"5 days" = "5 dìas";
+"2 days before" = "2 días antes";
 
 /* No comment provided by engineer. */
-"6 days" = "6 dìas";
+"2 hours before" = "2 horas antes";
 
 /* No comment provided by engineer. */
-"7 days" = "7 dìas";
+"3 days" = "3 días";
+
+/* No comment provided by engineer. */
+"4 days" = "4 días";
+
+/* No comment provided by engineer. */
+"5 days" = "5 días";
+
+/* No comment provided by engineer. */
+"5 minutes before" = "5 minutos antes";
+
+/* No comment provided by engineer. */
+"6 days" = "6 días";
+
+/* No comment provided by engineer. */
+"7 days" = "7 días";
+
+/* No comment provided by engineer. */
+"10 minutes before" = "10 minutos antes";
+
+/* No comment provided by engineer. */
+"15 minutes before" = "15 minutos antes";
+
+/* No comment provided by engineer. */
+"30 minutes before" = "30 minutos antes";
 
 /* No comment provided by engineer. */
 "Add Location" = "Añadir ubicación";
+
+/* No comment provided by engineer. */
+"Alert:" = "Aviso:";
 
 /* No comment provided by engineer. */
 "All-day:" = "Todo el día:";
@@ -29,7 +56,14 @@
 "Are you sure you want to delete this event?" = "¿Seguro que quieres eliminar este evento?";
 
 /* No comment provided by engineer. */
-"Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Acceso denegado.\n\nItsycal es más útil cuando se puede mostrar eventos de su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad";
+"At time of event" = "A la hora del evento";
+
+/* No comment provided by engineer. */
+"Calendar access denied.
+
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Acceso denegado.
+
+Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad";
 
 /* No comment provided by engineer. */
 "Calendar access was denied." = "Acceso denegado.";
@@ -115,8 +149,9 @@
 /* No comment provided by engineer. */
 "No events" = "Nada";
 
-/* Repeat none */
-"None" = "Nunca";
+/* Alert none
+   Repeat none */
+"None" = "Ninguno";
 
 /* Alert button when shortcut is already used */
 "OK" = "OK";

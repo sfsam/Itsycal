@@ -12,10 +12,10 @@
 
 @implementation EventViewController
 {
-    NSTextField *_title, *_location, *_repEndLabel;
+    NSTextField *_title, *_location, *_repEndLabel, *_alertLabel;
     NSButton *_allDayCheckbox, *_saveButton;
     NSDatePicker *_startDate, *_endDate, *_repEndDate;
-    NSPopUpButton *_repPopup, *_repEndPopup, *_calPopup;
+    NSPopUpButton *_repPopup, *_repEndPopup, *_alertPopup, *_calPopup;
 }
 
 - (void)loadView
@@ -84,6 +84,7 @@
     NSTextField *endsLabel   = txt(NSLocalizedString(@"Ends:", @""), NO);
     NSTextField *repLabel    = txt(NSLocalizedString(@"Repeat:", @""), NO);
     _repEndLabel             = txt(NSLocalizedString(@"End Repeat:", @""), NO);
+    _alertLabel              = txt(NSLocalizedString(@"Alert:", @""), NO);
     
     // Date pickers
     _startDate = picker();
@@ -108,6 +109,18 @@
     [_repEndPopup addItemsWithTitles:@[NSLocalizedString(@"Never", @"Repeat ends never"),
                                        NSLocalizedString(@"On Date", @"")]];
     
+    _alertPopup = popup();
+    [_alertPopup addItemsWithTitles:@[NSLocalizedString(@"None", @"Alert none"),
+                                      NSLocalizedString(@"At time of event", @""),
+                                      NSLocalizedString(@"5 minutes before", @""),
+                                      NSLocalizedString(@"10 minutes before", @""),
+                                      NSLocalizedString(@"15 minutes before", @""),
+                                      NSLocalizedString(@"30 minutes before", @""),
+                                      NSLocalizedString(@"1 hour before", @""),
+                                      NSLocalizedString(@"2 hours before", @""),
+                                      NSLocalizedString(@"1 day before", @""),
+                                      NSLocalizedString(@"2 days before", @"")]];
+    
     _calPopup = popup();
     _calPopup.menu.autoenablesItems = NO;
     
@@ -123,10 +136,10 @@
 
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*, NSLayoutFormatOptions) = ^(NSString *format, NSLayoutFormatOptions opt) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opt metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _calPopup, _saveButton)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opt metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, _alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _calPopup, _saveButton)]];
     };
     vcon(@"V:|-[_title]-[_location]-15-[_allDayCheckbox]", 0);
-    vcon(@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_calPopup]", NSLayoutFormatAlignAllLeading);
+    vcon(@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_alertPopup]-20-[_calPopup]", NSLayoutFormatAlignAllLeading);
     vcon(@"V:[_calPopup]-20-[_saveButton]-|", 0);
     vcon(@"H:|-[_title(>=200)]-|", 0);
     vcon(@"H:|-[_location]-|", 0);
@@ -135,6 +148,7 @@
     vcon(@"H:|-[endsLabel]-[_endDate]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:|-[repLabel]-[_repPopup]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:|-[_repEndLabel]-[_repEndPopup]-[_repEndDate]-|", NSLayoutFormatAlignAllBaseline);
+    vcon(@"H:|-[_alertLabel]-[_alertPopup]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:[_calPopup]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:[_saveButton]-|", 0);
     
@@ -185,6 +199,7 @@
     _repEndDate.dateValue = initialEnd;
     [_repPopup selectItemAtIndex:0];     // 'None' selected
     [_repEndPopup selectItemAtIndex:0];  // 'Never' selected
+    [_alertPopup selectItemAtIndex:0];   // 'None' selected
     _saveButton.enabled  = NO;
     
     // Function to make colored dots for calendar popup.
@@ -251,6 +266,18 @@
     else {
         _startDate.datePickerElements = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
         _endDate.datePickerElements = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
+    }
+    
+    // The All-day checkbox also toggles the alert popup.
+    // Currently, we don't allow the user to set an alert for an All-day event,
+    // but a 1-day-ahead alert will be set by the system by default.
+    if (allDayCheckbox.state == NSOnState) {
+        _alertLabel.hidden = YES;
+        _alertPopup.hidden = YES;
+    }
+    else {
+        _alertLabel.hidden = NO;
+        _alertPopup.hidden = NO;
     }
 }
 
@@ -344,6 +371,28 @@
     }
     if (recurrence != nil) {
         event.recurrenceRules = @[recurrence];
+    }
+    
+    // Alert (aka Alarm).
+    // Only set an alert if the event is NOT an All-day event. The system
+    // will automatically set a 1-day-ahead alert for All-day events.
+    if (event.allDay == NO) {
+        NSInteger alertIndex = [_alertPopup indexOfItem:_alertPopup.selectedItem];
+        if (alertIndex != 0) { // 0 == no alert
+            NSTimeInterval offset = 0;
+            switch (alertIndex) {
+                case 2:  offset =    -300; break; //  5 min before
+                case 3:  offset =    -600; break; // 10 min before
+                case 4:  offset =    -900; break; // 15 min before
+                case 5:  offset =   -1800; break; // 30 min before
+                case 6:  offset =   -3600; break; //  1 hour before
+                case 7:  offset =   -7200; break; //  2 hours before
+                case 8:  offset =  -86400; break; //  1 day before
+                case 9:  offset = -172800; break; //  2 days before
+                default: offset =       0; break; // at time of event
+            }
+            [event addAlarm:[EKAlarm alarmWithRelativeOffset:offset]];
+        }
     }
     
     // Commit the event.

@@ -2,7 +2,7 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
     <file original="Moon/Base.lproj/MainMenu.xib" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.3.2" build-num="6D2105"></tool>
         </header>
         <body>
             <trans-unit id="1Xt-HY-uBw.title">
@@ -37,14 +37,14 @@
     </file>
     <file original="Moon/Info.plist" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.3.2" build-num="6D2105"></tool>
         </header>
         <body>
             <trans-unit id="CFBundleName">
                 <source>$(PRODUCT_NAME)</source>
             </trans-unit>
             <trans-unit id="CFBundleShortVersionString">
-                <source>0.9.0</source>
+                <source>0.10.0</source>
             </trans-unit>
             <trans-unit id="NSHumanReadableCopyright">
                 <source>Copyright © 2015 mowglii.com</source>
@@ -53,48 +53,93 @@
     </file>
     <file original="Moon/Localizable.strings" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.3.2" build-num="6D2105"></tool>
         </header>
         <body>
             <trans-unit id="1 day">
                 <source>1 day</source>
-                <target>1 tag</target>
+                <target>1 Tag</target>
                 <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="1 day before">
+                <source>1 day before</source>
+                <note>No comment provided by engineer.</note>
+                <target>1 Tag vorher</target>
+            </trans-unit>
+            <trans-unit id="1 hour before">
+                <source>1 hour before</source>
+                <note>No comment provided by engineer.</note>
+                <target>1 Stunde vorher</target>
             </trans-unit>
             <trans-unit id="2 days">
                 <source>2 days</source>
-                <target>2 tage</target>
+                <target>2 Tage</target>
                 <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="2 days before">
+                <source>2 days before</source>
+                <note>No comment provided by engineer.</note>
+                <target>2 Tage vorher</target>
+            </trans-unit>
+            <trans-unit id="2 hours before">
+                <source>2 hours before</source>
+                <note>No comment provided by engineer.</note>
+                <target>2 Stunden vorher</target>
             </trans-unit>
             <trans-unit id="3 days">
                 <source>3 days</source>
-                <target>3 tage</target>
+                <target>3 Tage</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="4 days">
                 <source>4 days</source>
-                <target>4 tage</target>
+                <target>4 Tage</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="5 days">
                 <source>5 days</source>
-                <target>5 tage</target>
+                <target>5 Tage</target>
                 <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="5 minutes before">
+                <source>5 minutes before</source>
+                <note>No comment provided by engineer.</note>
+                <target>5 Minuten vorher</target>
             </trans-unit>
             <trans-unit id="6 days">
                 <source>6 days</source>
-                <target>6 tage</target>
+                <target>6 Tage</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="7 days">
                 <source>7 days</source>
-                <target>7 tage</target>
+                <target>7 Tage</target>
                 <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="10 minutes before">
+                <source>10 minutes before</source>
+                <note>No comment provided by engineer.</note>
+                <target>10 Minuten vorher</target>
+            </trans-unit>
+            <trans-unit id="15 minutes before">
+                <source>15 minutes before</source>
+                <note>No comment provided by engineer.</note>
+                <target>15 Minuten vorher</target>
+            </trans-unit>
+            <trans-unit id="30 minutes before">
+                <source>30 minutes before</source>
+                <note>No comment provided by engineer.</note>
+                <target>30 Minuten vorher</target>
             </trans-unit>
             <trans-unit id="Add Location">
                 <source>Add Location</source>
                 <target>Ort hinzufügen</target>
                 <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Alert:">
+                <source>Alert:</source>
+                <note>No comment provided by engineer.</note>
+                <target>Warnhinweis:</target>
             </trans-unit>
             <trans-unit id="All-day:">
                 <source>All-day:</source>
@@ -106,20 +151,34 @@
                 <target>Sind Sie sicher, dass Sie dieses Ereignis entfernen möchten ?</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
+            <trans-unit id="At time of event">
+                <source>At time of event</source>
+                <note>No comment provided by engineer.</note>
+                <target>Bei Ereignisstart</target>
+            </trans-unit>
             <trans-unit id="Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy">
-                <source>Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</source>
-                <target>Kalenderzugriff verweigert.\n\nItsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden können. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.</target>
+                <source>Calendar access denied.
+
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</source>
+                <target>Kalenderzugriff verweigert.
+
+Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden können. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Calendar access was denied.">
                 <source>Calendar access was denied.</source>
-                <note>No comment provided by engineer.</note>
                 <target>Kalenderzugriff verweigert.</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Cancel">
                 <source>Cancel</source>
                 <target>Abbrechen</target>
                 <note>Cancel action button in recording state</note>
+            </trans-unit>
+            <trans-unit id="Check for updates...">
+                <source>Check for updates...</source>
+                <target>Nach Updates suchen…</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Click to Record Shortcut">
                 <source>Click to Record Shortcut</source>
@@ -206,10 +265,10 @@
                 <target>Freitag</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
-            <trans-unit id="Itsycal is more useful when it can add events to your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy.">
-                <source>Itsycal is more useful when it can add events to your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy.</source>
-                <note>No comment provided by engineer.</note>
+            <trans-unit id="Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy.">
+                <source>Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy.</source>
                 <target>Itsycal ist nützlicher, wenn es Veranstaltungen zu Ihrem Kalender hinzuzufügen. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Keyboard shortcut">
                 <source>Keyboard shortcut</source>
@@ -248,8 +307,9 @@
             </trans-unit>
             <trans-unit id="None">
                 <source>None</source>
-                <target>Niemals</target>
-                <note>Repeat none</note>
+                <target>Ohne</target>
+                <note>Alert none
+   Repeat none</note>
             </trans-unit>
             <trans-unit id="OK">
                 <source>OK</source>
@@ -380,7 +440,7 @@
     </file>
     <file original="MoonExtra/Info.plist" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.3.2" build-num="6D2105"></tool>
         </header>
         <body>
             <trans-unit id="CFBundleName">
@@ -390,13 +450,13 @@
                 <source>1.0</source>
             </trans-unit>
             <trans-unit id="NSHumanReadableCopyright">
-                <source>Copyright © 2015 mowglii.com. All rights reserved.</source>
+                <source>Copyright © 2015 mowglii.com</source>
             </trans-unit>
         </body>
     </file>
     <file original="MoonExtra/en.lproj/Localizable.strings" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.1.1" build-num="6A2008a"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.3.2" build-num="6D2105"></tool>
         </header>
         <body>
             <trans-unit id="Open Itsycal...">

@@ -72,7 +72,7 @@
     else {
         // Itsycal is not running, so show the menu.
         menu = [NSMenu new];
-        // Cannot use the NSLocalizedString() macro because it uses
+        // Cannot use the NSLocalizedstring() macro because it uses
         // [NSBundle mainBundle] so we use what it expands into and
         // substitute in [self bundle] instead.
         NSMenuItem *item = [menu addItemWithTitle:[[self bundle] localizedStringForKey:@"Open Itsycal..." value:@"" table:nil] action:@selector(openItsycal:) keyEquivalent:@""];
