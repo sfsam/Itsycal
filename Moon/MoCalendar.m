@@ -278,6 +278,11 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [_monthLabel setStringValue:month];
     for (NSInteger i = 0; i < 7; i++) {
         NSString *dow = [NSString stringWithFormat:@"%@", dows[(i + self.weekStartDOW)%7]];
+        // Make French dow strings lowercase because that is the convention
+        // in France. -veryShortWeekdaySymbols should have done this for us.
+        if ([[NSLocale currentLocale].localeIdentifier hasPrefix:@"fr"]) {
+            dow = [dow lowercaseString];
+        }
         [[_dowGrid.cells[i] textField] setStringValue:dow];
     }
     
