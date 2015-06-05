@@ -109,7 +109,8 @@
     // The order of the statements is important! Subsequent statments
     // depend on previous ones.
 
-    _nsCal = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    // Calendar is 'autoupdating' so it handles timezone changes properly.
+    _nsCal = [NSCalendar autoupdatingCurrentCalendar];
     
     MoDate today = [self todayDate];
     _moCal.todayDate = today;
@@ -623,6 +624,11 @@
         _moCal.todayDate = today;
         _moCal.selectedDate = today;
         [self updateMenubarIcon];
+    }];
+    
+    // Timezone changed notification
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemTimeZoneDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [_ec refetchAll];
     }];
     
     // Preferences notifications

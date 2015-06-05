@@ -48,7 +48,11 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                 // seeing the same modal alert would get old fast.
             }
         }];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(storeChanged:) name:EKEventStoreChangedNotification object:_store];
+
+        // Refetch everything when the event store has changed.
+        [[NSNotificationCenter defaultCenter] addObserverForName:EKEventStoreChangedNotification object:_store queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            [self refetchAll];
+        }];
     }
     return self;
 }
@@ -293,13 +297,11 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     _filteredEventsForDate = [filteredEventsForDates copy];
 }
 
-#pragma mark -
-#pragma mark Store changed notification
-
-- (void)storeChanged:(NSNotification *)note
+- (void)refetchAll
 {
-    // The system told us the event store has changed so
-    // we have to refetch everything.
+    // Either the system told us the event store has changed or
+    // we were called by the main controller. Clear the cache
+    // and refetch everything.
     
     _eventsForDate = [NSMutableDictionary new];
 

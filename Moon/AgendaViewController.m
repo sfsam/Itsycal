@@ -248,6 +248,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)setDate:(NSDate *)date
 {
     _date = date;
+    _dateFormatter.timeZone = [NSTimeZone localTimeZone];
     _textField.stringValue = [_dateFormatter stringFromDate:date];
 }
 
@@ -310,6 +311,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)setEventInfo:(EventInfo *)info
 {
     _eventInfo = info;
+    _timeFormatter.timeZone = [NSTimeZone localTimeZone];
+    _intervalFormatter.timeZone = [NSTimeZone localTimeZone];
+
     NSString *title = info == nil ? @"" : info.event.title;
     NSString *duration = @"";
     if (info.isAllDay == NO) {

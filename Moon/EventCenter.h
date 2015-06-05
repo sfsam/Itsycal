@@ -55,6 +55,9 @@
 // the list of selected calendars.
 - (void)updateSelectedCalendars;
 
+// Clear cached events and refetch.
+- (void)refetchAll;
+
 @end
 
 // =========================================================================
