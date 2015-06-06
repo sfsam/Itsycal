@@ -282,7 +282,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (self) {
         self.identifier = kEventCellIdentifier;
         _timeFormatter = [NSDateFormatter new];
-        [_timeFormatter setLocalizedDateFormatFromTemplate:@"h:mm a"];
+        _timeFormatter.dateStyle = NSDateFormatterNoStyle;
+        _timeFormatter.timeStyle = NSDateFormatterShortStyle;
         _intervalFormatter = [NSDateIntervalFormatter new];
         _intervalFormatter.dateStyle = NSDateIntervalFormatterNoStyle;
         _intervalFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
