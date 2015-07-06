@@ -352,12 +352,22 @@
 {
     _menuItemFrame = [_statusItem.button.window convertRectToScreen:_statusItem.button.frame];
     _screenFrame = [[NSScreen mainScreen] frame];
+    
+    // Constrain the menu item's frame to be no higher than the top
+    // of the screen. For some reason, when an app is in fullscreen
+    // mode sometimes the menu item frame is reported to be *above*
+    // the top of the screen. The result is that the calendar is
+    // shown clipped at the top. Prevent that by constraining the
+    // top of the menu item to be at most the top of the screen.
+    _menuItemFrame.origin.y = MIN(_menuItemFrame.origin.y, _screenFrame.size.height);
 }
 
 - (void)updateMenuExtraPositionInfoWithUserInfo:(NSDictionary *)userInfo
 {
     _menuItemFrame = NSRectFromString(userInfo[@"menuItemFrame"]);
     _screenFrame   = NSRectFromString(userInfo[@"screenFrame"]);
+    // See comment above in -updateStatusItemPositionInfo.
+    _menuItemFrame.origin.y = MIN(_menuItemFrame.origin.y, _screenFrame.size.height);
 }
 
 - (void)statusItemMoved:(NSNotification *)note
