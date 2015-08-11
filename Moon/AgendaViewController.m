@@ -15,7 +15,7 @@ static NSString *kDateCellIdentifier  = @"DateCell";
 static NSString *kEventCellIdentifier = @"EventCell";
 
 @interface AgendaDateCell : NSView
-@property (nonatomic, weak) NSDate *date;
+@property (nonatomic) NSTextField *textField;
 @end
 
 @interface AgendaEventCell : NSView
@@ -34,6 +34,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @implementation AgendaViewController
 {
     MoTableView *_tv;
+    NSDateFormatter *_dateFormatter;
 }
 
 - (void)loadView
@@ -136,7 +137,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if ([obj isKindOfClass:[NSDate class]]) {
         AgendaDateCell *cell = [_tv makeViewWithIdentifier:kDateCellIdentifier owner:self];
         if (cell == nil) cell = [AgendaDateCell new];
-        cell.date = obj;
+        cell.textField.stringValue = [self dateStringForDate:obj];
         v = cell;
     }
     else {
@@ -208,6 +209,31 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
 }
 
+#pragma mark -
+#pragma mark Date string
+
+- (NSString *)dateStringForDate:(NSDate *)date
+{
+    if (!_dateFormatter) {
+        _dateFormatter = [NSDateFormatter new];
+    }
+    // First, use _dateFormatter to get the day of the week (dow).
+    _dateFormatter.timeZone = [NSTimeZone localTimeZone];
+    _dateFormatter.dateFormat = @"EEEE";
+    NSString *dow = [_dateFormatter stringFromDate:date];
+    // If the date is today or tomorrow, use "Today" or "Tomorrow" as the dow.
+    if (self.nsCal && ([self.nsCal isDateInToday:date] || [self.nsCal isDateInTomorrow:date])) {
+        _dateFormatter.doesRelativeDateFormatting = YES;
+        _dateFormatter.dateStyle = NSDateFormatterShortStyle;
+        dow = [_dateFormatter stringFromDate:date];
+    }
+    // Next, use _dateFormatter to get the date string using the standard short style.
+    _dateFormatter.doesRelativeDateFormatting = NO;
+    _dateFormatter.dateStyle = NSDateFormatterShortStyle;
+    // Finally, put them together...
+    return [NSString stringWithFormat:@"%@ ∙ %@", dow, [_dateFormatter stringFromDate:date]];
+}
+
 @end
 
 #pragma mark -
@@ -218,18 +244,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
 // =========================================================================
 
 @implementation AgendaDateCell
-{
-    NSTextField *_textField;
-    NSDateFormatter *_dateFormatter;
-}
 
 - (instancetype)init
 {
     self = [super init];
     if (self) {
         self.identifier = kDateCellIdentifier;
-        _dateFormatter = [NSDateFormatter new];
-        [_dateFormatter setLocalizedDateFormatFromTemplate:@"EEE d M y"];
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
         _textField.font = [NSFont fontWithName:@"Lucida Grande Bold" size:11];
@@ -243,13 +263,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-2-[_textField]" options:0 metrics:nil views:@{@"_textField": _textField}]];
     }
     return self;
-}
-
-- (void)setDate:(NSDate *)date
-{
-    _date = date;
-    _dateFormatter.timeZone = [NSTimeZone localTimeZone];
-    _textField.stringValue = [_dateFormatter stringFromDate:date];
 }
 
 - (void)drawRect:(NSRect)dirtyRect

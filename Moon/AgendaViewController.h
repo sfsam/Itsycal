@@ -13,6 +13,7 @@
 
 @interface AgendaViewController : NSViewController <NSTableViewDataSource, NSTableViewDelegate, MoTableViewDelegate>
 
+@property (nonatomic, weak) NSCalendar *nsCal;
 @property (nonatomic) NSArray *events;
 @property (nonatomic) NSColor *backgroundColor;
 @property (nonatomic, weak) id<AgendaDelegate> delegate;

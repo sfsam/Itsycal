@@ -111,6 +111,7 @@
 
     // Calendar is 'autoupdating' so it handles timezone changes properly.
     _nsCal = [NSCalendar autoupdatingCurrentCalendar];
+    _agendaVC.nsCal = _nsCal;
     
     MoDate today = [self todayDate];
     _moCal.todayDate = today;
