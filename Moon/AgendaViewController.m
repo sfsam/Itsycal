@@ -19,6 +19,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @end
 
 @interface AgendaEventCell : NSView
+@property (nonatomic, weak) NSDateFormatter *timeFormatter;
+@property (nonatomic, weak) NSDateIntervalFormatter *intervalFormatter;
 @property (nonatomic, weak) EventInfo *eventInfo;
 @property (nonatomic, readonly) CGFloat height;
 @property (nonatomic) MoButton *btnDelete;
@@ -35,6 +37,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     MoTableView *_tv;
     NSDateFormatter *_dateFormatter;
+    NSDateFormatter *_timeFormatter;
+    NSDateIntervalFormatter *_intervalFormatter;
 }
 
 - (void)loadView
@@ -142,7 +146,22 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
     else {
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
-        if (cell == nil) cell = [AgendaEventCell new];
+        if (!cell) {
+            cell = [AgendaEventCell new];
+        }
+        if (!_timeFormatter) {
+            _timeFormatter = [NSDateFormatter new];
+            _timeFormatter.dateStyle = NSDateFormatterNoStyle;
+            _timeFormatter.timeStyle = NSDateFormatterShortStyle;
+        }
+        if (!_intervalFormatter) {
+            _intervalFormatter = [NSDateIntervalFormatter new];
+            _intervalFormatter.dateStyle = NSDateIntervalFormatterNoStyle;
+            _intervalFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
+        }
+        // !! Must set timeFormatter and intervalFormatter before eventInfo !!
+        cell.timeFormatter = _timeFormatter;
+        cell.intervalFormatter = _intervalFormatter;
         cell.eventInfo = obj;
         BOOL allowsModification = cell.eventInfo.event.calendar.allowsContentModifications;
         cell.btnDelete.hidden = (tableView.hoverRow == row && allowsModification) ? NO : YES;
@@ -285,8 +304,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @implementation AgendaEventCell
 {
     NSTextField *_textField;
-    NSDateFormatter *_timeFormatter;
-    NSDateIntervalFormatter *_intervalFormatter;
 }
 
 - (instancetype)init
@@ -294,12 +311,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     self = [super init];
     if (self) {
         self.identifier = kEventCellIdentifier;
-        _timeFormatter = [NSDateFormatter new];
-        _timeFormatter.dateStyle = NSDateFormatterNoStyle;
-        _timeFormatter.timeStyle = NSDateFormatterShortStyle;
-        _intervalFormatter = [NSDateIntervalFormatter new];
-        _intervalFormatter.dateStyle = NSDateIntervalFormatterNoStyle;
-        _intervalFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
         _textField.font = [NSFont fontWithName:@"Lucida Grande" size:11];
