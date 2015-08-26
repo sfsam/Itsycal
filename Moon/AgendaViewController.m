@@ -35,7 +35,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 @implementation AgendaViewController
 {
-    MoTableView *_tv;
     NSDateFormatter *_dateFormatter;
     NSDateFormatter *_timeFormatter;
     NSDateIntervalFormatter *_intervalFormatter;
