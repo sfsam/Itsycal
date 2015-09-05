@@ -19,8 +19,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @end
 
 @interface AgendaEventCell : NSView
-@property (nonatomic, weak) NSDateFormatter *timeFormatter;
-@property (nonatomic, weak) NSDateIntervalFormatter *intervalFormatter;
+@property (nonatomic) NSTextField *textField;
 @property (nonatomic, weak) EventInfo *eventInfo;
 @property (nonatomic, readonly) CGFloat height;
 @property (nonatomic) MoButton *btnDelete;
@@ -144,24 +143,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
         v = cell;
     }
     else {
+        EventInfo *info = obj;
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
-        if (!cell) {
-            cell = [AgendaEventCell new];
-        }
-        if (!_timeFormatter) {
-            _timeFormatter = [NSDateFormatter new];
-            _timeFormatter.dateStyle = NSDateFormatterNoStyle;
-            _timeFormatter.timeStyle = NSDateFormatterShortStyle;
-        }
-        if (!_intervalFormatter) {
-            _intervalFormatter = [NSDateIntervalFormatter new];
-            _intervalFormatter.dateStyle = NSDateIntervalFormatterNoStyle;
-            _intervalFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
-        }
-        // !! Must set timeFormatter and intervalFormatter before eventInfo !!
-        cell.timeFormatter = _timeFormatter;
-        cell.intervalFormatter = _intervalFormatter;
-        cell.eventInfo = obj;
+        if (!cell) cell = [AgendaEventCell new];
+        cell.textField.attributedStringValue = [self eventStringForInfo:info];
+        cell.toolTip = info.event.location;
+        cell.eventInfo = info;
         BOOL allowsModification = cell.eventInfo.event.calendar.allowsContentModifications;
         cell.btnDelete.hidden = (tableView.hoverRow == row && allowsModification) ? NO : YES;
         cell.btnDelete.tag = row;
@@ -182,7 +169,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     id obj = self.events[row];
     if ([obj isKindOfClass:[EventInfo class]]) {
         cell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
-        cell.eventInfo = obj;
+        cell.textField.attributedStringValue = [self eventStringForInfo:obj];
         height = cell.height;
     }
     return height;
@@ -252,6 +239,47 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return [NSString stringWithFormat:@"%@ ∙ %@", dow, [_dateFormatter stringFromDate:date]];
 }
 
+- (NSAttributedString *)eventStringForInfo:(EventInfo *)info
+{
+    if (!_timeFormatter) {
+        _timeFormatter = [NSDateFormatter new];
+        _timeFormatter.dateStyle = NSDateFormatterNoStyle;
+        _timeFormatter.timeStyle = NSDateFormatterShortStyle;
+        _timeFormatter.timeZone  = [NSTimeZone localTimeZone];
+    }
+    if (!_intervalFormatter) {
+        _intervalFormatter = [NSDateIntervalFormatter new];
+        _intervalFormatter.dateStyle = NSDateIntervalFormatterNoStyle;
+        _intervalFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
+        _intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
+    }
+    NSString *title = info == nil ? @"" : info.event.title;
+    NSString *duration = @"";
+    if (info.isAllDay == NO) {
+        if (info.isStartDate == YES) {
+            duration = [NSString stringWithFormat:@"\n%@", [_timeFormatter stringFromDate:info.event.startDate]];
+        }
+        else if (info.isEndDate == YES) {
+            NSString *ends = NSLocalizedString(@"ends", @"Spanning event ends");
+            duration = [NSString stringWithFormat:@"\n%@ %@", ends, [_timeFormatter stringFromDate:info.event.endDate]];
+        }
+        else {
+            duration = [NSString stringWithFormat:@"\n%@", [_intervalFormatter stringFromDate:info.event.startDate toDate:info.event.endDate]];
+        }
+        // If the locale is English and we are in 12 hour time,
+        // remove :00 from the time. Effect is 3:00 PM -> 3 PM.
+        if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
+            if ([[_timeFormatter dateFormat] rangeOfString:@"a"].location != NSNotFound) {
+                duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
+            }
+        }
+    }
+    NSString *string = [NSString stringWithFormat:@"%@%@", title, duration];
+    NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:string];
+    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, title.length)];
+    return s;
+}
+
 @end
 
 #pragma mark -
@@ -301,9 +329,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 // =========================================================================
 
 @implementation AgendaEventCell
-{
-    NSTextField *_textField;
-}
 
 - (instancetype)init
 {
@@ -330,40 +355,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_btnDelete attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
     }
     return self;
-}
-
-- (void)setEventInfo:(EventInfo *)info
-{
-    _eventInfo = info;
-    _timeFormatter.timeZone = [NSTimeZone localTimeZone];
-    _intervalFormatter.timeZone = [NSTimeZone localTimeZone];
-
-    NSString *title = info == nil ? @"" : info.event.title;
-    NSString *duration = @"";
-    if (info.isAllDay == NO) {
-        if (info.isStartDate == YES) {
-            duration = [NSString stringWithFormat:@"\n%@", [_timeFormatter stringFromDate:info.event.startDate]];
-        }
-        else if (info.isEndDate == YES) {
-            NSString *ends = NSLocalizedString(@"ends", @"Spanning event ends");
-            duration = [NSString stringWithFormat:@"\n%@ %@", ends, [_timeFormatter stringFromDate:info.event.endDate]];
-        }
-        else {
-            duration = [NSString stringWithFormat:@"\n%@", [_intervalFormatter stringFromDate:info.event.startDate toDate:info.event.endDate]];
-        }
-        // If the locale is English and we are in 12 hour time,
-        // remove :00 from the time. Effect is 3:00 PM -> 3 PM.
-        if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
-            if ([[_timeFormatter dateFormat] rangeOfString:@"a"].location != NSNotFound) {
-                duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
-            }
-        }
-    }
-    NSString *string = [NSString stringWithFormat:@"%@%@", title, duration];
-    NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:string];
-    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, title.length)];
-    _textField.attributedStringValue = s;
-    _textField.toolTip = info.event.location;
 }
 
 - (void)setFrame:(NSRect)frame
