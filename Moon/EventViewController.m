@@ -152,7 +152,11 @@
     vcon(@"H:[_calPopup]-|", NSLayoutFormatAlignAllBaseline);
     vcon(@"H:[_saveButton]-|", 0);
     
-    // Pickers' will change depending on state of _allDayCheckbox.
+    // Require All-day checkbox height to hug the checkbox. Without this,
+    // the layout will look funny when the title is multi-line.
+    [_allDayCheckbox setContentHuggingPriority:999 forOrientation:NSLayoutConstraintOrientationVertical];
+    
+    // Pickers' width will change depending on state of _allDayCheckbox.
     // We don't want the size of the picker control to change (shrink)
     // when this happens so we set a very low hugging priority.
     [_startDate setContentHuggingPriority:1 forOrientation:NSLayoutConstraintOrientationHorizontal];
@@ -253,7 +257,9 @@
 
 - (void)controlTextDidChange:(NSNotification *)obj
 {
-    _saveButton.enabled = ![_title.stringValue isEqualToString:@""];
+    // Enable the Save button if the title is non-whitespace.
+    NSString *trimmedTitle = [_title.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    _saveButton.enabled = ![trimmedTitle isEqualToString:@""];
 }
 
 - (void)allDayClicked:(NSButton *)allDayCheckbox
@@ -321,9 +327,10 @@
     CalendarInfo *calInfo = sourcesAndCalendars[index];
 
     // Create the event.
+    NSCharacterSet *whitespaceSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
     EKEvent *event  = [EKEvent eventWithEventStore:self.ec.store];
-    event.title     = _title.stringValue;
-    event.location  = _location.stringValue;
+    event.title     = [_title.stringValue stringByTrimmingCharactersInSet:whitespaceSet];
+    event.location  = [_location.stringValue stringByTrimmingCharactersInSet:whitespaceSet];
     event.allDay    = _allDayCheckbox.state == NSOnState;
     event.startDate = startDate;
     event.endDate   = endDate;
