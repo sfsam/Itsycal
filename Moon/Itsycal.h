@@ -33,4 +33,4 @@ extern NSString * const ItsycalExtraDidMoveNotification;
 extern NSString * const ItsycalExtraWillUnloadNotification;
 
 NSImage *ItsycalDateIcon(NSInteger day, NSImage *datesImage);
-
+BOOL OSVersionIsAtLeast(NSInteger majorVersion, NSInteger minorVersion, NSInteger patchVersion);

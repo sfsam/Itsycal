@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 mowglii.com. All rights reserved.
 //
 
+#import "Itsycal.h"
 #import "AgendaViewController.h"
 #import "EventCenter.h"
 #import "MoButton.h"
@@ -298,7 +299,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self.identifier = kDateCellIdentifier;
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
-        _textField.font = [NSFont fontWithName:@"Lucida Grande Bold" size:11];
+        _textField.font = OSVersionIsAtLeast(10, 11, 0) ? [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold] : [NSFont fontWithName:@"Lucida Grande Bold" size:11];
         _textField.textColor = [NSColor colorWithWhite:0 alpha:0.9];
         _textField.editable = NO;
         _textField.bezeled = NO;
@@ -337,7 +338,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self.identifier = kEventCellIdentifier;
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
-        _textField.font = [NSFont fontWithName:@"Lucida Grande" size:11];
+        _textField.font = OSVersionIsAtLeast(10, 11, 0) ? [NSFont systemFontOfSize:11] : [NSFont fontWithName:@"Lucida Grande" size:11];
         _textField.textColor = [NSColor colorWithWhite:0.5 alpha:1];
         _textField.lineBreakMode = NSLineBreakByWordWrapping;
         _textField.editable = NO;
