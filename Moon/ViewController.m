@@ -210,6 +210,7 @@
     comp.year  = _moCal.selectedDate.year;
     comp.month = _moCal.selectedDate.month+1; // _moCal zero-indexes month
     comp.day   = _moCal.selectedDate.day;
+    [calendarApp activate]; // bring to foreground
     [calendarApp viewCalendarAt:[_nsCal dateFromComponents:comp]];
 }
 
