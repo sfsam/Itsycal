@@ -194,6 +194,26 @@
 
 - (void)showCalendarApp:(id)sender
 {
+    // Determine the default calendar app.
+    // See: support.busymac.com/help/21535-busycal-url-handler
+    
+    CFStringRef strRef = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, CFSTR("ics"), kUTTypeData);
+    CFStringRef bundleID = LSCopyDefaultRoleHandlerForContentType(strRef, kLSRolesEditor);
+    CFRelease(strRef);
+    NSString *defaultCalendarAppBundleID = CFBridgingRelease(bundleID);
+    
+    // Use URL scheme to open BusyCal or Fantastical2 on the
+    // date selected in our calendar.
+    
+    if ([defaultCalendarAppBundleID isEqualToString:@"com.busymac.busycal2"]) {
+        [self showCalendarAppWithURLScheme:@"busycalevent://date"];
+        return;
+    }
+    else if ([defaultCalendarAppBundleID isEqualToString:@"com.flexibits.fantastical2.mac"]) {
+        [self showCalendarAppWithURLScheme:@"x-fantastical2://show/calendar"];
+        return;
+    }
+    
     // Use the Scripting Bridge to open Calendar.app on the
     // date selected in our calendar.
     
@@ -206,12 +226,16 @@
         [alert runModal];
         return;
     }
-    NSDateComponents *comp = [NSDateComponents new];
-    comp.year  = _moCal.selectedDate.year;
-    comp.month = _moCal.selectedDate.month+1; // _moCal zero-indexes month
-    comp.day   = _moCal.selectedDate.day;
     [calendarApp activate]; // bring to foreground
-    [calendarApp viewCalendarAt:[_nsCal dateFromComponents:comp]];
+    [calendarApp viewCalendarAt:MakeNSDateWithDate(_moCal.selectedDate, _nsCal)];
+}
+
+- (void)showCalendarAppWithURLScheme:(NSString *)urlScheme
+{
+    // url is of the form: urlScheme/yyyy-MM-dd
+    // For example: x-fantastical2://show/calendar/2011-05-22
+    NSString *url = [NSString stringWithFormat:@"%@/%04zd-%02zd-%02zd", urlScheme, _moCal.selectedDate.year, _moCal.selectedDate.month+1, _moCal.selectedDate.day];
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
 }
 
 - (void)showOptionsMenu:(id)sender
