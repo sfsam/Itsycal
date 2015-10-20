@@ -132,6 +132,13 @@
 - (void)viewWillAppear
 {
     [super viewWillAppear];
+
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    _btnPin.state = [defaults boolForKey:kPinItsycal] ? NSOnState : NSOffState;
+    _moCal.showWeeks = [defaults boolForKey:kShowWeeks];
+    _moCal.highlightWeekend = [defaults boolForKey:kHighlightWeekend];
+    _moCal.weekStartDOW = [defaults integerForKey:kWeekStartDOW];
+    
     [self.itsycalWindow makeFirstResponder:_moCal];
 }
 
@@ -139,11 +146,6 @@
 {
     [super viewDidAppear];
 
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    _btnPin.state = [defaults boolForKey:kPinItsycal] ? NSOnState : NSOffState;
-    _moCal.showWeeks = [defaults boolForKey:kShowWeeks];
-    _moCal.weekStartDOW = [defaults integerForKey:kWeekStartDOW];
-    
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
 }
 
@@ -246,7 +248,10 @@
     item = [optMenu insertItemWithTitle:NSLocalizedString(@"Show calendar weeks", @"") action:@selector(showWeeks:) keyEquivalent:@"w" atIndex:i++];
     item.state = _moCal.showWeeks ? NSOnState : NSOffState;
     item.keyEquivalentModifierMask = 0;
-    
+
+    item = [optMenu insertItemWithTitle:NSLocalizedString(@"Highlight weekend", @"") action:@selector(highlightWeekend:) keyEquivalent:@"" atIndex:i++];
+    item.state = _moCal.highlightWeekend ? NSOnState : NSOffState;
+
     // Week Start submenu
     NSMenu *weekStartMenu = [[NSMenu alloc] initWithTitle:@"Week Start Menu"];
     NSInteger i2 = 0;
@@ -284,6 +289,12 @@
         _moCal.showWeeks = !_moCal.showWeeks;
         [[NSUserDefaults standardUserDefaults] setBool:_moCal.showWeeks forKey:kShowWeeks];
     });
+}
+
+- (void)highlightWeekend:(id)sender
+{
+    _moCal.highlightWeekend = !_moCal.highlightWeekend;
+    [[NSUserDefaults standardUserDefaults] setBool:_moCal.highlightWeekend forKey:kHighlightWeekend];
 }
 
 - (void)setFirstDayOfWeek:(id)sender

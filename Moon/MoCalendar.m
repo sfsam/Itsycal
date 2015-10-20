@@ -12,7 +12,7 @@
 #import "MoButton.h"
 
 static NSShadow *kShadow=nil;
-static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kBorderColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil;
+static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kBorderColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil, *kWeekendTextColor=nil;
 
 @implementation MoCalendar
 {
@@ -31,6 +31,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     __weak MoCalCell *_monthEndCell;
     NSBezierPath *_highlightPath;
     NSColor *_highlightColor;
+    NSColor *_weekendTextColor;
 }
 
 + (void)initialize
@@ -43,6 +44,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     kOutlineColor = [NSColor colorWithRed:0.7 green:0.7 blue:0.73 alpha:1];
     kLightTextColor = [NSColor colorWithWhite:0.15 alpha:0.6];
     kDarkTextColor  = [NSColor colorWithWhite:0.15 alpha:1];
+    kWeekendTextColor = [NSColor colorWithRed:0.75 green:0.2 blue:0.1 alpha:1];
     kBackgroundColor = [NSColor whiteColor];
     kWeeksBackgroundColor = [NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1];
     kDatesBackgroundColor = [NSColor colorWithRed:0.95 green:0.95 blue:0.96 alpha:1];
@@ -220,6 +222,13 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     } completionHandler:NULL];
 }
 
+- (void)setHighlightWeekend:(BOOL)highlightWeekend
+{
+    _highlightWeekend = highlightWeekend;
+    _weekendTextColor = highlightWeekend ? kWeekendTextColor : kDarkTextColor;
+    [self updateCalendar];
+}
+
 - (void)setTooltipVC:(NSViewController<MoCalTooltipProvider> *)tooltipVC
 {
     _tooltipVC = tooltipVC;
@@ -271,19 +280,28 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
 
 - (void)updateCalendar
 {
+    // On which column [0..6] in the monthly calendar do these days fall?
+    NSInteger sundayColumn   = DOW_COL(self.weekStartDOW, 0); // 0=Sunday
+    NSInteger mondayColumn   = DOW_COL(self.weekStartDOW, 1); // 1=Monday
+    NSInteger saturdayColumn = DOW_COL(self.weekStartDOW, 6); // 6=Saturday
+    
     // Month/year and DOW labels
     NSArray *months = [_formatter shortMonthSymbols];
     NSArray *dows = [_formatter veryShortWeekdaySymbols];
     NSString *month = [NSString stringWithFormat:@"%@ %zd", months[self.monthDate.month], self.monthDate.year];
     [_monthLabel setStringValue:month];
-    for (NSInteger i = 0; i < 7; i++) {
-        NSString *dow = [NSString stringWithFormat:@"%@", dows[(i + self.weekStartDOW)%7]];
+    for (NSInteger col = 0; col < 7; col++) {
+        NSString *dow = [NSString stringWithFormat:@"%@", dows[(col + self.weekStartDOW)%7]];
         // Make French dow strings lowercase because that is the convention
         // in France. -veryShortWeekdaySymbols should have done this for us.
         if ([[NSLocale currentLocale].localeIdentifier hasPrefix:@"fr"]) {
             dow = [dow lowercaseString];
         }
-        [[_dowGrid.cells[i] textField] setStringValue:dow];
+        [[_dowGrid.cells[col] textField] setStringValue:dow];
+        [[_dowGrid.cells[col] textField] setTextColor:kDarkTextColor];
+        if (col == sundayColumn || col == saturdayColumn) {
+            [[_dowGrid.cells[col] textField] setTextColor:_weekendTextColor];
+        }
     }
     
     // Get the first of the month.
@@ -299,9 +317,6 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     // Get the date for the first column of the monthly calendar.
     MoDate date = AddDaysToDate(-monthStartColumn, firstOfMonth);
     
-    // On which column [0..6] in the monthly calendar does Monday fall?
-    NSInteger mondayColumn = DOW_COL(self.weekStartDOW, 1); // 1=Monday
-    
     // Fill in the calendar grid sequentially.
     for (NSInteger row = 0; row < 6; row++) {
         for (NSInteger col = 0; col < 7; col++) {
@@ -311,6 +326,9 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
             cell.isToday = CompareDates(date, self.todayDate) == 0;
             if (date.month == self.monthDate.month) {
                 cell.textField.textColor = kDarkTextColor;
+                if (col == sundayColumn || col == saturdayColumn) {
+                    cell.textField.textColor = _weekendTextColor;
+                }
                 if (date.day == 1) {
                     _monthStartCell = cell;
                 }
@@ -320,6 +338,9 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
             }
             else {
                 cell.textField.textColor = kLightTextColor;
+                if (col == sundayColumn || col == saturdayColumn) {
+                    cell.textField.textColor = [_weekendTextColor colorWithAlphaComponent:0.6];
+                }
             }
             // ISO 8601 weeks are defined to start on Monday (and
             // really only make sense if self.weekStartDOW is Monday).
@@ -561,6 +582,22 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [kShadow set];
     [outlinePath fill];
     [NSGraphicsContext restoreGraphicsState];
+    
+    if (self.highlightWeekend) {
+        NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
+        weekendRect.size.width = kMoCalCellWidth;
+        NSRect sundayRect   = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 0) * kMoCalCellWidth, 0);
+        NSRect saturdayRect = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 6) * kMoCalCellWidth, 0);
+        [[NSColor colorWithWhite:0.15 alpha:0.05] set];
+        if (self.weekStartDOW == 0) {
+            [[NSBezierPath bezierPathWithRoundedRect:sundayRect xRadius:4 yRadius:4] fill];
+            [[NSBezierPath bezierPathWithRoundedRect:saturdayRect xRadius:4 yRadius:4] fill];
+        }
+        else {
+            weekendRect = NSUnionRect(sundayRect, saturdayRect);
+            [[NSBezierPath bezierPathWithRoundedRect:weekendRect xRadius:4 yRadius:4] fill];
+        }
+    }
     
     if (_highlightPath) {
         // Tranlsate the highlight path. It's location will depend

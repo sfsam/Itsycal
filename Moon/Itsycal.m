@@ -18,6 +18,7 @@ NSString * const kShowEventDays = @"ShowEventDays";
 NSString * const kShowWeeks = @"ShowWeeks";
 NSString * const kWeekStartDOW = @"WeekStartDOW";
 NSString * const kKeyboardShortcut = @"KeyboardShortcut";
+NSString * const kHighlightWeekend = @"HighlightWeekend";
 
 // Preferences notifications
 NSString * const kDaysToShowPreferenceChanged = @"DaysToShowPreferenceChanged";

@@ -37,6 +37,9 @@
 // Is the week of the year column showing?
 @property (nonatomic) BOOL showWeeks;
 
+// Should the weekend by highlighted?
+@property (nonatomic) BOOL highlightWeekend;
+
 // An optional view controller for tooltips.
 @property (nonatomic) NSViewController<MoCalTooltipProvider> *tooltipVC;
 

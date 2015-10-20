@@ -19,6 +19,7 @@ extern NSString * const kShowEventDays;
 extern NSString * const kShowWeeks;
 extern NSString * const kWeekStartDOW;
 extern NSString * const kKeyboardShortcut;
+extern NSString * const kHighlightWeekend;
 
 // Preferences notifications
 extern NSString * const kDaysToShowPreferenceChanged;
