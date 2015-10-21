@@ -2,7 +2,7 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
     <file original="Moon/Base.lproj/MainMenu.xib" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.3.2" build-num="6D2105"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.0" build-num="7A220"></tool>
         </header>
         <body>
             <trans-unit id="1Xt-HY-uBw.title">
@@ -37,14 +37,14 @@
     </file>
     <file original="Moon/Info.plist" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.3.2" build-num="6D2105"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.0" build-num="7A220"></tool>
         </header>
         <body>
             <trans-unit id="CFBundleName">
                 <source>$(PRODUCT_NAME)</source>
             </trans-unit>
             <trans-unit id="CFBundleShortVersionString">
-                <source>0.10.0</source>
+                <source>0.10.7</source>
             </trans-unit>
             <trans-unit id="NSHumanReadableCopyright">
                 <source>Copyright © 2015 mowglii.com</source>
@@ -53,7 +53,7 @@
     </file>
     <file original="Moon/Localizable.strings" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.3.2" build-num="6D2105"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.0" build-num="7A220"></tool>
         </header>
         <body>
             <trans-unit id="1 day">
@@ -63,13 +63,13 @@
             </trans-unit>
             <trans-unit id="1 day before">
                 <source>1 day before</source>
-                <note>No comment provided by engineer.</note>
                 <target>1 Tag vorher</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="1 hour before">
                 <source>1 hour before</source>
-                <note>No comment provided by engineer.</note>
                 <target>1 Stunde vorher</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="2 days">
                 <source>2 days</source>
@@ -78,13 +78,13 @@
             </trans-unit>
             <trans-unit id="2 days before">
                 <source>2 days before</source>
-                <note>No comment provided by engineer.</note>
                 <target>2 Tage vorher</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="2 hours before">
                 <source>2 hours before</source>
-                <note>No comment provided by engineer.</note>
                 <target>2 Stunden vorher</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="3 days">
                 <source>3 days</source>
@@ -103,8 +103,8 @@
             </trans-unit>
             <trans-unit id="5 minutes before">
                 <source>5 minutes before</source>
-                <note>No comment provided by engineer.</note>
                 <target>5 Minuten vorher</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="6 days">
                 <source>6 days</source>
@@ -118,18 +118,18 @@
             </trans-unit>
             <trans-unit id="10 minutes before">
                 <source>10 minutes before</source>
-                <note>No comment provided by engineer.</note>
                 <target>10 Minuten vorher</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="15 minutes before">
                 <source>15 minutes before</source>
-                <note>No comment provided by engineer.</note>
                 <target>15 Minuten vorher</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="30 minutes before">
                 <source>30 minutes before</source>
-                <note>No comment provided by engineer.</note>
                 <target>30 Minuten vorher</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Add Location">
                 <source>Add Location</source>
@@ -138,8 +138,8 @@
             </trans-unit>
             <trans-unit id="Alert:">
                 <source>Alert:</source>
-                <note>No comment provided by engineer.</note>
                 <target>Warnhinweis:</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="All-day:">
                 <source>All-day:</source>
@@ -153,8 +153,8 @@
             </trans-unit>
             <trans-unit id="At time of event">
                 <source>At time of event</source>
-                <note>No comment provided by engineer.</note>
                 <target>Bei Ereignisstart</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy">
                 <source>Calendar access denied.
@@ -265,6 +265,11 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
                 <target>Freitag</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
+            <trans-unit id="Highlight weekend">
+                <source>Highlight weekend</source>
+                <note>No comment provided by engineer.</note>
+                <target>Wochenende hervorheben</target>
+            </trans-unit>
             <trans-unit id="Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy.">
                 <source>Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy.</source>
                 <target>Itsycal ist nützlicher, wenn es Veranstaltungen zu Ihrem Kalender hinzuzufügen. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.</target>
@@ -358,7 +363,7 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
             </trans-unit>
             <trans-unit id="Save Event">
                 <source>Save Event</source>
-                <target>Sparen Ereignis</target>
+                <target>Ereignis sichern</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Show calendar weeks">
@@ -440,7 +445,7 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
     </file>
     <file original="MoonExtra/Info.plist" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.3.2" build-num="6D2105"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.0" build-num="7A220"></tool>
         </header>
         <body>
             <trans-unit id="CFBundleName">
@@ -456,7 +461,7 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
     </file>
     <file original="MoonExtra/en.lproj/Localizable.strings" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="6.3.2" build-num="6D2105"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.0" build-num="7A220"></tool>
         </header>
         <body>
             <trans-unit id="Open Itsycal...">

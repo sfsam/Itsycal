@@ -126,6 +126,9 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 "Friday" = "Venerdì";
 
 /* No comment provided by engineer. */
+"Highlight weekend" = "Evidenzia fine settimana";
+
+/* No comment provided by engineer. */
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal è più utile quando si permettono di aggiungere eventi dai calendari. È possibile modificare questa impostazione in Preferenze di Sistema › Sicurezza e Privacy › Privacy.";
 
 /* No comment provided by engineer. */
