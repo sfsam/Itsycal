@@ -73,6 +73,17 @@ static NSString *kEventCellIdentifier = @"EventCell";
     self.view = v;
 }
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    // Timezone changed notification
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemTimeZoneDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [_dateFormatter setTimeZone:[NSTimeZone localTimeZone]];
+        [_timeFormatter setTimeZone:[NSTimeZone localTimeZone]];
+        [_intervalFormatter setTimeZone:[NSTimeZone localTimeZone]];
+    }];
+}
+
 - (void)viewWillAppear
 {
     [super viewWillAppear];
