@@ -32,6 +32,13 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>mowglii.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
 			<key>s3.amazonaws.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
