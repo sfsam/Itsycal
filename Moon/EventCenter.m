@@ -91,12 +91,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSSet *selectedCalendars = [NSSet setWithArray:[defaults arrayForKey:kSelectedCalendars]];
-    NSMutableArray *cleanSelectedCalendars = [NSMutableArray new];
 
     // Make an array of source titles and calendar info.
-    // Also create a clean array of selected calendar identifiers for
-    // NSUserDefaults. We do this in case the user has resynced their
-    // calendars and the calendar identifiers have changed.
     NSMutableArray *sourcesAndCalendars = [NSMutableArray new];
     NSString *currentSourceTitle = @"";
     for (EKCalendar *calendar in calendars) {
@@ -108,12 +104,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         calInfo.calendar = calendar;
         calInfo.selected = selectedCalendars ? [selectedCalendars containsObject:calendar.calendarIdentifier] : NO;
         [sourcesAndCalendars addObject:calInfo];
-        if (calInfo.selected) {
-            [cleanSelectedCalendars addObject:calendar.calendarIdentifier];
-        }
     }
     _sourcesAndCalendars = [NSArray arrayWithArray:sourcesAndCalendars];
-    [defaults setObject:cleanSelectedCalendars forKey:kSelectedCalendars];
 }
 
 - (void)updateSelectedCalendars
