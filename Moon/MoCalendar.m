@@ -495,6 +495,26 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [super updateTrackingAreas];
 }
 
+- (void)scrollWheel:(NSEvent *)theEvent
+{
+    if (theEvent.phase == NSEventPhaseBegan) {
+        CGFloat dX = theEvent.scrollingDeltaX;
+        if (dX != 0) {
+            [theEvent trackSwipeEventWithOptions:(NSEventSwipeTrackingLockDirection) dampenAmountThresholdMin:-1 max:1 usingHandler:^(CGFloat amount, NSEventPhase phase, BOOL isDone, BOOL *stop) {
+                if (phase == NSEventPhaseEnded) {
+                    if (dX < 0) {
+                        [self showNextMonth:nil];
+                    }
+                    else {
+                        [self showPreviousMonth:nil];
+                    }
+                }
+            }];
+        }
+    }
+    [super scrollWheel:theEvent];
+}
+
 #pragma mark
 #pragma mark Utilities
 
