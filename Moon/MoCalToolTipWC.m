@@ -25,6 +25,7 @@ static CGFloat kToolipWindowWidth = 200;
 {
     NSTimer *_fadeTimer;
     NSRect   _positioningRect;
+    NSRect   _screenFrame;
 }
 
 - (instancetype)init
@@ -32,9 +33,10 @@ static CGFloat kToolipWindowWidth = 200;
     return [super initWithWindow:[MoCalTooltipWindow new]];
 }
 
-- (void)showTooltipForDate:(MoDate)date relativeToRect:(NSRect)rect
+- (void)showTooltipForDate:(MoDate)date relativeToRect:(NSRect)rect screenFrame:(NSRect)screenFrame
 {
     _positioningRect = rect;
+    _screenFrame = screenFrame;
     if (self.vc) {
         [self.vc toolTipForDate:date];
     }
@@ -56,9 +58,9 @@ static CGFloat kToolipWindowWidth = 200;
     NSRect frame = self.window.frame;
     frame.origin.x = roundf(NSMidX(_positioningRect) - NSWidth(frame)/2);
     frame.origin.y = _positioningRect.origin.y - NSHeight(frame) - 3;
-    NSScreen *primaryScreen = [[NSScreen screens] objectAtIndex:0];
-    if (NSMaxX(frame) + 5 > NSMaxX(primaryScreen.frame)) {
-        frame.origin.x = NSMaxX(primaryScreen.frame) - NSWidth(frame) - 5;
+    CGFloat screenMaxX = NSMaxX(_screenFrame);
+    if (NSMaxX(frame) + 5 > screenMaxX) {
+        frame.origin.x = screenMaxX - NSWidth(frame) - 5;
     }
     [self.window setFrame:frame display:YES animate:NO];
 }

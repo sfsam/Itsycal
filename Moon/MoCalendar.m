@@ -468,7 +468,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
             NSRect rect = [self convertRect:_hoveredCell.frame fromView:_dateGrid];
             rect = NSOffsetRect(rect, self.frame.origin.x, self.frame.origin.y);
             rect = [self.window convertRectToScreen:rect];
-            [_tooltipWC showTooltipForDate:_hoveredCell.date relativeToRect:rect];
+            [_tooltipWC showTooltipForDate:_hoveredCell.date relativeToRect:rect screenFrame:[[NSScreen mainScreen] frame]];
         }
         else {
             [_tooltipWC hideTooltip];
@@ -497,6 +497,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
 
 - (void)scrollWheel:(NSEvent *)theEvent
 {
+    // Left/right swipes change to previous/next months.
     if (theEvent.phase == NSEventPhaseBegan) {
         CGFloat dX = theEvent.scrollingDeltaX;
         if (dX != 0) {
