@@ -42,11 +42,17 @@
     _wc.contentViewController = _vc;
     _wc.window.delegate = _vc;
     
+    // Don't bother trying to load the menu extra on 10.11+. All we
+    // will do is clutter up the error log with failure messages.
+    if (OSVersionIsAtLeast(10, 11, 0)) {
+        return;
+    }
     // Load the menu extra asynchronously so that if it fails
     // and re-tries, it won't hold up the rest of the app.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self loadMenuExtra];
     });
+    
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
