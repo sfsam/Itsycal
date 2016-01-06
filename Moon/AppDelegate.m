@@ -47,12 +47,12 @@
     if (OSVersionIsAtLeast(10, 11, 0)) {
         return;
     }
+    
     // Load the menu extra asynchronously so that if it fails
     // and re-tries, it won't hold up the rest of the app.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self loadMenuExtra];
     });
-    
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
