@@ -104,8 +104,6 @@
 
 - (void)viewDidLoad
 {
-    [self fileNotifications];
-    
     // The order of the statements is important! Subsequent statments
     // depend on previous ones.
 
@@ -125,6 +123,10 @@
     tooltipVC.ec = _ec;
     _moCal.tooltipVC = tooltipVC;
 
+    // Now that everything else is set up, we file for notifications.
+    // Some of the notification handlers rely on stuff we just set up.
+    [self fileNotifications];
+    
     // Tell the menu extra that Itsycal is alive
     [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalIsActiveNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
 }
