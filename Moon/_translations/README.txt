@@ -1,6 +1,6 @@
 The Itsycal directory contains .xliff files exported from
 Xcode and then filled in with appropriate translations.
-The files where then imported back to Xcode.
+The files were then imported back to Xcode.
 
 To export, navigate to the project and then choose
 Editor > Export For Localization...
