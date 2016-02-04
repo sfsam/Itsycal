@@ -53,7 +53,7 @@
 "All-day:" = "Ganztägig:";
 
 /* No comment provided by engineer. */
-"Are you sure you want to delete this event?" = "Sind Sie sicher, dass Sie dieses Ereignis entfernen möchten ?";
+"Are you sure you want to delete this event?" = "Sind Sie sicher, dass Sie dieses Ereignis entfernen möchten?";
 
 /* No comment provided by engineer. */
 "At time of event" = "Bei Ereignisstart";
@@ -63,7 +63,7 @@
 
 Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Kalenderzugriff verweigert.
 
-Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden können. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.";
+Itsycal ist nützlicher, wenn Ereignisse aus Ihrem Kalender angezeigt werden können. Sie können diese Einstellung unter Systemeinstellungen › Sicherheit › Privatsphäre anpassen.";
 
 /* No comment provided by engineer. */
 "Calendar access was denied." = "Kalenderzugriff verweigert.";
@@ -75,10 +75,10 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 "Check for updates..." = "Nach Updates suchen…";
 
 /* Empty shortcut button in normal state */
-"Click to Record Shortcut" = "Klicken, um Kurzbefehl eingeben";
+"Click to Record Shortcut" = "Klicken, um einen Kurzbefehl aufzunehmen";
 
 /* Tooltip for non-empty shortcut button */
-"Click to record new shortcut" = "Klicken, um Kurzbefehl eingeben";
+"Click to record new shortcut" = "Klicken, um einen neuen Kurzbefehl aufzunehmen";
 
 /* No comment provided by engineer. */
 "Delete All Future Events" = "Alle zukünftigen Ereignisse löschen";
@@ -90,10 +90,10 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 "Delete This Event" = "Löschen";
 
 /* Tooltip for hint button near the non-empty shortcut */
-"Delete shortcut" = "Löschen Tastaturkurzbefehl";
+"Delete shortcut" = "Tastaturkurzbefehl löschen";
 
 /* No comment provided by engineer. */
-"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Möchten Sie dieses und all zukünftigen Vorkommen dieses Ereignisses löschen oder nur das ausgewählte Vorkommen?";
+"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Möchten Sie dieses und alle zukünftigen Vorkommnisse dieses Ereignisses löschen, oder nur das ausgewählte Ereignis?";
 
 /* No comment provided by engineer. */
 "End Repeat:" = "Beenden:";
@@ -129,7 +129,7 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 "Highlight weekend" = "Wochenende hervorheben";
 
 /* No comment provided by engineer. */
-"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal ist nützlicher, wenn es Veranstaltungen zu Ihrem Kalender hinzuzufügen. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.";
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal ist nützlicher, wenn es Veranstaltungen zu Ihrem Kalender hinzufügen kann. Sie können diese Einstellung unter Systemeinstellungen › Sicherheit › Privatsphäre anpassen.";
 
 /* No comment provided by engineer. */
 "Keyboard shortcut" = "Tastaturkurzbefehl";
@@ -214,7 +214,7 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 "Tuesday" = "Dienstag";
 
 /* Non-empty shortcut button in recording state */
-"Type New Shortcut" = "Kurzbefehl eingeben";
+"Type New Shortcut" = "Neuen Kurzbefehl eingeben";
 
 /* Empty shortcut button in recording state */
 "Type Shortcut" = "Kurzbefehl eingeben";
