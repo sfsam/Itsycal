@@ -20,9 +20,11 @@ extern NSString * const kShowWeeks;
 extern NSString * const kWeekStartDOW;
 extern NSString * const kKeyboardShortcut;
 extern NSString * const kHighlightWeekend;
+extern NSString * const kShowMonthInIcon;
 
 // Preferences notifications
 extern NSString * const kDaysToShowPreferenceChanged;
+extern NSString * const kShowMonthInIconPreferenceChanged;
 
 // Menu extra notifications
 extern NSString * const ItsycalIsActiveNotification;
@@ -33,5 +35,5 @@ extern NSString * const ItsycalExtraClickedNotification;
 extern NSString * const ItsycalExtraDidMoveNotification;
 extern NSString * const ItsycalExtraWillUnloadNotification;
 
-NSImage *ItsycalDateIcon(NSInteger day, NSImage *datesImage);
+NSImage *ItsycalIconImageForText(NSString *text);
 BOOL OSVersionIsAtLeast(NSInteger majorVersion, NSInteger minorVersion, NSInteger patchVersion);

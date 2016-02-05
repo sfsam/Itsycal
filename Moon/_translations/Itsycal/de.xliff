@@ -2,7 +2,7 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
     <file original="Moon/Base.lproj/MainMenu.xib" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.0" build-num="7A220"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.2" build-num="7C68"></tool>
         </header>
         <body>
             <trans-unit id="1Xt-HY-uBw.title">
@@ -13,13 +13,41 @@
                 <source>Quit Itsycal</source>
                 <note>Class = "NSMenuItem"; title = "Quit Itsycal"; ObjectID = "4sb-4s-VLi";</note>
             </trans-unit>
+            <trans-unit id="7wR-SZ-Nqc.title">
+                <source>Close</source>
+                <note>Class = "NSMenuItem"; title = "Close"; ObjectID = "7wR-SZ-Nqc";</note>
+            </trans-unit>
             <trans-unit id="AYu-sK-qS6.title">
                 <source>Main Menu</source>
                 <note>Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6";</note>
             </trans-unit>
-            <trans-unit id="DVo-aG-piG.title">
-                <source>Close</source>
-                <note>Class = "NSMenuItem"; title = "Close"; ObjectID = "DVo-aG-piG";</note>
+            <trans-unit id="Ajc-jh-dSd.title">
+                <source>Delete</source>
+                <note>Class = "NSMenuItem"; title = "Delete"; ObjectID = "Ajc-jh-dSd";</note>
+            </trans-unit>
+            <trans-unit id="E90-5z-y6Z.title">
+                <source>Redo</source>
+                <note>Class = "NSMenuItem"; title = "Redo"; ObjectID = "E90-5z-y6Z";</note>
+            </trans-unit>
+            <trans-unit id="KoB-Sc-Ag6.title">
+                <source>Copy</source>
+                <note>Class = "NSMenuItem"; title = "Copy"; ObjectID = "KoB-Sc-Ag6";</note>
+            </trans-unit>
+            <trans-unit id="PMd-w8-qYH.title">
+                <source>Paste and Match Style</source>
+                <note>Class = "NSMenuItem"; title = "Paste and Match Style"; ObjectID = "PMd-w8-qYH";</note>
+            </trans-unit>
+            <trans-unit id="RD9-zb-l4F.title">
+                <source>Edit</source>
+                <note>Class = "NSMenuItem"; title = "Edit"; ObjectID = "RD9-zb-l4F";</note>
+            </trans-unit>
+            <trans-unit id="XV4-be-FKs.title">
+                <source>Paste</source>
+                <note>Class = "NSMenuItem"; title = "Paste"; ObjectID = "XV4-be-FKs";</note>
+            </trans-unit>
+            <trans-unit id="Xm0-od-eJc.title">
+                <source>Edit</source>
+                <note>Class = "NSMenu"; title = "Edit"; ObjectID = "Xm0-od-eJc";</note>
             </trans-unit>
             <trans-unit id="bib-Uj-vzu.title">
                 <source>File</source>
@@ -33,18 +61,30 @@
                 <source>Itsycal</source>
                 <note>Class = "NSMenu"; title = "Itsycal"; ObjectID = "uQy-DD-JDr";</note>
             </trans-unit>
+            <trans-unit id="vKD-cH-8sx.title">
+                <source>Select All</source>
+                <note>Class = "NSMenuItem"; title = "Select All"; ObjectID = "vKD-cH-8sx";</note>
+            </trans-unit>
+            <trans-unit id="vPX-F4-xWi.title">
+                <source>Cut</source>
+                <note>Class = "NSMenuItem"; title = "Cut"; ObjectID = "vPX-F4-xWi";</note>
+            </trans-unit>
+            <trans-unit id="zvl-vr-OUg.title">
+                <source>Undo</source>
+                <note>Class = "NSMenuItem"; title = "Undo"; ObjectID = "zvl-vr-OUg";</note>
+            </trans-unit>
         </body>
     </file>
     <file original="Moon/Info.plist" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.0" build-num="7A220"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.2" build-num="7C68"></tool>
         </header>
         <body>
             <trans-unit id="CFBundleName">
                 <source>$(PRODUCT_NAME)</source>
             </trans-unit>
             <trans-unit id="CFBundleShortVersionString">
-                <source>0.10.7</source>
+                <source>0.10.9</source>
             </trans-unit>
             <trans-unit id="NSHumanReadableCopyright">
                 <source>Copyright © 2015 mowglii.com</source>
@@ -53,7 +93,7 @@
     </file>
     <file original="Moon/Localizable.strings" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.0" build-num="7A220"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.2" build-num="7C68"></tool>
         </header>
         <body>
             <trans-unit id="1 day">
@@ -267,8 +307,8 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
             </trans-unit>
             <trans-unit id="Highlight weekend">
                 <source>Highlight weekend</source>
-                <note>No comment provided by engineer.</note>
                 <target>Wochenende hervorheben</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy.">
                 <source>Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy.</source>
@@ -371,6 +411,11 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
                 <target>Kalenderwoche anzeigen</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
+            <trans-unit id="Show month in icon">
+                <source>Show month in icon</source>
+                <note>No comment provided by engineer.</note>
+                <target>Menüleistensymbol zeigt Monat</target>
+            </trans-unit>
             <trans-unit id="Space">
                 <source>Space</source>
                 <target>Leertaste</target>
@@ -445,7 +490,7 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
     </file>
     <file original="MoonExtra/Info.plist" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.0" build-num="7A220"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.2" build-num="7C68"></tool>
         </header>
         <body>
             <trans-unit id="CFBundleName">
@@ -461,7 +506,7 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
     </file>
     <file original="MoonExtra/en.lproj/Localizable.strings" source-language="en" datatype="plaintext" target-language="de">
         <header>
-            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.0" build-num="7A220"></tool>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.2" build-num="7C68"></tool>
         </header>
         <body>
             <trans-unit id="Open Itsycal...">

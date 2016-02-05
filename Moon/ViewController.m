@@ -28,6 +28,7 @@
     AgendaViewController  *_agendaVC;
     EventViewController   *_eventVC;
     NSLayoutConstraint    *_bottomMargin;
+    NSDateFormatter       *_iconDateFormatter;
 }
 
 - (void)dealloc
@@ -106,6 +107,8 @@
 {
     // The order of the statements is important! Subsequent statments
     // depend on previous ones.
+    
+    _iconDateFormatter = [NSDateFormatter new];
 
     // Calendar is 'autoupdating' so it handles timezone changes properly.
     _nsCal = [NSCalendar autoupdatingCurrentCalendar];
@@ -128,7 +131,7 @@
     [self fileNotifications];
     
     // Tell the menu extra that Itsycal is alive
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalIsActiveNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalIsActiveNotification object:nil userInfo:@{@"iconText": [self iconText]} deliverImmediately:YES];
 }
 
 - (void)viewWillAppear
@@ -351,11 +354,13 @@
     
     // Notification for when status item view moves
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidMoveNotification object:_statusItem.button.window];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidResizeNotification object:_statusItem.button.window];
 }
 
 - (void)removeStatusItem
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidMoveNotification object:_statusItem.button.window];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidResizeNotification object:_statusItem.button.window];
     [[NSStatusBar systemStatusBar] removeStatusItem:_statusItem];
     _statusItem = nil;
 }
@@ -363,10 +368,8 @@
 - (void)menuExtraIsActive:(NSNotification *)notification
 {
     [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
-    
     [self removeStatusItem];
-    
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalDidUpdateIconNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
+    [self updateMenubarIcon];
 }
 
 - (void)menuExtraWillUnload:(NSNotification *)notification
@@ -377,14 +380,26 @@
     [self createStatusItem];
 }
 
+- (NSString *)iconText
+{
+    NSString *iconText = [NSString stringWithFormat:@"%zd", _moCal.todayDate.day];
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon]) {
+        [_iconDateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:@"MMM d" options:0 locale:[NSLocale currentLocale]]];
+        iconText = [_iconDateFormatter stringFromDate:[NSDate new]];
+    }
+    if (iconText == nil) {
+        iconText = @"!!";
+    }
+    return iconText;
+}
+
 - (void)updateMenubarIcon
 {
+    NSString *iconText = [self iconText];
     if (_statusItem) {
-        NSInteger day = _moCal.todayDate.day;
-        NSImage *datesImage = [NSImage imageNamed:@"dates"];
-        _statusItem.button.image = ItsycalDateIcon(day, datesImage);
+        _statusItem.button.image = ItsycalIconImageForText(iconText);
     }
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalDidUpdateIconNotification object:nil userInfo:@{@"day": @(_moCal.todayDate.day)} deliverImmediately:YES];
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalDidUpdateIconNotification object:nil userInfo:@{@"iconText": iconText} deliverImmediately:YES];
 }
 
 - (void)updateStatusItemPositionInfo
@@ -683,6 +698,14 @@
     // Preferences notifications
     [[NSNotificationCenter defaultCenter] addObserverForName:kDaysToShowPreferenceChanged object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [self updateAgenda];
+    }];
+    [[NSNotificationCenter defaultCenter] addObserverForName:kShowMonthInIconPreferenceChanged object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [self updateMenubarIcon];
+    }];
+    
+    // Locale notifications
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [self updateMenubarIcon];
     }];
 }
 

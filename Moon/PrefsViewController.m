@@ -36,6 +36,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 {
     MoTextField *_title;
     NSButton *_login;
+    NSButton *_showMonth;
     NSTableView *_calendarsTV;
     NSPopUpButton *_daysPopup;
 }
@@ -93,6 +94,16 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [_login setButtonType:NSSwitchButton];
     [v addSubview:_login];
     
+    // Show month checkbox
+    _showMonth = [NSButton new];
+    _showMonth.translatesAutoresizingMaskIntoConstraints = NO;
+    _showMonth.title = NSLocalizedString(@"Show month in icon", @"");
+    _showMonth.font = [NSFont systemFontOfSize:12];
+    _showMonth.target = self;
+    _showMonth.action = @selector(showMonthInIcon:);
+    [_showMonth setButtonType:NSSwitchButton];
+    [v addSubview:_showMonth];
+    
     // Shortcut label
     MoTextField *shortcutLabel = txt(NSLocalizedString(@"Keyboard shortcut", @""));
     
@@ -144,14 +155,15 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, _showMonth, shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
     };
     vcon(@"V:|-m-[appIcon(64)]");
     vcon(@"H:|-m-[appIcon(64)]-[_title]-(>=m)-|");
     vcon(@"H:[appIcon]-[link]-(>=m)-|");
     vcon(@"V:|-36-[_title]-1-[link]");
-    vcon(@"V:|-110-[_login]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
+    vcon(@"V:|-110-[_login]-[_showMonth]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
     vcon(@"H:|-m-[_login]-(>=m)-|");
+    vcon(@"H:|-m-[_showMonth]-(>=m)-|");
     vcon(@"H:|-(>=m)-[shortcutLabel]-(>=m)-|");
     vcon(@"H:|-m-[shortcutView(>=220)]-m-|");
     vcon(@"H:|-m-[tvContainer]-m-|");
@@ -176,8 +188,9 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 - (void)viewWillAppear
 {
     [super viewWillAppear];
-    _login.state = [self isLoginItemEnabled] ? NSOnState : NSOffState;
     [_calendarsTV reloadData];
+    _login.state = [self isLoginItemEnabled] ? NSOnState : NSOffState;
+    _showMonth.state = [[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon];
     NSInteger days = [[NSUserDefaults standardUserDefaults] integerForKey:kShowEventDays];
     [_daysPopup selectItemAtIndex:MIN(MAX(days, 0), 7)]; // days is in range 0..7
     
@@ -198,6 +211,13 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, 7)];
     _title.attributedStringValue = s;
     toggle = !toggle;
+}
+
+- (void)showMonthInIcon:(NSButton *)showMonthCheckbox
+{
+    BOOL showMonth = showMonthCheckbox.state;
+    [[NSUserDefaults standardUserDefaults] setBool:showMonth forKey:kShowMonthInIcon];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kShowMonthInIconPreferenceChanged object:nil];
 }
 
 #pragma mark -

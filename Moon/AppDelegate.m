@@ -26,7 +26,8 @@
         kShowWeeks:        @(NO),
         kHighlightWeekend: @(NO),
         kShowEventDays:    @0,
-        kWeekStartDOW:     @0 // Sun=0, Mon=1,... (MoCalendar.h)
+        kWeekStartDOW:     @0, // Sun=0, Mon=1,... (MoCalendar.h)
+        kShowMonthInIcon:  @(NO)
     }];
 }
 

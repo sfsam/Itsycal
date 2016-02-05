@@ -189,6 +189,9 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
 /* No comment provided by engineer. */
 "Show calendar weeks" = "Mostrar semanas del calendario";
 
+/* No comment provided by engineer. */
+"Show month in icon" = "El icono muestra mes";
+
 /* Shortcut glyph name for SPACE key */
 "Space" = "Espacio";
 

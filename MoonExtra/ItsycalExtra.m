@@ -13,7 +13,6 @@
 @implementation ItsycalExtra
 {
     BOOL _itsycalIsRunning;
-    NSImage *_dates;
 }
 
 - (id)initWithBundle:(NSBundle *)bundle
@@ -21,12 +20,18 @@
     self = [super initWithBundle:bundle];
     if (self) {
         _itsycalIsRunning = NO;
-        _dates = [[NSImage alloc] initWithContentsOfFile:[bundle pathForImageResource:@"dates"]];
         
         // Setup menu extra view with blank image.
         NSMenuExtraView *exView;
+        NSImage *iconImage = ItsycalIconImageForText(@"-");
+
+        NSRect frame = self.view.frame;
+        frame.size.width = iconImage.size.width;
+        self.view.frame = frame;
+        
         exView = [[NSMenuExtraView alloc] initWithFrame:self.view.frame menuExtra:self];
-        exView.image = ItsycalDateIcon(0, _dates);
+        exView.image = iconImage;
+        
         self.view = exView;
         
         // Menu extra moved notification
@@ -117,9 +122,19 @@
 
 - (void)menubarIconUpdated:(NSNotification *)notification
 {
-    NSInteger day = [notification.userInfo[@"day"] integerValue];
     _itsycalIsRunning = YES;
-    [(NSMenuExtraView *)self.view setImage:ItsycalDateIcon(day, _dates)];
+    NSString *iconText = notification.userInfo[@"iconText"];
+    if (iconText == nil) {
+        iconText = @"?";
+    }
+    NSImage *iconImage = ItsycalIconImageForText(iconText);
+    [(NSMenuExtraView *)self.view setImage:iconImage];
+    
+    // Adjust size of menu extra based on iconImage size.
+    NSRect frame = self.view.frame;
+    frame.size.width = iconImage.size.width;
+    self.view.frame = frame;
+    self.length = iconImage.size.width;
 }
 
 - (void)keyboardShortcutActivated:(NSNotification *)notification
@@ -146,7 +161,16 @@
         }
         if (!foundItsycal && _itsycalIsRunning) {
             _itsycalIsRunning = NO;
-            [(NSMenuExtraView *)self.view setImage:ItsycalDateIcon(0, _dates)];
+            
+            // Display a blank icon.
+            NSImage *iconImage = ItsycalIconImageForText(@"-");
+            [(NSMenuExtraView *)self.view setImage:iconImage];
+            
+            // Adjust size of menu extra based on iconImage size.
+            NSRect frame = self.view.frame;
+            frame.size.width = iconImage.size.width;
+            self.view.frame = frame;
+            self.length = iconImage.size.width;
         }
     }
 }
