@@ -35,9 +35,9 @@ FILESIZE=$(stat -f "%z" "$ZIP_PATH1")
 # Make the Sparkle appcast XML file.
 cat > "$XML_PATH" <<EOF
 <?xml version="1.0" encoding="utf-8"?>
-<rss 
-    version="2.0" 
-    xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" 
+<rss
+    version="2.0"
+    xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"
     xmlns:dc="http://purl.org/dc/elements/1.1/" >
 <channel>
 <title>Itsycal Changelog</title>
@@ -47,12 +47,12 @@ cat > "$XML_PATH" <<EOF
 <item>
 <title>Version $VERSION</title>
 <sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
-<sparkle:releaseNotesLink>http://mowglii.com/itsycal/changelog.html</sparkle:releaseNotesLink>
+<sparkle:releaseNotesLink>https://s3.amazonaws.com/itsycal/changelog.html</sparkle:releaseNotesLink>
 <pubDate>$DATE +0000</pubDate>
-<enclosure 
+<enclosure
     url="https://s3.amazonaws.com/itsycal/$ZIP_NAME"
-    sparkle:version="$VERSION" 
-    length="$FILESIZE" 
+    sparkle:version="$VERSION"
+    length="$FILESIZE"
     type="application/octet-stream" />
 </item>
 </channel>
