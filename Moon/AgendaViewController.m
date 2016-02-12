@@ -159,6 +159,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
         if (!cell) cell = [AgendaEventCell new];
         cell.textField.attributedStringValue = [self eventStringForInfo:info];
+        cell.toolTip = info.event.location;
         
         //make the date color light grey if the date for the entry has passed
         NSDate *now = [NSDate date];
