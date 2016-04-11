@@ -27,7 +27,8 @@
         kHighlightWeekend: @(NO),
         kShowEventDays:    @7,
         kWeekStartDOW:     @0, // Sun=0, Mon=1,... (MoCalendar.h)
-        kShowMonthInIcon:  @(NO)
+        kShowMonthInIcon:  @(NO),
+        kShowTimeInIcon:   @(NO)
     }];
 }
 
