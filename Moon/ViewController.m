@@ -388,6 +388,11 @@
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon]) {
         dateFormat = [@"MMM " stringByAppendingString:dateFormat];
     }
+
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeekInIcon]) {
+        dateFormat = [@"EEE " stringByAppendingString:dateFormat];
+    }
+
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowTimeInIcon]) {
         dateFormat = [dateFormat stringByAppendingString:@" hh mm"];
     }
@@ -710,6 +715,9 @@
         [self updateMenubarIcon];
     }];
     [[NSNotificationCenter defaultCenter] addObserverForName:kShowTimeInIconPreferenceChanged object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [self updateMenubarIcon];
+    }];
+    [[NSNotificationCenter defaultCenter] addObserverForName:kShowDayOfWeekInIconPreferenceChanged object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [self updateMenubarIcon];
     }];
     

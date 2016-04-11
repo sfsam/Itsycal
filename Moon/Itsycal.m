@@ -20,11 +20,13 @@ NSString * const kWeekStartDOW = @"WeekStartDOW";
 NSString * const kKeyboardShortcut = @"KeyboardShortcut";
 NSString * const kHighlightWeekend = @"HighlightWeekend";
 NSString * const kShowMonthInIcon = @"ShowMonthInIcon";
+NSString * const kShowDayOfWeekInIcon = @"ShowDayOfWeekInIcon";
 NSString * const kShowTimeInIcon = @"ShowTimeInIcon";
 
 // Preferences notifications
 NSString * const kDaysToShowPreferenceChanged = @"DaysToShowPreferenceChanged";
 NSString * const kShowMonthInIconPreferenceChanged = @"ShowMonthInIconPreferenceChanged";
+NSString * const kShowDayOfWeekInIconPreferenceChanged = @"ShowDayOfWeelInIconPreferenceChanged";
 NSString * const kShowTimeInIconPreferenceChanged = @"ShowTimeInIconPreferenceChanged";
 
 // Menu extra notifications

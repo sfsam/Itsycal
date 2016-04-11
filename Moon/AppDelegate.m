@@ -22,13 +22,14 @@
 + (void)initialize
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{
-        kPinItsycal:       @(NO),
-        kShowWeeks:        @(NO),
-        kHighlightWeekend: @(NO),
-        kShowEventDays:    @7,
-        kWeekStartDOW:     @0, // Sun=0, Mon=1,... (MoCalendar.h)
-        kShowMonthInIcon:  @(NO),
-        kShowTimeInIcon:   @(NO)
+        kPinItsycal:            @(NO),
+        kShowWeeks:             @(NO),
+        kHighlightWeekend:      @(NO),
+        kShowEventDays:         @7,
+        kWeekStartDOW:          @0, // Sun=0, Mon=1,... (MoCalendar.h)
+        kShowMonthInIcon:       @(NO),
+        kShowDayOfWeekInIcon:   @(NO),
+        kShowTimeInIcon:        @(NO)
     }];
 }
 
