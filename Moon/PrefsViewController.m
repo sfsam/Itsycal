@@ -37,6 +37,8 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     MoTextField *_title;
     NSButton *_login;
     NSButton *_showMonth;
+    NSButton *_showDayOfWeek;
+    NSButton *_showTime;
     NSTableView *_calendarsTV;
     NSPopUpButton *_daysPopup;
 }
@@ -104,6 +106,26 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [_showMonth setButtonType:NSSwitchButton];
     [v addSubview:_showMonth];
     
+    // Show day of week checkbox
+    _showDayOfWeek = [NSButton new];
+    _showDayOfWeek.translatesAutoresizingMaskIntoConstraints = NO;
+    _showDayOfWeek.title = NSLocalizedString(@"Show day of week in icon", @"");
+    _showDayOfWeek.font = [NSFont systemFontOfSize:12];
+    _showDayOfWeek.target = self;
+    _showDayOfWeek.action = @selector(showDayOfWeekInIcon:);
+    [_showDayOfWeek setButtonType:NSSwitchButton];
+    [v addSubview:_showDayOfWeek];
+    
+    // SHow time checkbox
+    _showTime = [NSButton new];
+    _showTime.translatesAutoresizingMaskIntoConstraints = NO;
+    _showTime.title = NSLocalizedString(@"Show time in icon", @"");
+    _showTime.font = [NSFont systemFontOfSize:12];
+    _showTime.target = self;
+    _showTime.action = @selector(showTimeInIcon:);
+    [_showTime setButtonType:NSSwitchButton];
+    [v addSubview:_showTime];
+
     // Shortcut label
     MoTextField *shortcutLabel = txt(NSLocalizedString(@"Keyboard shortcut", @""));
     
@@ -155,15 +177,17 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, _showMonth, shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, _showMonth, _showTime, _showDayOfWeek, shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
     };
     vcon(@"V:|-m-[appIcon(64)]");
     vcon(@"H:|-m-[appIcon(64)]-[_title]-(>=m)-|");
     vcon(@"H:[appIcon]-[link]-(>=m)-|");
     vcon(@"V:|-36-[_title]-1-[link]");
-    vcon(@"V:|-110-[_login]-[_showMonth]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
+    vcon(@"V:|-110-[_login]-[_showMonth]-[_showDayOfWeek]-[_showTime]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
     vcon(@"H:|-m-[_login]-(>=m)-|");
     vcon(@"H:|-m-[_showMonth]-(>=m)-|");
+    vcon(@"H:|-m-[_showDayOfWeek]-(>=m)-|");
+    vcon(@"H:|-m-[_showTime]-(>=m)-|");
     vcon(@"H:|-(>=m)-[shortcutLabel]-(>=m)-|");
     vcon(@"H:|-m-[shortcutView(>=220)]-m-|");
     vcon(@"H:|-m-[tvContainer]-m-|");
@@ -191,6 +215,8 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [_calendarsTV reloadData];
     _login.state = [self isLoginItemEnabled] ? NSOnState : NSOffState;
     _showMonth.state = [[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon];
+    _showTime.state = [[NSUserDefaults standardUserDefaults] boolForKey:kShowTimeInIcon];
+    _showDayOfWeek.state = [[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeekInIcon];
     NSInteger days = [[NSUserDefaults standardUserDefaults] integerForKey:kShowEventDays];
     [_daysPopup selectItemAtIndex:MIN(MAX(days, 0), 7)]; // days is in range 0..7
     
@@ -218,6 +244,20 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     BOOL showMonth = showMonthCheckbox.state;
     [[NSUserDefaults standardUserDefaults] setBool:showMonth forKey:kShowMonthInIcon];
     [[NSNotificationCenter defaultCenter] postNotificationName:kShowMonthInIconPreferenceChanged object:nil];
+}
+
+- (void)showTimeInIcon:(NSButton *)showTimeCheckbox
+{
+    BOOL showTime = showTimeCheckbox.state;
+    [[NSUserDefaults standardUserDefaults] setBool:showTime forKey:kShowTimeInIcon];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kShowTimeInIconPreferenceChanged object:nil];
+}
+
+- (void)showDayOfWeekInIcon:(NSButton *)showDayOfWeekCheckbox
+{
+    BOOL showTime = showDayOfWeekCheckbox.state;
+    [[NSUserDefaults standardUserDefaults] setBool:showTime forKey:kShowDayOfWeekInIcon];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kShowDayOfWeekInIconPreferenceChanged object:nil];
 }
 
 #pragma mark -

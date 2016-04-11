@@ -21,10 +21,14 @@ extern NSString * const kWeekStartDOW;
 extern NSString * const kKeyboardShortcut;
 extern NSString * const kHighlightWeekend;
 extern NSString * const kShowMonthInIcon;
+extern NSString * const kShowDayOfWeekInIcon;
+extern NSString * const kShowTimeInIcon;
 
 // Preferences notifications
 extern NSString * const kDaysToShowPreferenceChanged;
 extern NSString * const kShowMonthInIconPreferenceChanged;
+extern NSString * const kShowDayOfWeekInIconPreferenceChanged;
+extern NSString * const kShowTimeInIconPreferenceChanged;
 
 // Menu extra notifications
 extern NSString * const ItsycalIsActiveNotification;
