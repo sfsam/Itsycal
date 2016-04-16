@@ -382,11 +382,15 @@
 
 - (NSString *)iconText
 {
-    NSString *iconText = [NSString stringWithFormat:@"%zd", _moCal.todayDate.day];
+    NSMutableString *template = @"d".mutableCopy;
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon]) {
-        [_iconDateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:@"MMM d" options:0 locale:[NSLocale currentLocale]]];
-        iconText = [_iconDateFormatter stringFromDate:[NSDate new]];
+        [template appendString:@"MMM"];
     }
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeekInIcon]) {
+        [template appendString:@"EEE"];
+    }
+    [_iconDateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:template options:0 locale:[NSLocale currentLocale]]];
+    NSString *iconText = [_iconDateFormatter stringFromDate:[NSDate new]];
     if (iconText == nil) {
         iconText = @"!!";
     }
@@ -700,6 +704,9 @@
         [self updateAgenda];
     }];
     [[NSNotificationCenter defaultCenter] addObserverForName:kShowMonthInIconPreferenceChanged object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [self updateMenubarIcon];
+    }];
+    [[NSNotificationCenter defaultCenter] addObserverForName:kShowDayOfWeekInIconPreferenceChanged object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [self updateMenubarIcon];
     }];
     
