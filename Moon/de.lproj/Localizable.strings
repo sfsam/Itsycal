@@ -190,6 +190,9 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 "Show calendar weeks" = "Kalenderwoche anzeigen";
 
 /* No comment provided by engineer. */
+"Show day of week in icon" = "Menüleistensymbol zeigt Wochentag";
+
+/* No comment provided by engineer. */
 "Show month in icon" = "Menüleistensymbol zeigt Monat";
 
 /* Shortcut glyph name for SPACE key */

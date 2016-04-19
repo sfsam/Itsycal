@@ -84,7 +84,7 @@
                 <source>$(PRODUCT_NAME)</source>
             </trans-unit>
             <trans-unit id="CFBundleShortVersionString">
-                <source>0.10.9</source>
+                <source>0.10.10</source>
             </trans-unit>
             <trans-unit id="NSHumanReadableCopyright">
                 <source>Copyright © 2015 mowglii.com</source>
@@ -411,10 +411,15 @@ Itsycal est plus utile quand il peut afficher les événements de vos calendrier
                 <target>Afficher les numéros de semaine</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
+            <trans-unit id="Show day of week in icon">
+                <source>Show day of week in icon</source>
+                <note>No comment provided by engineer.</note>
+                <target>L'icône de la barre de menu affiche le jour de la semaine</target>
+            </trans-unit>
             <trans-unit id="Show month in icon">
                 <source>Show month in icon</source>
-                <note>No comment provided by engineer.</note>
                 <target>L'icône de la barre de menu affiche le mois</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Space">
                 <source>Space</source>
