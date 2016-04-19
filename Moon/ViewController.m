@@ -382,15 +382,22 @@
 
 - (NSString *)iconText
 {
-    NSMutableString *template = @"d".mutableCopy;
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon]) {
-        [template appendString:@"MMM"];
+    NSString *iconText;
+    
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon] || [[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeekInIcon]) {
+        NSMutableString *template = @"d".mutableCopy;
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon]) {
+            [template appendString:@"MMM"];
+        }
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeekInIcon]) {
+            [template appendString:@"EEE"];
+        }
+        [_iconDateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:template options:0 locale:[NSLocale currentLocale]]];
+        iconText = [_iconDateFormatter stringFromDate:[NSDate new]];
+    } else {
+        iconText = [NSString stringWithFormat:@"%zd", _moCal.todayDate.day];
     }
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeekInIcon]) {
-        [template appendString:@"EEE"];
-    }
-    [_iconDateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:template options:0 locale:[NSLocale currentLocale]]];
-    NSString *iconText = [_iconDateFormatter stringFromDate:[NSDate new]];
+    
     if (iconText == nil) {
         iconText = @"!!";
     }
