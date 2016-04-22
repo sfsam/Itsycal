@@ -167,17 +167,26 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
     rect.size.height -= (kArrowHeight + kShadowWidth + kShadowWidth/2 + 2*kBorderWidth);
     NSBezierPath *rectPath = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:kCornerRadius yRadius:kCornerRadius];
     
-    // The arrow is in the middle of the frame view.
-    NSBezierPath *arrowPath = [NSBezierPath bezierPath];
+    // Append the arrow to the body if its right ege is inside
+    // the right edge of the body (taking into account the corner
+    // radius). This accounts for the edge-case where Itsycal is
+    // all the way to the right in the menu bar. This is possible
+    // if the user has a 3rd party app like Bartender.
     CGFloat curveOffset = 5;
     CGFloat arrowMidX = (_arrowMidX == 0) ? NSMidX(self.frame) : _arrowMidX;
-    CGFloat x = arrowMidX - kArrowHeight - curveOffset;
-    CGFloat y = NSHeight(self.frame) - kArrowHeight - kBorderWidth;
-    [arrowPath moveToPoint:NSMakePoint(x, y)];
-    [arrowPath relativeCurveToPoint:NSMakePoint(kArrowHeight + curveOffset, kArrowHeight) controlPoint1:NSMakePoint(curveOffset, 0) controlPoint2:NSMakePoint(kArrowHeight, kArrowHeight)];
-    [arrowPath relativeCurveToPoint:NSMakePoint(kArrowHeight + curveOffset, -kArrowHeight) controlPoint1:NSMakePoint(curveOffset, 0) controlPoint2:NSMakePoint(kArrowHeight, -kArrowHeight)];
+    CGFloat arrowRightEdge = arrowMidX + curveOffset + kArrowHeight;
+    CGFloat bodyRightEdge = NSMaxX(rect) - kCornerRadius;
+    if (arrowRightEdge < bodyRightEdge) {
+        NSBezierPath *arrowPath = [NSBezierPath bezierPath];
+        CGFloat x = arrowMidX - kArrowHeight - curveOffset;
+        CGFloat y = NSHeight(self.frame) - kArrowHeight - kBorderWidth;
+        [arrowPath moveToPoint:NSMakePoint(x, y)];
+        [arrowPath relativeCurveToPoint:NSMakePoint(kArrowHeight + curveOffset, kArrowHeight) controlPoint1:NSMakePoint(curveOffset, 0) controlPoint2:NSMakePoint(kArrowHeight, kArrowHeight)];
+        [arrowPath relativeCurveToPoint:NSMakePoint(kArrowHeight + curveOffset, -kArrowHeight) controlPoint1:NSMakePoint(curveOffset, 0) controlPoint2:NSMakePoint(kArrowHeight, -kArrowHeight)];
+        [rectPath appendBezierPath:arrowPath];
+    }
     
-    // Combine rectangular and arrow parts; stroke and fill.
+    // Shadow, stroke and fill.
     static NSShadow *shadow = nil;
     if (shadow == nil) {
         shadow = [NSShadow new];
@@ -188,7 +197,6 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
     [shadow set];
     [[NSColor colorWithWhite:0 alpha:0.4] setStroke];
     [[NSColor whiteColor] setFill];
-    [rectPath appendBezierPath:arrowPath];
     [rectPath setLineWidth:2*kBorderWidth];
     [rectPath stroke];
     [rectPath fill];
