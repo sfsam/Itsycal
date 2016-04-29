@@ -160,6 +160,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
         if (!cell) cell = [AgendaEventCell new];
         cell.textField.attributedStringValue = [self eventStringForInfo:info];
         cell.toolTip = info.event.location;
+        
+        //make the date color light grey if the date for the entry has passed
+        NSDate *now = [NSDate date];
+        if ([info.event.endDate laterDate:now] == now) {
+            cell.textField.textColor  = [NSColor colorWithRed:.8 green:.8 blue:.8 alpha:1];
+        }else{
+            cell.textField.textColor = [NSColor grayColor];
+        }
+        
         cell.eventInfo = info;
         BOOL allowsModification = cell.eventInfo.event.calendar.allowsContentModifications;
         cell.btnDelete.hidden = (tableView.hoverRow == row && allowsModification) ? NO : YES;
@@ -286,9 +295,18 @@ static NSString *kEventCellIdentifier = @"EventCell";
             }
         }
     }
+    
     NSString *string = [NSString stringWithFormat:@"%@%@", title, duration];
+    
+    //make the event text light grey if the date has already passed
+    NSColor *textColor = [NSColor blackColor];
+    NSDate *now = [NSDate date];
+    if ([info.event.endDate laterDate:now] == now) {
+        textColor = [NSColor colorWithRed:.8 green:.8 blue:.8 alpha:1];
+    }
+    
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:string];
-    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, title.length)];
+    [s addAttributes:@{NSForegroundColorAttributeName: textColor} range:NSMakeRange(0, title.length)];
     return s;
 }
 
