@@ -45,8 +45,6 @@
 		925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B471A1A93CD2A00E0329A /* TooltipViewController.m */; };
 		92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92658E611A9DBD8E002AE86C /* EventViewController.m */; };
 		9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9278CADA1A990462004B6BB9 /* MoTableView.m */; };
-		9297F0EF1A9AFB72005287D9 /* VarelaRoundNeo-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9297F0ED1A9AFB72005287D9 /* VarelaRoundNeo-Bold.otf */; };
-		9297F0F01A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9297F0EE1A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf */; };
 		9297F0F11A9AFBE1005287D9 /* VarelaRoundNeo-Bold.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9297F0ED1A9AFB72005287D9 /* VarelaRoundNeo-Bold.otf */; };
 		9297F0F21A9AFBE1005287D9 /* VarelaRoundNeo-Regular.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9297F0EE1A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf */; };
 		92B3C0431AA7EF43008A5C05 /* MoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92B3C0421AA7EF43008A5C05 /* MoView.m */; };
@@ -470,11 +468,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				9222B56D1A899B3500CCAC22 /* ItsycalExtra.menu in Resources */,
-				9297F0EF1A9AFB72005287D9 /* VarelaRoundNeo-Bold.otf in Resources */,
 				9242A5671A82A136005AA4B3 /* Images.xcassets in Resources */,
 				922B6BC41A87EDBE00DEA9CD /* InfoPlist.strings in Resources */,
 				922B6BBE1A87EDBD00DEA9CD /* Localizable.strings in Resources */,
-				9297F0F01A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf in Resources */,
 				9242A56A1A82A136005AA4B3 /* MainMenu.xib in Resources */,
 				9219CC261A8990F700B6E159 /* MenuCracker.menu in Resources */,
 			);
