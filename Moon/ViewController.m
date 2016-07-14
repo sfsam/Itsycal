@@ -38,6 +38,9 @@
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowEventDays];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMonthInIcon];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
 }
 
 #pragma mark -
@@ -706,21 +709,28 @@
         [_ec refetchAll];
     }];
     
-    // Preferences notifications
-    [[NSNotificationCenter defaultCenter] addObserverForName:kDaysToShowPreferenceChanged object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateAgenda];
-    }];
-    [[NSNotificationCenter defaultCenter] addObserverForName:kShowMonthInIconPreferenceChanged object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateMenubarIcon];
-    }];
-    [[NSNotificationCenter defaultCenter] addObserverForName:kShowDayOfWeekInIconPreferenceChanged object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateMenubarIcon];
-    }];
-    
     // Locale notifications
     [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [self updateMenubarIcon];
     }];
+    
+    // Observe NSUserDefaults for preference changes
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowEventDays options:NSKeyValueObservingOptionNew context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowMonthInIcon options:NSKeyValueObservingOptionNew context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowDayOfWeekInIcon options:NSKeyValueObservingOptionNew context:NULL];
+}
+
+#pragma mark -
+#pragma mark NSUserDefaults observer
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:kShowEventDays]) {
+        [self updateAgenda];
+    }
+    else if ([keyPath isEqualToString:kShowMonthInIcon] || [keyPath isEqualToString:kShowDayOfWeekInIcon]) {
+        [self updateMenubarIcon];
+    }
 }
 
 @end

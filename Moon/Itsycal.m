@@ -22,11 +22,6 @@ NSString * const kHighlightWeekend = @"HighlightWeekend";
 NSString * const kShowMonthInIcon = @"ShowMonthInIcon";
 NSString * const kShowDayOfWeekInIcon = @"ShowDayOfWeekInIcon";
 
-// Preferences notifications
-NSString * const kDaysToShowPreferenceChanged = @"DaysToShowPreferenceChanged";
-NSString * const kShowMonthInIconPreferenceChanged = @"ShowMonthInIconPreferenceChanged";
-NSString * const kShowDayOfWeekInIconPreferenceChanged = @"ShowDayOfWeekInIconPreferenceChanged";
-
 // Menu extra notifications
 NSString * const ItsycalIsActiveNotification = @"ItsycalIsActiveNotification";
 NSString * const ItsycalDidUpdateIconNotification = @"ItsycalDidUpdateIconNotification";

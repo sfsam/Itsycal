@@ -230,14 +230,12 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 {
     BOOL showMonth = showMonthCheckbox.state;
     [[NSUserDefaults standardUserDefaults] setBool:showMonth forKey:kShowMonthInIcon];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kShowMonthInIconPreferenceChanged object:nil];
 }
 
 - (void)showDayOfWeekInIcon:(NSButton *)showDayOfWeekCheckbox
 {
     BOOL showDayOfWeek = showDayOfWeekCheckbox.state;
     [[NSUserDefaults standardUserDefaults] setBool:showDayOfWeek forKey:kShowDayOfWeekInIcon];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kShowDayOfWeekInIconPreferenceChanged object:nil];
 }
 
 #pragma mark -
@@ -306,7 +304,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 {
     NSInteger days = [_daysPopup indexOfItem:_daysPopup.selectedItem];
     [[NSUserDefaults standardUserDefaults] setInteger:days forKey:kShowEventDays];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kDaysToShowPreferenceChanged object:nil];
 }
 
 - (void)calendarClicked:(NSButton *)checkbox

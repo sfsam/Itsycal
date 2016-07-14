@@ -23,11 +23,6 @@ extern NSString * const kHighlightWeekend;
 extern NSString * const kShowMonthInIcon;
 extern NSString * const kShowDayOfWeekInIcon;
 
-// Preferences notifications
-extern NSString * const kDaysToShowPreferenceChanged;
-extern NSString * const kShowMonthInIconPreferenceChanged;
-extern NSString * const kShowDayOfWeekInIconPreferenceChanged;
-
 // Menu extra notifications
 extern NSString * const ItsycalIsActiveNotification;
 extern NSString * const ItsycalDidUpdateIconNotification;
