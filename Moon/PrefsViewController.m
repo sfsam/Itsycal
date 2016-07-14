@@ -100,8 +100,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     _showMonth.translatesAutoresizingMaskIntoConstraints = NO;
     _showMonth.title = NSLocalizedString(@"Show month in icon", @"");
     _showMonth.font = [NSFont systemFontOfSize:12];
-    _showMonth.target = self;
-    _showMonth.action = @selector(showMonthInIcon:);
     [_showMonth setButtonType:NSSwitchButton];
     [v addSubview:_showMonth];
     
@@ -110,8 +108,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     _showDayOfWeek.translatesAutoresizingMaskIntoConstraints = NO;
     _showDayOfWeek.title = NSLocalizedString(@"Show day of week in icon", @"");
     _showDayOfWeek.font = [NSFont systemFontOfSize:12];
-    _showDayOfWeek.target = self;
-    _showDayOfWeek.action = @selector(showDayOfWeekInIcon:);
     [_showDayOfWeek setButtonType:NSSwitchButton];
     [v addSubview:_showDayOfWeek];
     
@@ -148,8 +144,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     // Agenda days popup
     _daysPopup = [NSPopUpButton new];
     _daysPopup.translatesAutoresizingMaskIntoConstraints = NO;
-    _daysPopup.target = self;
-    _daysPopup.action = @selector(showEventDays:);
     [_daysPopup addItemsWithTitles:@[NSLocalizedString(@"No events", @""),
                                      NSLocalizedString(@"1 day", @""),
                                      NSLocalizedString(@"2 days", @""),
@@ -202,10 +196,13 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [super viewWillAppear];
     [_calendarsTV reloadData];
     _login.state = [self isLoginItemEnabled] ? NSOnState : NSOffState;
-    _showMonth.state = [[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon];
-    _showDayOfWeek.state = [[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeekInIcon];
-    NSInteger days = [[NSUserDefaults standardUserDefaults] integerForKey:kShowEventDays];
-    [_daysPopup selectItemAtIndex:MIN(MAX(days, 0), 7)]; // days is in range 0..7
+    
+    // Bindings for icon preferences
+    [_showMonth bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_showDayOfWeek bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowDayOfWeekInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    
+    // Bindings for agenda days
+    [_daysPopup bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDays] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
     _calendarsTV.enabled = self.ec.calendarAccessGranted;
     _daysPopup.enabled = self.ec.calendarAccessGranted;
@@ -224,18 +221,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, 7)];
     _title.attributedStringValue = s;
     toggle = !toggle;
-}
-
-- (void)showMonthInIcon:(NSButton *)showMonthCheckbox
-{
-    BOOL showMonth = showMonthCheckbox.state;
-    [[NSUserDefaults standardUserDefaults] setBool:showMonth forKey:kShowMonthInIcon];
-}
-
-- (void)showDayOfWeekInIcon:(NSButton *)showDayOfWeekCheckbox
-{
-    BOOL showDayOfWeek = showDayOfWeekCheckbox.state;
-    [[NSUserDefaults standardUserDefaults] setBool:showDayOfWeek forKey:kShowDayOfWeekInIcon];
 }
 
 #pragma mark -
@@ -299,12 +284,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 
 #pragma mark -
 #pragma mark Calendar
-
-- (void)showEventDays:(id)sender
-{
-    NSInteger days = [_daysPopup indexOfItem:_daysPopup.selectedItem];
-    [[NSUserDefaults standardUserDefaults] setInteger:days forKey:kShowEventDays];
-}
 
 - (void)calendarClicked:(NSButton *)checkbox
 {

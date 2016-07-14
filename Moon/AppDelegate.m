@@ -21,7 +21,8 @@
 
 + (void)initialize
 {
-    [[NSUserDefaults standardUserDefaults] registerDefaults:@{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults registerDefaults:@{
         kPinItsycal:       @(NO),
         kShowWeeks:        @(NO),
         kHighlightWeekend: @(NO),
@@ -30,6 +31,10 @@
         kShowMonthInIcon:  @(NO),
         kShowDayOfWeekInIcon: @(NO)
     }];
+    
+    // Constrain kShowEventDays to values 0...7 in (unlikely) case it is invalid.
+    NSInteger validDays = MIN(MAX([defaults integerForKey:kShowEventDays], 0), 7);
+    [defaults setInteger:validDays forKey:kShowEventDays];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
