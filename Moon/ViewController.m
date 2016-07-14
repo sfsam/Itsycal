@@ -33,9 +33,6 @@
 
 - (void)dealloc
 {
-    if (_statusItem) {
-        [self removeStatusItem];
-    }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowEventDays];
@@ -362,10 +359,12 @@
 
 - (void)removeStatusItem
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidMoveNotification object:_statusItem.button.window];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidResizeNotification object:_statusItem.button.window];
-    [[NSStatusBar systemStatusBar] removeStatusItem:_statusItem];
-    _statusItem = nil;
+    if (_statusItem) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidMoveNotification object:_statusItem.button.window];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidResizeNotification object:_statusItem.button.window];
+        [[NSStatusBar systemStatusBar] removeStatusItem:_statusItem];
+        _statusItem = nil;
+    }
 }
 
 - (void)menuExtraIsActive:(NSNotification *)notification

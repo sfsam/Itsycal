@@ -60,6 +60,7 @@
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
     [self removeMenuExtra];
+    [_vc removeStatusItem];
     [[MASShortcutMonitor sharedMonitor] unregisterAllShortcuts];
 }
 

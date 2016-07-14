@@ -14,5 +14,6 @@
 @interface ViewController : NSViewController <NSWindowDelegate, AgendaDelegate, MoCalendarDelegate, EventCenterDelegate>
 
 - (void)keyboardShortcutActivated;
+- (void)removeStatusItem;
 
 @end
