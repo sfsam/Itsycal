@@ -45,9 +45,9 @@
 		925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B471A1A93CD2A00E0329A /* TooltipViewController.m */; };
 		92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92658E611A9DBD8E002AE86C /* EventViewController.m */; };
 		9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9278CADA1A990462004B6BB9 /* MoTableView.m */; };
-		9297F0F11A9AFBE1005287D9 /* VarelaRoundNeo-Bold.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9297F0ED1A9AFB72005287D9 /* VarelaRoundNeo-Bold.otf */; };
-		9297F0F21A9AFBE1005287D9 /* VarelaRoundNeo-Regular.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9297F0EE1A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf */; };
 		92B3C0431AA7EF43008A5C05 /* MoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92B3C0421AA7EF43008A5C05 /* MoView.m */; };
+		92C2F3141D3811E1009048D9 /* VarelaRoundNeo-Bold.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 92C2F3101D380FC2009048D9 /* VarelaRoundNeo-Bold.otf */; };
+		92C2F3151D3811E4009048D9 /* VarelaRoundNeo-Regular.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 92C2F3111D380FC2009048D9 /* VarelaRoundNeo-Regular.otf */; };
 		92CDDE7B1A955D7F00D7675C /* AgendaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -78,8 +78,8 @@
 			dstPath = Fonts;
 			dstSubfolderSpec = 7;
 			files = (
-				9297F0F11A9AFBE1005287D9 /* VarelaRoundNeo-Bold.otf in CopyFiles */,
-				9297F0F21A9AFBE1005287D9 /* VarelaRoundNeo-Regular.otf in CopyFiles */,
+				92C2F3141D3811E1009048D9 /* VarelaRoundNeo-Bold.otf in CopyFiles */,
+				92C2F3151D3811E4009048D9 /* VarelaRoundNeo-Regular.otf in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,10 +172,10 @@
 		92658E611A9DBD8E002AE86C /* EventViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventViewController.m; sourceTree = "<group>"; };
 		9278CAD91A990462004B6BB9 /* MoTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoTableView.h; sourceTree = "<group>"; };
 		9278CADA1A990462004B6BB9 /* MoTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoTableView.m; sourceTree = "<group>"; };
-		9297F0ED1A9AFB72005287D9 /* VarelaRoundNeo-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "VarelaRoundNeo-Bold.otf"; path = "Moon/_fonts/VarelaRoundNeo-Bold.otf"; sourceTree = "<group>"; };
-		9297F0EE1A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "VarelaRoundNeo-Regular.otf"; path = "Moon/_fonts/VarelaRoundNeo-Regular.otf"; sourceTree = "<group>"; };
 		92B3C0411AA7EF43008A5C05 /* MoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoView.h; sourceTree = "<group>"; };
 		92B3C0421AA7EF43008A5C05 /* MoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoView.m; sourceTree = "<group>"; };
+		92C2F3101D380FC2009048D9 /* VarelaRoundNeo-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "VarelaRoundNeo-Bold.otf"; path = "_fonts/VarelaRoundNeo-Bold.otf"; sourceTree = "<group>"; };
+		92C2F3111D380FC2009048D9 /* VarelaRoundNeo-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "VarelaRoundNeo-Regular.otf"; path = "_fonts/VarelaRoundNeo-Regular.otf"; sourceTree = "<group>"; };
 		92CDDE791A955D7F00D7675C /* AgendaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AgendaViewController.h; sourceTree = "<group>"; };
 		92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AgendaViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -216,8 +216,7 @@
 				921CD1751A89355B007B60C0 /* ItsycalExtra.h */,
 				921CD1761A89355B007B60C0 /* ItsycalExtra.m */,
 			);
-			name = ItsycalExtra;
-			path = MoonExtra;
+			path = ItsycalExtra;
 			sourceTree = "<group>";
 		};
 		921CD16D1A893420007B60C0 /* Supporting Files */ = {
@@ -306,8 +305,7 @@
 				92658E601A9DBD8E002AE86C /* EventViewController.h */,
 				92658E611A9DBD8E002AE86C /* EventViewController.m */,
 			);
-			name = Itsycal;
-			path = Moon;
+			path = Itsycal;
 			sourceTree = "<group>";
 		};
 		9242A55F1A82A136005AA4B3 /* Supporting Files */ = {
@@ -348,11 +346,10 @@
 		927145041A8DF20000745411 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
-				9297F0ED1A9AFB72005287D9 /* VarelaRoundNeo-Bold.otf */,
-				9297F0EE1A9AFB72005287D9 /* VarelaRoundNeo-Regular.otf */,
+				92C2F3101D380FC2009048D9 /* VarelaRoundNeo-Bold.otf */,
+				92C2F3111D380FC2009048D9 /* VarelaRoundNeo-Regular.otf */,
 			);
 			name = Fonts;
-			path = ..;
 			sourceTree = "<group>";
 		};
 		92CDDE7C1A97FFE700D7675C /* MoCode */ = {
@@ -605,7 +602,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = MoonExtra/Info.plist;
+				INFOPLIST_FILE = ItsycalExtra/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mowglii.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -622,7 +619,7 @@
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
 				);
-				INFOPLIST_FILE = MoonExtra/Info.plist;
+				INFOPLIST_FILE = ItsycalExtra/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mowglii.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -716,9 +713,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Moon/_sparkle",
+					"$(PROJECT_DIR)/Itsycal/_sparkle",
 				);
-				INFOPLIST_FILE = Moon/Info.plist;
+				INFOPLIST_FILE = Itsycal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				OTHER_LDFLAGS = "-Wl,-rpath,@loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mowglii.$(PRODUCT_NAME:rfc1034identifier)App";
@@ -735,9 +732,9 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Moon/_sparkle",
+					"$(PROJECT_DIR)/Itsycal/_sparkle",
 				);
-				INFOPLIST_FILE = Moon/Info.plist;
+				INFOPLIST_FILE = Itsycal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				OTHER_LDFLAGS = "-Wl,-rpath,@loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mowglii.$(PRODUCT_NAME:rfc1034identifier)App";
