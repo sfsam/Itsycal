@@ -68,17 +68,11 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 /* No comment provided by engineer. */
 "Calendar access was denied." = "L'accesso al calendario negato.";
 
-/* Cancel action button in recording state */
+/* No comment provided by engineer. */
 "Cancel" = "Annulla";
 
 /* No comment provided by engineer. */
 "Check for updates..." = "Controlla aggiornamenti…";
-
-/* Empty shortcut button in normal state */
-"Click to Record Shortcut" = "Fai clic per registrare l'abbreviazione";
-
-/* Tooltip for non-empty shortcut button */
-"Click to record new shortcut" = "Fai clic per registrare l'abbreviazione";
 
 /* No comment provided by engineer. */
 "Delete All Future Events" = "Elimina tutti gli eventi futuri";
@@ -88,9 +82,6 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 
 /* No comment provided by engineer. */
 "Delete This Event" = "Elimina";
-
-/* Tooltip for hint button near the non-empty shortcut */
-"Delete shortcut" = "Elimina l'abbreviazione";
 
 /* No comment provided by engineer. */
 "Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Vuoi eliminare questa e tutte le ricorrenze future di questo evento o solo quella selezionata?";
@@ -156,9 +147,6 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
    Repeat none */
 "None" = "Nessuno";
 
-/* Alert button when shortcut is already used */
-"OK" = "OK";
-
 /* No comment provided by engineer. */
 "On Date" = "In data";
 
@@ -195,9 +183,6 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 /* No comment provided by engineer. */
 "Show month in icon" = "L'icona nella barra dei menu mostra Mese";
 
-/* Shortcut glyph name for SPACE key */
-"Space" = "Spazio";
-
 /* No comment provided by engineer. */
 "Starts:" = "Inizia:";
 
@@ -207,26 +192,11 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "L'applicazione Calendario non è stato trovato.";
 
-/* Title for alert when shortcut is already used */
-"The key combination %@ cannot be used" = "La combinazione di tasti %@ non può essere usata!";
-
-/* Message for alert when shortcut is already used */
-"This shortcut cannot be used because it is already used by the menu item ‘%@’." = "La combinazione di tasti non può essere usata perché è già usata dall'elemento del menu ‘%@’.";
-
 /* No comment provided by engineer. */
 "Thursday" = "Giovedì";
 
 /* No comment provided by engineer. */
 "Tuesday" = "Martedì";
-
-/* Non-empty shortcut button in recording state */
-"Type New Shortcut" = "Digita l'abbreviazione";
-
-/* Empty shortcut button in recording state */
-"Type Shortcut" = "Digita l'abbreviazione";
-
-/* Cancel action button for non-empty shortcut in recording state */
-"Use Old Shortcut" = "Usa la vecchia abbreviazione";
 
 /* No comment provided by engineer. */
 "Wednesday" = "Mercoledì";

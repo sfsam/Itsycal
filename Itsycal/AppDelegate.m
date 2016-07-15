@@ -10,8 +10,8 @@
 #import "Itsycal.h"
 #import "ItsycalWindow.h"
 #import "ViewController.h"
-#import "MASShortcutBinder.h"
-#import "MASShortcutMonitor.h"
+#import "MASShortcut/MASShortcutBinder.h"
+#import "MASShortcut/MASShortcutMonitor.h"
 
 @implementation AppDelegate
 {

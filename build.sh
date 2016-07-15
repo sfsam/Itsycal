@@ -7,7 +7,7 @@
 # all be uploaded to the web.
 
 # Get the bundle version from the plist.
-PLIST_FILE="Moon/Info.plist"
+PLIST_FILE="Itsycal/Info.plist"
 VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" $PLIST_FILE)
 
 # Set up file names and paths.

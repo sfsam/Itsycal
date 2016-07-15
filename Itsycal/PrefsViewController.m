@@ -8,8 +8,8 @@
 
 #import "PrefsViewController.h"
 #import "Itsycal.h"
-#import "MASShortcutView.h"
-#import "MASShortcutView+Bindings.h"
+#import "MASShortcut/MASShortcutView.h"
+#import "MASShortcut/MASShortcutView+Bindings.h"
 #import "MoView.h"
 #import "MoTextField.h"
 #import "EventCenter.h"

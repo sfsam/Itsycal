@@ -16,18 +16,14 @@
 		922232CD1A8DF672003BFAD9 /* EventCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 922232CC1A8DF672003BFAD9 /* EventCenter.m */; };
 		9222B56D1A899B3500CCAC22 /* ItsycalExtra.menu in Resources */ = {isa = PBXBuildFile; fileRef = 921CD16B1A893420007B60C0 /* ItsycalExtra.menu */; };
 		9224B0751A8BE75500D63030 /* MoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9224B0741A8BE75500D63030 /* MoButton.m */; };
-		922B6BA91A85950600DEA9CD /* MASDictionaryTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B941A85950600DEA9CD /* MASDictionaryTransformer.m */; };
-		922B6BAB1A85950600DEA9CD /* MASHotKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B971A85950600DEA9CD /* MASHotKey.m */; };
-		922B6BAD1A85950600DEA9CD /* MASShortcut.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B9B1A85950600DEA9CD /* MASShortcut.m */; };
-		922B6BAE1A85950600DEA9CD /* MASShortcutBinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6B9D1A85950600DEA9CD /* MASShortcutBinder.m */; };
-		922B6BB01A85950600DEA9CD /* MASShortcutMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6BA01A85950600DEA9CD /* MASShortcutMonitor.m */; };
-		922B6BB31A85950600DEA9CD /* MASShortcutValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6BA41A85950600DEA9CD /* MASShortcutValidator.m */; };
-		922B6BB41A85950600DEA9CD /* MASShortcutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6BA61A85950600DEA9CD /* MASShortcutView.m */; };
-		922B6BB51A85950600DEA9CD /* MASShortcutView+Bindings.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6BA81A85950600DEA9CD /* MASShortcutView+Bindings.m */; };
 		922B6BB81A85CC7800DEA9CD /* PrefsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6BB71A85CC7800DEA9CD /* PrefsViewController.m */; };
 		922B6BBB1A85E0EC00DEA9CD /* MoTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6BBA1A85E0EC00DEA9CD /* MoTextField.m */; };
 		922B6BBE1A87EDBD00DEA9CD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 922B6BC01A87EDBD00DEA9CD /* Localizable.strings */; };
 		922B6BC41A87EDBE00DEA9CD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 922B6BC61A87EDBE00DEA9CD /* InfoPlist.strings */; };
+		923E78E01D385D480012979B /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 923E78DD1D385CF60012979B /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		923E78E11D385D4F0012979B /* MASShortcut.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 923E78DC1D385CF60012979B /* MASShortcut.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		923E78E21D385FD80012979B /* MASShortcut.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 923E78DC1D385CF60012979B /* MASShortcut.framework */; };
+		923E78E31D385FDB0012979B /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 923E78DD1D385CF60012979B /* Sparkle.framework */; };
 		9242A5631A82A136005AA4B3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5621A82A136005AA4B3 /* AppDelegate.m */; };
 		9242A5651A82A136005AA4B3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5641A82A136005AA4B3 /* main.m */; };
 		9242A5671A82A136005AA4B3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9242A5661A82A136005AA4B3 /* Images.xcassets */; };
@@ -39,8 +35,6 @@
 		9242A5921A82A40B005AA4B3 /* MoCalGrid.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A58D1A82A40B005AA4B3 /* MoCalGrid.m */; };
 		9242A5931A82A40B005AA4B3 /* MoCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A58F1A82A40B005AA4B3 /* MoCalendar.m */; };
 		9242A5961A82BE5E005AA4B3 /* Itsycal.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5951A82BE5E005AA4B3 /* Itsycal.m */; };
-		9252DF331AFD34F0007B079F /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9252DF301AFD349C007B079F /* Sparkle.framework */; };
-		9252DF371AFD355D007B079F /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9252DF301AFD349C007B079F /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B47171A93B63100E0329A /* MoCalToolTipWC.m */; };
 		925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B471A1A93CD2A00E0329A /* TooltipViewController.m */; };
 		92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92658E611A9DBD8E002AE86C /* EventViewController.m */; };
@@ -68,7 +62,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				9252DF371AFD355D007B079F /* Sparkle.framework in CopyFiles */,
+				923E78E01D385D480012979B /* Sparkle.framework in CopyFiles */,
+				923E78E11D385D4F0012979B /* MASShortcut.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,23 +103,6 @@
 		9224B0731A8BE75500D63030 /* MoButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoButton.h; sourceTree = "<group>"; };
 		9224B0741A8BE75500D63030 /* MoButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoButton.m; sourceTree = "<group>"; };
 		922B6B911A856A7D00DEA9CD /* SBCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBCalendar.h; sourceTree = "<group>"; };
-		922B6B931A85950600DEA9CD /* MASDictionaryTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MASDictionaryTransformer.h; path = _vendor/MASShortcut/MASDictionaryTransformer.h; sourceTree = "<group>"; };
-		922B6B941A85950600DEA9CD /* MASDictionaryTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MASDictionaryTransformer.m; path = _vendor/MASShortcut/MASDictionaryTransformer.m; sourceTree = "<group>"; };
-		922B6B961A85950600DEA9CD /* MASHotKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MASHotKey.h; path = _vendor/MASShortcut/MASHotKey.h; sourceTree = "<group>"; };
-		922B6B971A85950600DEA9CD /* MASHotKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MASHotKey.m; path = _vendor/MASShortcut/MASHotKey.m; sourceTree = "<group>"; };
-		922B6B991A85950600DEA9CD /* MASKeyCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MASKeyCodes.h; path = _vendor/MASShortcut/MASKeyCodes.h; sourceTree = "<group>"; };
-		922B6B9A1A85950600DEA9CD /* MASShortcut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MASShortcut.h; path = _vendor/MASShortcut/MASShortcut.h; sourceTree = "<group>"; };
-		922B6B9B1A85950600DEA9CD /* MASShortcut.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MASShortcut.m; path = _vendor/MASShortcut/MASShortcut.m; sourceTree = "<group>"; };
-		922B6B9C1A85950600DEA9CD /* MASShortcutBinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MASShortcutBinder.h; path = _vendor/MASShortcut/MASShortcutBinder.h; sourceTree = "<group>"; };
-		922B6B9D1A85950600DEA9CD /* MASShortcutBinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MASShortcutBinder.m; path = _vendor/MASShortcut/MASShortcutBinder.m; sourceTree = "<group>"; };
-		922B6B9F1A85950600DEA9CD /* MASShortcutMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MASShortcutMonitor.h; path = _vendor/MASShortcut/MASShortcutMonitor.h; sourceTree = "<group>"; };
-		922B6BA01A85950600DEA9CD /* MASShortcutMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MASShortcutMonitor.m; path = _vendor/MASShortcut/MASShortcutMonitor.m; sourceTree = "<group>"; };
-		922B6BA31A85950600DEA9CD /* MASShortcutValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MASShortcutValidator.h; path = _vendor/MASShortcut/MASShortcutValidator.h; sourceTree = "<group>"; };
-		922B6BA41A85950600DEA9CD /* MASShortcutValidator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MASShortcutValidator.m; path = _vendor/MASShortcut/MASShortcutValidator.m; sourceTree = "<group>"; };
-		922B6BA51A85950600DEA9CD /* MASShortcutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MASShortcutView.h; path = _vendor/MASShortcut/MASShortcutView.h; sourceTree = "<group>"; };
-		922B6BA61A85950600DEA9CD /* MASShortcutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MASShortcutView.m; path = _vendor/MASShortcut/MASShortcutView.m; sourceTree = "<group>"; };
-		922B6BA71A85950600DEA9CD /* MASShortcutView+Bindings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MASShortcutView+Bindings.h"; path = "_vendor/MASShortcut/MASShortcutView+Bindings.h"; sourceTree = "<group>"; };
-		922B6BA81A85950600DEA9CD /* MASShortcutView+Bindings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MASShortcutView+Bindings.m"; path = "_vendor/MASShortcut/MASShortcutView+Bindings.m"; sourceTree = "<group>"; };
 		922B6BB61A85CC7800DEA9CD /* PrefsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsViewController.h; sourceTree = "<group>"; };
 		922B6BB71A85CC7800DEA9CD /* PrefsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsViewController.m; sourceTree = "<group>"; };
 		922B6BB91A85E0EC00DEA9CD /* MoTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoTextField.h; sourceTree = "<group>"; };
@@ -141,6 +119,8 @@
 		922B6BDB1A88667700DEA9CD /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		922B6BDC1A886C6900DEA9CD /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		922B6BDD1A886C6900DEA9CD /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/MainMenu.strings; sourceTree = "<group>"; };
+		923E78DC1D385CF60012979B /* MASShortcut.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MASShortcut.framework; path = _frameworks/MASShortcut.framework; sourceTree = "<group>"; };
+		923E78DD1D385CF60012979B /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = _frameworks/Sparkle.framework; sourceTree = "<group>"; };
 		9242A55C1A82A136005AA4B3 /* Itsycal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Itsycal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9242A5601A82A136005AA4B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9242A5611A82A136005AA4B3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -162,7 +142,6 @@
 		9242A58F1A82A40B005AA4B3 /* MoCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoCalendar.m; sourceTree = "<group>"; };
 		9242A5941A82BE5E005AA4B3 /* Itsycal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Itsycal.h; sourceTree = "<group>"; };
 		9242A5951A82BE5E005AA4B3 /* Itsycal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Itsycal.m; sourceTree = "<group>"; };
-		9252DF301AFD349C007B079F /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = _sparkle/Sparkle.framework; sourceTree = "<group>"; };
 		925B47161A93B63100E0329A /* MoCalToolTipWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoCalToolTipWC.h; sourceTree = "<group>"; };
 		925B47171A93B63100E0329A /* MoCalToolTipWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoCalToolTipWC.m; sourceTree = "<group>"; };
 		925B47191A93CD2A00E0329A /* TooltipViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TooltipViewController.h; sourceTree = "<group>"; };
@@ -193,7 +172,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9252DF331AFD34F0007B079F /* Sparkle.framework in Frameworks */,
+				923E78E21D385FD80012979B /* MASShortcut.framework in Frameworks */,
+				923E78E31D385FDB0012979B /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,28 +212,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		922B6B921A8594E900DEA9CD /* MASShortcut */ = {
+		923E78DB1D385CD80012979B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				922B6B931A85950600DEA9CD /* MASDictionaryTransformer.h */,
-				922B6B941A85950600DEA9CD /* MASDictionaryTransformer.m */,
-				922B6B961A85950600DEA9CD /* MASHotKey.h */,
-				922B6B971A85950600DEA9CD /* MASHotKey.m */,
-				922B6B991A85950600DEA9CD /* MASKeyCodes.h */,
-				922B6B9A1A85950600DEA9CD /* MASShortcut.h */,
-				922B6B9B1A85950600DEA9CD /* MASShortcut.m */,
-				922B6B9C1A85950600DEA9CD /* MASShortcutBinder.h */,
-				922B6B9D1A85950600DEA9CD /* MASShortcutBinder.m */,
-				922B6B9F1A85950600DEA9CD /* MASShortcutMonitor.h */,
-				922B6BA01A85950600DEA9CD /* MASShortcutMonitor.m */,
-				922B6BA31A85950600DEA9CD /* MASShortcutValidator.h */,
-				922B6BA41A85950600DEA9CD /* MASShortcutValidator.m */,
-				922B6BA51A85950600DEA9CD /* MASShortcutView.h */,
-				922B6BA61A85950600DEA9CD /* MASShortcutView.m */,
-				922B6BA71A85950600DEA9CD /* MASShortcutView+Bindings.h */,
-				922B6BA81A85950600DEA9CD /* MASShortcutView+Bindings.m */,
+				923E78DC1D385CF60012979B /* MASShortcut.framework */,
+				923E78DD1D385CF60012979B /* Sparkle.framework */,
 			);
-			name = MASShortcut;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		9242A5531A82A136005AA4B3 = {
@@ -277,9 +242,8 @@
 		9242A55E1A82A136005AA4B3 /* Itsycal */ = {
 			isa = PBXGroup;
 			children = (
-				9252DF321AFD34A3007B079F /* Sparkle */,
+				923E78DB1D385CD80012979B /* Frameworks */,
 				9219CC241A8990F700B6E159 /* MenuCracker */,
-				922B6B921A8594E900DEA9CD /* MASShortcut */,
 				927145041A8DF20000745411 /* Fonts */,
 				9242A55F1A82A136005AA4B3 /* Supporting Files */,
 				9242A5661A82A136005AA4B3 /* Images.xcassets */,
@@ -333,14 +297,6 @@
 				925B47171A93B63100E0329A /* MoCalToolTipWC.m */,
 			);
 			name = MoCalendar;
-			sourceTree = "<group>";
-		};
-		9252DF321AFD34A3007B079F /* Sparkle */ = {
-			isa = PBXGroup;
-			children = (
-				9252DF301AFD349C007B079F /* Sparkle.framework */,
-			);
-			name = Sparkle;
 			sourceTree = "<group>";
 		};
 		927145041A8DF20000745411 /* Fonts */ = {
@@ -490,10 +446,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9242A5921A82A40B005AA4B3 /* MoCalGrid.m in Sources */,
-				922B6BA91A85950600DEA9CD /* MASDictionaryTransformer.m in Sources */,
-				922B6BB51A85950600DEA9CD /* MASShortcutView+Bindings.m in Sources */,
 				92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */,
-				922B6BB01A85950600DEA9CD /* MASShortcutMonitor.m in Sources */,
 				922232CD1A8DF672003BFAD9 /* EventCenter.m in Sources */,
 				9242A5651A82A136005AA4B3 /* main.m in Sources */,
 				9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */,
@@ -505,17 +458,12 @@
 				9242A5901A82A40B005AA4B3 /* MoDate.m in Sources */,
 				925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */,
 				9242A5961A82BE5E005AA4B3 /* Itsycal.m in Sources */,
-				922B6BB31A85950600DEA9CD /* MASShortcutValidator.m in Sources */,
 				9242A5931A82A40B005AA4B3 /* MoCalendar.m in Sources */,
 				9242A5911A82A40B005AA4B3 /* MoCalCell.m in Sources */,
 				9224B0751A8BE75500D63030 /* MoButton.m in Sources */,
 				92B3C0431AA7EF43008A5C05 /* MoView.m in Sources */,
 				9242A5841A82A189005AA4B3 /* ViewController.m in Sources */,
-				922B6BB41A85950600DEA9CD /* MASShortcutView.m in Sources */,
-				922B6BAD1A85950600DEA9CD /* MASShortcut.m in Sources */,
 				9242A5631A82A136005AA4B3 /* AppDelegate.m in Sources */,
-				922B6BAB1A85950600DEA9CD /* MASHotKey.m in Sources */,
-				922B6BAE1A85950600DEA9CD /* MASShortcutBinder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -713,7 +661,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Itsycal/_sparkle",
+					"$(PROJECT_DIR)/Itsycal/_frameworks",
 				);
 				INFOPLIST_FILE = Itsycal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
@@ -732,7 +680,7 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Itsycal/_sparkle",
+					"$(PROJECT_DIR)/Itsycal/_frameworks",
 				);
 				INFOPLIST_FILE = Itsycal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
