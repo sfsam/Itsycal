@@ -123,6 +123,13 @@ Itsycal est plus utile quand il peut afficher les événements de vos calendrier
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal est plus utile lorsque vous lui permettent d'ajouter des événements à vos calendriers. Vous pouvez modifier ce paramètre dans les Préférences Système › Sécurité et confidentialité › Confidentialité.";
 
 /* No comment provided by engineer. */
+"Itsycal must be run from the Applications folder in order to work properly.
+
+Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsycal doit être exécuté à partir du dossier Applications afin de fonctionner correctement.
+
+S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et relancer.";
+
+/* No comment provided by engineer. */
 "Keyboard shortcut" = "Raccourci clavier";
 
 /* No comment provided by engineer. */
@@ -130,6 +137,9 @@ Itsycal est plus utile quand il peut afficher les événements de vos calendrier
 
 /* No comment provided by engineer. */
 "Monday" = "lundi";
+
+/* No comment provided by engineer. */
+"Move Itsycal to the Applications folder" = "Déplacer Itsycal dans le dossier Applications";
 
 /* Repeat ends never */
 "Never" = "jamais";
