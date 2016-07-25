@@ -530,6 +530,7 @@
 
 - (void)showItsycalWindow
 {
+    [[NSApplication sharedApplication] unhideWithoutActivation];
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
     [self.itsycalWindow makeKeyAndOrderFront:self];
     [self.itsycalWindow makeFirstResponder:_moCal];
