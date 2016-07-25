@@ -443,15 +443,22 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [_tooltipWC endTooltip];
 }
 
-- (void)mouseDown:(NSEvent *)theEvent
+- (void)mouseUp:(NSEvent *)theEvent
 {
-    NSPoint locationInWindow = [theEvent locationInWindow];
-    NSPoint locationInDates  = [_dateGrid convertPoint:locationInWindow fromView:nil];
-    MoCalCell *clickedCell   = [_dateGrid cellAtPoint:locationInDates];
-    if (clickedCell && clickedCell != _selectedCell) {
-        [self setMonthDate:self.monthDate selectedDate:clickedCell.date];
+    if ([theEvent clickCount] == 1) {
+        NSPoint locationInWindow = [theEvent locationInWindow];
+        NSPoint locationInDates  = [_dateGrid convertPoint:locationInWindow fromView:nil];
+        MoCalCell *clickedCell   = [_dateGrid cellAtPoint:locationInDates];
+        if (clickedCell && clickedCell != _selectedCell) {
+            [self setMonthDate:self.monthDate selectedDate:clickedCell.date];
+        }
+        [_tooltipWC hideTooltip];
     }
-    [_tooltipWC hideTooltip];
+    else if ([theEvent clickCount] == 2) {
+        if (self.target && self.doubleAction) {
+            [NSApp sendAction:self.doubleAction to:self.target from:self];
+        }
+    }
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent

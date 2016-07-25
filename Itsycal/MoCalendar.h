@@ -45,6 +45,10 @@
 
 @property (nonatomic, weak) id<MoCalendarDelegate> delegate;
 
+// Double-click handling
+@property (nonatomic, weak) id target;
+@property (nonatomic) SEL doubleAction;
+
 - (IBAction)showPreviousMonth:(id)sender;
 - (IBAction)showNextMonth:(id)sender;
 - (IBAction)showPreviousYear:(id)sender;
