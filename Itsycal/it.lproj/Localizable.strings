@@ -1,0 +1,219 @@
+/* No comment provided by engineer. */
+"1 day" = "1 giorno";
+
+/* No comment provided by engineer. */
+"1 day before" = "1 giorno prima";
+
+/* No comment provided by engineer. */
+"1 hour before" = "1 ora prima";
+
+/* No comment provided by engineer. */
+"2 days" = "2 giorni";
+
+/* No comment provided by engineer. */
+"2 days before" = "2 giorni prima";
+
+/* No comment provided by engineer. */
+"2 hours before" = "2 ore prima";
+
+/* No comment provided by engineer. */
+"3 days" = "3 giorni";
+
+/* No comment provided by engineer. */
+"4 days" = "4 giorni";
+
+/* No comment provided by engineer. */
+"5 days" = "5 giorni";
+
+/* No comment provided by engineer. */
+"5 minutes before" = "5 minuti prima";
+
+/* No comment provided by engineer. */
+"6 days" = "6 giorni";
+
+/* No comment provided by engineer. */
+"7 days" = "7 giorni";
+
+/* No comment provided by engineer. */
+"10 minutes before" = "10 minuti prima";
+
+/* No comment provided by engineer. */
+"15 minutes before" = "15 minuti prima";
+
+/* No comment provided by engineer. */
+"30 minutes before" = "30 minuti prima";
+
+/* No comment provided by engineer. */
+"Add Location" = "Aggiungi posizione";
+
+/* No comment provided by engineer. */
+"Alert:" = "Avviso:";
+
+/* No comment provided by engineer. */
+"All-day:" = "Tutto il giorno:";
+
+/* No comment provided by engineer. */
+"Are you sure you want to delete this event?" = "Sei sicuro di voler cancellare questo evento?";
+
+/* No comment provided by engineer. */
+"At time of event" = "All'ora dell'evento";
+
+/* No comment provided by engineer. */
+"Calendar access denied.
+
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "L'accesso al calendario negato.
+
+Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. È possibile modificare questa impostazione in Preferenze di Sistema › Sicurezza e Privacy › Privacy.";
+
+/* No comment provided by engineer. */
+"Calendar access was denied." = "L'accesso al calendario negato.";
+
+/* No comment provided by engineer. */
+"Cancel" = "Annulla";
+
+/* No comment provided by engineer. */
+"Check for updates..." = "Controlla aggiornamenti…";
+
+/* No comment provided by engineer. */
+"Delete All Future Events" = "Elimina tutti gli eventi futuri";
+
+/* No comment provided by engineer. */
+"Delete Only This Event" = "Elimina solo questo";
+
+/* No comment provided by engineer. */
+"Delete This Event" = "Elimina";
+
+/* No comment provided by engineer. */
+"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Vuoi eliminare questa e tutte le ricorrenze future di questo evento o solo quella selezionata?";
+
+/* No comment provided by engineer. */
+"End Repeat:" = "Fine ripetizione:";
+
+/* No comment provided by engineer. */
+"Ends:" = "Termina:";
+
+/* No comment provided by engineer. */
+"Event list shows:" = "Mostra lista eventi:";
+
+/* No comment provided by engineer. */
+"Every 2 Weeks" = "Ogni 2 settimane";
+
+/* No comment provided by engineer. */
+"Every Day" = "Ogni giorno";
+
+/* No comment provided by engineer. */
+"Every Month" = "Ogni mese";
+
+/* No comment provided by engineer. */
+"Every Week" = "Ogni settimana";
+
+/* No comment provided by engineer. */
+"Every Year" = "Ogni anno";
+
+/* No comment provided by engineer. */
+"First day of week" = "Primo giorno della settimana";
+
+/* No comment provided by engineer. */
+"Friday" = "Venerdì";
+
+/* No comment provided by engineer. */
+"Highlight weekend" = "Evidenzia fine settimana";
+
+/* No comment provided by engineer. */
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal è più utile quando si permettono di aggiungere eventi dai calendari. È possibile modificare questa impostazione in Preferenze di Sistema › Sicurezza e Privacy › Privacy.";
+
+/* No comment provided by engineer. */
+"Itsycal must be run from the Applications folder in order to work properly.
+
+Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsycal deve essere eseguito dalla cartella Applicazioni per poter funzionare correttamente.
+
+Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
+
+/* No comment provided by engineer. */
+"Keyboard shortcut" = "Abbreviazione da tastiera";
+
+/* No comment provided by engineer. */
+"Launch at login" = "Apri automaticamente con il login";
+
+/* No comment provided by engineer. */
+"Monday" = "Lunedì";
+
+/* No comment provided by engineer. */
+"Move Itsycal to the Applications folder" = "Spostare Itsycal nella cartella Applicazioni";
+
+/* Repeat ends never */
+"Never" = "Mai";
+
+/* No comment provided by engineer. */
+"New Event" = "Nuovo evento";
+
+/* No comment provided by engineer. */
+"New Event... ⌘N" = "Nuovo evento… ⌘N";
+
+/* No comment provided by engineer. */
+"No events" = "Nessun evento";
+
+/* Alert none
+   Repeat none */
+"None" = "Nessuno";
+
+/* No comment provided by engineer. */
+"On Date" = "In data";
+
+/* No comment provided by engineer. */
+"Open Calendar... ⌘O" = "Apri l'applicazione Calendario… ⌘O";
+
+/* No comment provided by engineer. */
+"Options" = "Opzioni";
+
+/* No comment provided by engineer. */
+"Pin Itsycal... P" = "Mantieni Itsycal visibile… P";
+
+/* No comment provided by engineer. */
+"Preferences..." = "Preferenze…";
+
+/* No comment provided by engineer. */
+"Quit Itsycal" = "Esci da Itsycal";
+
+/* No comment provided by engineer. */
+"Repeat:" = "Ripetizione:";
+
+/* No comment provided by engineer. */
+"Saturday" = "Sabato";
+
+/* No comment provided by engineer. */
+"Save Event" = "Salvare Evento";
+
+/* No comment provided by engineer. */
+"Show calendar weeks" = "Mostra le settimane del calendario";
+
+/* No comment provided by engineer. */
+"Show day of week in icon" = "L'icona nella barra dei menu mostra giorno della settimana";
+
+/* No comment provided by engineer. */
+"Show month in icon" = "L'icona nella barra dei menu mostra Mese";
+
+/* No comment provided by engineer. */
+"Starts:" = "Inizia:";
+
+/* No comment provided by engineer. */
+"Sunday" = "Domenica";
+
+/* Alert box message when we fail to launch the Calendar application */
+"The Calendar application could not be found." = "L'applicazione Calendario non è stato trovato.";
+
+/* No comment provided by engineer. */
+"Thursday" = "Giovedì";
+
+/* No comment provided by engineer. */
+"Tuesday" = "Martedì";
+
+/* No comment provided by engineer. */
+"Wednesday" = "Mercoledì";
+
+/* No comment provided by engineer. */
+"You're deleting an event." = "Stai eliminando en evento.";
+
+/* Spanning event ends */
+"ends" = "termina il";
+
