@@ -21,6 +21,7 @@ NSString * const kKeyboardShortcut = @"KeyboardShortcut";
 NSString * const kHighlightWeekend = @"HighlightWeekend";
 NSString * const kShowMonthInIcon = @"ShowMonthInIcon";
 NSString * const kShowDayOfWeekInIcon = @"ShowDayOfWeekInIcon";
+NSString * const kAllowOutsideApplicationsFolder = @"AllowOutsideApplicationsFolder";
 
 // Menu extra notifications
 NSString * const ItsycalIsActiveNotification = @"ItsycalIsActiveNotification";
