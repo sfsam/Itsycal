@@ -22,6 +22,7 @@ extern NSString * const kKeyboardShortcut;
 extern NSString * const kHighlightWeekend;
 extern NSString * const kShowMonthInIcon;
 extern NSString * const kShowDayOfWeekInIcon;
+extern NSString * const kAllowOutsideApplicationsFolder;
 
 // Menu extra notifications
 extern NSString * const ItsycalIsActiveNotification;

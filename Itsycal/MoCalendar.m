@@ -700,7 +700,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     
     else {
         p = [NSBezierPath bezierPath];
-        [p moveToPoint:NSMakePoint(x, y)];
+        [p moveToPoint:NSMakePoint(x, y + r)];
         y = NSMaxY(startRect);
         [p lineToPoint:NSMakePoint(x, y - r)];
         [p appendBezierPathWithArcFromPoint:NSMakePoint(x, y) toPoint:NSMakePoint(x + r, y) radius:r];
@@ -712,7 +712,8 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
             [p lineToPoint:NSMakePoint(x, y + r)];
             [p appendBezierPathWithArcFromPoint:NSMakePoint(x, y) toPoint:NSMakePoint(x - r, y) radius:r];
             x = NSMaxX(endRect);
-            [p lineToPoint:NSMakePoint(x, y)];
+            [p lineToPoint:NSMakePoint(x + r, y)];
+            [p appendBezierPathWithArcFromPoint:NSMakePoint(x, y) toPoint:NSMakePoint(x, y - r) radius:r];
         }
         y = NSMinY(endRect);
         [p lineToPoint:NSMakePoint(x, y + r)];
@@ -725,7 +726,8 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
             [p lineToPoint:NSMakePoint(x, y - r)];
             [p appendBezierPathWithArcFromPoint:NSMakePoint(x, y) toPoint:NSMakePoint(x + r, y) radius:r];
             x = NSMinX(startRect);
-            [p lineToPoint:NSMakePoint(x, y)];
+            [p lineToPoint:NSMakePoint(x - r, y)];
+            [p appendBezierPathWithArcFromPoint:NSMakePoint(x, y) toPoint:NSMakePoint(x, y + r) radius:r];
         }
         [p closePath];
     }

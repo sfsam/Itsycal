@@ -82,6 +82,10 @@
 
 - (void)checkIfRunFromApplicationsFolder
 {
+    // This check can be short-circuited.
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kAllowOutsideApplicationsFolder]) {
+        return;
+    }
     NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
     NSArray *applicationDirs = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSLocalDomainMask, YES);
     for (NSString *appDir in applicationDirs) {
