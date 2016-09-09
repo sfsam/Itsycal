@@ -14,6 +14,7 @@ and delete (but not edit) events.
 For more info, see: http://www.mowglii.com/itsycal
 
 ## For me
+Itsycal is a great app. I'm like it. But it can't show time.
 I'm just change menu icon display like calendar icon, date text, day of week and time. It's seens like OS X base information.
 
 ## Preview
