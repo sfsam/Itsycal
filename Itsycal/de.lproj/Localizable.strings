@@ -194,6 +194,18 @@ Bitte beenden Sie Itsycal, es in den Programme-Ordner zu verschieben, und erneut
 "Show month in icon" = "Menüleistensymbol zeigt Monat";
 
 /* No comment provided by engineer. */
+"Show icon" = "Zeigen symbol";
+
+/* No comment provided by engineer. */
+"Show date" = "Zeigen Datum";
+
+/* No comment provided by engineer. */
+"Show day of week" = "Zeigen Sie Tag der Woche";
+
+/* No comment provided by engineer. */
+"Show time" = "Zeigen Zeit";
+
+/* No comment provided by engineer. */
 "Starts:" = "Von:";
 
 /* No comment provided by engineer. */

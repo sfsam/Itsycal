@@ -188,10 +188,16 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "Show calendar weeks" = "Mostra le settimane del calendario";
 
 /* No comment provided by engineer. */
-"Show day of week in icon" = "L'icona nella barra dei menu mostra giorno della settimana";
+"Show icon" = "Mostra icona";
 
 /* No comment provided by engineer. */
-"Show month in icon" = "L'icona nella barra dei menu mostra Mese";
+"Show date" = "Mostra data";
+
+/* No comment provided by engineer. */
+"Show day of week" = "Mostra giorno della settimana";
+
+/* No comment provided by engineer. */
+"Show time" = "Mostra ora";
 
 /* No comment provided by engineer. */
 "Starts:" = "Inizia:";

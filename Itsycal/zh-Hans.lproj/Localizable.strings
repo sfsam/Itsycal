@@ -1,0 +1,225 @@
+/* No comment provided by engineer. */
+"1 day" = "1天";
+
+/* No comment provided by engineer. */
+"1 day before" = "1天前";
+
+/* No comment provided by engineer. */
+"1 hour before" = "1小时前";
+
+/* No comment provided by engineer. */
+"2 days" = "2天";
+
+/* No comment provided by engineer. */
+"2 days before" = "2天前";
+
+/* No comment provided by engineer. */
+"2 hours before" = "2小时前";
+
+/* No comment provided by engineer. */
+"3 days" = "3天";
+
+/* No comment provided by engineer. */
+"4 days" = "4天";
+
+/* No comment provided by engineer. */
+"5 days" = "5天";
+
+/* No comment provided by engineer. */
+"5 minutes before" = "5分钟前";
+
+/* No comment provided by engineer. */
+"6 days" = "6天";
+
+/* No comment provided by engineer. */
+"7 days" = "7天";
+
+/* No comment provided by engineer. */
+"10 minutes before" = "10分钟前";
+
+/* No comment provided by engineer. */
+"15 minutes before" = "15分钟前";
+
+/* No comment provided by engineer. */
+"30 minutes before" = "30分钟前";
+
+/* No comment provided by engineer. */
+"Add Location" = "添加地点";
+
+/* No comment provided by engineer. */
+"Alert:" = "提醒:";
+
+/* No comment provided by engineer. */
+"All-day:" = "周期重复:";
+
+/* No comment provided by engineer. */
+"Are you sure you want to delete this event?" = "是否删除此事件?";
+
+/* No comment provided by engineer. */
+"At time of event" = "准点";
+
+/* No comment provided by engineer. */
+"Calendar access denied.
+
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "日历访问被拒绝.
+
+Itsycal可以显示您的日历中的事件. 您可以在 系统偏好设置 > 安全与隐私 > 隐私 中授予权限.";
+
+/* No comment provided by engineer. */
+"Calendar access was denied." = "日历访问被拒绝.";
+
+/* No comment provided by engineer. */
+"Cancel" = "取消";
+
+/* No comment provided by engineer. */
+"Check for updates..." = "检查更新...";
+
+/* No comment provided by engineer. */
+"Delete All Future Events" = "删除所有未来事件";
+
+/* No comment provided by engineer. */
+"Delete Only This Event" = "只删除此事件";
+
+/* No comment provided by engineer. */
+"Delete This Event" = "删除此事件";
+
+/* No comment provided by engineer. */
+"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "你要删除当前和将来所有重复的事件，还是删除当前？";
+
+/* No comment provided by engineer. */
+"End Repeat:" = "重复结束:";
+
+/* No comment provided by engineer. */
+"Ends:" = "停止:";
+
+/* No comment provided by engineer. */
+"Event list shows:" = "事件列表显示:";
+
+/* No comment provided by engineer. */
+"Every 2 Weeks" = "每两周";
+
+/* No comment provided by engineer. */
+"Every Day" = "每天";
+
+/* No comment provided by engineer. */
+"Every Month" = "每月";
+
+/* No comment provided by engineer. */
+"Every Week" = "每周";
+
+/* No comment provided by engineer. */
+"Every Year" = "每年";
+
+/* No comment provided by engineer. */
+"First day of week" = "每周的第一天";
+
+/* No comment provided by engineer. */
+"Friday" = "星期五";
+
+/* No comment provided by engineer. */
+"Highlight weekend" = "周末高亮";
+
+/* No comment provided by engineer. */
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal可以显示您的日历中的事件。您可以在 系统偏好设置 > 安全与隐私 > 隐私 中授予权限。";
+
+/* No comment provided by engineer. */
+"Itsycal must be run from the Applications folder in order to work properly.
+
+Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsycal必须从应用程序文件夹中才能正常工作运行.
+
+请退出Itsycal, 将其移动到文件夹中, 并重新启动. ";
+
+/* No comment provided by engineer. */
+"Keyboard shortcut" = "键盘快捷键";
+
+/* No comment provided by engineer. */
+"Launch at login" = "开机启动";
+
+/* No comment provided by engineer. */
+"Monday" = "星期一";
+
+/* No comment provided by engineer. */
+"Move Itsycal to the Applications folder" = "移动Itsycal到应用程序文件夹";
+
+/* Repeat ends never */
+"Never" = "决不";
+
+/* No comment provided by engineer. */
+"New Event" = "新建事件";
+
+/* No comment provided by engineer. */
+"New Event... ⌘N" = "新建事件... ⌘N";
+
+/* No comment provided by engineer. */
+"No events" = "不显示";
+
+/* Alert none
+   Repeat none */
+"None" = "无";
+
+/* No comment provided by engineer. */
+"On Date" = "时间到了";
+
+/* No comment provided by engineer. */
+"Open Calendar... ⌘O" = "打开日历... ⌘O";
+
+/* No comment provided by engineer. */
+"Options" = "选项";
+
+/* No comment provided by engineer. */
+"Pin Itsycal... P" = "固定Itsycal窗口... P";
+
+/* No comment provided by engineer. */
+"Preferences..." = "偏好设置...";
+
+/* No comment provided by engineer. */
+"Quit Itsycal" = "退出Itsycal";
+
+/* No comment provided by engineer. */
+"Repeat:" = "重复:";
+
+/* No comment provided by engineer. */
+"Saturday" = "星期六";
+
+/* No comment provided by engineer. */
+"Save Event" = "保存事件";
+
+/* No comment provided by engineer. */
+"Show calendar weeks" = "显示周数";
+
+/* No comment provided by engineer. */
+"Show icon" = "显示图标";
+
+/* No comment provided by engineer. */
+"Show date" = "显示日期";
+
+/* No comment provided by engineer. */
+"Show day of week" = "显示星期几";
+
+/* No comment provided by engineer. */
+"Show time" = "显示时间";
+
+/* No comment provided by engineer. */
+"Starts:" = "开始:";
+
+/* No comment provided by engineer. */
+"Sunday" = "星期日";
+
+/* Alert box message when we fail to launch the Calendar application */
+"The Calendar application could not be found." = "日历应用程序未能找到. ";
+
+/* No comment provided by engineer. */
+"Thursday" = "星期四";
+
+/* No comment provided by engineer. */
+"Tuesday" = "星期二";
+
+/* No comment provided by engineer. */
+"Wednesday" = "星期三";
+
+/* No comment provided by engineer. */
+"You're deleting an event." = "你正在删除事件.";
+
+/* Spanning event ends */
+"ends" = "结束";
+
