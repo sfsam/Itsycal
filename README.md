@@ -18,6 +18,5 @@ I'm just change menu icon display like calendar icon, date text, day of week and
 
 ## Preview
 ![image](https://github.com/EddieChen12/Itsycal/raw/master/preview.png)
-<p>
+
 ![image](https://github.com/EddieChen12/Itsycal/raw/master/preference.png)
-</p>
