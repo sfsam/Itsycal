@@ -29,6 +29,7 @@
     EventViewController   *_eventVC;
     NSLayoutConstraint    *_bottomMargin;
     NSDateFormatter       *_iconDateFormatter;
+    NSTimer               *_clockTimer;
 }
 
 - (void)dealloc
@@ -36,8 +37,11 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowEventDays];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMonthInIcon];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowIcon];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowData];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeek];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowTime];
+    [_clockTimer invalidate];
 }
 
 #pragma mark -
@@ -133,7 +137,7 @@
     [self fileNotifications];
     
     // Tell the menu extra that Itsycal is alive
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalIsActiveNotification object:nil userInfo:@{@"iconText": [self iconText]} deliverImmediately:YES];
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalIsActiveNotification object:nil userInfo:@{@"dateText": [self getDateText], @"iconText": [self getIconText]} deliverImmediately:YES];
 }
 
 - (void)viewWillAppear
@@ -347,9 +351,24 @@
 - (void)createStatusItem
 {
     _statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
-    _statusItem.button.target = self;
-    _statusItem.button.action = @selector(statusItemClicked:);
-    _statusItem.highlightMode = NO; // Deprecated in 10.10, but what is alternative?
+//    _statusItem.button.target = self;
+//    _statusItem.button.action = @selector(statusItemClicked:);
+//    _statusItem.highlightMode = NO; // Deprecated in 10.10, but what is alternative?
+    
+    [NSEvent addLocalMonitorForEventsMatchingMask:(NSLeftMouseDown | NSRightMouseDown)
+                                          handler:^NSEvent *(NSEvent *event) {
+                                              if (event.window == _statusItem.button.window) {
+                                                  [self statusItemClicked:nil];
+                                                  return nil;
+                                              }
+                                              return event;
+                                          }];
+    
+    // fix title y position
+    NSRect frame = _statusItem.button.frame;
+    frame.size.height += 1;
+    _statusItem.button.frame = frame;
+    
     [self updateMenubarIcon];
     [self updateStatusItemPositionInfo];
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
@@ -384,37 +403,84 @@
     [self createStatusItem];
 }
 
-- (NSString *)iconText
+- (NSString*)getIconText
 {
-    NSString *iconText;
-    
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon] || [[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeekInIcon]) {
-        NSMutableString *template = @"d".mutableCopy;
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon]) {
-            [template appendString:@"MMM"];
-        }
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeekInIcon]) {
-            [template appendString:@"EEE"];
-        }
-        [_iconDateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:template options:0 locale:[NSLocale currentLocale]]];
-        iconText = [_iconDateFormatter stringFromDate:[NSDate new]];
-    } else {
-        iconText = [NSString stringWithFormat:@"%zd", _moCal.todayDate.day];
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowIcon])
+        return [NSString stringWithFormat:@"%zd", _moCal.todayDate.day];
+    else
+        return @"";
+}
+
+- (NSString *)getDateText
+{
+    NSMutableString *template = [[NSMutableString alloc] init];
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowData]) {
+        [template appendString:@"dMMM"];
     }
-    
-    if (iconText == nil) {
-        iconText = @"!!";
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeek]) {
+        [template appendString:@"EEE"];
     }
-    return iconText;
+//    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowTime]) {
+//        [template appendString:@"h:mm a"];
+//    }
+//    
+//    NSString* dateFormat = [NSDateFormatter dateFormatFromTemplate:template options:0 locale:[NSLocale currentLocale]];
+//    [_iconDateFormatter setDateFormat:dateFormat];
+//    NSString *dateText = [_iconDateFormatter stringFromDate:[NSDate new]];
+//    if (dateText == nil) {
+//        dateText = @"";
+//    }
+    
+    NSString* dateFormat = [NSDateFormatter dateFormatFromTemplate:template options:0 locale:[NSLocale currentLocale]];
+    
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:dateFormat];
+    
+    NSDate *date = [NSDate date];
+    NSMutableString *dateText = [[NSMutableString alloc] init];
+    [dateText appendString:[dateFormatter stringFromDate:date]];
+    
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowTime]) {
+        if (dateText.length)
+            [dateText appendString:@" "];
+        [dateText appendString:[NSDateFormatter localizedStringFromDate:date dateStyle:NSDateFormatterNoStyle timeStyle:NSDateFormatterShortStyle]];
+    }
+
+    return dateText;
 }
 
 - (void)updateMenubarIcon
 {
-    NSString *iconText = [self iconText];
+    NSString *dateText = [self getDateText];
+    NSString *iconText = [self getIconText];
+    NSImage *iconImage = nil;
+    if (iconText.length)
+        iconImage = ItsycalIconImageForText(iconText);
+    
     if (_statusItem) {
-        _statusItem.button.image = ItsycalIconImageForText(iconText);
+        _statusItem.button.image = iconImage;
+        _statusItem.title = dateText;
     }
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalDidUpdateIconNotification object:nil userInfo:@{@"iconText": iconText} deliverImmediately:YES];
+    
+    // If not load ItsycalExtra, fix status width
+    if (OSVersionIsAtLeast(10, 11, 0)) {
+        CGRect textRect = [dateText boundingRectWithSize:CGSizeMake(MAXFLOAT, MAXFLOAT)
+                                                                   options:NSStringDrawingUsesLineFragmentOrigin
+                                                                attributes:@{NSFontAttributeName:_statusItem.button.font}
+                                                                   context:nil];
+        
+        // Add blank
+        if (textRect.size.width)
+            textRect.size.width += 6;
+        
+        // Adjust size of menu extra based on iconImage size
+        NSRect frame = _statusItem.view.frame;
+        frame.size.width = iconImage.size.width + textRect.size.width;
+        _statusItem.view.frame = frame;
+        _statusItem.length = iconImage.size.width + textRect.size.width;
+    }
+    
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalDidUpdateIconNotification object:nil userInfo:@{@"dateText": dateText, @"iconText": iconText} deliverImmediately:YES];
 }
 
 - (void)updateStatusItemPositionInfo
@@ -530,6 +596,7 @@
 
 - (void)showItsycalWindow
 {
+    _statusItem.button.highlighted = YES;
     [[NSApplication sharedApplication] unhideWithoutActivation];
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
     [self.itsycalWindow makeKeyAndOrderFront:self];
@@ -550,6 +617,7 @@
 - (void)windowDidResignKey:(NSNotification *)notification
 {
     if (_btnPin.state == NSOffState) {
+        _statusItem.button.highlighted = NO;
         [self.itsycalWindow orderOut:self];
     }
 }
@@ -687,6 +755,13 @@
     return MakeDate(c.year, c.month-1, c.day);
 }
 
+- (void)clockTick:(NSTimer *)timer
+{
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowTime]) {
+        [self updateMenubarIcon];
+    }
+}
+
 #pragma mark -
 #pragma mark Notifications
 
@@ -706,6 +781,15 @@
         [self updateMenubarIcon];
     }];
     
+    // Time changed timer
+    // create a timer object
+    _clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                                  target:self
+                                                selector:@selector(clockTick:)
+                                                userInfo:nil
+                                                 repeats:YES];
+    [_clockTimer fire];
+    
     // Timezone changed notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemTimeZoneDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [_ec refetchAll];
@@ -718,8 +802,10 @@
     
     // Observe NSUserDefaults for preference changes
     [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowEventDays options:NSKeyValueObservingOptionNew context:NULL];
-    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowMonthInIcon options:NSKeyValueObservingOptionNew context:NULL];
-    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowDayOfWeekInIcon options:NSKeyValueObservingOptionNew context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowIcon options:NSKeyValueObservingOptionNew context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowData options:NSKeyValueObservingOptionNew context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowDayOfWeek options:NSKeyValueObservingOptionNew context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowTime options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 #pragma mark -
@@ -730,7 +816,7 @@
     if ([keyPath isEqualToString:kShowEventDays]) {
         [self updateAgenda];
     }
-    else if ([keyPath isEqualToString:kShowMonthInIcon] || [keyPath isEqualToString:kShowDayOfWeekInIcon]) {
+    else if ([keyPath isEqualToString:kShowIcon] || [keyPath isEqualToString:kShowData] || [keyPath isEqualToString:kShowDayOfWeek] || [keyPath isEqualToString:kShowTime]) {
         [self updateMenubarIcon];
     }
 }
