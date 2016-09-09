@@ -1,5 +1,5 @@
 
-# Origin author
+# Origin author says
 I've learned a lot by looking at other people's code so
 maybe someone can learn something from looking at mine.
 
@@ -18,4 +18,6 @@ I'm just change menu icon display like calendar icon, date text, day of week and
 
 ## Preview
 ![image](https://github.com/EddieChen12/Itsycal/raw/master/preview.png)
+<p>
 ![image](https://github.com/EddieChen12/Itsycal/raw/master/preference.png)
+</p>
