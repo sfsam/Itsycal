@@ -200,6 +200,9 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "Show time" = "Mostrar la hora";
 
 /* No comment provided by engineer. */
+"Use 24-hour clock format" = "utilizar el formato de reloj de 24 horas";
+
+/* No comment provided by engineer. */
 "Starts:" = "Empieza:";
 
 /* No comment provided by engineer. */

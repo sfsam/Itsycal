@@ -41,6 +41,7 @@
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowData];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeek];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowTime];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kUse24Hour];
     [_clockTimer invalidate];
 }
 
@@ -443,7 +444,15 @@
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowTime]) {
         if (dateText.length)
             [dateText appendString:@" "];
-        [dateText appendString:[NSDateFormatter localizedStringFromDate:date dateStyle:NSDateFormatterNoStyle timeStyle:NSDateFormatterShortStyle]];
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:kUse24Hour]) {
+            NSDateFormatter* timeFormatter = [[NSDateFormatter alloc] init];
+            [timeFormatter setDateFormat:@"HH:mm"];
+            [dateText appendString:[timeFormatter stringFromDate:date]];
+        }
+        else {
+            [dateText appendString:[NSDateFormatter localizedStringFromDate:date dateStyle:NSDateFormatterNoStyle timeStyle:NSDateFormatterShortStyle]];
+        }
     }
 
     return dateText;
@@ -806,6 +815,7 @@
     [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowData options:NSKeyValueObservingOptionNew context:NULL];
     [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowDayOfWeek options:NSKeyValueObservingOptionNew context:NULL];
     [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowTime options:NSKeyValueObservingOptionNew context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kUse24Hour options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 #pragma mark -
@@ -816,7 +826,7 @@
     if ([keyPath isEqualToString:kShowEventDays]) {
         [self updateAgenda];
     }
-    else if ([keyPath isEqualToString:kShowIcon] || [keyPath isEqualToString:kShowData] || [keyPath isEqualToString:kShowDayOfWeek] || [keyPath isEqualToString:kShowTime]) {
+    else if ([keyPath isEqualToString:kShowIcon] || [keyPath isEqualToString:kShowData] || [keyPath isEqualToString:kShowDayOfWeek] || [keyPath isEqualToString:kShowTime] || [keyPath isEqualToString:kUse24Hour]) {
         [self updateMenubarIcon];
     }
 }

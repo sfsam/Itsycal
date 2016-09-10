@@ -203,6 +203,9 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsyc
 "Starts:" = "开始:";
 
 /* No comment provided by engineer. */
+"Use 24-hour clock format" = "使用24小时格式时钟";
+
+/* No comment provided by engineer. */
 "Sunday" = "星期日";
 
 /* Alert box message when we fail to launch the Calendar application */

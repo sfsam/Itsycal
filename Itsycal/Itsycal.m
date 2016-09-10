@@ -23,6 +23,7 @@ NSString * const kShowIcon = @"ShowIcon";
 NSString * const kShowData = @"ShowData";
 NSString * const kShowDayOfWeek = @"ShowDayOfWeek";
 NSString * const kShowTime = @"ShowTime";
+NSString * const kUse24Hour = @"Use24Hour";
 NSString * const kAllowOutsideApplicationsFolder = @"AllowOutsideApplicationsFolder";
 
 // Menu extra notifications

@@ -40,6 +40,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     NSButton *_showDate;
     NSButton *_showDayOfWeek;
     NSButton *_showTime;
+    NSButton *_use24Hour;
     NSTableView *_calendarsTV;
     NSPopUpButton *_daysPopup;
 }
@@ -137,6 +138,14 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [_showTime setButtonType:NSSwitchButton];
     [v addSubview:_showTime];
     
+    // use 24-hour clock format
+    _use24Hour = [NSButton new];
+    _use24Hour.translatesAutoresizingMaskIntoConstraints = NO;
+    _use24Hour.title = NSLocalizedString(@"Use 24-hour clock format", @"");
+    _use24Hour.font = [NSFont systemFontOfSize:12];
+    [_use24Hour setButtonType:NSSwitchButton];
+    [v addSubview:_use24Hour];
+    
     // Shortcut label
     MoTextField *shortcutLabel = txt(NSLocalizedString(@"Keyboard shortcut", @""));
     
@@ -186,18 +195,19 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, _showIcon, _showDate, _showDayOfWeek, _showTime, shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, _showIcon, _showDate, _showDayOfWeek, _showTime, _use24Hour,shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
     };
     vcon(@"V:|-m-[appIcon(64)]");
     vcon(@"H:|-m-[appIcon(64)]-[_title]-(>=m)-|");
     vcon(@"H:[appIcon]-[link]-(>=m)-|");
     vcon(@"V:|-36-[_title]-1-[link]");
-    vcon(@"V:|-110-[_login]-[_showIcon]-[_showDate]-[_showDayOfWeek]-[_showTime]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
+    vcon(@"V:|-110-[_login]-[_showIcon]-[_showDate]-[_showDayOfWeek]-[_showTime]-[_use24Hour]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
     vcon(@"H:|-m-[_login]-(>=m)-|");
     vcon(@"H:|-m-[_showIcon]-(>=m)-|");
     vcon(@"H:|-m-[_showDate]-(>=m)-|");
     vcon(@"H:|-m-[_showDayOfWeek]-(>=m)-|");
     vcon(@"H:|-m-[_showTime]-(>=m)-|");
+    vcon(@"H:|-m-[_use24Hour]-(>=m)-|");
     vcon(@"H:|-(>=m)-[shortcutLabel]-(>=m)-|");
     vcon(@"H:|-m-[shortcutView(>=220)]-m-|");
     vcon(@"H:|-m-[tvContainer]-m-|");
@@ -230,6 +240,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [_showDate bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowData] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_showDayOfWeek bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowDayOfWeek] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_showTime bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowTime] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_use24Hour bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUse24Hour] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
     // Bindings for agenda days
     [_daysPopup bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDays] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];

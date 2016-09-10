@@ -31,7 +31,8 @@
         kShowIcon:         @(YES),
         kShowData:         @(NO),
         kShowDayOfWeek:    @(NO),
-        kShowTime:         @(NO)
+        kShowTime:         @(NO),
+        kUse24Hour:        @(NO)
     }];
     
     // Constrain kShowEventDays to values 0...7 in (unlikely) case it is invalid.

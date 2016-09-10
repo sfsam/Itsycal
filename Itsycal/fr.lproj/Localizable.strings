@@ -200,6 +200,9 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Show time" = "Afficher l'heure";
 
 /* No comment provided by engineer. */
+"Use 24-hour clock format" = "utiliser le format d'horloge de 24 heures";
+
+/* No comment provided by engineer. */
 "Starts:" = "Commence:";
 
 /* No comment provided by engineer. */
