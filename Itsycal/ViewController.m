@@ -421,18 +421,22 @@
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeek]) {
         [template appendString:@"EEE"];
     }
-//    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowTime]) {
-//        [template appendString:@"h:mm a"];
-//    }
-//    
-//    NSString* dateFormat = [NSDateFormatter dateFormatFromTemplate:template options:0 locale:[NSLocale currentLocale]];
-//    [_iconDateFormatter setDateFormat:dateFormat];
-//    NSString *dateText = [_iconDateFormatter stringFromDate:[NSDate new]];
-//    if (dateText == nil) {
-//        dateText = @"";
-//    }
     
-    NSString* dateFormat = [NSDateFormatter dateFormatFromTemplate:template options:0 locale:[NSLocale currentLocale]];
+    NSMutableString* dateFormat = [NSDateFormatter dateFormatFromTemplate:template options:0 locale:[NSLocale currentLocale]].mutableCopy;
+    
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowTime]) {
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:kUse24Hour]) {
+            template = @"H:mm".mutableCopy;
+        }
+        else {
+            template = @"h:mm a".mutableCopy;
+        }
+        
+        if (dateFormat.length)
+            [dateFormat appendString:@" "];
+        
+        [dateFormat appendString:[NSDateFormatter dateFormatFromTemplate:template options:0 locale:[NSLocale currentLocale]]];
+    }
     
     NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:dateFormat];
@@ -440,20 +444,6 @@
     NSDate *date = [NSDate date];
     NSMutableString *dateText = [[NSMutableString alloc] init];
     [dateText appendString:[dateFormatter stringFromDate:date]];
-    
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowTime]) {
-        if (dateText.length)
-            [dateText appendString:@" "];
-        
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:kUse24Hour]) {
-            NSDateFormatter* timeFormatter = [[NSDateFormatter alloc] init];
-            [timeFormatter setDateFormat:@"HH:mm"];
-            [dateText appendString:[timeFormatter stringFromDate:date]];
-        }
-        else {
-            [dateText appendString:[NSDateFormatter localizedStringFromDate:date dateStyle:NSDateFormatterNoStyle timeStyle:NSDateFormatterShortStyle]];
-        }
-    }
 
     return dateText;
 }
