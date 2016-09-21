@@ -356,9 +356,11 @@
 //    _statusItem.button.action = @selector(statusItemClicked:);
 //    _statusItem.highlightMode = NO; // Deprecated in 10.10, but what is alternative?
     
+    // ensure show Itsycal window when command key was not pressed
     [NSEvent addLocalMonitorForEventsMatchingMask:(NSLeftMouseDown | NSRightMouseDown)
                                           handler:^NSEvent *(NSEvent *event) {
-                                              if (event.window == _statusItem.button.window) {
+                                              if (event.window == _statusItem.button.window &&
+                                                  !([event modifierFlags] & NSCommandKeyMask)) {
                                                   [self statusItemClicked:nil];
                                                   return nil;
                                               }
