@@ -14,6 +14,7 @@
 
 @interface MoCalCell : NSView
 
+@property (nonatomic) NSColor *normalTextColor;
 @property (nonatomic) NSTextField *textField;
 @property (nonatomic) MoDate date;
 @property (nonatomic) BOOL isToday;
