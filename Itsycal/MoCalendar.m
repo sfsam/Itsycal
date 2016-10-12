@@ -13,6 +13,7 @@
 
 static NSShadow *kShadow=nil;
 static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kBorderColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil, *kWeekendTextColor=nil;
+static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
 
 @implementation MoCalendar
 {
@@ -48,6 +49,9 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     kBackgroundColor = [NSColor whiteColor];
     kWeeksBackgroundColor = [NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1];
     kDatesBackgroundColor = [NSColor colorWithRed:0.95 green:0.95 blue:0.96 alpha:1];
+    kCountriesWithFridaySaturdayWeekend = @[
+        @"AF", @"DZ", @"BH", @"BD", @"EG", @"IQ", @"JO", @"KW", @"LY",
+        @"MV", @"OM", @"PS", @"QA", @"SA", @"SD", @"SY", @"AE", @"YE"];
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
@@ -283,8 +287,13 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     // On which column [0..6] in the monthly calendar do these days fall?
     NSInteger sundayColumn   = DOW_COL(self.weekStartDOW, 0); // 0=Sunday
     NSInteger mondayColumn   = DOW_COL(self.weekStartDOW, 1); // 1=Monday
+    NSInteger fridayColumn   = DOW_COL(self.weekStartDOW, 5); // 5=Friday
     NSInteger saturdayColumn = DOW_COL(self.weekStartDOW, 6); // 6=Saturday
-    
+
+    // Countries in the Middle East observe Friday/Saturday weekend.
+    NSInteger weekendColumn1 = [self weekendIsFridaySaturday] ? fridayColumn : sundayColumn;
+    NSInteger weekendColumn2 = saturdayColumn;
+
     // Month/year and DOW labels
     NSArray *months = [_formatter shortMonthSymbols];
     NSArray *dows = [_formatter veryShortWeekdaySymbols];
@@ -299,7 +308,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
         }
         [[_dowGrid.cells[col] textField] setStringValue:dow];
         [[_dowGrid.cells[col] textField] setTextColor:kDarkTextColor];
-        if (col == sundayColumn || col == saturdayColumn) {
+        if (col == weekendColumn1 || col == weekendColumn2) {
             [[_dowGrid.cells[col] textField] setTextColor:_weekendTextColor];
         }
     }
@@ -326,7 +335,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
             cell.isToday = CompareDates(date, self.todayDate) == 0;
             if (date.month == self.monthDate.month) {
                 cell.textField.textColor = kDarkTextColor;
-                if (col == sundayColumn || col == saturdayColumn) {
+                if (col == weekendColumn1 || col == weekendColumn2) {
                     cell.textField.textColor = _weekendTextColor;
                 }
                 if (date.day == 1) {
@@ -338,7 +347,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
             }
             else {
                 cell.textField.textColor = kLightTextColor;
-                if (col == sundayColumn || col == saturdayColumn) {
+                if (col == weekendColumn1 || col == weekendColumn2) {
                     cell.textField.textColor = [_weekendTextColor colorWithAlphaComponent:0.6];
                 }
             }
@@ -614,16 +623,31 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     if (self.highlightWeekend) {
         NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
         weekendRect.size.width = kMoCalCellWidth;
-        NSRect sundayRect   = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 0) * kMoCalCellWidth, 0);
-        NSRect saturdayRect = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 6) * kMoCalCellWidth, 0);
         [[NSColor colorWithWhite:0.15 alpha:0.05] set];
-        if (self.weekStartDOW == 0) {
-            [[NSBezierPath bezierPathWithRoundedRect:sundayRect xRadius:4 yRadius:4] fill];
-            [[NSBezierPath bezierPathWithRoundedRect:saturdayRect xRadius:4 yRadius:4] fill];
+        // Countries in the Middle East observe Friday/Saturday weekend.
+        if ([self weekendIsFridaySaturday]) {
+            NSRect   fridayRect = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 5) * kMoCalCellWidth, 0);
+            NSRect saturdayRect = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 6) * kMoCalCellWidth, 0);
+            if (self.weekStartDOW == 6) {
+                [[NSBezierPath bezierPathWithRoundedRect:saturdayRect xRadius:4 yRadius:4] fill];
+                [[NSBezierPath bezierPathWithRoundedRect:fridayRect xRadius:4 yRadius:4] fill];
+            }
+            else {
+                weekendRect = NSUnionRect(fridayRect, saturdayRect);
+                [[NSBezierPath bezierPathWithRoundedRect:weekendRect xRadius:4 yRadius:4] fill];
+            }
         }
         else {
-            weekendRect = NSUnionRect(sundayRect, saturdayRect);
-            [[NSBezierPath bezierPathWithRoundedRect:weekendRect xRadius:4 yRadius:4] fill];
+            NSRect sundayRect   = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 0) * kMoCalCellWidth, 0);
+            NSRect saturdayRect = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 6) * kMoCalCellWidth, 0);
+            if (self.weekStartDOW == 0) {
+                [[NSBezierPath bezierPathWithRoundedRect:sundayRect xRadius:4 yRadius:4] fill];
+                [[NSBezierPath bezierPathWithRoundedRect:saturdayRect xRadius:4 yRadius:4] fill];
+            }
+            else {
+                weekendRect = NSUnionRect(sundayRect, saturdayRect);
+                [[NSBezierPath bezierPathWithRoundedRect:weekendRect xRadius:4 yRadius:4] fill];
+            }
         }
     }
     
@@ -641,6 +665,12 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
         [highlightPath stroke];
         [highlightPath fill];
     }
+}
+
+// Countries in the Middle East observe Friday/Saturday weekend.
+- (BOOL)weekendIsFridaySaturday {
+    NSString *countryCode = [NSLocale currentLocale].countryCode;
+    return [kCountriesWithFridaySaturdayWeekend containsObject:countryCode];
 }
 
 - (NSBezierPath *)bezierPathWithStartCell:(MoCalCell *)startCell endCell:(MoCalCell *)endCell radius:(CGFloat)r inset:(CGFloat)inset useRects:(BOOL)useRects
