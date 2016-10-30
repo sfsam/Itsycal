@@ -157,6 +157,11 @@
 		92C2F3111D380FC2009048D9 /* VarelaRoundNeo-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "VarelaRoundNeo-Regular.otf"; path = "_fonts/VarelaRoundNeo-Regular.otf"; sourceTree = "<group>"; };
 		92CDDE791A955D7F00D7675C /* AgendaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AgendaViewController.h; sourceTree = "<group>"; };
 		92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AgendaViewController.m; sourceTree = "<group>"; };
+		C45CAFC01D82C05D009C97BA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.strings"; sourceTree = "<group>"; };
+		C45CAFC11D82C05D009C97BA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		C45CAFC21D82C05D009C97BA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		C45CAFC31D82C05E009C97BA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		C45CAFC41D82C05E009C97BA /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -398,6 +403,7 @@
 				es,
 				it,
 				de,
+				"zh-Hans",
 			);
 			mainGroup = 9242A5531A82A136005AA4B3;
 			productRefGroup = 9242A55D1A82A136005AA4B3 /* Products */;
@@ -489,6 +495,7 @@
 				9200F0181A940C0800CA36A9 /* es */,
 				9200F0191A940C1700CA36A9 /* fr */,
 				9200F01A1A940C2100CA36A9 /* it */,
+				C45CAFC31D82C05E009C97BA /* zh-Hans */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -501,6 +508,7 @@
 				921CD1881A897A01007B60C0 /* es */,
 				921CD1891A897A02007B60C0 /* it */,
 				921CD18A1A897A03007B60C0 /* de */,
+				C45CAFC41D82C05E009C97BA /* zh-Hans */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -512,6 +520,7 @@
 				922B6BD21A881DBF00DEA9CD /* fr */,
 				922B6BD71A88359800DEA9CD /* es */,
 				922B6BDB1A88667700DEA9CD /* it */,
+				C45CAFC21D82C05D009C97BA /* zh-Hans */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -523,6 +532,7 @@
 				922B6BD31A8821A200DEA9CD /* fr */,
 				922B6BD61A88359800DEA9CD /* es */,
 				922B6BDC1A886C6900DEA9CD /* it */,
+				C45CAFC11D82C05D009C97BA /* zh-Hans */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -535,6 +545,7 @@
 				922B6BD41A8821A300DEA9CD /* fr */,
 				922B6BD51A88359800DEA9CD /* es */,
 				922B6BDD1A886C6900DEA9CD /* it */,
+				C45CAFC01D82C05D009C97BA /* zh-Hans */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";

@@ -36,6 +36,8 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
 
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_textField]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_textField]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
+        
+        _normalTextColor = _textField.textColor;
     }
     return self;
 }
@@ -52,6 +54,10 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
 {
     if (isSelected != _isSelected) {
         _isSelected = isSelected;
+        if (_isSelected)
+            _textField.textColor = [NSColor whiteColor];
+        else
+            _textField.textColor = _normalTextColor;
         [self setNeedsDisplay:YES];
     }
 }
@@ -72,25 +78,31 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
     }
 }
 
+- (void)setNormalTextColor:(NSColor *)color
+{
+    _normalTextColor = color;
+    if (!_isSelected)
+        _textField.textColor = color;
+}
+
 - (void)drawRect:(NSRect)dirtyRect
 {
     if (self.isToday) {
         [kTodayCellColor set];
         NSRect r = NSInsetRect(self.bounds, 2, 2);
         NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3];
-        [p setLineWidth:2];
-        [p stroke];
+        [p fill];
+        
+        _textField.textColor = [NSColor whiteColor];
     }
     else if (self.isSelected) {
         [kSelectedCellColor set];
         NSRect r = NSInsetRect(self.bounds, 2.5, 2.5);
-        [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] stroke];
+        [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] fill];
     }
     else if (self.isHovered) {
         [kHoveredCellColor set];
         NSRect r = NSInsetRect(self.bounds, 2.5, 2.5);
-        [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] stroke];
-        [[kHoveredCellColor colorWithAlphaComponent:0.1] set];
         [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] fill];
     }
     if (self.hasDot) {
