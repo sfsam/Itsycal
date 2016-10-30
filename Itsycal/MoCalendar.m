@@ -11,6 +11,11 @@
 #import "MoCalGrid.h"
 #import "MoButton.h"
 
+// If user has region set to certain Middle Eastern countries, weekend
+// is defined as Friday/Saturday. This is the NSUserDefaults key for the
+// boolean property to override that and force Saturday/Sunday weekend.
+NSString * const kWeekendIsSaturdaySunday = @"WeekendIsSaturdaySunday";
+
 static NSShadow *kShadow=nil;
 static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kBorderColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil, *kWeekendTextColor=nil;
 static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
@@ -669,8 +674,9 @@ static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
 
 // Countries in the Middle East observe Friday/Saturday weekend.
 - (BOOL)weekendIsFridaySaturday {
+    BOOL weekendIsSaturdaySunday = [[NSUserDefaults standardUserDefaults] boolForKey:kWeekendIsSaturdaySunday];
     NSString *countryCode = [NSLocale currentLocale].countryCode;
-    return [kCountriesWithFridaySaturdayWeekend containsObject:countryCode];
+    return [kCountriesWithFridaySaturdayWeekend containsObject:countryCode] && !weekendIsSaturdaySunday;
 }
 
 - (NSBezierPath *)bezierPathWithStartCell:(MoCalCell *)startCell endCell:(MoCalCell *)endCell radius:(CGFloat)r inset:(CGFloat)inset useRects:(BOOL)useRects
