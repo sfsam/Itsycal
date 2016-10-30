@@ -352,6 +352,12 @@
 - (void)createStatusItem
 {
     _statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
+    
+    if (OSVersionIsAtLeast(10, 12, 0)) {
+        [_statusItem setBehavior:NSStatusItemBehaviorTerminationOnRemoval];
+        [_statusItem setAutosaveName: @"itSysCalStatusBarItem"];
+    }
+
 //    _statusItem.button.target = self;
 //    _statusItem.button.action = @selector(statusItemClicked:);
 //    _statusItem.highlightMode = NO; // Deprecated in 10.10, but what is alternative?
@@ -386,8 +392,10 @@
     if (_statusItem) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidMoveNotification object:_statusItem.button.window];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidResizeNotification object:_statusItem.button.window];
-        [[NSStatusBar systemStatusBar] removeStatusItem:_statusItem];
-        _statusItem = nil;
+        if (!OSVersionIsAtLeast(10, 12, 0)) {   // to let Sierra remember icon position and remove icon when app is terminated (at least how I understand the mechanism...) 
+            [[NSStatusBar systemStatusBar] removeStatusItem:_statusItem];
+            _statusItem = nil;
+        }
     }
 }
 
