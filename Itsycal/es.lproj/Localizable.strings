@@ -188,10 +188,19 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "Show calendar weeks" = "Mostrar semanas del calendario";
 
 /* No comment provided by engineer. */
-"Show day of week in icon" = "El icono muestra día de la semana";
+"Show icon" = "Mostrar icono";
 
 /* No comment provided by engineer. */
-"Show month in icon" = "El icono muestra mes";
+"Show date" = "Mostrar fecha";
+
+/* No comment provided by engineer. */
+"Show day of week" = "Mostrar día de la semana";
+
+/* No comment provided by engineer. */
+"Show time" = "Mostrar la hora";
+
+/* No comment provided by engineer. */
+"Use 24-hour clock format" = "utilizar el formato de reloj de 24 horas";
 
 /* No comment provided by engineer. */
 "Starts:" = "Empieza:";

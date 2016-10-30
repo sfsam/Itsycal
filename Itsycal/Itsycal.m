@@ -19,8 +19,11 @@ NSString * const kShowWeeks = @"ShowWeeks";
 NSString * const kWeekStartDOW = @"WeekStartDOW";
 NSString * const kKeyboardShortcut = @"KeyboardShortcut";
 NSString * const kHighlightWeekend = @"HighlightWeekend";
-NSString * const kShowMonthInIcon = @"ShowMonthInIcon";
-NSString * const kShowDayOfWeekInIcon = @"ShowDayOfWeekInIcon";
+NSString * const kShowIcon = @"ShowIcon";
+NSString * const kShowData = @"ShowData";
+NSString * const kShowDayOfWeek = @"ShowDayOfWeek";
+NSString * const kShowTime = @"ShowTime";
+NSString * const kUse24Hour = @"Use24Hour";
 NSString * const kAllowOutsideApplicationsFolder = @"AllowOutsideApplicationsFolder";
 
 // Menu extra notifications
@@ -35,7 +38,8 @@ NSString * const ItsycalExtraWillUnloadNotification = @"ItsycalMenuExtraWillUnlo
 // Based on cocoawithlove.com/2009/09/creating-alpha-masks-from-text-on.html
 NSImage *ItsycalIconImageForText(NSString *text)
 {
-    if (text == nil) text = @"!";
+    if (!text.length)
+        return nil;
     
     // Measure text width
     NSFont *font = [NSFont boldSystemFontOfSize:11.5];
@@ -43,7 +47,7 @@ NSImage *ItsycalIconImageForText(NSString *text)
 
     // Icon width is at least 19 pts with 4 pt margins
     CGFloat width = MAX(4 + ceilf(NSWidth(textRect)) + 4, 19);
-    CGFloat height = 16;
+    CGFloat height = 17;
     NSImage *image = [NSImage imageWithSize:NSMakeSize(width, height) flipped:NO drawingHandler:^BOOL (NSRect rect) {
         
         // Get image's context and figure out scale.
@@ -65,6 +69,7 @@ NSImage *ItsycalIconImageForText(NSString *text)
         [NSGraphicsContext setCurrentContext:maskGraphicsContext];
         
         // Draw a white rounded rect background into the mask context
+        deviceRect.size.height -= 1;
         CGFloat radius = scale * 2;
         [[NSColor whiteColor] setFill];
         [[NSBezierPath bezierPathWithRoundedRect:deviceRect xRadius:radius yRadius:radius] fill];

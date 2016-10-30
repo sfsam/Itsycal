@@ -123,18 +123,29 @@
 - (void)menubarIconUpdated:(NSNotification *)notification
 {
     _itsycalIsRunning = YES;
+    NSString *dateText = notification.userInfo[@"dateText"];
     NSString *iconText = notification.userInfo[@"iconText"];
-    if (iconText == nil) {
-        iconText = @"?";
-    }
-    NSImage *iconImage = ItsycalIconImageForText(iconText);
+    NSImage *iconImage = nil;
+    if (iconText.length)
+        iconImage = ItsycalIconImageForText(iconText);
+    
     [(NSMenuExtraView *)self.view setImage:iconImage];
+    self.title = dateText;
+    
+    CGRect textRect = [dateText boundingRectWithSize:CGSizeMake(MAXFLOAT, MAXFLOAT)
+                                             options:NSStringDrawingUsesLineFragmentOrigin
+                                          attributes:@{NSFontAttributeName:self.button.font}
+                                             context:nil];
+    
+    // Add blank
+    if (textRect.size.width)
+        textRect.size.width += 6;
     
     // Adjust size of menu extra based on iconImage size.
     NSRect frame = self.view.frame;
-    frame.size.width = iconImage.size.width;
+    frame.size.width = iconImage.size.width + textRect.size.width;
     self.view.frame = frame;
-    self.length = iconImage.size.width;
+    self.length = iconImage.size.width + textRect.size.width;
 }
 
 - (void)keyboardShortcutActivated:(NSNotification *)notification

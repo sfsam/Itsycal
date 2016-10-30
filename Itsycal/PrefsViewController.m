@@ -36,8 +36,11 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 {
     MoTextField *_title;
     NSButton *_login;
-    NSButton *_showMonth;
+    NSButton *_showIcon;
+    NSButton *_showDate;
     NSButton *_showDayOfWeek;
+    NSButton *_showTime;
+    NSButton *_use24Hour;
     NSTableView *_calendarsTV;
     NSPopUpButton *_daysPopup;
 }
@@ -95,21 +98,53 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [_login setButtonType:NSSwitchButton];
     [v addSubview:_login];
     
-    // Show month checkbox
-    _showMonth = [NSButton new];
-    _showMonth.translatesAutoresizingMaskIntoConstraints = NO;
-    _showMonth.title = NSLocalizedString(@"Show month in icon", @"");
-    _showMonth.font = [NSFont systemFontOfSize:12];
-    [_showMonth setButtonType:NSSwitchButton];
-    [v addSubview:_showMonth];
+    // Show icon checkbox
+    _showIcon = [NSButton new];
+    _showIcon.translatesAutoresizingMaskIntoConstraints = NO;
+    _showIcon.title = NSLocalizedString(@"Show icon", @"");
+    _showIcon.font = [NSFont systemFontOfSize:12];
+    _showIcon.target = self;
+    _showIcon.action = @selector(showIconClicked:);
+    [_showIcon setButtonType:NSSwitchButton];
+    [v addSubview:_showIcon];
+    
+    // Show date checkbox
+    _showDate = [NSButton new];
+    _showDate.translatesAutoresizingMaskIntoConstraints = NO;
+    _showDate.title = NSLocalizedString(@"Show date", @"");
+    _showDate.font = [NSFont systemFontOfSize:12];
+    _showDate.target = self;
+    _showDate.action = @selector(showDateClicked:);
+    [_showDate setButtonType:NSSwitchButton];
+    [v addSubview:_showDate];
     
     // Show day-of-week checkbox
     _showDayOfWeek = [NSButton new];
     _showDayOfWeek.translatesAutoresizingMaskIntoConstraints = NO;
-    _showDayOfWeek.title = NSLocalizedString(@"Show day of week in icon", @"");
+    _showDayOfWeek.title = NSLocalizedString(@"Show day of week", @"");
     _showDayOfWeek.font = [NSFont systemFontOfSize:12];
+    _showDayOfWeek.target = self;
+    _showDayOfWeek.action = @selector(showDayOfWeekClicked:);
     [_showDayOfWeek setButtonType:NSSwitchButton];
     [v addSubview:_showDayOfWeek];
+    
+    // Show time checkbox
+    _showTime = [NSButton new];
+    _showTime.translatesAutoresizingMaskIntoConstraints = NO;
+    _showTime.title = NSLocalizedString(@"Show time", @"");
+    _showTime.font = [NSFont systemFontOfSize:12];
+    _showTime.target = self;
+    _showTime.action = @selector(showTimeClicked:);
+    [_showTime setButtonType:NSSwitchButton];
+    [v addSubview:_showTime];
+    
+    // use 24-hour clock format
+    _use24Hour = [NSButton new];
+    _use24Hour.translatesAutoresizingMaskIntoConstraints = NO;
+    _use24Hour.title = NSLocalizedString(@"Use 24-hour clock format", @"");
+    _use24Hour.font = [NSFont systemFontOfSize:12];
+    [_use24Hour setButtonType:NSSwitchButton];
+    [v addSubview:_use24Hour];
     
     // Shortcut label
     MoTextField *shortcutLabel = txt(NSLocalizedString(@"Keyboard shortcut", @""));
@@ -160,16 +195,19 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, _showMonth, _showDayOfWeek, shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, _showIcon, _showDate, _showDayOfWeek, _showTime, _use24Hour,shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
     };
     vcon(@"V:|-m-[appIcon(64)]");
     vcon(@"H:|-m-[appIcon(64)]-[_title]-(>=m)-|");
     vcon(@"H:[appIcon]-[link]-(>=m)-|");
     vcon(@"V:|-36-[_title]-1-[link]");
-    vcon(@"V:|-110-[_login]-[_showMonth]-[_showDayOfWeek]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
+    vcon(@"V:|-110-[_login]-[_showIcon]-[_showDate]-[_showDayOfWeek]-[_showTime]-[_use24Hour]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
     vcon(@"H:|-m-[_login]-(>=m)-|");
-    vcon(@"H:|-m-[_showMonth]-(>=m)-|");
+    vcon(@"H:|-m-[_showIcon]-(>=m)-|");
+    vcon(@"H:|-m-[_showDate]-(>=m)-|");
     vcon(@"H:|-m-[_showDayOfWeek]-(>=m)-|");
+    vcon(@"H:|-m-[_showTime]-(>=m)-|");
+    vcon(@"H:|-m-[_use24Hour]-(>=m)-|");
     vcon(@"H:|-(>=m)-[shortcutLabel]-(>=m)-|");
     vcon(@"H:|-m-[shortcutView(>=220)]-m-|");
     vcon(@"H:|-m-[tvContainer]-m-|");
@@ -198,8 +236,11 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     _login.state = [self isLoginItemEnabled] ? NSOnState : NSOffState;
     
     // Bindings for icon preferences
-    [_showMonth bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
-    [_showDayOfWeek bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowDayOfWeekInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_showIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_showDate bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowData] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_showDayOfWeek bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowDayOfWeek] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_showTime bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowTime] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_use24Hour bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUse24Hour] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
     // Bindings for agenda days
     [_daysPopup bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDays] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
@@ -221,6 +262,61 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, 7)];
     _title.attributedStringValue = s;
     toggle = !toggle;
+}
+
+#pragma mark -
+#pragma mark option
+- (void)keepOneOptionOn
+{
+    NSInteger iconState = _showIcon.state == NSOnState;
+    NSInteger dateState = _showDate.state == NSOnState;
+    NSInteger DayState = _showDayOfWeek.state == NSOnState;
+    NSInteger timeState = _showTime.state == NSOnState;
+    
+    NSInteger countOnOption =  iconState + dateState + DayState + timeState;
+    
+    // disable last one option
+    if (countOnOption == 1) {
+        if (iconState)
+            _showIcon.enabled = NO;
+        else if (dateState)
+            _showDate.enabled = NO;
+        else if (DayState)
+            _showDayOfWeek.enabled = NO;
+        else if (timeState)
+            _showTime.enabled = NO;
+    }
+    // enable all options
+    else {
+        if (!_showIcon.enabled)
+            _showIcon.enabled = YES;
+        else if (!_showDate.enabled)
+            _showDate.enabled = YES;
+        else if (!_showDayOfWeek.enabled)
+            _showDayOfWeek.enabled = YES;
+        else if (!_showTime.enabled)
+            _showTime.enabled = YES;
+    }
+}
+
+- (void)showIconClicked:(NSButton *)button
+{
+    [self keepOneOptionOn];
+}
+
+- (void)showDateClicked:(NSButton *)button
+{
+    [self keepOneOptionOn];
+}
+
+- (void)showDayOfWeekClicked:(NSButton *)button
+{
+    [self keepOneOptionOn];
+}
+
+- (void)showTimeClicked:(NSButton *)button
+{
+    [self keepOneOptionOn];
 }
 
 #pragma mark -

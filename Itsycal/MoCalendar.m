@@ -11,8 +11,7 @@
 #import "MoCalGrid.h"
 #import "MoButton.h"
 
-static NSShadow *kShadow=nil;
-static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kBorderColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil, *kWeekendTextColor=nil;
+static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kBorderColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil, *kWeekendTextColor=nil;
 static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
 
 @implementation MoCalendar
@@ -37,12 +36,7 @@ static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
 
 + (void)initialize
 {
-    kShadow = [NSShadow new];
-    kShadow.shadowColor = [NSColor colorWithWhite:0 alpha:0.3];
-    kShadow.shadowBlurRadius = 2;
-    kShadow.shadowOffset = NSMakeSize(0, -1);
     kBorderColor = [NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1];
-    kOutlineColor = [NSColor colorWithRed:0.7 green:0.7 blue:0.73 alpha:1];
     kLightTextColor = [NSColor colorWithWhite:0.15 alpha:0.6];
     kDarkTextColor  = [NSColor colorWithWhite:0.15 alpha:1];
     kWeekendTextColor = [NSColor colorWithRed:0.75 green:0.2 blue:0.1 alpha:1];
@@ -115,7 +109,7 @@ static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
     
     for (MoCalCell *cell in _dowGrid.cells) {
         cell.textField.font = [NSFont fontWithName:@"VarelaRoundNeo-Bold" size:11];
-        cell.textField.textColor = kDarkTextColor;
+        cell.normalTextColor = kDarkTextColor;
     }
     
     [self addSubview:_monthLabel];
@@ -334,9 +328,9 @@ static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
             cell.date = date;
             cell.isToday = CompareDates(date, self.todayDate) == 0;
             if (date.month == self.monthDate.month) {
-                cell.textField.textColor = kDarkTextColor;
+                cell.normalTextColor = kDarkTextColor;
                 if (col == weekendColumn1 || col == weekendColumn2) {
-                    cell.textField.textColor = _weekendTextColor;
+                    cell.normalTextColor = _weekendTextColor;
                 }
                 if (date.day == 1) {
                     _monthStartCell = cell;
@@ -346,9 +340,9 @@ static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
                 }
             }
             else {
-                cell.textField.textColor = kLightTextColor;
+                cell.normalTextColor = kLightTextColor;
                 if (col == weekendColumn1 || col == weekendColumn2) {
-                    cell.textField.textColor = [_weekendTextColor colorWithAlphaComponent:0.6];
+                    cell.normalTextColor = [_weekendTextColor colorWithAlphaComponent:0.6];
                 }
             }
             // ISO 8601 weeks are defined to start on Monday (and
@@ -610,13 +604,8 @@ static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
     
     NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:4 inset:0 useRects:NO];
     
-    [kOutlineColor set];
-    [outlinePath setLineWidth:2];
-    [outlinePath stroke];
-    
     [[NSColor whiteColor] set];
     [NSGraphicsContext saveGraphicsState];
-    [kShadow set];
     [outlinePath fill];
     [NSGraphicsContext restoreGraphicsState];
     
@@ -659,10 +648,7 @@ static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
         [t translateXBy:NSMinX(_dateGrid.frame) yBy:0];
         NSBezierPath *highlightPath = [_highlightPath copy];
         [highlightPath transformUsingAffineTransform:t];
-        NSColor *outlineColor = [_highlightColor blendedColorWithFraction:0.6 ofColor:[NSColor blackColor]];
-        [[outlineColor colorWithAlphaComponent:0.3] setStroke];
-        [[_highlightColor colorWithAlphaComponent:0.2] setFill];
-        [highlightPath stroke];
+        [[_highlightColor colorWithAlphaComponent:0.4] setFill];
         [highlightPath fill];
     }
 }

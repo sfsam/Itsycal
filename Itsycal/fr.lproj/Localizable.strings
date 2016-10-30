@@ -188,10 +188,19 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Show calendar weeks" = "Afficher les numéros de semaine";
 
 /* No comment provided by engineer. */
-"Show day of week in icon" = "L'icône de la barre de menu affiche le jour de la semaine";
+"Show icon" = "Afficher l'icône";
 
 /* No comment provided by engineer. */
-"Show month in icon" = "L'icône de la barre de menu affiche le mois";
+"Show date" = "Afficher la date";
+
+/* No comment provided by engineer. */
+"Show day of week" = "Afficher le jour de la semaine";
+
+/* No comment provided by engineer. */
+"Show time" = "Afficher l'heure";
+
+/* No comment provided by engineer. */
+"Use 24-hour clock format" = "utiliser le format d'horloge de 24 heures";
 
 /* No comment provided by engineer. */
 "Starts:" = "Commence:";
