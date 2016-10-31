@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 mowglii.com. All rights reserved.
 //
 
+#import "MoUtils.h"
 #import "MoCalendar.h"
 #import "MoCalCell.h"
 #import "MoCalGrid.h"
@@ -15,6 +16,13 @@
 // is defined as Friday/Saturday. This is the NSUserDefaults key for the
 // boolean property to override that and force Saturday/Sunday weekend.
 NSString * const kWeekendIsSaturdaySunday = @"WeekendIsSaturdaySunday";
+
+// NSUserDefaults key for property to force weekend to be Friday/
+// Saturday. The automatic region check for Fri/Sat weekends (see above)
+// only works on 10.12+. Use this key to get Fri/Sat behavior on older
+// systems. This property supercedes kWeekendIsSaturdaySunday if both
+// are set. See -weekendIsFridaySaturday.
+NSString * const kWeekendIsFridaySaturday = @"WeekendIsFridaySaturday";
 
 static NSShadow *kShadow=nil;
 static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kBorderColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil, *kWeekendTextColor=nil;
@@ -672,11 +680,21 @@ static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
     }
 }
 
-// Countries in the Middle East observe Friday/Saturday weekend.
+// Certain countries observe Friday/Saturday weekend.
 - (BOOL)weekendIsFridaySaturday {
-    BOOL weekendIsSaturdaySunday = [[NSUserDefaults standardUserDefaults] boolForKey:kWeekendIsSaturdaySunday];
-    NSString *countryCode = [NSLocale currentLocale].countryCode;
-    return [kCountriesWithFridaySaturdayWeekend containsObject:countryCode] && !weekendIsSaturdaySunday;
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults boolForKey:kWeekendIsFridaySaturday]) {
+        return YES;
+    }
+    if ([defaults boolForKey:kWeekendIsSaturdaySunday]) {
+        return NO;
+    }
+    // NSLocale's -countryCode is only available on 10.12+.
+    if (OSVersionIsAtLeast(10, 12, 0)) {
+        NSString *countryCode = [NSLocale currentLocale].countryCode;
+        return [kCountriesWithFridaySaturdayWeekend containsObject:countryCode];
+    }
+    return NO;
 }
 
 - (NSBezierPath *)bezierPathWithStartCell:(MoCalCell *)startCell endCell:(MoCalCell *)endCell radius:(CGFloat)r inset:(CGFloat)inset useRects:(BOOL)useRects

@@ -98,11 +98,3 @@ NSImage *ItsycalIconImageForText(NSString *text)
     [image setTemplate:YES];
     return image;
 }
-
-BOOL OSVersionIsAtLeast(NSInteger majorVersion, NSInteger minorVersion, NSInteger patchVersion)
-{
-    NSOperatingSystemVersion os = [[NSProcessInfo processInfo] operatingSystemVersion];
-    return (os.majorVersion >  majorVersion) ||
-           (os.majorVersion == majorVersion && os.minorVersion >  minorVersion) ||
-           (os.majorVersion == majorVersion && os.minorVersion == minorVersion && os.patchVersion >= patchVersion) ? YES : NO;
-}
