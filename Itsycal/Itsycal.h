@@ -10,10 +10,6 @@
 #import "MoDate.h"
 #import "MoUtils.h"
 
-// Bundle IDs
-extern NSString * const kItsycalBundleID;
-extern NSString * const kItsycalExtraBundleID;
-
 // NSUserDefaults keys
 extern NSString * const kPinItsycal;
 extern NSString * const kShowEventDays;
@@ -24,14 +20,5 @@ extern NSString * const kHighlightWeekend;
 extern NSString * const kShowMonthInIcon;
 extern NSString * const kShowDayOfWeekInIcon;
 extern NSString * const kAllowOutsideApplicationsFolder;
-
-// Menu extra notifications
-extern NSString * const ItsycalIsActiveNotification;
-extern NSString * const ItsycalDidUpdateIconNotification;
-extern NSString * const ItsycalKeyboardShortcutNotification;
-extern NSString * const ItsycalExtraIsActiveNotification;
-extern NSString * const ItsycalExtraClickedNotification;
-extern NSString * const ItsycalExtraDidMoveNotification;
-extern NSString * const ItsycalExtraWillUnloadNotification;
 
 NSImage *ItsycalIconImageForText(NSString *text);

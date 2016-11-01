@@ -34,7 +34,6 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowEventDays];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMonthInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
@@ -131,9 +130,6 @@
     // Now that everything else is set up, we file for notifications.
     // Some of the notification handlers rely on stuff we just set up.
     [self fileNotifications];
-    
-    // Tell the menu extra that Itsycal is alive
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalIsActiveNotification object:nil userInfo:@{@"iconText": [self iconText]} deliverImmediately:YES];
 }
 
 - (void)viewWillAppear
@@ -378,21 +374,6 @@
     }
 }
 
-- (void)menuExtraIsActive:(NSNotification *)notification
-{
-    [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
-    [self removeStatusItem];
-    [self updateMenubarIcon];
-}
-
-- (void)menuExtraWillUnload:(NSNotification *)notification
-{
-    if ([self.itsycalWindow isVisible]) {
-        [self.itsycalWindow orderOut:nil];
-    }
-    [self createStatusItem];
-}
-
 - (NSString *)iconText
 {
     NSString *iconText;
@@ -420,10 +401,7 @@
 - (void)updateMenubarIcon
 {
     NSString *iconText = [self iconText];
-    if (_statusItem) {
-        _statusItem.button.image = ItsycalIconImageForText(iconText);
-    }
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalDidUpdateIconNotification object:nil userInfo:@{@"iconText": iconText} deliverImmediately:YES];
+    _statusItem.button.image = ItsycalIconImageForText(iconText);
 }
 
 - (void)updateStatusItemPositionInfo
@@ -437,14 +415,6 @@
     // the top of the screen. The result is that the calendar is
     // shown clipped at the top. Prevent that by constraining the
     // top of the menu item to be at most the top of the screen.
-    _menuItemFrame.origin.y = MIN(_menuItemFrame.origin.y, _screenFrame.origin.y + _screenFrame.size.height);
-}
-
-- (void)updateMenuExtraPositionInfoWithUserInfo:(NSDictionary *)userInfo
-{
-    _menuItemFrame = NSRectFromString(userInfo[@"menuItemFrame"]);
-    _screenFrame   = NSRectFromString(userInfo[@"screenFrame"]);
-    // See comment above in -updateStatusItemPositionInfo.
     _menuItemFrame.origin.y = MIN(_menuItemFrame.origin.y, _screenFrame.origin.y + _screenFrame.size.height);
 }
 
@@ -476,24 +446,9 @@
     });
 }
 
-- (void)menuExtraMoved:(NSNotification *)notification
-{
-    // see comment in -statusItemMoved:
-    [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
-    });
-}
-
 - (void)statusItemClicked:(id)sender
 {
     [self updateStatusItemPositionInfo];
-    [self menuIconClickedAction];
-}
-
-- (void)menuExtraClicked:(NSNotification *)notification
-{
-    [self updateMenuExtraPositionInfoWithUserInfo:notification.userInfo];
     [self menuIconClickedAction];
 }
 
@@ -566,17 +521,8 @@
 - (void)keyboardShortcutActivated
 {
     // The user hit the keyboard shortcut. This is the same
-    // as if the user had clicked the menubar icon. If the
-    // icon is the statusItem it is straightforward: just
-    // simulate a click on the statusItem. If the icon is the
-    // menuextra, we need to send it a message so it can
-    // simulate the click.
-    if (_statusItem) {
-        [self statusItemClicked:self];
-    }
-    else {
-        [[NSDistributedNotificationCenter defaultCenter] postNotificationName:ItsycalKeyboardShortcutNotification object:nil userInfo:nil deliverImmediately:YES];
-    }
+    // as if the user had clicked the menubar icon.
+    [self statusItemClicked:self];
 }
 
 #pragma mark -
@@ -701,12 +647,6 @@
 
 - (void)fileNotifications
 {
-    // Menu extra notifications
-    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraIsActive:) name:ItsycalExtraIsActiveNotification object:nil];
-    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraClicked:) name:ItsycalExtraClickedNotification object:nil];
-    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraMoved:) name:ItsycalExtraDidMoveNotification object:nil];
-    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(menuExtraWillUnload:) name:ItsycalExtraWillUnloadNotification object:nil];
-    
     // Day changed notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         MoDate today = [self todayDate];

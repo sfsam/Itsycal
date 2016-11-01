@@ -8,10 +8,6 @@
 
 #import "Itsycal.h"
 
-// Bundle IDs
-NSString * const kItsycalBundleID = @"com.mowglii.ItsycalApp";
-NSString * const kItsycalExtraBundleID = @"com.mowglii.ItsycalExtra";
-
 // NSUserDefaults keys
 NSString * const kPinItsycal = @"PinItsycal";
 NSString * const kShowEventDays = @"ShowEventDays";
@@ -22,15 +18,6 @@ NSString * const kHighlightWeekend = @"HighlightWeekend";
 NSString * const kShowMonthInIcon = @"ShowMonthInIcon";
 NSString * const kShowDayOfWeekInIcon = @"ShowDayOfWeekInIcon";
 NSString * const kAllowOutsideApplicationsFolder = @"AllowOutsideApplicationsFolder";
-
-// Menu extra notifications
-NSString * const ItsycalIsActiveNotification = @"ItsycalIsActiveNotification";
-NSString * const ItsycalDidUpdateIconNotification = @"ItsycalDidUpdateIconNotification";
-NSString * const ItsycalKeyboardShortcutNotification = @"ItsycalKeyboardShortcutNotification";
-NSString * const ItsycalExtraIsActiveNotification = @"ItsycalMenuExtraIsActiveNotification";
-NSString * const ItsycalExtraClickedNotification = @"ItsycalMenuExtraClickedNotification";
-NSString * const ItsycalExtraDidMoveNotification = @"ItsycalMenuExtraDidMoveNotification";
-NSString * const ItsycalExtraWillUnloadNotification = @"ItsycalMenuExtraWillUnloadNotification";
 
 // Based on cocoawithlove.com/2009/09/creating-alpha-masks-from-text-on.html
 NSImage *ItsycalIconImageForText(NSString *text)
