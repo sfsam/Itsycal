@@ -6,12 +6,27 @@
 //  Copyright (c) 2014 mowglii.com. All rights reserved.
 //
 
+#import "MoUtils.h"
 #import "MoCalendar.h"
 #import "MoCalCell.h"
 #import "MoCalGrid.h"
 #import "MoButton.h"
 
-static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kBorderColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil, *kWeekendTextColor=nil;
+// If user has region set to certain Middle Eastern countries, weekend
+// is defined as Friday/Saturday. This is the NSUserDefaults key for the
+// boolean property to override that and force Saturday/Sunday weekend.
+NSString * const kWeekendIsSaturdaySunday = @"WeekendIsSaturdaySunday";
+
+// NSUserDefaults key for property to force weekend to be Friday/
+// Saturday. The automatic region check for Fri/Sat weekends (see above)
+// only works on 10.12+. Use this key to get Fri/Sat behavior on older
+// systems. This property supercedes kWeekendIsSaturdaySunday if both
+// are set. See -weekendIsFridaySaturday.
+NSString * const kWeekendIsFridaySaturday = @"WeekendIsFridaySaturday";
+
+static NSShadow *kShadow=nil;
+static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kBorderColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil, *kWeekendTextColor=nil;
+static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
 
 @implementation MoCalendar
 {
@@ -42,6 +57,9 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     kBackgroundColor = [NSColor whiteColor];
     kWeeksBackgroundColor = [NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1];
     kDatesBackgroundColor = [NSColor colorWithRed:0.95 green:0.95 blue:0.96 alpha:1];
+    kCountriesWithFridaySaturdayWeekend = @[
+        @"AF", @"DZ", @"BH", @"BD", @"EG", @"IQ", @"JO", @"KW", @"LY",
+        @"MV", @"OM", @"PS", @"QA", @"SA", @"SD", @"SY", @"AE", @"YE"];
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
@@ -277,8 +295,13 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     // On which column [0..6] in the monthly calendar do these days fall?
     NSInteger sundayColumn   = DOW_COL(self.weekStartDOW, 0); // 0=Sunday
     NSInteger mondayColumn   = DOW_COL(self.weekStartDOW, 1); // 1=Monday
+    NSInteger fridayColumn   = DOW_COL(self.weekStartDOW, 5); // 5=Friday
     NSInteger saturdayColumn = DOW_COL(self.weekStartDOW, 6); // 6=Saturday
-    
+
+    // Countries in the Middle East observe Friday/Saturday weekend.
+    NSInteger weekendColumn1 = [self weekendIsFridaySaturday] ? fridayColumn : sundayColumn;
+    NSInteger weekendColumn2 = saturdayColumn;
+
     // Month/year and DOW labels
     NSArray *months = [_formatter shortMonthSymbols];
     NSArray *dows = [_formatter veryShortWeekdaySymbols];
@@ -293,7 +316,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
         }
         [[_dowGrid.cells[col] textField] setStringValue:dow];
         [[_dowGrid.cells[col] textField] setTextColor:kDarkTextColor];
-        if (col == sundayColumn || col == saturdayColumn) {
+        if (col == weekendColumn1 || col == weekendColumn2) {
             [[_dowGrid.cells[col] textField] setTextColor:_weekendTextColor];
         }
     }
@@ -320,7 +343,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
             cell.isToday = CompareDates(date, self.todayDate) == 0;
             if (date.month == self.monthDate.month) {
                 cell.normalTextColor = kDarkTextColor;
-                if (col == sundayColumn || col == saturdayColumn) {
+                if (col == weekendColumn1 || col == weekendColumn2) {
                     cell.normalTextColor = _weekendTextColor;
                 }
                 if (date.day == 1) {
@@ -332,7 +355,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
             }
             else {
                 cell.normalTextColor = kLightTextColor;
-                if (col == sundayColumn || col == saturdayColumn) {
+                if (col == weekendColumn1 || col == weekendColumn2) {
                     cell.normalTextColor = [_weekendTextColor colorWithAlphaComponent:0.6];
                 }
             }
@@ -603,16 +626,31 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     if (self.highlightWeekend) {
         NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
         weekendRect.size.width = kMoCalCellWidth;
-        NSRect sundayRect   = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 0) * kMoCalCellWidth, 0);
-        NSRect saturdayRect = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 6) * kMoCalCellWidth, 0);
         [[NSColor colorWithWhite:0.15 alpha:0.05] set];
-        if (self.weekStartDOW == 0) {
-            [[NSBezierPath bezierPathWithRoundedRect:sundayRect xRadius:4 yRadius:4] fill];
-            [[NSBezierPath bezierPathWithRoundedRect:saturdayRect xRadius:4 yRadius:4] fill];
+        // Countries in the Middle East observe Friday/Saturday weekend.
+        if ([self weekendIsFridaySaturday]) {
+            NSRect   fridayRect = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 5) * kMoCalCellWidth, 0);
+            NSRect saturdayRect = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 6) * kMoCalCellWidth, 0);
+            if (self.weekStartDOW == 6) {
+                [[NSBezierPath bezierPathWithRoundedRect:saturdayRect xRadius:4 yRadius:4] fill];
+                [[NSBezierPath bezierPathWithRoundedRect:fridayRect xRadius:4 yRadius:4] fill];
+            }
+            else {
+                weekendRect = NSUnionRect(fridayRect, saturdayRect);
+                [[NSBezierPath bezierPathWithRoundedRect:weekendRect xRadius:4 yRadius:4] fill];
+            }
         }
         else {
-            weekendRect = NSUnionRect(sundayRect, saturdayRect);
-            [[NSBezierPath bezierPathWithRoundedRect:weekendRect xRadius:4 yRadius:4] fill];
+            NSRect sundayRect   = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 0) * kMoCalCellWidth, 0);
+            NSRect saturdayRect = NSOffsetRect(weekendRect, DOW_COL(self.weekStartDOW, 6) * kMoCalCellWidth, 0);
+            if (self.weekStartDOW == 0) {
+                [[NSBezierPath bezierPathWithRoundedRect:sundayRect xRadius:4 yRadius:4] fill];
+                [[NSBezierPath bezierPathWithRoundedRect:saturdayRect xRadius:4 yRadius:4] fill];
+            }
+            else {
+                weekendRect = NSUnionRect(sundayRect, saturdayRect);
+                [[NSBezierPath bezierPathWithRoundedRect:weekendRect xRadius:4 yRadius:4] fill];
+            }
         }
     }
     
@@ -627,6 +665,23 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
         [[_highlightColor colorWithAlphaComponent:0.4] setFill];
         [highlightPath fill];
     }
+}
+
+// Certain countries observe Friday/Saturday weekend.
+- (BOOL)weekendIsFridaySaturday {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults boolForKey:kWeekendIsFridaySaturday]) {
+        return YES;
+    }
+    if ([defaults boolForKey:kWeekendIsSaturdaySunday]) {
+        return NO;
+    }
+    // NSLocale's -countryCode is only available on 10.12+.
+    if (OSVersionIsAtLeast(10, 12, 0)) {
+        NSString *countryCode = [NSLocale currentLocale].countryCode;
+        return [kCountriesWithFridaySaturdayWeekend containsObject:countryCode];
+    }
+    return NO;
 }
 
 - (NSBezierPath *)bezierPathWithStartCell:(MoCalCell *)startCell endCell:(MoCalCell *)endCell radius:(CGFloat)r inset:(CGFloat)inset useRects:(BOOL)useRects

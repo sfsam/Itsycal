@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "MoDate.h"
+#import "MoUtils.h"
 
 // Bundle IDs
 extern NSString * const kItsycalBundleID;
@@ -37,4 +38,3 @@ extern NSString * const ItsycalExtraDidMoveNotification;
 extern NSString * const ItsycalExtraWillUnloadNotification;
 
 NSImage *ItsycalIconImageForText(NSString *text);
-BOOL OSVersionIsAtLeast(NSInteger majorVersion, NSInteger minorVersion, NSInteger patchVersion);
