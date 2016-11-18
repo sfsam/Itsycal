@@ -21,8 +21,11 @@ extern NSString * const kShowWeeks;
 extern NSString * const kWeekStartDOW;
 extern NSString * const kKeyboardShortcut;
 extern NSString * const kHighlightWeekend;
-extern NSString * const kShowMonthInIcon;
-extern NSString * const kShowDayOfWeekInIcon;
+extern NSString * const kShowIcon;
+extern NSString * const kShowData;
+extern NSString * const kShowDayOfWeek;
+extern NSString * const kShowTime;
+extern NSString * const kUse24Hour;
 extern NSString * const kAllowOutsideApplicationsFolder;
 
 // Menu extra notifications
