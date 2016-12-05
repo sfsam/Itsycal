@@ -36,6 +36,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 {
     MoTextField *_title;
     NSButton *_login;
+    NSButton *_useOutlineIcon;
     NSButton *_showMonth;
     NSButton *_showDayOfWeek;
     NSTableView *_calendarsTV;
@@ -51,7 +52,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     MoView *v = [MoView new];
  
     // App Icon
-    NSImageView *appIcon = [[NSImageView alloc] initWithFrame:NSZeroRect];
+    NSImageView *appIcon = [NSImageView new];
     appIcon.translatesAutoresizingMaskIntoConstraints = NO;
     appIcon.image = [NSImage imageNamed:@"AppIcon"];
     [v addSubview:appIcon];
@@ -72,17 +73,17 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     // Title and version
     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
     _title = txt([NSString stringWithFormat:@"Itsycal %@", infoDict[@"CFBundleShortVersionString"]]);
-    _title.font = [NSFont boldSystemFontOfSize:13];
+    _title.font = [NSFont systemFontOfSize:12 weight:NSFontWeightSemibold];
     _title.textColor = [NSColor lightGrayColor];
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:_title.stringValue];
-    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, 7)];
+    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor], NSFontAttributeName: [NSFont boldSystemFontOfSize:12]} range:NSMakeRange(0, 7)];
     _title.attributedStringValue = s;
     _title.target = self;
     _title.action = @selector(toggleTitle:);
     
     // Mowglii link
     MoTextField *link  = txt(@"mowglii.com/itsycal");
-    link.font = [NSFont boldSystemFontOfSize:12];
+    link.font = [NSFont systemFontOfSize:12 weight:NSFontWeightSemibold];
     link.linkEnabled = YES;
     
     // Login checkbox
@@ -95,6 +96,14 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [_login setButtonType:NSSwitchButton];
     [v addSubview:_login];
     
+    // Use outline icon checkbox
+    _useOutlineIcon = [NSButton new];
+    _useOutlineIcon.translatesAutoresizingMaskIntoConstraints = NO;
+    _useOutlineIcon.title = NSLocalizedString(@"Use outline icon", @"");
+    _useOutlineIcon.font = [NSFont systemFontOfSize:12];
+    [_useOutlineIcon setButtonType:NSSwitchButton];
+    [v addSubview:_useOutlineIcon];
+
     // Show month checkbox
     _showMonth = [NSButton new];
     _showMonth.translatesAutoresizingMaskIntoConstraints = NO;
@@ -160,14 +169,15 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, _showMonth, _showDayOfWeek, shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, _useOutlineIcon, _showMonth, _showDayOfWeek, shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
     };
-    vcon(@"V:|-m-[appIcon(64)]");
-    vcon(@"H:|-m-[appIcon(64)]-[_title]-(>=m)-|");
+    vcon(@"V:|-m-[appIcon(32)]");
+    vcon(@"H:|-m-[appIcon(32)]-[_title]-(>=m)-|");
     vcon(@"H:[appIcon]-[link]-(>=m)-|");
-    vcon(@"V:|-36-[_title]-1-[link]");
-    vcon(@"V:|-110-[_login]-[_showMonth]-[_showDayOfWeek]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
+    vcon(@"V:|-20-[_title][link]");
+    vcon(@"V:|-75-[_login]-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
     vcon(@"H:|-m-[_login]-(>=m)-|");
+    vcon(@"H:|-m-[_useOutlineIcon]-(>=m)-|");
     vcon(@"H:|-m-[_showMonth]-(>=m)-|");
     vcon(@"H:|-m-[_showDayOfWeek]-(>=m)-|");
     vcon(@"H:|-(>=m)-[shortcutLabel]-(>=m)-|");
@@ -198,6 +208,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     _login.state = [self isLoginItemEnabled] ? NSOnState : NSOffState;
     
     // Bindings for icon preferences
+    [_useOutlineIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseOutlineIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_showMonth bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_showDayOfWeek bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowDayOfWeekInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     

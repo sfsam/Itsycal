@@ -17,8 +17,7 @@ extern NSString * const kShowWeeks;
 extern NSString * const kWeekStartDOW;
 extern NSString * const kKeyboardShortcut;
 extern NSString * const kHighlightWeekend;
+extern NSString * const kUseOutlineIcon;
 extern NSString * const kShowMonthInIcon;
 extern NSString * const kShowDayOfWeekInIcon;
 extern NSString * const kAllowOutsideApplicationsFolder;
-
-NSImage *ItsycalIconImageForText(NSString *text);

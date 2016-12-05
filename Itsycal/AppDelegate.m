@@ -43,10 +43,12 @@
     // /Applications folder. Having the user manually move Itsycal
     // to /Applications turns off Gatekeeper Path Randomization
     // and allows Itsycal to be updated with Sparkle. :P
+#ifndef DEBUG
     if (OSVersionIsAtLeast(10, 12, 0)) {
         [self checkIfRunFromApplicationsFolder];
     }
-    
+#endif
+
     // Register keyboard shortcut.
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
          [_vc keyboardShortcutActivated];

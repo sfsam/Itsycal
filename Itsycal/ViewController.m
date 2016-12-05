@@ -35,6 +35,7 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowEventDays];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kUseOutlineIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMonthInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
 }
@@ -401,7 +402,108 @@
 - (void)updateMenubarIcon
 {
     NSString *iconText = [self iconText];
-    _statusItem.button.image = ItsycalIconImageForText(iconText);
+    _statusItem.button.image = [self iconImageForText:iconText];
+}
+
+- (NSImage *)iconImageForText:(NSString *)text
+{
+    if (text == nil) text = @"!";
+
+    // Does user want outline icon or solid icon?
+    BOOL useOutlineIcon = [[NSUserDefaults standardUserDefaults] boolForKey:kUseOutlineIcon];
+
+    // Return cached icon if one is available.
+    NSString *iconName = [text stringByAppendingString:useOutlineIcon ? @" outline" : @" solid"];
+    NSImage *iconImage = [NSImage imageNamed:iconName];
+    if (iconImage != nil) {
+        return iconImage;
+    }
+
+    // Measure text width
+    NSFont *font = [NSFont monospacedDigitSystemFontOfSize:11.5 weight:NSFontWeightBold];
+    CGRect textRect = [[[NSAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName: font}] boundingRectWithSize:CGSizeMake(999, 999) options:0 context:nil];
+
+    // Icon width is at least 19 pts with 3 pt outside margins, 4 pt inside margins.
+    CGFloat width = MAX(3 + 4 + ceilf(NSWidth(textRect)) + 4 + 3, 19);
+    CGFloat height = 16;
+    iconImage = [NSImage imageWithSize:NSMakeSize(width, height) flipped:NO drawingHandler:^BOOL (NSRect rect) {
+
+        // Get image's context.
+        CGContextRef const ctx = [[NSGraphicsContext currentContext] graphicsPort];
+
+        if (useOutlineIcon) {
+
+            // Draw outlined icon image.
+
+            [[NSColor colorWithWhite:0 alpha:0.9] set];
+            [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 3.5, 0.5) xRadius:2 yRadius:2] stroke];
+
+            [[NSColor colorWithWhite:0 alpha:0.15] set];
+            NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 4, 1) xRadius:1 yRadius:1];
+            [p setLineWidth:2];
+            [p stroke];
+
+            // Turning off smoothing looks better (why??).
+            CGContextSetShouldSmoothFonts(ctx, false);
+
+            // Draw text.
+            NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
+            pstyle.alignment = NSCenterTextAlignment;
+            [text drawInRect:NSOffsetRect(rect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont monospacedDigitSystemFontOfSize:11.5 weight:NSFontWeightSemibold], NSParagraphStyleAttributeName: pstyle, NSForegroundColorAttributeName: [NSColor blackColor]}];
+        }
+        else {
+
+            // Draw solid background icon image.
+            // Based on cocoawithlove.com/2009/09/creating-alpha-masks-from-text-on.html
+
+            // Make scale adjustments.
+            NSRect deviceRect = CGContextConvertRectToDeviceSpace(ctx, rect);
+            CGFloat scale  = NSHeight(deviceRect)/NSHeight(rect);
+            CGFloat width  = scale * NSWidth(rect);
+            CGFloat height = scale * NSHeight(rect);
+            CGFloat outsideMargin = scale * 3;
+            CGFloat radius = scale * 2;
+            CGFloat fontSize = scale > 1 ? 24 : 11.5;
+
+            // Create a grayscale context for the mask
+            CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceGray();
+            CGContextRef maskContext = CGBitmapContextCreate(NULL, width, height, 8, 0, colorspace, 0);
+            CGColorSpaceRelease(colorspace);
+
+            // Switch to the context for drawing.
+            // Drawing done in this context is scaled.
+            NSGraphicsContext *maskGraphicsContext = [NSGraphicsContext graphicsContextWithGraphicsPort:maskContext flipped:NO];
+            [NSGraphicsContext saveGraphicsState];
+            [NSGraphicsContext setCurrentContext:maskGraphicsContext];
+
+            // Draw a white rounded rect background into the mask context
+            [[NSColor whiteColor] setFill];
+            [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(deviceRect, outsideMargin, 0) xRadius:radius yRadius:radius] fill];
+
+            // Draw text.
+            NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
+            pstyle.alignment = NSCenterTextAlignment;
+            [text drawInRect:NSOffsetRect(deviceRect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont monospacedDigitSystemFontOfSize:fontSize weight:NSFontWeightBold], NSForegroundColorAttributeName: [NSColor blackColor], NSParagraphStyleAttributeName: pstyle}];
+
+            // Switch back to the image's context.
+            [NSGraphicsContext restoreGraphicsState];
+
+            // Create an image mask from our mask context.
+            CGImageRef alphaMask = CGBitmapContextCreateImage(maskContext);
+
+            // Fill the image, clipped by the mask.
+            CGContextClipToMask(ctx, rect, alphaMask);
+            [[NSColor blackColor] set];
+            NSRectFill(rect);
+
+            CGImageRelease(alphaMask);
+        }
+
+        return YES;
+    }];
+    [iconImage setTemplate:YES];
+    [iconImage setName:iconName];
+    return iconImage;
 }
 
 - (void)updateStatusItemPositionInfo
@@ -666,9 +768,9 @@
     }];
     
     // Observe NSUserDefaults for preference changes
-    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowEventDays options:NSKeyValueObservingOptionNew context:NULL];
-    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowMonthInIcon options:NSKeyValueObservingOptionNew context:NULL];
-    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowDayOfWeekInIcon options:NSKeyValueObservingOptionNew context:NULL];
+    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon]) {
+        [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
+    }
 }
 
 #pragma mark -
@@ -679,7 +781,9 @@
     if ([keyPath isEqualToString:kShowEventDays]) {
         [self updateAgenda];
     }
-    else if ([keyPath isEqualToString:kShowMonthInIcon] || [keyPath isEqualToString:kShowDayOfWeekInIcon]) {
+    else if ([keyPath isEqualToString:kUseOutlineIcon] ||
+             [keyPath isEqualToString:kShowMonthInIcon] ||
+             [keyPath isEqualToString:kShowDayOfWeekInIcon]) {
         [self updateMenubarIcon];
     }
 }
