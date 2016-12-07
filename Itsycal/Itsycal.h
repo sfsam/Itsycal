@@ -21,3 +21,4 @@ extern NSString * const kUseOutlineIcon;
 extern NSString * const kShowMonthInIcon;
 extern NSString * const kShowDayOfWeekInIcon;
 extern NSString * const kAllowOutsideApplicationsFolder;
+extern NSString * const kClockFormat;

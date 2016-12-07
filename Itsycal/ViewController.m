@@ -29,6 +29,10 @@
     EventViewController   *_eventVC;
     NSLayoutConstraint    *_bottomMargin;
     NSDateFormatter       *_iconDateFormatter;
+
+    NSString  *_clockFormat;
+    NSTimer   *_clockTimer;
+    BOOL       _clockUsesSeconds;
 }
 
 - (void)dealloc
@@ -38,6 +42,7 @@
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kUseOutlineIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMonthInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kClockFormat];
 }
 
 #pragma mark -
@@ -347,11 +352,20 @@
     _statusItem.button.target = self;
     _statusItem.button.action = @selector(statusItemClicked:);
     _statusItem.highlightMode = NO; // Deprecated in 10.10, but what is alternative?
+
+    // Use monospaced font in case user sets custom clock format.
+    // We modify the default font with a font descriptor instead
+    // of using +monospacedDigitSystemFontOfSize:weight: because
+    // we get slightly darker looking ':' characters this way.
+    NSFontDescriptor *fontDesc = [_statusItem.button.font fontDescriptor];
+    fontDesc = [fontDesc fontDescriptorByAddingAttributes:@{NSFontFeatureSettingsAttribute: @[@{NSFontFeatureTypeIdentifierKey: @(kNumberSpacingType), NSFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)}]}];
+    _statusItem.button.font = [NSFont fontWithDescriptor:fontDesc size:0];
+
     // Remember item position in menubar for 10.12+. (@pskowronek (Github))
     if (OSVersionIsAtLeast(10, 12, 0)) {
         [_statusItem setAutosaveName:@"ItsycalStatusItem"];
     }
-    [self updateMenubarIcon];
+    [self clockFormatDidChange];
     [self updateStatusItemPositionInfo];
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
     
@@ -403,6 +417,12 @@
 {
     NSString *iconText = [self iconText];
     _statusItem.button.image = [self iconImageForText:iconText];
+
+    if (_clockFormat) {
+        [_iconDateFormatter setDateFormat:_clockFormat];
+        _statusItem.button.title = [_iconDateFormatter stringFromDate:[NSDate new]];
+        [self updateClock];
+    }
 }
 
 - (NSImage *)iconImageForText:(NSString *)text
@@ -744,6 +764,88 @@
     return MakeDate(c.year, c.month-1, c.day);
 }
 
+- (void)updateClock
+{
+    [_clockTimer invalidate];
+
+    // If the clock uses seconds, fire the timer after a second.
+    // Otherwise, fire after 60 seconds. We could just fire every
+    // second in either case, but we want to be as efficient as
+    // possible and only fire when needed. Even firing every 60
+    // seconds is too much if the format string doesn't contain
+    // any time specifiers.
+    NSTimeInterval clockInterval = _clockUsesSeconds ? 1 : 60;
+
+    _clockTimer = [NSTimer timerWithTimeInterval:clockInterval target:self selector:@selector(updateMenubarIcon) userInfo:nil repeats:NO];
+
+    // Align the timer's fireDate to real-time minutes or seconds.
+    // We do this by subtracting the extra seconds or fractional
+    // seconds from the fireDate.
+    NSCalendarUnit extraUnits = _clockUsesSeconds ? NSCalendarUnitNanosecond : NSCalendarUnitSecond | NSCalendarUnitNanosecond;
+    NSDateComponents *extraComponents = [_nsCal components:extraUnits fromDate:_clockTimer.fireDate];
+    NSTimeInterval extraSeconds = (NSTimeInterval)extraComponents.nanosecond / (NSTimeInterval)NSEC_PER_SEC;
+    extraSeconds += _clockUsesSeconds ? 0 : extraComponents.second;
+    _clockTimer.fireDate = [_clockTimer.fireDate dateByAddingTimeInterval:-extraSeconds];
+
+    // Add the timer to the main runloop.
+    [[NSRunLoop mainRunLoop] addTimer:_clockTimer forMode:NSRunLoopCommonModes];
+}
+
+#pragma mark -
+#pragma mark Custom clock format
+
+- (void)clockFormatDidChange
+{
+    NSString *format = [[NSUserDefaults standardUserDefaults] stringForKey:kClockFormat];
+
+    // Did the user set a custom clock format string?
+    if (format != nil && ![format isEqualToString:@""]) {
+        NSLog(@"Use custom clock format: [%@]", format);
+        _clockUsesSeconds = [self formatContainsSecondsSpecifier:format];
+        _statusItem.button.imagePosition = NSImageLeft;
+        _clockFormat = format;
+    }
+    else {
+        NSLog(@"Use normal icon");
+        [_clockTimer invalidate];
+        _clockTimer = nil;
+        _statusItem.button.title = @"";
+        _statusItem.button.imagePosition = NSImageOnly;
+        _clockFormat = nil;
+    }
+    [self updateMenubarIcon];
+}
+
+- (BOOL)formatContainsSecondsSpecifier:(NSString *)format
+{
+    // The seconds specifier is an s-character. Does format
+    // contain an s that isn't inside a quoted string? A
+    // quoted string is delimited by single-quote chars.
+
+    __block BOOL secondsSpecifierFound = NO;
+    __block BOOL insideQuotedString = NO;
+
+    // First, remove adjacent pairs of single-quotes. They
+    // represent single-quote literals. Removing them makes
+    // parsing for quoted strings much easier.
+    NSString *fmt = [format stringByReplacingOccurrencesOfString:@"''" withString:@""];
+
+    // Iterate through fmt looking for an s that isn't in a quoted string.
+    [fmt enumerateSubstringsInRange: NSMakeRange(0, [fmt length]) options: NSStringEnumerationByComposedCharacterSequences usingBlock: ^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+
+        // Did we find an s that isn't inside a quoted string?
+        if (insideQuotedString == NO && [substring isEqualToString:@"s"]) {
+            secondsSpecifierFound = YES;
+            *stop = YES;
+        }
+        // Are we inside a quoted string? They are delimited with single-quotes.
+        else if ([substring isEqualToString:@"'"]) {
+            insideQuotedString = !insideQuotedString;
+        }
+    }];
+    return secondsSpecifierFound;
+}
+
 #pragma mark -
 #pragma mark Notifications
 
@@ -759,6 +861,7 @@
     
     // Timezone changed notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemTimeZoneDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [self updateMenubarIcon];
         [_ec refetchAll];
     }];
     
@@ -767,8 +870,16 @@
         [self updateMenubarIcon];
     }];
     
+    // System clock notification
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        [self updateMenubarIcon];
+    }];
+
+    // Wake from sleep notification
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(updateMenubarIcon) name:NSWorkspaceDidWakeNotification object:nil];
+
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon]) {
+    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kClockFormat]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -785,6 +896,9 @@
              [keyPath isEqualToString:kShowMonthInIcon] ||
              [keyPath isEqualToString:kShowDayOfWeekInIcon]) {
         [self updateMenubarIcon];
+    }
+    else if ([keyPath isEqualToString:kClockFormat]) {
+        [self clockFormatDidChange];
     }
 }
 
