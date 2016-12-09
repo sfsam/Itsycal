@@ -35,7 +35,7 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
 
 - (id)init
 {
-    self = [super initWithContentRect:NSZeroRect styleMask:NSNonactivatingPanelMask backing:NSBackingStoreBuffered defer:NO];
+    self = [super initWithContentRect:NSZeroRect styleMask:NSWindowStyleMaskNonactivatingPanel backing:NSBackingStoreBuffered defer:NO];
     if (self) {
         [self setBackgroundColor:[NSColor clearColor]];
         [self setOpaque:NO];

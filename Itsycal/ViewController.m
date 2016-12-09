@@ -71,7 +71,7 @@
         [btn setToolTip:tip];
         [btn setImage:[NSImage imageNamed:imageName]];
         [btn setKeyEquivalent:key];
-        [btn setKeyEquivalentModifierMask:NSCommandKeyMask];
+        [btn setKeyEquivalentModifierMask:NSEventModifierFlagCommand];
         [v addSubview:btn];
         return btn;
     };
@@ -166,8 +166,8 @@
     NSString *charsIgnoringModifiers = [theEvent charactersIgnoringModifiers];
     if (charsIgnoringModifiers.length != 1) return;
     NSUInteger flags = [theEvent modifierFlags];
-    BOOL noFlags = !(flags & (NSCommandKeyMask | NSShiftKeyMask | NSAlternateKeyMask | NSControlKeyMask));
-    BOOL cmdFlag = (flags & NSCommandKeyMask) &&  !(flags & (NSShiftKeyMask | NSAlternateKeyMask | NSControlKeyMask));
+    BOOL noFlags = !(flags & (NSEventModifierFlagCommand | NSEventModifierFlagShift | NSEventModifierFlagOption | NSEventModifierFlagControl));
+    BOOL cmdFlag = (flags & NSEventModifierFlagCommand) &&  !(flags & (NSEventModifierFlagShift | NSEventModifierFlagOption | NSEventModifierFlagControl));
     unichar keyChar = [charsIgnoringModifiers characterAtIndex:0];
     
     if (keyChar == 'w' && noFlags) {
@@ -233,7 +233,7 @@
         NSString *message = NSLocalizedString(@"The Calendar application could not be found.", @"Alert box message when we fail to launch the Calendar application");
         NSAlert *alert = [NSAlert new];
         alert.messageText = message;
-        alert.alertStyle = NSCriticalAlertStyle;
+        alert.alertStyle = NSAlertStyleCritical;
         [alert runModal];
         return;
     }
@@ -318,7 +318,7 @@
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
     
     if (!_prefsWC) {
-        NSPanel *panel = [[NSPanel alloc] initWithContentRect:NSZeroRect styleMask:(NSTitledWindowMask | NSClosableWindowMask) backing:NSBackingStoreBuffered defer:NO];
+        NSPanel *panel = [[NSPanel alloc] initWithContentRect:NSZeroRect styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable) backing:NSBackingStoreBuffered defer:NO];
         PrefsViewController *prefsVC = [PrefsViewController new];
         prefsVC.ec = _ec;
         _prefsWC = [[NSWindowController alloc] initWithWindow:panel];
@@ -468,7 +468,7 @@
 
             // Draw text.
             NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
-            pstyle.alignment = NSCenterTextAlignment;
+            pstyle.alignment = NSTextAlignmentCenter;
             [text drawInRect:NSOffsetRect(rect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont monospacedDigitSystemFontOfSize:11.5 weight:NSFontWeightSemibold], NSParagraphStyleAttributeName: pstyle, NSForegroundColorAttributeName: [NSColor blackColor]}];
         }
         else {
@@ -502,7 +502,7 @@
 
             // Draw text.
             NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
-            pstyle.alignment = NSCenterTextAlignment;
+            pstyle.alignment = NSTextAlignmentCenter;
             [text drawInRect:NSOffsetRect(deviceRect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont monospacedDigitSystemFontOfSize:fontSize weight:NSFontWeightBold], NSForegroundColorAttributeName: [NSColor blackColor], NSParagraphStyleAttributeName: pstyle}];
 
             // Switch back to the image's context.

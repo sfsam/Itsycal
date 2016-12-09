@@ -41,7 +41,7 @@ void commonInitForMoView(MoView *moView)
 {
     if (self.backgroundColor) {
         [self.backgroundColor set];
-        NSRectFillUsingOperation(self.bounds, NSCompositeSourceOver);
+        NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
     }
 }
 

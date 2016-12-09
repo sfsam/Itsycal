@@ -427,8 +427,8 @@ static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
     if (charsIgnoringModifiers.length != 1) return;
     
     NSUInteger flags = [theEvent modifierFlags];
-    BOOL noFlags =  !(flags & (NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask | NSShiftKeyMask));
-    BOOL shiftFlag = (flags &  NSShiftKeyMask) && !(flags & (NSCommandKeyMask | NSAlternateKeyMask | NSControlKeyMask));
+    BOOL noFlags =  !(flags & (NSEventModifierFlagCommand | NSEventModifierFlagOption | NSEventModifierFlagControl | NSEventModifierFlagShift));
+    BOOL shiftFlag = (flags &  NSEventModifierFlagShift) && !(flags & (NSEventModifierFlagCommand | NSEventModifierFlagOption | NSEventModifierFlagControl));
     
     unichar keyChar = [charsIgnoringModifiers characterAtIndex:0];
     
@@ -607,19 +607,19 @@ static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
     
     [kBackgroundColor set];
     if (NSMinY(dirtyRect) > NSMaxY(_dateGrid.frame)+1) {
-        NSRectFillUsingOperation(dirtyRect, NSCompositeSourceOver);
+        NSRectFillUsingOperation(dirtyRect, NSCompositingOperationSourceOver);
         return;
     }
-    NSRectFillUsingOperation(self.bounds, NSCompositeSourceOver);
+    NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
     
     [kBorderColor set];
-    NSRectFillUsingOperation(NSMakeRect(0, 0, NSWidth(self.bounds), NSMaxY(_dateGrid.frame)+1), NSCompositeSourceOver);
+    NSRectFillUsingOperation(NSMakeRect(0, 0, NSWidth(self.bounds), NSMaxY(_dateGrid.frame)+1), NSCompositingOperationSourceOver);
     
     [kWeeksBackgroundColor set];
-    NSRectFillUsingOperation(_weekGrid.frame, NSCompositeSourceOver);
+    NSRectFillUsingOperation(_weekGrid.frame, NSCompositingOperationSourceOver);
     
     [kDatesBackgroundColor set];
-    NSRectFillUsingOperation(_dateGrid.frame, NSCompositeSourceOver);
+    NSRectFillUsingOperation(_dateGrid.frame, NSCompositingOperationSourceOver);
     
     NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:4 inset:0 useRects:NO];
     

@@ -42,7 +42,7 @@
     _imgDarkened = [NSImage imageWithSize:_img.size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
         [_img drawInRect:dstRect];
         [[NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:1] set];
-        NSRectFillUsingOperation(dstRect, NSCompositeSourceAtop);
+        NSRectFillUsingOperation(dstRect, NSCompositingOperationSourceAtop);
         return YES;
     }];
 }

@@ -113,7 +113,7 @@ static CGFloat kToolipWindowWidth = 200;
 
 - (instancetype)init
 {
-    self = [super initWithContentRect:NSZeroRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
+    self = [super initWithContentRect:NSZeroRect styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
     if (self) {
         self.backgroundColor = [NSColor clearColor];
         self.opaque = NO;

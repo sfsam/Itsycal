@@ -35,7 +35,7 @@
         }
         else {
             txt.stringValue = stringValue;
-            txt.alignment = NSRightTextAlignment;
+            txt.alignment = NSTextAlignmentRight;
             txt.textColor = [NSColor grayColor];
         }
         [v addSubview:txt];
@@ -169,7 +169,7 @@
 {
     [super viewWillAppear];
 
-    self.view.window.styleMask = NSTitledWindowMask | NSClosableWindowMask;
+    self.view.window.styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable;
     self.view.window.defaultButtonCell = _saveButton.cell;
     
     // If self.calSelectedDate is today, the initialStart is set to

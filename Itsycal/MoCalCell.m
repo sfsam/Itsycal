@@ -28,7 +28,7 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
         [_textField setTextColor:[NSColor blackColor]];
         [_textField setBezeled:NO];
         [_textField setEditable:NO];
-        [_textField setAlignment:NSCenterTextAlignment];
+        [_textField setAlignment:NSTextAlignmentCenter];
         [_textField setDrawsBackground:NO];
         [_textField setTranslatesAutoresizingMaskIntoConstraints:NO];
 

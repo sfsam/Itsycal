@@ -327,11 +327,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     NSRect r = self.bounds;
     [[NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1] set];
-    NSRectFillUsingOperation(r, NSCompositeSourceOver);
+    NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
 
     r.size.height -= 1;
     [[NSColor colorWithRed:0.95 green:0.95 blue:0.96 alpha:1] set];
-    NSRectFillUsingOperation(r, NSCompositeSourceOver);
+    NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
 }
 
 @end
