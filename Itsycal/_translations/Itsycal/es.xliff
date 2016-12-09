@@ -1,473 +1,465 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
-  <file original="Itsycal/Base.lproj/MainMenu.xib" source-language="en" datatype="plaintext" target-language="es">
-    <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.2" build-num="7C68"/>
-    </header>
-    <body>
-      <trans-unit id="1Xt-HY-uBw.title">
-        <source>Itsycal</source>
-        <note>Class = "NSMenuItem"; title = "Itsycal"; ObjectID = "1Xt-HY-uBw";</note>
-      </trans-unit>
-      <trans-unit id="4sb-4s-VLi.title">
-        <source>Quit Itsycal</source>
-        <note>Class = "NSMenuItem"; title = "Quit Itsycal"; ObjectID = "4sb-4s-VLi";</note>
-      </trans-unit>
-      <trans-unit id="7wR-SZ-Nqc.title">
-        <source>Close</source>
-        <note>Class = "NSMenuItem"; title = "Close"; ObjectID = "7wR-SZ-Nqc";</note>
-      </trans-unit>
-      <trans-unit id="AYu-sK-qS6.title">
-        <source>Main Menu</source>
-        <note>Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6";</note>
-      </trans-unit>
-      <trans-unit id="Ajc-jh-dSd.title">
-        <source>Delete</source>
-        <note>Class = "NSMenuItem"; title = "Delete"; ObjectID = "Ajc-jh-dSd";</note>
-      </trans-unit>
-      <trans-unit id="E90-5z-y6Z.title">
-        <source>Redo</source>
-        <note>Class = "NSMenuItem"; title = "Redo"; ObjectID = "E90-5z-y6Z";</note>
-      </trans-unit>
-      <trans-unit id="KoB-Sc-Ag6.title">
-        <source>Copy</source>
-        <note>Class = "NSMenuItem"; title = "Copy"; ObjectID = "KoB-Sc-Ag6";</note>
-      </trans-unit>
-      <trans-unit id="PMd-w8-qYH.title">
-        <source>Paste and Match Style</source>
-        <note>Class = "NSMenuItem"; title = "Paste and Match Style"; ObjectID = "PMd-w8-qYH";</note>
-      </trans-unit>
-      <trans-unit id="RD9-zb-l4F.title">
-        <source>Edit</source>
-        <note>Class = "NSMenuItem"; title = "Edit"; ObjectID = "RD9-zb-l4F";</note>
-      </trans-unit>
-      <trans-unit id="XV4-be-FKs.title">
-        <source>Paste</source>
-        <note>Class = "NSMenuItem"; title = "Paste"; ObjectID = "XV4-be-FKs";</note>
-      </trans-unit>
-      <trans-unit id="Xm0-od-eJc.title">
-        <source>Edit</source>
-        <note>Class = "NSMenu"; title = "Edit"; ObjectID = "Xm0-od-eJc";</note>
-      </trans-unit>
-      <trans-unit id="bib-Uj-vzu.title">
-        <source>File</source>
-        <note>Class = "NSMenu"; title = "File"; ObjectID = "bib-Uj-vzu";</note>
-      </trans-unit>
-      <trans-unit id="dMs-cI-mzQ.title">
-        <source>File</source>
-        <note>Class = "NSMenuItem"; title = "File"; ObjectID = "dMs-cI-mzQ";</note>
-      </trans-unit>
-      <trans-unit id="uQy-DD-JDr.title">
-        <source>Itsycal</source>
-        <note>Class = "NSMenu"; title = "Itsycal"; ObjectID = "uQy-DD-JDr";</note>
-      </trans-unit>
-      <trans-unit id="vKD-cH-8sx.title">
-        <source>Select All</source>
-        <note>Class = "NSMenuItem"; title = "Select All"; ObjectID = "vKD-cH-8sx";</note>
-      </trans-unit>
-      <trans-unit id="vPX-F4-xWi.title">
-        <source>Cut</source>
-        <note>Class = "NSMenuItem"; title = "Cut"; ObjectID = "vPX-F4-xWi";</note>
-      </trans-unit>
-      <trans-unit id="zvl-vr-OUg.title">
-        <source>Undo</source>
-        <note>Class = "NSMenuItem"; title = "Undo"; ObjectID = "zvl-vr-OUg";</note>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="Itsycal/Info.plist" source-language="en" datatype="plaintext" target-language="es">
-    <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.2" build-num="7C68"/>
-    </header>
-    <body>
-      <trans-unit id="CFBundleName">
-        <source>$(PRODUCT_NAME)</source>
-      </trans-unit>
-      <trans-unit id="CFBundleShortVersionString">
-        <source>0.10.12</source>
-      </trans-unit>
-      <trans-unit id="NSHumanReadableCopyright">
-        <source>Copyright © 2015 mowglii.com</source>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="Itsycal/Localizable.strings" source-language="en" datatype="plaintext" target-language="es">
-    <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.2" build-num="7C68"/>
-    </header>
-    <body>
-      <trans-unit id="1 day">
-        <source>1 day</source>
-        <target>1 día</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="1 day before">
-        <source>1 day before</source>
-        <target>1 día antes</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="1 hour before">
-        <source>1 hour before</source>
-        <target>1 hora antes</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="2 days">
-        <source>2 days</source>
-        <target>2 días</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="2 days before">
-        <source>2 days before</source>
-        <target>2 días antes</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="2 hours before">
-        <source>2 hours before</source>
-        <target>2 horas antes</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="3 days">
-        <source>3 days</source>
-        <target>3 días</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="4 days">
-        <source>4 days</source>
-        <target>4 días</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="5 days">
-        <source>5 days</source>
-        <target>5 días</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="5 minutes before">
-        <source>5 minutes before</source>
-        <target>5 minutos antes</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="6 days">
-        <source>6 days</source>
-        <target>6 días</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="7 days">
-        <source>7 days</source>
-        <target>7 días</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="10 minutes before">
-        <source>10 minutes before</source>
-        <target>10 minutos antes</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="15 minutes before">
-        <source>15 minutes before</source>
-        <target>15 minutos antes</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="30 minutes before">
-        <source>30 minutes before</source>
-        <target>30 minutos antes</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Add Location">
-        <source>Add Location</source>
-        <target>Añadir ubicación</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Alert:">
-        <source>Alert:</source>
-        <target>Aviso:</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="All-day:">
-        <source>All-day:</source>
-        <target>Todo el día:</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Are you sure you want to delete this event?">
-        <source>Are you sure you want to delete this event?</source>
-        <target>¿Seguro que quieres eliminar este evento?</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="At time of event">
-        <source>At time of event</source>
-        <target>A la hora del evento</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy">
-        <source>Calendar access denied.
+    <file original="Itsycal/Base.lproj/MainMenu.xib" source-language="en" datatype="plaintext" target-language="es">
+        <header>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="8.1" build-num="8B62"></tool>
+        </header>
+        <body>
+            <trans-unit id="1Xt-HY-uBw.title">
+                <source>Itsycal</source>
+                <note>Class = "NSMenuItem"; title = "Itsycal"; ObjectID = "1Xt-HY-uBw";</note>
+            </trans-unit>
+            <trans-unit id="4sb-4s-VLi.title">
+                <source>Quit Itsycal</source>
+                <note>Class = "NSMenuItem"; title = "Quit Itsycal"; ObjectID = "4sb-4s-VLi";</note>
+            </trans-unit>
+            <trans-unit id="7wR-SZ-Nqc.title">
+                <source>Close</source>
+                <note>Class = "NSMenuItem"; title = "Close"; ObjectID = "7wR-SZ-Nqc";</note>
+            </trans-unit>
+            <trans-unit id="AYu-sK-qS6.title">
+                <source>Main Menu</source>
+                <note>Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6";</note>
+            </trans-unit>
+            <trans-unit id="Ajc-jh-dSd.title">
+                <source>Delete</source>
+                <note>Class = "NSMenuItem"; title = "Delete"; ObjectID = "Ajc-jh-dSd";</note>
+            </trans-unit>
+            <trans-unit id="E90-5z-y6Z.title">
+                <source>Redo</source>
+                <note>Class = "NSMenuItem"; title = "Redo"; ObjectID = "E90-5z-y6Z";</note>
+            </trans-unit>
+            <trans-unit id="KoB-Sc-Ag6.title">
+                <source>Copy</source>
+                <note>Class = "NSMenuItem"; title = "Copy"; ObjectID = "KoB-Sc-Ag6";</note>
+            </trans-unit>
+            <trans-unit id="PMd-w8-qYH.title">
+                <source>Paste and Match Style</source>
+                <note>Class = "NSMenuItem"; title = "Paste and Match Style"; ObjectID = "PMd-w8-qYH";</note>
+            </trans-unit>
+            <trans-unit id="RD9-zb-l4F.title">
+                <source>Edit</source>
+                <note>Class = "NSMenuItem"; title = "Edit"; ObjectID = "RD9-zb-l4F";</note>
+            </trans-unit>
+            <trans-unit id="XV4-be-FKs.title">
+                <source>Paste</source>
+                <note>Class = "NSMenuItem"; title = "Paste"; ObjectID = "XV4-be-FKs";</note>
+            </trans-unit>
+            <trans-unit id="Xm0-od-eJc.title">
+                <source>Edit</source>
+                <note>Class = "NSMenu"; title = "Edit"; ObjectID = "Xm0-od-eJc";</note>
+            </trans-unit>
+            <trans-unit id="bib-Uj-vzu.title">
+                <source>File</source>
+                <note>Class = "NSMenu"; title = "File"; ObjectID = "bib-Uj-vzu";</note>
+            </trans-unit>
+            <trans-unit id="dMs-cI-mzQ.title">
+                <source>File</source>
+                <note>Class = "NSMenuItem"; title = "File"; ObjectID = "dMs-cI-mzQ";</note>
+            </trans-unit>
+            <trans-unit id="uQy-DD-JDr.title">
+                <source>Itsycal</source>
+                <note>Class = "NSMenu"; title = "Itsycal"; ObjectID = "uQy-DD-JDr";</note>
+            </trans-unit>
+            <trans-unit id="vKD-cH-8sx.title">
+                <source>Select All</source>
+                <note>Class = "NSMenuItem"; title = "Select All"; ObjectID = "vKD-cH-8sx";</note>
+            </trans-unit>
+            <trans-unit id="vPX-F4-xWi.title">
+                <source>Cut</source>
+                <note>Class = "NSMenuItem"; title = "Cut"; ObjectID = "vPX-F4-xWi";</note>
+            </trans-unit>
+            <trans-unit id="zvl-vr-OUg.title">
+                <source>Undo</source>
+                <note>Class = "NSMenuItem"; title = "Undo"; ObjectID = "zvl-vr-OUg";</note>
+            </trans-unit>
+        </body>
+    </file>
+    <file original="Itsycal/Info.plist" source-language="en" datatype="plaintext" target-language="es">
+        <header>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="8.1" build-num="8B62"></tool>
+        </header>
+        <body>
+            <trans-unit id="CFBundleName">
+                <source>$(PRODUCT_NAME)</source>
+            </trans-unit>
+            <trans-unit id="CFBundleShortVersionString">
+                <source>0.10.16</source>
+            </trans-unit>
+            <trans-unit id="NSHumanReadableCopyright">
+                <source>Copyright © 2015 mowglii.com</source>
+            </trans-unit>
+        </body>
+    </file>
+    <file original="Itsycal/Localizable.strings" source-language="en" datatype="plaintext" target-language="es">
+        <header>
+            <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="8.1" build-num="8B62"></tool>
+        </header>
+        <body>
+            <trans-unit id="1 day">
+                <source>1 day</source>
+                <target>1 día</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="1 day before">
+                <source>1 day before</source>
+                <target>1 día antes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="1 hour before">
+                <source>1 hour before</source>
+                <target>1 hora antes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="2 days">
+                <source>2 days</source>
+                <target>2 días</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="2 days before">
+                <source>2 days before</source>
+                <target>2 días antes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="2 hours before">
+                <source>2 hours before</source>
+                <target>2 horas antes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="3 days">
+                <source>3 days</source>
+                <target>3 días</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="4 days">
+                <source>4 days</source>
+                <target>4 días</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="5 days">
+                <source>5 days</source>
+                <target>5 días</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="5 minutes before">
+                <source>5 minutes before</source>
+                <target>5 minutos antes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="6 days">
+                <source>6 days</source>
+                <target>6 días</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="7 days">
+                <source>7 days</source>
+                <target>7 días</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="10 minutes before">
+                <source>10 minutes before</source>
+                <target>10 minutos antes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="15 minutes before">
+                <source>15 minutes before</source>
+                <target>15 minutos antes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="30 minutes before">
+                <source>30 minutes before</source>
+                <target>30 minutos antes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Add Location">
+                <source>Add Location</source>
+                <target>Añadir ubicación</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Alert:">
+                <source>Alert:</source>
+                <target>Aviso:</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="All-day:">
+                <source>All-day:</source>
+                <target>Todo el día:</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Are you sure you want to delete this event?">
+                <source>Are you sure you want to delete this event?</source>
+                <target>¿Seguro que quieres eliminar este evento?</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="At time of event">
+                <source>At time of event</source>
+                <target>A la hora del evento</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy">
+                <source>Calendar access denied.
 
 Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</source>
-        <target>Acceso denegado.
+                <target>Acceso denegado.
 
 Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Calendar access was denied.">
-        <source>Calendar access was denied.</source>
-        <target>Acceso denegado.</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Cancel">
-        <source>Cancel</source>
-        <target>Cancelar</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Check for updates...">
-        <source>Check for updates...</source>
-        <target>Buscar actualizaciones…</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Delete All Future Events">
-        <source>Delete All Future Events</source>
-        <target>Eliminar todos los eventos futuros</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Delete Only This Event">
-        <source>Delete Only This Event</source>
-        <target>Eliminar solo este evento</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Delete This Event">
-        <source>Delete This Event</source>
-        <target>Eliminar</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Do you want to delete this and all future occurrences of this event, or only the selected occurrence?">
-        <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <target>¿Desea eliminar este evento y todas sus repeticiones futuras o bien solo la aparición seleccionada?</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="End Repeat:">
-        <source>End Repeat:</source>
-        <target>Terminar:</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Ends:">
-        <source>Ends:</source>
-        <target>Termina:</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Event list shows:">
-        <source>Event list shows:</source>
-        <target>La lista de eventos muestra:</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Every 2 Weeks">
-        <source>Every 2 Weeks</source>
-        <target>Cada 2 semanas</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Every Day">
-        <source>Every Day</source>
-        <target>Todos los días</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Every Month">
-        <source>Every Month</source>
-        <target>Todos los meses</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Every Week">
-        <source>Every Week</source>
-        <target>Todas las semanas</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Every Year">
-        <source>Every Year</source>
-        <target>Todos los años</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="First day of week">
-        <source>First day of week</source>
-        <target>Primer día de la semana</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Friday">
-        <source>Friday</source>
-        <target>Viernes</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Highlight weekend">
-        <source>Highlight weekend</source>
-        <target>Resaltar fin de semana</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy.">
-        <source>Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy.</source>
-        <target>Itsycal es más útil cuando usted lo permite para agregar eventos a su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad.</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Keyboard shortcut">
-        <source>Keyboard shortcut</source>
-        <target>Atajo de teclado</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Launch at login">
-        <source>Launch at login</source>
-        <target>Abrir automáticamente al iniciar sesión</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Monday">
-        <source>Monday</source>
-        <target>Lunes</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Never">
-        <source>Never</source>
-        <target>Nunca</target>
-        <note>Repeat ends never</note>
-      </trans-unit>
-      <trans-unit id="New Event">
-        <source>New Event</source>
-        <target>Nuevo evento</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="New Event... ⌘N">
-        <source>New Event... ⌘N</source>
-        <target>Nuevo evento… ⌘N</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="No events">
-        <source>No events</source>
-        <target>Nada</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="None">
-        <source>None</source>
-        <target>Ninguno</target>
-        <note>Alert none
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Calendar access was denied.">
+                <source>Calendar access was denied.</source>
+                <target>Acceso denegado.</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Cancel">
+                <source>Cancel</source>
+                <target>Cancelar</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Check for updates...">
+                <source>Check for updates...</source>
+                <target>Buscar actualizaciones…</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Delete All Future Events">
+                <source>Delete All Future Events</source>
+                <target>Eliminar todos los eventos futuros</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Delete Only This Event">
+                <source>Delete Only This Event</source>
+                <target>Eliminar solo este evento</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Delete This Event">
+                <source>Delete This Event</source>
+                <target>Eliminar</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Do you want to delete this and all future occurrences of this event, or only the selected occurrence?">
+                <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
+                <target>¿Desea eliminar este evento y todas sus repeticiones futuras o bien solo la aparición seleccionada?</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="End Repeat:">
+                <source>End Repeat:</source>
+                <target>Terminar:</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Ends:">
+                <source>Ends:</source>
+                <target>Termina:</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Event list shows:">
+                <source>Event list shows:</source>
+                <target>La lista de eventos muestra:</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Every 2 Weeks">
+                <source>Every 2 Weeks</source>
+                <target>Cada 2 semanas</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Every Day">
+                <source>Every Day</source>
+                <target>Todos los días</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Every Month">
+                <source>Every Month</source>
+                <target>Todos los meses</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Every Week">
+                <source>Every Week</source>
+                <target>Todas las semanas</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Every Year">
+                <source>Every Year</source>
+                <target>Todos los años</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="First day of week">
+                <source>First day of week</source>
+                <target>Primer día de la semana</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Friday">
+                <source>Friday</source>
+                <target>Viernes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Highlight weekend">
+                <source>Highlight weekend</source>
+                <target>Resaltar fin de semana</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy.">
+                <source>Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy.</source>
+                <target>Itsycal es más útil cuando usted lo permite para agregar eventos a su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad.</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Itsycal must be run from the Applications folder in order to work properly.\n\nPlease quit Itsycal, move it to the Applications folder, and relaunch.">
+                <source>Itsycal must be run from the Applications folder in order to work properly.
+
+Please quit Itsycal, move it to the Applications folder, and relaunch.</source>
+                <target>Itsycal se debe ejecutar desde la carpeta Aplicaciones con el fin de funcionar correctamente.
+
+Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arrancar.</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Keyboard shortcut">
+                <source>Keyboard shortcut</source>
+                <target>Atajo de teclado</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Launch at login">
+                <source>Launch at login</source>
+                <target>Abrir automáticamente al iniciar sesión</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Monday">
+                <source>Monday</source>
+                <target>Lunes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Move Itsycal to the Applications folder">
+                <source>Move Itsycal to the Applications folder</source>
+                <target>Trasladar Itsycal a la carpeta Aplicaciones</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Never">
+                <source>Never</source>
+                <target>Nunca</target>
+                <note>Repeat ends never</note>
+            </trans-unit>
+            <trans-unit id="New Event">
+                <source>New Event</source>
+                <target>Nuevo evento</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="New Event... ⌘N">
+                <source>New Event... ⌘N</source>
+                <target>Nuevo evento… ⌘N</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="No events">
+                <source>No events</source>
+                <target>Nada</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="None">
+                <source>None</source>
+                <target>Ninguno</target>
+                <note>Alert none
    Repeat none</note>
-      </trans-unit>
-      <trans-unit id="On Date">
-        <source>On Date</source>
-        <target>En la fecha</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Open Calendar... ⌘O">
-        <source>Open Calendar... ⌘O</source>
-        <target>Abrir La aplicación del calendario… ⌘O</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Options">
-        <source>Options</source>
-        <target>Opciones</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Pin Itsycal... P">
-        <source>Pin Itsycal... P</source>
-        <target>Mantener Itsycal… P</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Preferences...">
-        <source>Preferences...</source>
-        <target>Preferencias…</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Quit Itsycal">
-        <source>Quit Itsycal</source>
-        <target>Cerrar Itsycal</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Repeat:">
-        <source>Repeat:</source>
-        <target>Repetir:</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Saturday">
-        <source>Saturday</source>
-        <target>Sábado</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Save Event">
-        <source>Save Event</source>
-        <target>Salvar Evento</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Show calendar weeks">
-        <source>Show calendar weeks</source>
-        <target>Mostrar semanas del calendario</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Show day of week in icon">
-        <source>Show day of week in icon</source>
-        <target>El icono muestra día de la semana</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Show month in icon">
-        <source>Show month in icon</source>
-        <target>El icono muestra mes</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Starts:">
-        <source>Starts:</source>
-        <target>Empieza:</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Sunday">
-        <source>Sunday</source>
-        <target>Domingo</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="The Calendar application could not be found.">
-        <source>The Calendar application could not be found.</source>
-        <target>La aplicación del calendario no se pudo encontrar.</target>
-        <note>Alert box message when we fail to launch the Calendar application</note>
-      </trans-unit>
-      <trans-unit id="Thursday">
-        <source>Thursday</source>
-        <target>Jueves</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Tuesday">
-        <source>Tuesday</source>
-        <target>Martes</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="Wednesday">
-        <source>Wednesday</source>
-        <target>Miércoles</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="You're deleting an event.">
-        <source>You're deleting an event.</source>
-        <target>Está eliminando un evento.</target>
-        <note>No comment provided by engineer.</note>
-      </trans-unit>
-      <trans-unit id="ends">
-        <source>ends</source>
-        <target>finaliza a las</target>
-        <note>Spanning event ends</note>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="ItsycalExtra/Info.plist" source-language="en" datatype="plaintext" target-language="es">
-    <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.2" build-num="7C68"/>
-    </header>
-    <body>
-      <trans-unit id="CFBundleName">
-        <source>$(PRODUCT_NAME)</source>
-      </trans-unit>
-      <trans-unit id="CFBundleShortVersionString">
-        <source>1.0</source>
-      </trans-unit>
-      <trans-unit id="NSHumanReadableCopyright">
-        <source>Copyright © 2015 mowglii.com</source>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="ItsycalExtra/en.lproj/Localizable.strings" source-language="en" datatype="plaintext" target-language="es">
-    <header>
-      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="7.2" build-num="7C68"/>
-    </header>
-    <body>
-      <trans-unit id="Open Itsycal...">
-        <source>Open Itsycal…</source>
-        <target>Abrir Itsycal…</target>
-      </trans-unit>
-    </body>
-  </file>
+            </trans-unit>
+            <trans-unit id="On Date">
+                <source>On Date</source>
+                <target>En la fecha</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Open Calendar... ⌘O">
+                <source>Open Calendar... ⌘O</source>
+                <target>Abrir La aplicación del calendario… ⌘O</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Options">
+                <source>Options</source>
+                <target>Opciones</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Pin Itsycal... P">
+                <source>Pin Itsycal... P</source>
+                <target>Mantener Itsycal… P</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Preferences...">
+                <source>Preferences...</source>
+                <target>Preferencias…</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Quit Itsycal">
+                <source>Quit Itsycal</source>
+                <target>Cerrar Itsycal</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Repeat:">
+                <source>Repeat:</source>
+                <target>Repetir:</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Saturday">
+                <source>Saturday</source>
+                <target>Sábado</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Save Event">
+                <source>Save Event</source>
+                <target>Salvar Evento</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Show calendar weeks">
+                <source>Show calendar weeks</source>
+                <target>Mostrar semanas del calendario</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Show day of week in icon">
+                <source>Show day of week in icon</source>
+                <target>El icono muestra día de la semana</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Show month in icon">
+                <source>Show month in icon</source>
+                <target>El icono muestra mes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Starts:">
+                <source>Starts:</source>
+                <target>Empieza:</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Sunday">
+                <source>Sunday</source>
+                <target>Domingo</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="The Calendar application could not be found.">
+                <source>The Calendar application could not be found.</source>
+                <target>La aplicación del calendario no se pudo encontrar.</target>
+                <note>Alert box message when we fail to launch the Calendar application</note>
+            </trans-unit>
+            <trans-unit id="Thursday">
+                <source>Thursday</source>
+                <target>Jueves</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Tuesday">
+                <source>Tuesday</source>
+                <target>Martes</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Use outline icon">
+                <source>Use outline icon</source>
+                <note>No comment provided by engineer.</note>
+                <target>Utilizar el icono contorno</target>
+            </trans-unit>
+            <trans-unit id="Wednesday">
+                <source>Wednesday</source>
+                <target>Miércoles</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="You're deleting an event.">
+                <source>You're deleting an event.</source>
+                <target>Está eliminando un evento.</target>
+                <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="ends">
+                <source>ends</source>
+                <target>finaliza a las</target>
+                <note>Spanning event ends</note>
+            </trans-unit>
+        </body>
+    </file>
 </xliff>
