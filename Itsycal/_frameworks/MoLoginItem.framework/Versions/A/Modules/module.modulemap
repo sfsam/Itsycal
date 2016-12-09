@@ -1,0 +1,6 @@
+framework module MoLoginItem {
+  umbrella header "MoLoginItem.h"
+
+  export *
+  module * { export * }
+}

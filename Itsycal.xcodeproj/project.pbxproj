@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		922232CD1A8DF672003BFAD9 /* EventCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 922232CC1A8DF672003BFAD9 /* EventCenter.m */; };
 		9224B0751A8BE75500D63030 /* MoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9224B0741A8BE75500D63030 /* MoButton.m */; };
+		922A06611DFB3CC700706C1E /* MoLoginItem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 922A065F1DFB3C9600706C1E /* MoLoginItem.framework */; };
+		922A06621DFB3CC700706C1E /* MoLoginItem.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 922A065F1DFB3C9600706C1E /* MoLoginItem.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		922B6BB81A85CC7800DEA9CD /* PrefsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6BB71A85CC7800DEA9CD /* PrefsViewController.m */; };
 		922B6BBB1A85E0EC00DEA9CD /* MoTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6BBA1A85E0EC00DEA9CD /* MoTextField.m */; };
 		922B6BBE1A87EDBD00DEA9CD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 922B6BC01A87EDBD00DEA9CD /* Localizable.strings */; };
@@ -48,6 +50,7 @@
 			files = (
 				923E78E01D385D480012979B /* Sparkle.framework in CopyFiles */,
 				923E78E11D385D4F0012979B /* MASShortcut.framework in CopyFiles */,
+				922A06621DFB3CC700706C1E /* MoLoginItem.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,6 +72,7 @@
 		922232CC1A8DF672003BFAD9 /* EventCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventCenter.m; sourceTree = "<group>"; };
 		9224B0731A8BE75500D63030 /* MoButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoButton.h; sourceTree = "<group>"; };
 		9224B0741A8BE75500D63030 /* MoButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoButton.m; sourceTree = "<group>"; };
+		922A065F1DFB3C9600706C1E /* MoLoginItem.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MoLoginItem.framework; path = _frameworks/MoLoginItem.framework; sourceTree = "<group>"; };
 		922B6B911A856A7D00DEA9CD /* SBCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBCalendar.h; sourceTree = "<group>"; };
 		922B6BB61A85CC7800DEA9CD /* PrefsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsViewController.h; sourceTree = "<group>"; };
 		922B6BB71A85CC7800DEA9CD /* PrefsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsViewController.m; sourceTree = "<group>"; };
@@ -134,6 +138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				923E78E21D385FD80012979B /* MASShortcut.framework in Frameworks */,
+				922A06611DFB3CC700706C1E /* MoLoginItem.framework in Frameworks */,
 				923E78E31D385FDB0012979B /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -144,6 +149,7 @@
 		923E78DB1D385CD80012979B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				922A065F1DFB3C9600706C1E /* MoLoginItem.framework */,
 				923E78DC1D385CF60012979B /* MASShortcut.framework */,
 				923E78DD1D385CF60012979B /* Sparkle.framework */,
 			);
