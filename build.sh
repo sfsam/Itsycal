@@ -47,7 +47,7 @@ cat > "$XML_PATH" <<EOF
 <language>en</language>
 <item>
 <title>Version $VERSION</title>
-<sparkle:minimumSystemVersion>10.10</sparkle:minimumSystemVersion>
+<sparkle:minimumSystemVersion>10.12</sparkle:minimumSystemVersion>
 <sparkle:releaseNotesLink>https://s3.amazonaws.com/itsycal/changelog.html</sparkle:releaseNotesLink>
 <pubDate>$DATE +0000</pubDate>
 <enclosure

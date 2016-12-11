@@ -230,7 +230,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     NSString *version = toggle ? @"CFBundleShortVersionString": @"CFBundleVersion";
     NSString *str = [NSString stringWithFormat:@"Itsycal %@", infoDict[version]];
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:str];
-    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, 7)];
+    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor], NSFontAttributeName: [NSFont boldSystemFontOfSize:12]} range:NSMakeRange(0, 7)];
     _title.attributedStringValue = s;
     toggle = !toggle;
 }
