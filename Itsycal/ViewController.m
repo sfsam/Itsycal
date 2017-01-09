@@ -361,10 +361,9 @@
     fontDesc = [fontDesc fontDescriptorByAddingAttributes:@{NSFontFeatureSettingsAttribute: @[@{NSFontFeatureTypeIdentifierKey: @(kNumberSpacingType), NSFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)}]}];
     _statusItem.button.font = [NSFont fontWithDescriptor:fontDesc size:0];
 
-    // Remember item position in menubar for 10.12+. (@pskowronek (Github))
-    if (OSVersionIsAtLeast(10, 12, 0)) {
-        [_statusItem setAutosaveName:@"ItsycalStatusItem"];
-    }
+    // Remember item position in menubar. (@pskowronek (Github))
+    [_statusItem setAutosaveName:@"ItsycalStatusItem"];
+
     [self clockFormatDidChange];
     [self updateStatusItemPositionInfo];
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
@@ -382,10 +381,9 @@
         // Let 10.12+ remember item position and remove item when app is terminated.
         // If we remove item ourselves, autosavename is deleted from user defaults.
         // (@pskowronek (Github))
-        if (!OSVersionIsAtLeast(10, 12, 0)) {
-            [[NSStatusBar systemStatusBar] removeStatusItem:_statusItem];
-            _statusItem = nil;
-        }
+        // DO NOT do this:
+        //   [[NSStatusBar systemStatusBar] removeStatusItem:_statusItem];
+        //   _statusItem = nil;
     }
 }
 

@@ -689,12 +689,8 @@ static NSArray *kCountriesWithFridaySaturdayWeekend=nil;
     if ([defaults boolForKey:kWeekendIsSaturdaySunday]) {
         return NO;
     }
-    // NSLocale's -countryCode is only available on 10.12+.
-    if (OSVersionIsAtLeast(10, 12, 0)) {
-        NSString *countryCode = [NSLocale currentLocale].countryCode;
-        return [kCountriesWithFridaySaturdayWeekend containsObject:countryCode];
-    }
-    return NO;
+    NSString *countryCode = [NSLocale currentLocale].countryCode;
+    return [kCountriesWithFridaySaturdayWeekend containsObject:countryCode];
 }
 
 - (NSBezierPath *)bezierPathWithStartCell:(MoCalCell *)startCell endCell:(MoCalCell *)endCell radius:(CGFloat)r inset:(CGFloat)inset useRects:(BOOL)useRects
