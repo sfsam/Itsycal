@@ -254,11 +254,11 @@
     NSMenu *optMenu = [[NSMenu alloc] initWithTitle:@"Options Menu"];
     NSInteger i = 0;
     NSMenuItem *item;
-    item = [optMenu insertItemWithTitle:NSLocalizedString(@"Show calendar weeks", @"") action:@selector(showWeeks:) keyEquivalent:@"w" atIndex:i++];
+    item = [optMenu insertItemWithTitle:NSLocalizedString(@"Show Calendar Weeks", @"") action:@selector(showWeeks:) keyEquivalent:@"w" atIndex:i++];
     item.state = _moCal.showWeeks ? NSOnState : NSOffState;
     item.keyEquivalentModifierMask = 0;
 
-    item = [optMenu insertItemWithTitle:NSLocalizedString(@"Highlight weekend", @"") action:@selector(highlightWeekend:) keyEquivalent:@"" atIndex:i++];
+    item = [optMenu insertItemWithTitle:NSLocalizedString(@"Highlight Weekend", @"") action:@selector(highlightWeekend:) keyEquivalent:@"" atIndex:i++];
     item.state = _moCal.highlightWeekend ? NSOnState : NSOffState;
 
     // Week Start submenu
@@ -271,13 +271,13 @@
         [weekStartMenu insertItemWithTitle:d action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
     }
     [[weekStartMenu itemAtIndex:_moCal.weekStartDOW] setState:NSOnState];
-    item = [optMenu insertItemWithTitle:NSLocalizedString(@"First day of week", @"") action:NULL keyEquivalent:@"" atIndex:i++];
+    item = [optMenu insertItemWithTitle:NSLocalizedString(@"First Day of Week", @"") action:NULL keyEquivalent:@"" atIndex:i++];
     item.submenu = weekStartMenu;
     
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
-    [optMenu insertItemWithTitle:NSLocalizedString(@"Check for updates...", @"") action:@selector(checkForUpdates:) keyEquivalent:@"" atIndex:i++];
+    [optMenu insertItemWithTitle:NSLocalizedString(@"Check for Updates...", @"") action:@selector(checkForUpdates:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
     NSPoint pt = NSOffsetRect(_btnOpt.frame, -5, -10).origin;
