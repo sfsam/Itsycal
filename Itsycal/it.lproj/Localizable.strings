@@ -59,6 +59,9 @@
 "At time of event" = "All'ora dell'evento";
 
 /* No comment provided by engineer. */
+"Automatically check for updates" = "Controlla gli aggiornamenti automaticamente";
+
+/* No comment provided by engineer. */
 "Calendar access denied.
 
 Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "L'accesso al calendario negato.

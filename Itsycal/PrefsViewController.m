@@ -14,6 +14,7 @@
 #import "MoView.h"
 #import "MoTextField.h"
 #import "EventCenter.h"
+#import "Sparkle/SUUpdater.h"
 
 static NSString * const kSourceCellId = @"SourceCell";
 static NSString * const kCalendarCellId = @"CalendarCell";
@@ -37,6 +38,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 {
     MoTextField *_title;
     NSButton *_login;
+    NSButton *_checkUpdates;
     NSButton *_useOutlineIcon;
     NSButton *_showMonth;
     NSButton *_showDayOfWeek;
@@ -70,6 +72,15 @@ static NSString * const kCalendarCellId = @"CalendarCell";
         [v addSubview:txt];
         return txt;
     };
+
+    // Convenience function for making checkboxes.
+    NSButton* (^chkbx)(NSString *) = ^NSButton* (NSString *title) {
+        NSButton *chkbx = [NSButton checkboxWithTitle:title target:self action:nil];
+        chkbx.translatesAutoresizingMaskIntoConstraints = NO;
+        chkbx.font = [NSFont systemFontOfSize:12];
+        [v addSubview:chkbx];
+        return chkbx;
+    };
     
     // Title and version
     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
@@ -87,39 +98,13 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     link.font = [NSFont systemFontOfSize:12 weight:NSFontWeightSemibold];
     link.linkEnabled = YES;
     
-    // Login checkbox
-    _login = [NSButton new];
-    _login.translatesAutoresizingMaskIntoConstraints = NO;
-    _login.title = NSLocalizedString(@"Launch at login", @"");
-    _login.font = [NSFont systemFontOfSize:12];
-    _login.target = self;
+    // Checkboxes
+    _login = chkbx(NSLocalizedString(@"Launch at login", @""));
     _login.action = @selector(launchAtLogin:);
-    [_login setButtonType:NSSwitchButton];
-    [v addSubview:_login];
-    
-    // Use outline icon checkbox
-    _useOutlineIcon = [NSButton new];
-    _useOutlineIcon.translatesAutoresizingMaskIntoConstraints = NO;
-    _useOutlineIcon.title = NSLocalizedString(@"Use outline icon", @"");
-    _useOutlineIcon.font = [NSFont systemFontOfSize:12];
-    [_useOutlineIcon setButtonType:NSSwitchButton];
-    [v addSubview:_useOutlineIcon];
-
-    // Show month checkbox
-    _showMonth = [NSButton new];
-    _showMonth.translatesAutoresizingMaskIntoConstraints = NO;
-    _showMonth.title = NSLocalizedString(@"Show month in icon", @"");
-    _showMonth.font = [NSFont systemFontOfSize:12];
-    [_showMonth setButtonType:NSSwitchButton];
-    [v addSubview:_showMonth];
-    
-    // Show day-of-week checkbox
-    _showDayOfWeek = [NSButton new];
-    _showDayOfWeek.translatesAutoresizingMaskIntoConstraints = NO;
-    _showDayOfWeek.title = NSLocalizedString(@"Show day of week in icon", @"");
-    _showDayOfWeek.font = [NSFont systemFontOfSize:12];
-    [_showDayOfWeek setButtonType:NSSwitchButton];
-    [v addSubview:_showDayOfWeek];
+    _checkUpdates = chkbx(NSLocalizedString(@"Automatically check for updates", @""));
+    _useOutlineIcon = chkbx(NSLocalizedString(@"Use outline icon", @""));
+    _showMonth = chkbx(NSLocalizedString(@"Show month in icon", @""));
+    _showDayOfWeek = chkbx(NSLocalizedString(@"Show day of week in icon", @""));
     
     // Shortcut label
     MoTextField *shortcutLabel = txt(NSLocalizedString(@"Keyboard shortcut", @""));
@@ -170,14 +155,15 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, _useOutlineIcon, _showMonth, _showDayOfWeek, shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appIcon, _title, link, _login, _checkUpdates, _useOutlineIcon, _showMonth, _showDayOfWeek, shortcutLabel, shortcutView, tvContainer, daysLabel, _daysPopup, copyright)]];
     };
     vcon(@"V:|-m-[appIcon(32)]");
     vcon(@"H:|-m-[appIcon(32)]-[_title]-(>=m)-|");
     vcon(@"H:[appIcon]-[link]-(>=m)-|");
     vcon(@"V:|-20-[_title][link]");
-    vcon(@"V:|-75-[_login]-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
+    vcon(@"V:|-75-[_login]-[_checkUpdates]-16-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_daysPopup]-20-[copyright]-m-|");
     vcon(@"H:|-m-[_login]-(>=m)-|");
+    vcon(@"H:|-m-[_checkUpdates]-(>=m)-|");
     vcon(@"H:|-m-[_useOutlineIcon]-(>=m)-|");
     vcon(@"H:|-m-[_showMonth]-(>=m)-|");
     vcon(@"H:|-m-[_showDayOfWeek]-(>=m)-|");
@@ -207,6 +193,9 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [super viewWillAppear];
     [_calendarsTV reloadData];
     _login.state = MOIsLoginItemEnabled() ? NSOnState : NSOffState;
+
+    // Binding for Sparkle automatic update checks
+    [_checkUpdates bind:@"value" toObject:[SUUpdater sharedUpdater] withKeyPath:@"automaticallyChecksForUpdates" options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bindings for icon preferences
     [_useOutlineIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseOutlineIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
