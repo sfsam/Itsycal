@@ -191,10 +191,10 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Show calendar weeks" = "Afficher les numéros de semaine";
 
 /* No comment provided by engineer. */
-"Show day of week in icon" = "L'icône de la barre de menu affiche le jour de la semaine";
+"Show day of week in icon" = "L'icône de la barre des menus affiche le jour de la semaine";
 
 /* No comment provided by engineer. */
-"Show month in icon" = "L'icône de la barre de menu affiche le mois";
+"Show month in icon" = "L'icône de la barre des menus affiche le mois";
 
 /* No comment provided by engineer. */
 "Starts:" = "Commence:";
@@ -212,7 +212,7 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Tuesday" = "mardi";
 
 /* No comment provided by engineer. */
-"Use outline icon" = "Utiliser l'icône de la barre de menu de contour";
+"Use outline icon" = "Utiliser l'icône de la barre des menus de contour";
 
 /* No comment provided by engineer. */
 "Wednesday" = "mercredi";

@@ -412,12 +412,12 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
             </trans-unit>
             <trans-unit id="Show day of week in icon">
                 <source>Show day of week in icon</source>
-                <target>L'icône de la barre de menu affiche le jour de la semaine</target>
+                <target>L'icône de la barre des menus affiche le jour de la semaine</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Show month in icon">
                 <source>Show month in icon</source>
-                <target>L'icône de la barre de menu affiche le mois</target>
+                <target>L'icône de la barre des menus affiche le mois</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Starts:">
@@ -447,7 +447,7 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
             </trans-unit>
             <trans-unit id="Use outline icon">
                 <source>Use outline icon</source>
-                <target>Utiliser l'icône de la barre de menu de contour</target>
+                <target>Utiliser l'icône de la barre des menus de contour</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Wednesday">
