@@ -11,7 +11,10 @@
 #import "ItsycalWindow.h"
 #import "SBCalendar.h"
 #import "EventViewController.h"
-#import "PrefsViewController.h"
+#import "PrefsVC.h"
+#import "PrefsGeneralVC.h"
+#import "PrefsAppearanceVC.h"
+#import "PrefsAboutVC.h"
 #import "TooltipViewController.h"
 #import "MoButton.h"
 #import "Sparkle/SUUpdater.h"
@@ -136,6 +139,10 @@
     // Now that everything else is set up, we file for notifications.
     // Some of the notification handlers rely on stuff we just set up.
     [self fileNotifications];
+
+    [_moCal bind:@"showWeeks" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowWeeks] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_moCal bind:@"highlightWeekend" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightWeekend] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_moCal bind:@"weekStartDOW" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kWeekStartDOW] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 }
 
 - (void)viewWillAppear
@@ -145,9 +152,7 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     _btnPin.state = [defaults boolForKey:kPinItsycal] ? NSOnState : NSOffState;
     _moCal.showWeeks = [defaults boolForKey:kShowWeeks];
-    _moCal.highlightWeekend = [defaults boolForKey:kHighlightWeekend];
-    _moCal.weekStartDOW = [defaults integerForKey:kWeekStartDOW];
-    
+
     [self.itsycalWindow makeFirstResponder:_moCal];
 }
 
@@ -171,7 +176,8 @@
     unichar keyChar = [charsIgnoringModifiers characterAtIndex:0];
     
     if (keyChar == 'w' && noFlags) {
-        [self showWeeks:self];
+        _moCal.showWeeks = !_moCal.showWeeks;
+        [[NSUserDefaults standardUserDefaults] setBool:_moCal.showWeeks forKey:kShowWeeks];
     }
     else if (keyChar == ',' && cmdFlag) {
         [self showPrefs:self];
@@ -253,28 +259,7 @@
 {
     NSMenu *optMenu = [[NSMenu alloc] initWithTitle:@"Options Menu"];
     NSInteger i = 0;
-    NSMenuItem *item;
-    item = [optMenu insertItemWithTitle:NSLocalizedString(@"Show Calendar Weeks", @"") action:@selector(showWeeks:) keyEquivalent:@"w" atIndex:i++];
-    item.state = _moCal.showWeeks ? NSOnState : NSOffState;
-    item.keyEquivalentModifierMask = 0;
 
-    item = [optMenu insertItemWithTitle:NSLocalizedString(@"Highlight Weekend", @"") action:@selector(highlightWeekend:) keyEquivalent:@"" atIndex:i++];
-    item.state = _moCal.highlightWeekend ? NSOnState : NSOffState;
-
-    // Week Start submenu
-    NSMenu *weekStartMenu = [[NSMenu alloc] initWithTitle:@"Week Start Menu"];
-    NSInteger i2 = 0;
-    for (NSString *d in @[NSLocalizedString(@"Sunday", @""), NSLocalizedString(@"Monday", @""),
-                          NSLocalizedString(@"Tuesday", @""), NSLocalizedString(@"Wednesday", @""),
-                          NSLocalizedString(@"Thursday", @""), NSLocalizedString(@"Friday", @""),
-                          NSLocalizedString(@"Saturday", @"")]) {
-        [weekStartMenu insertItemWithTitle:d action:@selector(setFirstDayOfWeek:) keyEquivalent:@"" atIndex:i2++];
-    }
-    [[weekStartMenu itemAtIndex:_moCal.weekStartDOW] setState:NSOnState];
-    item = [optMenu insertItemWithTitle:NSLocalizedString(@"First Day of Week", @"") action:NULL keyEquivalent:@"" atIndex:i++];
-    item.submenu = weekStartMenu;
-    
-    [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Check for Updates...", @"") action:@selector(checkForUpdates:) keyEquivalent:@"" atIndex:i++];
@@ -290,39 +275,34 @@
     [[NSUserDefaults standardUserDefaults] setBool:pin forKey:kPinItsycal];
 }
 
-- (void)showWeeks:(id)sender
-{
-    // The delay gives the menu item time to flicker before
-    // setting _moCal.showWeeks which runs an animation.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        _moCal.showWeeks = !_moCal.showWeeks;
-        [[NSUserDefaults standardUserDefaults] setBool:_moCal.showWeeks forKey:kShowWeeks];
-    });
-}
-
-- (void)highlightWeekend:(id)sender
-{
-    _moCal.highlightWeekend = !_moCal.highlightWeekend;
-    [[NSUserDefaults standardUserDefaults] setBool:_moCal.highlightWeekend forKey:kHighlightWeekend];
-}
-
-- (void)setFirstDayOfWeek:(id)sender
-{
-    NSMenuItem *item = (NSMenuItem *)sender;
-    _moCal.weekStartDOW = [item.menu indexOfItem:item];
-    [[NSUserDefaults standardUserDefaults] setInteger:_moCal.weekStartDOW forKey:kWeekStartDOW];
-}
-
 - (void)showPrefs:(id)sender
 {
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
     
     if (!_prefsWC) {
-        NSPanel *panel = [[NSPanel alloc] initWithContentRect:NSZeroRect styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable) backing:NSBackingStoreBuffered defer:NO];
-        PrefsViewController *prefsVC = [PrefsViewController new];
+        // Create prefs VC. It is a container VC for the VC's that
+        // control each tab.
+        PrefsVC *prefsVC = [PrefsVC new];
         prefsVC.ec = _ec;
+        prefsVC.tabStyle = NSTabViewControllerTabStyleToolbar;
+        prefsVC.transitionOptions = NSViewControllerTransitionNone;
+        // Add General prefs VC to prefsVC.
+        PrefsGeneralVC *prefsGeneralVC = [PrefsGeneralVC new];
+        [prefsVC addChildViewController:prefsGeneralVC];
+        [prefsVC tabViewItemForViewController:prefsGeneralVC].label = NSLocalizedString(@"General", @"General prefs tab label");
+        // Add Appearance prefs VC to prefsVC.
+        PrefsAppearanceVC *prefsAppearanceVC = [PrefsAppearanceVC new];
+        [prefsVC addChildViewController:prefsAppearanceVC];
+        [prefsVC tabViewItemForViewController:prefsAppearanceVC].label = NSLocalizedString(@"Appearance", @"Appearance prefs tab label");
+        // Add About prefs VC to prefsVC.
+        PrefsAboutVC *prefsAboutVC = [PrefsAboutVC new];
+        [prefsVC addChildViewController:prefsAboutVC];
+        [prefsVC tabViewItemForViewController:prefsAboutVC].label = NSLocalizedString(@"About", @"About prefs tab label");
+        // Create prefs WC.
+        NSPanel *panel = [[NSPanel alloc] initWithContentRect:NSZeroRect styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable) backing:NSBackingStoreBuffered defer:NO];
         _prefsWC = [[NSWindowController alloc] initWithWindow:panel];
         _prefsWC.contentViewController = prefsVC;
+        _prefsWC.window.contentView.wantsLayer = YES;
     }
     // If the window is not visible, we must "close" it before showing it.
     // This seems weird, but is the only way to ensure that -viewWillAppear
@@ -334,8 +314,10 @@
     if (!(_prefsWC.window.occlusionState & NSWindowOcclusionStateVisible)) {
         [_prefsWC close];
     }
+    [_prefsWC.window setAlphaValue:0];
     [_prefsWC showWindow:self];
     [_prefsWC.window center];
+    [_prefsWC.window setAlphaValue:1];
 }
 
 - (void)checkForUpdates:(id)sender

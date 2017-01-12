@@ -43,6 +43,9 @@
 /* No comment provided by engineer. */
 "30 minutes before" = "30 minutos antes";
 
+/* About prefs tab label */
+"About" = "Acerca de";
+
 /* No comment provided by engineer. */
 "Add Location" = "Añadir ubicación";
 
@@ -51,6 +54,9 @@
 
 /* No comment provided by engineer. */
 "All-day:" = "Todo el día:";
+
+/* Appearance prefs tab label */
+"Appearance" = "Apariencia";
 
 /* No comment provided by engineer. */
 "Are you sure you want to delete this event?" = "¿Seguro que quieres eliminar este evento?";
@@ -114,13 +120,16 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
 "Every Year" = "Todos los años";
 
 /* No comment provided by engineer. */
-"First Day of Week" = "Primer día de la semana";
+"First day of week:" = "Primer día de la semana:";
 
 /* No comment provided by engineer. */
 "Friday" = "Viernes";
 
+/* General prefs tab label */
+"General" = "General";
+
 /* No comment provided by engineer. */
-"Highlight Weekend" = "Resaltar fin de semana";
+"Highlight weekend" = "Resaltar fin de semana";
 
 /* No comment provided by engineer. */
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal es más útil cuando usted lo permite para agregar eventos a su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad.";
@@ -188,7 +197,7 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "Save Event" = "Salvar Evento";
 
 /* No comment provided by engineer. */
-"Show Calendar Weeks" = "Mostrar semanas del calendario";
+"Show calendar weeks" = "Mostrar semanas del calendario";
 
 /* No comment provided by engineer. */
 "Show day of week in icon" = "El icono muestra día de la semana";

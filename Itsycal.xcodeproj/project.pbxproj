@@ -7,11 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		921E62B41E26B2F2007B029F /* PrefsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62B31E26B2F2007B029F /* PrefsVC.m */; };
+		921E62CD1E26B3EA007B029F /* PrefsGeneralVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */; };
+		921E62D01E26B9D2007B029F /* PrefsAppearanceVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62CF1E26B9D2007B029F /* PrefsAppearanceVC.m */; };
+		921E62D31E26E038007B029F /* PrefsAboutVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62D21E26E038007B029F /* PrefsAboutVC.m */; };
 		922232CD1A8DF672003BFAD9 /* EventCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 922232CC1A8DF672003BFAD9 /* EventCenter.m */; };
 		9224B0751A8BE75500D63030 /* MoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9224B0741A8BE75500D63030 /* MoButton.m */; };
 		922A06611DFB3CC700706C1E /* MoLoginItem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 922A065F1DFB3C9600706C1E /* MoLoginItem.framework */; };
 		922A06621DFB3CC700706C1E /* MoLoginItem.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 922A065F1DFB3C9600706C1E /* MoLoginItem.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		922B6BB81A85CC7800DEA9CD /* PrefsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6BB71A85CC7800DEA9CD /* PrefsViewController.m */; };
 		922B6BBB1A85E0EC00DEA9CD /* MoTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 922B6BBA1A85E0EC00DEA9CD /* MoTextField.m */; };
 		922B6BBE1A87EDBD00DEA9CD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 922B6BC01A87EDBD00DEA9CD /* Localizable.strings */; };
 		922B6BC41A87EDBE00DEA9CD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 922B6BC61A87EDBE00DEA9CD /* InfoPlist.strings */; };
@@ -68,14 +71,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		921E62B21E26B2F2007B029F /* PrefsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsVC.h; sourceTree = "<group>"; };
+		921E62B31E26B2F2007B029F /* PrefsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsVC.m; sourceTree = "<group>"; };
+		921E62C01E26B3EA007B029F /* PrefsGeneralVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsGeneralVC.h; sourceTree = "<group>"; };
+		921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsGeneralVC.m; sourceTree = "<group>"; };
+		921E62CE1E26B9D2007B029F /* PrefsAppearanceVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsAppearanceVC.h; sourceTree = "<group>"; };
+		921E62CF1E26B9D2007B029F /* PrefsAppearanceVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsAppearanceVC.m; sourceTree = "<group>"; };
+		921E62D11E26E038007B029F /* PrefsAboutVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsAboutVC.h; sourceTree = "<group>"; };
+		921E62D21E26E038007B029F /* PrefsAboutVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsAboutVC.m; sourceTree = "<group>"; };
 		922232CB1A8DF672003BFAD9 /* EventCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventCenter.h; sourceTree = "<group>"; };
 		922232CC1A8DF672003BFAD9 /* EventCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventCenter.m; sourceTree = "<group>"; };
 		9224B0731A8BE75500D63030 /* MoButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoButton.h; sourceTree = "<group>"; };
 		9224B0741A8BE75500D63030 /* MoButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoButton.m; sourceTree = "<group>"; };
 		922A065F1DFB3C9600706C1E /* MoLoginItem.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MoLoginItem.framework; path = _frameworks/MoLoginItem.framework; sourceTree = "<group>"; };
 		922B6B911A856A7D00DEA9CD /* SBCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBCalendar.h; sourceTree = "<group>"; };
-		922B6BB61A85CC7800DEA9CD /* PrefsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsViewController.h; sourceTree = "<group>"; };
-		922B6BB71A85CC7800DEA9CD /* PrefsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsViewController.m; sourceTree = "<group>"; };
 		922B6BB91A85E0EC00DEA9CD /* MoTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoTextField.h; sourceTree = "<group>"; };
 		922B6BBA1A85E0EC00DEA9CD /* MoTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoTextField.m; sourceTree = "<group>"; };
 		922B6BBF1A87EDBD00DEA9CD /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -192,8 +201,14 @@
 				9242A5851A82A1A1005AA4B3 /* ItsycalWindow.h */,
 				9242A5861A82A1A1005AA4B3 /* ItsycalWindow.m */,
 				92CDDE7C1A97FFE700D7675C /* MoCode */,
-				922B6BB61A85CC7800DEA9CD /* PrefsViewController.h */,
-				922B6BB71A85CC7800DEA9CD /* PrefsViewController.m */,
+				921E62B21E26B2F2007B029F /* PrefsVC.h */,
+				921E62B31E26B2F2007B029F /* PrefsVC.m */,
+				921E62C01E26B3EA007B029F /* PrefsGeneralVC.h */,
+				921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */,
+				921E62CE1E26B9D2007B029F /* PrefsAppearanceVC.h */,
+				921E62CF1E26B9D2007B029F /* PrefsAppearanceVC.m */,
+				921E62D11E26E038007B029F /* PrefsAboutVC.h */,
+				921E62D21E26E038007B029F /* PrefsAboutVC.m */,
 				922232CB1A8DF672003BFAD9 /* EventCenter.h */,
 				922232CC1A8DF672003BFAD9 /* EventCenter.m */,
 				92CDDE791A955D7F00D7675C /* AgendaViewController.h */,
@@ -349,16 +364,19 @@
 				9242A5871A82A1A1005AA4B3 /* ItsycalWindow.m in Sources */,
 				92CDDE7B1A955D7F00D7675C /* AgendaViewController.m in Sources */,
 				922B6BBB1A85E0EC00DEA9CD /* MoTextField.m in Sources */,
-				922B6BB81A85CC7800DEA9CD /* PrefsViewController.m in Sources */,
 				9242A5901A82A40B005AA4B3 /* MoDate.m in Sources */,
+				921E62B41E26B2F2007B029F /* PrefsVC.m in Sources */,
 				925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */,
+				921E62D01E26B9D2007B029F /* PrefsAppearanceVC.m in Sources */,
 				9242A5961A82BE5E005AA4B3 /* Itsycal.m in Sources */,
 				9242A5931A82A40B005AA4B3 /* MoCalendar.m in Sources */,
 				9242A5911A82A40B005AA4B3 /* MoCalCell.m in Sources */,
 				9224B0751A8BE75500D63030 /* MoButton.m in Sources */,
 				92B3C0431AA7EF43008A5C05 /* MoView.m in Sources */,
 				9242A5841A82A189005AA4B3 /* ViewController.m in Sources */,
+				921E62CD1E26B3EA007B029F /* PrefsGeneralVC.m in Sources */,
 				9242A5631A82A136005AA4B3 /* AppDelegate.m in Sources */,
+				921E62D31E26E038007B029F /* PrefsAboutVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
