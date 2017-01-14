@@ -84,6 +84,9 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
 "Check for Updates..." = "Buscar actualizaciones…";
 
 /* No comment provided by engineer. */
+"Datetime pattern" = "Patrón de fecha y hora";
+
+/* No comment provided by engineer. */
 "Delete All Future Events" = "Eliminar todos los eventos futuros";
 
 /* No comment provided by engineer. */
@@ -127,6 +130,9 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
 
 /* General prefs tab label */
 "General" = "General";
+
+/* No comment provided by engineer. */
+"Hide icon" = "Ocultar icono";
 
 /* No comment provided by engineer. */
 "Highlight weekend" = "Resaltar fin de semana";

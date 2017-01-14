@@ -171,6 +171,11 @@
                 <target>30 minutos antes</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
+            <trans-unit id="About">
+                <source>About</source>
+                <target>Acerca de</target>
+                <note>About prefs tab label</note>
+            </trans-unit>
             <trans-unit id="Add Location">
                 <source>Add Location</source>
                 <target>Añadir ubicación</target>
@@ -186,6 +191,11 @@
                 <target>Todo el día:</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
+            <trans-unit id="Appearance">
+                <source>Appearance</source>
+                <target>Apariencia</target>
+                <note>Appearance prefs tab label</note>
+            </trans-unit>
             <trans-unit id="Are you sure you want to delete this event?">
                 <source>Are you sure you want to delete this event?</source>
                 <target>¿Seguro que quieres eliminar este evento?</target>
@@ -198,8 +208,8 @@
             </trans-unit>
             <trans-unit id="Automatically check for updates">
                 <source>Automatically check for updates</source>
-                <note>No comment provided by engineer.</note>
                 <target>Buscar actualizaciones automáticamente</target>
+                <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy">
                 <source>Calendar access denied.
@@ -220,10 +230,15 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
                 <target>Cancelar</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
-            <trans-unit id="Check for updates...">
-                <source>Check for updates...</source>
+            <trans-unit id="Check for Updates...">
+                <source>Check for Updates...</source>
                 <target>Buscar actualizaciones…</target>
                 <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="Datetime pattern">
+                <source>Datetime pattern</source>
+                <note>No comment provided by engineer.</note>
+                <target>Patrón de fecha y hora</target>
             </trans-unit>
             <trans-unit id="Delete All Future Events">
                 <source>Delete All Future Events</source>
@@ -285,15 +300,25 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
                 <target>Todos los años</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
-            <trans-unit id="First day of week">
-                <source>First day of week</source>
-                <target>Primer día de la semana</target>
+            <trans-unit id="First day of week:">
+                <source>First day of week:</source>
+                <target>Primer día de la semana:</target>
                 <note>No comment provided by engineer.</note>
             </trans-unit>
             <trans-unit id="Friday">
                 <source>Friday</source>
                 <target>Viernes</target>
                 <note>No comment provided by engineer.</note>
+            </trans-unit>
+            <trans-unit id="General">
+                <source>General</source>
+                <target>General</target>
+                <note>General prefs tab label</note>
+            </trans-unit>
+            <trans-unit id="Hide icon">
+                <source>Hide icon</source>
+                <note>No comment provided by engineer.</note>
+                <target>Ocultar icono</target>
             </trans-unit>
             <trans-unit id="Highlight weekend">
                 <source>Highlight weekend</source>

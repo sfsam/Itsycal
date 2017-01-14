@@ -84,6 +84,9 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 "Check for Updates..." = "Nach Updates suchen…";
 
 /* No comment provided by engineer. */
+"Datetime pattern" = "Datum & Zeit Muster";
+
+/* No comment provided by engineer. */
 "Delete All Future Events" = "Alle zukünftigen Ereignisse löschen";
 
 /* No comment provided by engineer. */
@@ -127,6 +130,9 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 
 /* General prefs tab label */
 "General" = "Allgemein";
+
+/* No comment provided by engineer. */
+"Hide icon" = "Menüleistensymbol verbergen";
 
 /* No comment provided by engineer. */
 "Highlight weekend" = "Wochenende hervorheben";

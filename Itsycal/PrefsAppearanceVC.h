@@ -5,6 +5,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface PrefsAppearanceVC : NSViewController
+@interface PrefsAppearanceVC : NSViewController <NSTextFieldDelegate>
 
 @end

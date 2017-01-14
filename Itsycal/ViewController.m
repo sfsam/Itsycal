@@ -395,9 +395,14 @@
 
 - (void)updateMenubarIcon
 {
-    NSString *iconText = [self iconText];
-    _statusItem.button.image = [self iconImageForText:iconText];
-
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kHideIcon]) {
+        _statusItem.button.image = nil;
+        _statusItem.button.imagePosition = NSNoImage;
+    }
+    else {
+        _statusItem.button.image = [self iconImageForText:[self iconText]];
+        _statusItem.button.imagePosition = _clockFormat ? NSImageLeft : NSImageOnly;
+    }
     if (_clockFormat) {
         [_iconDateFormatter setDateFormat:_clockFormat];
         _statusItem.button.title = [_iconDateFormatter stringFromDate:[NSDate new]];
@@ -778,20 +783,27 @@
 {
     NSString *format = [[NSUserDefaults standardUserDefaults] stringForKey:kClockFormat];
 
+    // -observeValueForKeyPath:ofObject:change:context: sends
+    // redundant change notifications ever since binding prefs
+    // textfield to kClockFormat. If clock format hasn't changed,
+    // ignore this redundant change notification.
+    if ((format == nil && _clockFormat == nil) ||
+        [format isEqualToString:_clockFormat]) {
+        return;
+    }
+
     // Did the user set a custom clock format string?
     if (format != nil && ![format isEqualToString:@""]) {
         NSLog(@"Use custom clock format: [%@]", format);
         _clockUsesSeconds = [self formatContainsSecondsSpecifier:format];
-        _statusItem.button.imagePosition = NSImageLeft;
         _clockFormat = format;
     }
     else {
         NSLog(@"Use normal icon");
         [_clockTimer invalidate];
         _clockTimer = nil;
-        _statusItem.button.title = @"";
-        _statusItem.button.imagePosition = NSImageOnly;
         _clockFormat = nil;
+        _statusItem.button.title = @"";
     }
     [self updateMenubarIcon];
 }
@@ -859,7 +871,7 @@
     [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(updateMenubarIcon) name:NSWorkspaceDidWakeNotification object:nil];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kHideIcon, kClockFormat]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -874,7 +886,8 @@
     }
     else if ([keyPath isEqualToString:kUseOutlineIcon] ||
              [keyPath isEqualToString:kShowMonthInIcon] ||
-             [keyPath isEqualToString:kShowDayOfWeekInIcon]) {
+             [keyPath isEqualToString:kShowDayOfWeekInIcon] ||
+             [keyPath isEqualToString:kHideIcon]) {
         [self updateMenubarIcon];
     }
     else if ([keyPath isEqualToString:kClockFormat]) {
