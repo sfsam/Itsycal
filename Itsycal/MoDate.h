@@ -20,7 +20,9 @@
 //  0  1  2  3  4  5  6  <=Column
 // Mo Tu We Th Fr Sa Su  <=DayOfWeek
 //                ^^
-#define DOW_COL(startDOW, DOW) ((7 - startDOW + DOW)%7)
+#define DOW_COL(startDOW, DOW) ((7 - startDOW + DOW) % 7)
+// Reverse of DOW_COL. Get the DOW in a given COL.
+#define COL_DOW(startDOW, COL) ((startDOW + COL) % 7)
 #define IS_LEAP_YEAR(y)        ((y % 4) == 0 && ((y % 100) != 0 || (y % 400) == 0))
 #define NO_JULIAN              (-1) // When Julian Day is undefined
 #define MIN_MODATE_YEAR        (1583)

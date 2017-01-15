@@ -10,6 +10,19 @@
 #import "MoDate.h"
 #import "MoCalToolTipWC.h"
 
+// A bit mask for days-of-the-week.
+// Used to select columns to highlight.
+typedef enum : NSInteger {
+    DOWMaskNone = 0,
+    DOWMaskSun  = 1 << 0,
+    DOWMaskMon  = 1 << 1,
+    DOWMaskTue  = 1 << 2,
+    DOWMaskWed  = 1 << 3,
+    DOWMaskThu  = 1 << 4,
+    DOWMaskFri  = 1 << 5,
+    DOWMaskSat  = 1 << 6,
+} DOWMask;
+
 @protocol MoCalendarDelegate;
 
 // =========================================================================
@@ -37,8 +50,8 @@
 // Is the week of the year column showing?
 @property (nonatomic) BOOL showWeeks;
 
-// Should the weekend by highlighted?
-@property (nonatomic) BOOL highlightWeekend;
+// DOW colums to highlight
+@property (nonatomic) DOWMask highlightedDOWs;
 
 // An optional view controller for tooltips.
 @property (nonatomic) NSViewController<MoCalTooltipProvider> *tooltipVC;

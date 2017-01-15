@@ -135,7 +135,7 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 "Hide icon" = "Menüleistensymbol verbergen";
 
 /* No comment provided by engineer. */
-"Highlight weekend" = "Wochenende hervorheben";
+"Highlight:" = "Hervorheben:";
 
 /* No comment provided by engineer. */
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal ist nützlicher, wenn es Veranstaltungen zu Ihrem Kalender hinzuzufügen. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.";

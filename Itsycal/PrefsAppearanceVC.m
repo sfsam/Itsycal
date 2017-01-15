@@ -7,6 +7,7 @@
 #import "Itsycal.h"
 #import "MoView.h"
 #import "MoTextField.h"
+#import "HighlightPicker.h"
 
 @implementation PrefsAppearanceVC
 {
@@ -15,7 +16,7 @@
     NSButton *_showDayOfWeek;
     NSTextField *_dateTimeFormat;
     NSButton *_hideIcon;
-    NSButton *_highlightWeekends;
+    HighlightPicker *_highlight;
     NSButton *_showWeeks;
 }
 
@@ -36,12 +37,11 @@
         [v addSubview:chkbx];
         return chkbx;
     };
-    
+
     // Checkboxes
     _useOutlineIcon = chkbx(NSLocalizedString(@"Use outline icon", @""));
     _showMonth = chkbx(NSLocalizedString(@"Show month in icon", @""));
     _showDayOfWeek = chkbx(NSLocalizedString(@"Show day of week in icon", @""));
-    _highlightWeekends = chkbx(NSLocalizedString(@"Highlight weekend", @""));
     _showWeeks = chkbx(NSLocalizedString(@"Show calendar weeks", @""));
     _hideIcon = chkbx(NSLocalizedString(@"Hide icon", @""));
 
@@ -64,18 +64,25 @@
     helpButton.action = @selector(openHelpPage:);
     [v addSubview:helpButton];
 
+    // Highlight control
+    _highlight = [HighlightPicker new];
+    _highlight.translatesAutoresizingMaskIntoConstraints = NO;
+    _highlight.target = self;
+    _highlight.action = @selector(didChangeHighlight:);
+    [v addSubview:_highlight];
+    
     // Convenience function to make visual constraints.
     void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_useOutlineIcon, _showMonth, _showDayOfWeek, _highlightWeekends, _showWeeks, _dateTimeFormat, helpButton, _hideIcon)]];
+        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_useOutlineIcon, _showMonth, _showDayOfWeek, _showWeeks, _dateTimeFormat, helpButton, _hideIcon, _highlight)]];
     };
-    vcon(@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_highlightWeekends]-[_showWeeks]-m-|");
+    vcon(@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_highlight]-m-[_showWeeks]-m-|");
     vcon(@"H:|-m-[_useOutlineIcon]-(>=m)-|");
     vcon(@"H:|-m-[_showMonth]-(>=m)-|");
     vcon(@"H:|-m-[_showDayOfWeek]-(>=m)-|");
-    vcon(@"H:|-m-[_highlightWeekends]-(>=m)-|");
-    vcon(@"H:|-m-[_showWeeks]-(>=m)-|");
     vcon(@"H:|-m-[_dateTimeFormat]-[helpButton]-m-|");
     vcon(@"H:|-m-[_hideIcon]-(>=m)-|");
+    vcon(@"H:|-m-[_highlight]-(>=m)-|");
+    vcon(@"H:|-m-[_showWeeks]-(>=m)-|");
 
     // Center dateTime format and help button vertically.
     [v addConstraint:[NSLayoutConstraint constraintWithItem:helpButton attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_dateTimeFormat attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
@@ -101,9 +108,12 @@
     // Binding for datetime format
     [_dateTimeFormat bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kClockFormat] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSMultipleValuesPlaceholderBindingOption: _dateTimeFormat.placeholderString, NSNoSelectionPlaceholderBindingOption: _dateTimeFormat.placeholderString, NSNotApplicablePlaceholderBindingOption: _dateTimeFormat.placeholderString, NSNullPlaceholderBindingOption: _dateTimeFormat.placeholderString}];
 
-    // Bindings for week/weekends preferences
-    [_highlightWeekends bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightWeekend] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    // Bindings for showWeeks preference
     [_showWeeks bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowWeeks] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+
+    // Bindings for highlight picker
+    [_highlight bind:@"weekStartDOW" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kWeekStartDOW] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_highlight bind:@"selectedDOWs" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightedDOWs] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     [self updateHideIconState];
 
@@ -143,6 +153,11 @@
 - (void)controlTextDidChange:(NSNotification *)obj
 {
     [self updateHideIconState];
+}
+
+- (void)didChangeHighlight:(HighlightPicker *)picker
+{
+    [[NSUserDefaults standardUserDefaults] setInteger:picker.selectedDOWs forKey:kHighlightedDOWs];
 }
 
 @end

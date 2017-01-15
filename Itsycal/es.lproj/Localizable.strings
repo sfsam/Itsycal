@@ -135,7 +135,7 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
 "Hide icon" = "Ocultar icono";
 
 /* No comment provided by engineer. */
-"Highlight weekend" = "Resaltar fin de semana";
+"Highlight:" = "Resaltar:";
 
 /* No comment provided by engineer. */
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal es más útil cuando usted lo permite para agregar eventos a su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad.";

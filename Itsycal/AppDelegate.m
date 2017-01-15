@@ -25,7 +25,7 @@
     [defaults registerDefaults:@{
         kPinItsycal:       @(NO),
         kShowWeeks:        @(NO),
-        kHighlightWeekend: @(NO),
+        kHighlightedDOWs: @0,
         kShowEventDays:    @7,
         kWeekStartDOW:     @0, // Sun=0, Mon=1,... (MoCalendar.h)
         kShowMonthInIcon:  @(NO),
@@ -47,6 +47,9 @@
 #ifndef DEBUG
     [self checkIfRunFromApplicationsFolder];
 #endif
+
+    // 0.11.1 introduced a new way to highlight columns in the calendar.
+    [self weekendHighlightFixup];
 
     // Register keyboard shortcut.
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
@@ -90,6 +93,38 @@
     [alert addButtonWithTitle:NSLocalizedString(@"Quit Itsycal", @"")];
     [alert runModal];
     [NSApp terminate:nil];
+}
+
+#pragma mark -
+#pragma mark Weekend highlight fixup
+
+// Itsycal 0.11.1 moves away from using a trio of possible defaults
+// (HighlightWeekend, WeekendIsFridaySaturday, WeekendIsSaturdaySunday) and
+// a hardcoded list of countries with Fri/Sat weekends to the method
+// of allowing the user to specify highlighted DOWs. If the user had
+// HighlightWeekend == YES, migrate their highlight settings. In either
+// case, remove the old default keys.
+- (void)weekendHighlightFixup
+{
+    NSArray *countriesWithFridaySaturdayWeekend = @[
+        @"AF", @"DZ", @"BH", @"BD", @"EG", @"IQ", @"JO", @"KW", @"LY",
+        @"MV", @"OM", @"PS", @"QA", @"SA", @"SD", @"SY", @"AE", @"YE"];
+    NSString *countryCode = [NSLocale currentLocale].countryCode;
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults boolForKey:@"HighlightWeekend"]) {
+        if ([defaults boolForKey:@"WeekendIsFridaySaturday"] ||
+            [countriesWithFridaySaturdayWeekend containsObject:countryCode]) {
+            // Fri + Sat = (1<<5) + (1<<6) = 32 + 64 = 96
+            [defaults setInteger:96 forKey:kHighlightedDOWs];
+        }
+        else {
+            // Sat + Sun = (1<<6) + (1<<0) = 64 + 1 = 65
+            [defaults setInteger:65 forKey:kHighlightedDOWs];
+        }
+    }
+    [defaults removeObjectForKey:@"HighlightWeekend"];
+    [defaults removeObjectForKey:@"WeekendIsFridaySaturday"];
+    [defaults removeObjectForKey:@"WeekendIsSaturdaySunday"];
 }
 
 @end

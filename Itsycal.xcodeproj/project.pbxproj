@@ -38,6 +38,7 @@
 		925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B471A1A93CD2A00E0329A /* TooltipViewController.m */; };
 		92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92658E611A9DBD8E002AE86C /* EventViewController.m */; };
 		9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9278CADA1A990462004B6BB9 /* MoTableView.m */; };
+		929223EB1E2D6E0900F1A119 /* HighlightPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 929223EA1E2D6E0800F1A119 /* HighlightPicker.m */; };
 		92B3C0431AA7EF43008A5C05 /* MoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92B3C0421AA7EF43008A5C05 /* MoView.m */; };
 		92C2F3141D3811E1009048D9 /* VarelaRoundNeo-Bold.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 92C2F3101D380FC2009048D9 /* VarelaRoundNeo-Bold.otf */; };
 		92C2F3151D3811E4009048D9 /* VarelaRoundNeo-Regular.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 92C2F3111D380FC2009048D9 /* VarelaRoundNeo-Regular.otf */; };
@@ -133,6 +134,8 @@
 		92658E611A9DBD8E002AE86C /* EventViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventViewController.m; sourceTree = "<group>"; };
 		9278CAD91A990462004B6BB9 /* MoTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoTableView.h; sourceTree = "<group>"; };
 		9278CADA1A990462004B6BB9 /* MoTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoTableView.m; sourceTree = "<group>"; };
+		929223E91E2D6E0800F1A119 /* HighlightPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightPicker.h; sourceTree = "<group>"; };
+		929223EA1E2D6E0800F1A119 /* HighlightPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightPicker.m; sourceTree = "<group>"; };
 		92B3C0411AA7EF43008A5C05 /* MoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoView.h; sourceTree = "<group>"; };
 		92B3C0421AA7EF43008A5C05 /* MoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoView.m; sourceTree = "<group>"; };
 		92C2F3101D380FC2009048D9 /* VarelaRoundNeo-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "VarelaRoundNeo-Bold.otf"; path = "_fonts/VarelaRoundNeo-Bold.otf"; sourceTree = "<group>"; };
@@ -209,6 +212,8 @@
 				921E62CF1E26B9D2007B029F /* PrefsAppearanceVC.m */,
 				921E62D11E26E038007B029F /* PrefsAboutVC.h */,
 				921E62D21E26E038007B029F /* PrefsAboutVC.m */,
+				929223E91E2D6E0800F1A119 /* HighlightPicker.h */,
+				929223EA1E2D6E0800F1A119 /* HighlightPicker.m */,
 				922232CB1A8DF672003BFAD9 /* EventCenter.h */,
 				922232CC1A8DF672003BFAD9 /* EventCenter.m */,
 				92CDDE791A955D7F00D7675C /* AgendaViewController.h */,
@@ -360,6 +365,7 @@
 				922D9B261DC7A1CA0050AB2F /* MoUtils.m in Sources */,
 				9242A5651A82A136005AA4B3 /* main.m in Sources */,
 				9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */,
+				929223EB1E2D6E0900F1A119 /* HighlightPicker.m in Sources */,
 				925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */,
 				9242A5871A82A1A1005AA4B3 /* ItsycalWindow.m in Sources */,
 				92CDDE7B1A955D7F00D7675C /* AgendaViewController.m in Sources */,
