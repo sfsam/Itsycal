@@ -303,21 +303,9 @@
         _prefsWC = [[NSWindowController alloc] initWithWindow:panel];
         _prefsWC.contentViewController = prefsVC;
         _prefsWC.window.contentView.wantsLayer = YES;
+        [_prefsWC.window center];
     }
-    // If the window is not visible, we must "close" it before showing it.
-    // This seems weird, but is the only way to ensure that -viewWillAppear
-    // and -viewDidAppear are called in the prefs VC. When the prefs window
-    // is hidden by being deactivated, it appears to have been closed to the
-    // user, but it didn't really "close" (it just hid). So we first properly
-    // "close" and then our view lifecycle methods are called in the VC.
-    // This feels like a hack.
-    if (!(_prefsWC.window.occlusionState & NSWindowOcclusionStateVisible)) {
-        [_prefsWC close];
-    }
-    [_prefsWC.window setAlphaValue:0];
     [_prefsWC showWindow:self];
-    [_prefsWC.window center];
-    [_prefsWC.window setAlphaValue:1];
 }
 
 - (void)checkForUpdates:(id)sender
