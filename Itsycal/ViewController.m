@@ -36,6 +36,8 @@
     NSString  *_clockFormat;
     NSTimer   *_clockTimer;
     BOOL       _clockUsesSeconds;
+    NSFont    *_statusItemRegularFont;
+    NSFont    *_statusItemMonospaceFont;
 }
 
 - (void)dealloc
@@ -323,13 +325,14 @@
     _statusItem.button.action = @selector(statusItemClicked:);
     _statusItem.highlightMode = NO; // Deprecated in 10.10, but what is alternative?
 
-    // Use monospaced font in case user sets custom clock format.
+    // Use monospace font if the datetime format displays seconds.
     // We modify the default font with a font descriptor instead
     // of using +monospacedDigitSystemFontOfSize:weight: because
     // we get slightly darker looking ':' characters this way.
     NSFontDescriptor *fontDesc = [_statusItem.button.font fontDescriptor];
     fontDesc = [fontDesc fontDescriptorByAddingAttributes:@{NSFontFeatureSettingsAttribute: @[@{NSFontFeatureTypeIdentifierKey: @(kNumberSpacingType), NSFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)}]}];
-    _statusItem.button.font = [NSFont fontWithDescriptor:fontDesc size:0];
+    _statusItemMonospaceFont = [NSFont fontWithDescriptor:fontDesc size:0];
+    _statusItemRegularFont = [_statusItem.button.font copy];
 
     // Remember item position in menubar. (@pskowronek (Github))
     [_statusItem setAutosaveName:@"ItsycalStatusItem"];
@@ -413,7 +416,7 @@
     }
 
     // Measure text width
-    NSFont *font = [NSFont monospacedDigitSystemFontOfSize:11.5 weight:NSFontWeightBold];
+    NSFont *font = [NSFont systemFontOfSize:11.5 weight:NSFontWeightBold];
     CGRect textRect = [[[NSAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName: font}] boundingRectWithSize:CGSizeMake(999, 999) options:0 context:nil];
 
     // Icon width is at least 19 pts with 3 pt outside margins, 4 pt inside margins.
@@ -442,7 +445,7 @@
             // Draw text.
             NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
             pstyle.alignment = NSTextAlignmentCenter;
-            [text drawInRect:NSOffsetRect(rect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont monospacedDigitSystemFontOfSize:11.5 weight:NSFontWeightSemibold], NSParagraphStyleAttributeName: pstyle, NSForegroundColorAttributeName: [NSColor blackColor]}];
+            [text drawInRect:NSOffsetRect(rect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:11.5 weight:NSFontWeightSemibold], NSParagraphStyleAttributeName: pstyle, NSForegroundColorAttributeName: [NSColor blackColor]}];
         }
         else {
 
@@ -476,7 +479,7 @@
             // Draw text.
             NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
             pstyle.alignment = NSTextAlignmentCenter;
-            [text drawInRect:NSOffsetRect(deviceRect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont monospacedDigitSystemFontOfSize:fontSize weight:NSFontWeightBold], NSForegroundColorAttributeName: [NSColor blackColor], NSParagraphStyleAttributeName: pstyle}];
+            [text drawInRect:NSOffsetRect(deviceRect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:fontSize weight:NSFontWeightBold], NSForegroundColorAttributeName: [NSColor blackColor], NSParagraphStyleAttributeName: pstyle}];
 
             // Switch back to the image's context.
             [NSGraphicsContext restoreGraphicsState];
@@ -784,6 +787,7 @@
     if (format != nil && ![format isEqualToString:@""]) {
         NSLog(@"Use custom clock format: [%@]", format);
         _clockUsesSeconds = [self formatContainsSecondsSpecifier:format];
+        _statusItem.button.font = _clockUsesSeconds ? _statusItemMonospaceFont : _statusItemRegularFont;
         _clockFormat = format;
     }
     else {
