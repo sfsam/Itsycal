@@ -165,7 +165,18 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 {
     [super viewWillAppear];
     [_calendarsTV reloadData];
-    _login.state = MOIsLoginItemEnabled() ? NSOnState : NSOffState;
+
+    // The API used to check the login item's state (LSSharedFileList) causes
+    // errors for users who have network drives but are not connected to their
+    // network (github.com/sfsam/Itsycal/issues/15). Give them an option to
+    // disable this check.
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DoNotCheckLoginItemStatus"] == NO) {
+        _login.hidden = NO;
+        _login.state = MOIsLoginItemEnabled() ? NSOnState : NSOffState;
+    }
+    else {
+        _login.hidden = YES;
+    }
 
     // Binding for Sparkle automatic update checks
     [_checkUpdates bind:@"value" toObject:[SUUpdater sharedUpdater] withKeyPath:@"automaticallyChecksForUpdates" options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
