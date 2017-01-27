@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */; };
 		921E62B41E26B2F2007B029F /* PrefsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62B31E26B2F2007B029F /* PrefsVC.m */; };
 		921E62CD1E26B3EA007B029F /* PrefsGeneralVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */; };
 		921E62D01E26B9D2007B029F /* PrefsAppearanceVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62CF1E26B9D2007B029F /* PrefsAppearanceVC.m */; };
@@ -72,6 +73,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9215AD4A1E3AECA700317FAE /* MoVFLHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoVFLHelper.h; sourceTree = "<group>"; };
+		9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoVFLHelper.m; sourceTree = "<group>"; };
 		921E62B21E26B2F2007B029F /* PrefsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsVC.h; sourceTree = "<group>"; };
 		921E62B31E26B2F2007B029F /* PrefsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsVC.m; sourceTree = "<group>"; };
 		921E62C01E26B3EA007B029F /* PrefsGeneralVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsGeneralVC.h; sourceTree = "<group>"; };
@@ -276,6 +279,8 @@
 				9278CADA1A990462004B6BB9 /* MoTableView.m */,
 				92B3C0411AA7EF43008A5C05 /* MoView.h */,
 				92B3C0421AA7EF43008A5C05 /* MoView.m */,
+				9215AD4A1E3AECA700317FAE /* MoVFLHelper.h */,
+				9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */,
 			);
 			name = MoCode;
 			sourceTree = "<group>";
@@ -370,6 +375,7 @@
 				9242A5871A82A1A1005AA4B3 /* ItsycalWindow.m in Sources */,
 				92CDDE7B1A955D7F00D7675C /* AgendaViewController.m in Sources */,
 				922B6BBB1A85E0EC00DEA9CD /* MoTextField.m in Sources */,
+				9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */,
 				9242A5901A82A40B005AA4B3 /* MoDate.m in Sources */,
 				921E62B41E26B2F2007B029F /* PrefsVC.m in Sources */,
 				925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */,

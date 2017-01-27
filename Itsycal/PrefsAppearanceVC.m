@@ -8,6 +8,7 @@
 #import "MoView.h"
 #import "MoTextField.h"
 #import "HighlightPicker.h"
+#import "MoVFLHelper.h"
 
 @implementation PrefsAppearanceVC
 {
@@ -70,22 +71,16 @@
     _highlight.target = self;
     _highlight.action = @selector(didChangeHighlight:);
     [v addSubview:_highlight];
-    
-    // Convenience function to make visual constraints.
-    void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_useOutlineIcon, _showMonth, _showDayOfWeek, _showWeeks, _dateTimeFormat, helpButton, _hideIcon, _highlight)]];
-    };
-    vcon(@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_highlight]-m-[_showWeeks]-m-|");
-    vcon(@"H:|-m-[_useOutlineIcon]-(>=m)-|");
-    vcon(@"H:|-m-[_showMonth]-(>=m)-|");
-    vcon(@"H:|-m-[_showDayOfWeek]-(>=m)-|");
-    vcon(@"H:|-m-[_dateTimeFormat]-[helpButton]-m-|");
-    vcon(@"H:|-m-[_hideIcon]-(>=m)-|");
-    vcon(@"H:|-m-[_highlight]-(>=m)-|");
-    vcon(@"H:|-m-[_showWeeks]-(>=m)-|");
 
-    // Center dateTime format and help button vertically.
-    [v addConstraint:[NSLayoutConstraint constraintWithItem:helpButton attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_dateTimeFormat attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_useOutlineIcon, _showMonth, _showDayOfWeek, _showWeeks, _dateTimeFormat, helpButton, _hideIcon, _highlight)];
+    [vfl :@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_highlight]-m-[_showWeeks]-m-|"];
+    [vfl :@"H:|-m-[_useOutlineIcon]-(>=m)-|"];
+    [vfl :@"H:|-m-[_showMonth]-(>=m)-|"];
+    [vfl :@"H:|-m-[_showDayOfWeek]-(>=m)-|"];
+    [vfl :@"H:|-m-[_dateTimeFormat]-[helpButton]-m-|" :NSLayoutFormatAlignAllCenterY];
+    [vfl :@"H:|-m-[_hideIcon]-(>=m)-|"];
+    [vfl :@"H:|-m-[_highlight]-(>=m)-|"];
+    [vfl :@"H:|-m-[_showWeeks]-(>=m)-|"];
 
     self.view = v;
 }

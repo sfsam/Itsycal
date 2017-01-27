@@ -17,6 +17,7 @@
 #import "PrefsAboutVC.h"
 #import "TooltipViewController.h"
 #import "MoButton.h"
+#import "MoVFLHelper.h"
 #import "Sparkle/SUUpdater.h"
 
 @implementation ViewController
@@ -95,16 +96,14 @@
     _agendaVC.delegate = self;
     NSView *agenda = _agendaVC.view;
     [v addSubview:agenda];
-    
-    // Convenience function to make visual constraints.
-    void (^vcon)(NSString*, NSLayoutFormatOptions) = ^(NSString *format, NSLayoutFormatOptions opts) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opts metrics:nil views:NSDictionaryOfVariableBindings(_moCal, _btnAdd, _btnCal, _btnOpt, _btnPin, agenda)]];
-    };
-    vcon(@"H:|[_moCal]|", 0);
-    vcon(@"H:|[agenda]|", 0);
-    vcon(@"H:|-6-[_btnAdd]-(>=0)-[_btnPin]-10-[_btnCal]-10-[_btnOpt]-6-|", NSLayoutFormatAlignAllCenterY);
-    vcon(@"V:|[_moCal]-6-[_btnOpt]", 0);
-    vcon(@"V:[agenda]-(-2)-|", 0);
+
+    // Constraints
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_moCal, _btnAdd, _btnCal, _btnOpt, _btnPin, agenda)];
+    [vfl :@"H:|[_moCal]|"];
+    [vfl :@"H:|[agenda]|"];
+    [vfl :@"H:|-6-[_btnAdd]-(>=0)-[_btnPin]-10-[_btnCal]-10-[_btnOpt]-6-|" :NSLayoutFormatAlignAllCenterY];
+    [vfl :@"V:|[_moCal]-6-[_btnOpt]"];
+    [vfl :@"V:[agenda]-(-2)-|"];
     
     // Margin between bottom of _moCal and top of agenda. When the agenda
     // has no items, we reduce this space so that the bottom of the window

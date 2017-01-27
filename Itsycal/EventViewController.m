@@ -9,6 +9,7 @@
 #import "EventViewController.h"
 #import "EventCenter.h"
 #import "MoView.h"
+#import "MoVFLHelper.h"
 
 @implementation EventViewController
 {
@@ -134,23 +135,21 @@
     _saveButton.action = @selector(saveEvent:);
     [v addSubview:_saveButton];
 
-    // Convenience function to make visual constraints.
-    void (^vcon)(NSString*, NSLayoutFormatOptions) = ^(NSString *format, NSLayoutFormatOptions opt) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opt metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, _alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _calPopup, _saveButton)]];
-    };
-    vcon(@"V:|-[_title]-[_location]-15-[_allDayCheckbox]", 0);
-    vcon(@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_alertPopup]-20-[_calPopup]", NSLayoutFormatAlignAllLeading);
-    vcon(@"V:[_calPopup]-20-[_saveButton]-|", 0);
-    vcon(@"H:|-[_title(>=200)]-|", 0);
-    vcon(@"H:|-[_location]-|", 0);
-    vcon(@"H:|-[allDayLabel]-[_allDayCheckbox]-|", NSLayoutFormatAlignAllBaseline);
-    vcon(@"H:|-[startsLabel]-[_startDate]-|", NSLayoutFormatAlignAllBaseline);
-    vcon(@"H:|-[endsLabel]-[_endDate]-|", NSLayoutFormatAlignAllBaseline);
-    vcon(@"H:|-[repLabel]-[_repPopup]-|", NSLayoutFormatAlignAllBaseline);
-    vcon(@"H:|-[_repEndLabel]-[_repEndPopup]-[_repEndDate]-|", NSLayoutFormatAlignAllBaseline);
-    vcon(@"H:|-[_alertLabel]-[_alertPopup]-|", NSLayoutFormatAlignAllBaseline);
-    vcon(@"H:[_calPopup]-|", NSLayoutFormatAlignAllBaseline);
-    vcon(@"H:[_saveButton]-|", 0);
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, _alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _calPopup, _saveButton)];
+
+    [vfl :@"V:|-[_title]-[_location]-15-[_allDayCheckbox]"];
+    [vfl :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_alertPopup]-20-[_calPopup]" :NSLayoutFormatAlignAllLeading];
+    [vfl :@"V:[_calPopup]-20-[_saveButton]-|"];
+    [vfl :@"H:|-[_title(>=200)]-|"];
+    [vfl :@"H:|-[_location]-|"];
+    [vfl :@"H:|-[allDayLabel]-[_allDayCheckbox]-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-[startsLabel]-[_startDate]-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-[endsLabel]-[_endDate]-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-[repLabel]-[_repPopup]-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-[_repEndLabel]-[_repEndPopup]-[_repEndDate]-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-[_alertLabel]-[_alertPopup]-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:[_calPopup]-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:[_saveButton]-|"];
     
     // Require All-day checkbox height to hug the checkbox. Without this,
     // the layout will look funny when the title is multi-line.

@@ -11,6 +11,7 @@
 #import "MoCalCell.h"
 #import "MoCalGrid.h"
 #import "MoButton.h"
+#import "MoVFLHelper.h"
 
 static NSShadow *kShadow=nil;
 static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kBorderColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil, *kHighlightedDOWTextColor=nil;
@@ -118,17 +119,14 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [self addSubview:_dateGrid];
     [self addSubview:_weekGrid];
     [self addSubview:_dowGrid];
-    
-    // Convenience function to make visual constraints.
-    void (^vcon)(NSString*, NSLayoutFormatOptions) = ^(NSString *format, NSLayoutFormatOptions opts) {
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:opts metrics:nil views:NSDictionaryOfVariableBindings(_monthLabel, _btnPrev, _btnToday, _btnNext, _dowGrid, _weekGrid, _dateGrid)]];
-    };
-    vcon(@"H:|-8-[_monthLabel]-4-[_btnPrev]-2-[_btnToday]-2-[_btnNext]-6-|", NSLayoutFormatAlignAllCenterY);
-    vcon(@"H:[_dowGrid]|", 0);
-    vcon(@"H:[_weekGrid][_dateGrid]|", 0);
-    vcon(@"V:|-(-3)-[_monthLabel]-1-[_dowGrid][_dateGrid]-1-|", 0);
-    vcon(@"V:[_weekGrid]-1-|", 0);
-    
+
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_monthLabel, _btnPrev, _btnToday, _btnNext, _dowGrid, _weekGrid, _dateGrid)];
+    [vfl :@"H:|-8-[_monthLabel]-4-[_btnPrev]-2-[_btnToday]-2-[_btnNext]-6-|" :NSLayoutFormatAlignAllCenterY];
+    [vfl :@"H:[_dowGrid]|"];
+    [vfl :@"H:[_weekGrid][_dateGrid]|"];
+    [vfl :@"V:|-(-3)-[_monthLabel]-1-[_dowGrid][_dateGrid]-1-|"];
+    [vfl :@"V:[_weekGrid]-1-|"];
+
     _weeksConstraint = [NSLayoutConstraint constraintWithItem:_weekGrid attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0];
     [self addConstraint:_weeksConstraint];
     

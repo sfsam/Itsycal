@@ -11,6 +11,7 @@
 #import "MoLoginItem/MoLoginItem.h"
 #import "MoView.h"
 #import "MoTextField.h"
+#import "MoVFLHelper.h"
 #import "EventCenter.h"
 #import "Sparkle/SUUpdater.h"
 
@@ -135,25 +136,16 @@ static NSString * const kCalendarCellId = @"CalendarCell";
                                      NSLocalizedString(@"6 days", @""),
                                      NSLocalizedString(@"7 days", @""),]];
     [v addSubview:_agendaDaysPopup];
-    
-    // Convenience function to make visual constraints.
-    void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_login, _checkUpdates, firstDayLabel, _firstDayPopup, shortcutLabel, shortcutView, tvContainer, agendaDaysLabel, _agendaDaysPopup)]];
-    };
-    vcon(@"V:|-m-[_login]-[_checkUpdates]-20-[_firstDayPopup]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_agendaDaysPopup]-m-|");
-    vcon(@"H:|-m-[_login]-(>=m)-|");
-    vcon(@"H:|-m-[_checkUpdates]-(>=m)-|");
-    vcon(@"H:|-m-[firstDayLabel]-[_firstDayPopup]-(>=m)-|");
-    vcon(@"H:|-(>=m)-[shortcutLabel]-(>=m)-|");
-    vcon(@"H:|-m-[shortcutView(>=220)]-m-|");
-    vcon(@"H:|-m-[tvContainer]-m-|");
-    vcon(@"H:|-m-[agendaDaysLabel]-[_agendaDaysPopup]-(>=m)-|");
 
-    // Baselines of firstDayLabel and _firstDayPopup
-    [v addConstraint:[NSLayoutConstraint constraintWithItem:firstDayLabel attribute:NSLayoutAttributeBaseline relatedBy:NSLayoutRelationEqual toItem:_firstDayPopup attribute:NSLayoutAttributeBaseline multiplier:1 constant:0]];
-
-    // Baselines of agendaDaysLabel and _agendaDaysPopup
-    [v addConstraint:[NSLayoutConstraint constraintWithItem:agendaDaysLabel attribute:NSLayoutAttributeBaseline relatedBy:NSLayoutRelationEqual toItem:_agendaDaysPopup attribute:NSLayoutAttributeBaseline multiplier:1 constant:0]];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_login, _checkUpdates, firstDayLabel, _firstDayPopup, shortcutLabel, shortcutView, tvContainer, agendaDaysLabel, _agendaDaysPopup)];
+    [vfl :@"V:|-m-[_login]-[_checkUpdates]-20-[_firstDayPopup]-20-[shortcutLabel]-3-[shortcutView(25)]-20-[tvContainer(170)]-[_agendaDaysPopup]-m-|"];
+    [vfl :@"H:|-m-[_login]-(>=m)-|"];
+    [vfl :@"H:|-m-[_checkUpdates]-(>=m)-|"];
+    [vfl :@"H:|-m-[firstDayLabel]-[_firstDayPopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
+    [vfl :@"H:|-(>=m)-[shortcutLabel]-(>=m)-|"];
+    [vfl :@"H:|-m-[shortcutView(>=220)]-m-|"];
+    [vfl :@"H:|-m-[tvContainer]-m-|"];
+    [vfl :@"H:|-m-[agendaDaysLabel]-[_agendaDaysPopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
 
     // Center shortcutLabel
     [v addConstraint:[NSLayoutConstraint constraintWithItem:shortcutLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:v attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];

@@ -7,6 +7,7 @@
 #import "Itsycal.h"
 #import "MoView.h"
 #import "MoTextField.h"
+#import "MoVFLHelper.h"
 
 @implementation PrefsAboutVC
 
@@ -65,20 +66,17 @@
     MoTextField *copyright = label(infoDict[@"NSHumanReadableCopyright"], NO);
     copyright.textColor = [NSColor disabledControlTextColor];
 
-    // Convenience function to make visual constraints.
-    void (^vcon)(NSString*) = ^(NSString *format) {
-        [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:format options:0 metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appName, appLink, twtrLink, acknowledgments, sparkleLink, sparkleCopyright, masshortcutLink, masshortcutCopyright, copyright)]];
-    };
-    vcon(@"V:|-m-[appName]-[appLink]-[twtrLink]-30-[acknowledgments]-[sparkleLink][sparkleCopyright]-[masshortcutLink][masshortcutCopyright]-40-[copyright]-m-|");
-    vcon(@"H:|-m-[appName]-(>=m)-|");
-    vcon(@"H:|-m-[appLink]-(>=m)-|");
-    vcon(@"H:|-m-[twtrLink]-(>=m)-|");
-    vcon(@"H:|-m-[acknowledgments]-(>=m)-|");
-    vcon(@"H:|-m-[sparkleLink]-(>=m)-|");
-    vcon(@"H:|-m-[sparkleCopyright]-(>=m)-|");
-    vcon(@"H:|-m-[masshortcutLink]-(>=m)-|");
-    vcon(@"H:|-m-[masshortcutCopyright]-(>=m)-|");
-    vcon(@"H:|-m-[copyright]-(>=m)-|");
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appName, appLink, twtrLink, acknowledgments, sparkleLink, sparkleCopyright, masshortcutLink, masshortcutCopyright, copyright)];
+    [vfl :@"V:|-m-[appName]-[appLink]-[twtrLink]-30-[acknowledgments]-[sparkleLink][sparkleCopyright]-[masshortcutLink][masshortcutCopyright]-40-[copyright]-m-|"];
+    [vfl :@"H:|-m-[appName]-(>=m)-|"];
+    [vfl :@"H:|-m-[appLink]-(>=m)-|"];
+    [vfl :@"H:|-m-[twtrLink]-(>=m)-|"];
+    [vfl :@"H:|-m-[acknowledgments]-(>=m)-|"];
+    [vfl :@"H:|-m-[sparkleLink]-(>=m)-|"];
+    [vfl :@"H:|-m-[sparkleCopyright]-(>=m)-|"];
+    [vfl :@"H:|-m-[masshortcutLink]-(>=m)-|"];
+    [vfl :@"H:|-m-[masshortcutCopyright]-(>=m)-|"];
+    [vfl :@"H:|-m-[copyright]-(>=m)-|"];
 
     self.view = v;
 }
