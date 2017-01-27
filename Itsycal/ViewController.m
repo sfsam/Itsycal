@@ -37,8 +37,6 @@
     NSString  *_clockFormat;
     NSTimer   *_clockTimer;
     BOOL       _clockUsesSeconds;
-    NSFont    *_statusItemRegularFont;
-    NSFont    *_statusItemMonospaceFont;
 }
 
 - (void)dealloc
@@ -324,14 +322,14 @@
     _statusItem.button.action = @selector(statusItemClicked:);
     _statusItem.highlightMode = NO; // Deprecated in 10.10, but what is alternative?
 
-    // Use monospace font if the datetime format displays seconds.
+    // Use monospaced font in case user sets custom clock format
+    // so the status item doesn't move when the time changes.
     // We modify the default font with a font descriptor instead
     // of using +monospacedDigitSystemFontOfSize:weight: because
     // we get slightly darker looking ':' characters this way.
     NSFontDescriptor *fontDesc = [_statusItem.button.font fontDescriptor];
     fontDesc = [fontDesc fontDescriptorByAddingAttributes:@{NSFontFeatureSettingsAttribute: @[@{NSFontFeatureTypeIdentifierKey: @(kNumberSpacingType), NSFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)}]}];
-    _statusItemMonospaceFont = [NSFont fontWithDescriptor:fontDesc size:0];
-    _statusItemRegularFont = [_statusItem.button.font copy];
+    _statusItem.button.font = [NSFont fontWithDescriptor:fontDesc size:0];
 
     // Remember item position in menubar. (@pskowronek (Github))
     [_statusItem setAutosaveName:@"ItsycalStatusItem"];
@@ -786,7 +784,6 @@
     if (format != nil && ![format isEqualToString:@""]) {
         NSLog(@"Use custom clock format: [%@]", format);
         _clockUsesSeconds = [self formatContainsSecondsSpecifier:format];
-        _statusItem.button.font = _clockUsesSeconds ? _statusItemMonospaceFont : _statusItemRegularFont;
         _clockFormat = format;
     }
     else {
