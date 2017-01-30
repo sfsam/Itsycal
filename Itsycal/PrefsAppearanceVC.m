@@ -27,9 +27,7 @@
 - (void)loadView
 {
     // View controller content view
-    MoView *v = [MoView new];
-
-    v.translatesAutoresizingMaskIntoConstraints = YES;
+    NSView *v = [NSView new];
 
     // Convenience function for making checkboxes.
     NSButton* (^chkbx)(NSString *) = ^NSButton* (NSString *title) {

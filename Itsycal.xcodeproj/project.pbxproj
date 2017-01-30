@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */; };
-		921E62B41E26B2F2007B029F /* PrefsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62B31E26B2F2007B029F /* PrefsVC.m */; };
 		921E62CD1E26B3EA007B029F /* PrefsGeneralVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */; };
 		921E62D01E26B9D2007B029F /* PrefsAppearanceVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62CF1E26B9D2007B029F /* PrefsAppearanceVC.m */; };
 		921E62D31E26E038007B029F /* PrefsAboutVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62D21E26E038007B029F /* PrefsAboutVC.m */; };
@@ -38,6 +37,7 @@
 		925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B47171A93B63100E0329A /* MoCalToolTipWC.m */; };
 		925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B471A1A93CD2A00E0329A /* TooltipViewController.m */; };
 		92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92658E611A9DBD8E002AE86C /* EventViewController.m */; };
+		926A6D8F1E3EC89100AAA991 /* PrefsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 926A6D8E1E3EC89100AAA991 /* PrefsVC.m */; };
 		9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9278CADA1A990462004B6BB9 /* MoTableView.m */; };
 		929223EB1E2D6E0900F1A119 /* HighlightPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 929223EA1E2D6E0800F1A119 /* HighlightPicker.m */; };
 		92B3C0431AA7EF43008A5C05 /* MoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92B3C0421AA7EF43008A5C05 /* MoView.m */; };
@@ -75,8 +75,6 @@
 /* Begin PBXFileReference section */
 		9215AD4A1E3AECA700317FAE /* MoVFLHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoVFLHelper.h; sourceTree = "<group>"; };
 		9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoVFLHelper.m; sourceTree = "<group>"; };
-		921E62B21E26B2F2007B029F /* PrefsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsVC.h; sourceTree = "<group>"; };
-		921E62B31E26B2F2007B029F /* PrefsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsVC.m; sourceTree = "<group>"; };
 		921E62C01E26B3EA007B029F /* PrefsGeneralVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsGeneralVC.h; sourceTree = "<group>"; };
 		921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsGeneralVC.m; sourceTree = "<group>"; };
 		921E62CE1E26B9D2007B029F /* PrefsAppearanceVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsAppearanceVC.h; sourceTree = "<group>"; };
@@ -135,6 +133,8 @@
 		925B471D1A93E3D800E0329A /* MoCalTooltipProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoCalTooltipProvider.h; sourceTree = "<group>"; };
 		92658E601A9DBD8E002AE86C /* EventViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventViewController.h; sourceTree = "<group>"; };
 		92658E611A9DBD8E002AE86C /* EventViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventViewController.m; sourceTree = "<group>"; };
+		926A6D8D1E3EC89100AAA991 /* PrefsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsVC.h; sourceTree = "<group>"; };
+		926A6D8E1E3EC89100AAA991 /* PrefsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsVC.m; sourceTree = "<group>"; };
 		9278CAD91A990462004B6BB9 /* MoTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoTableView.h; sourceTree = "<group>"; };
 		9278CADA1A990462004B6BB9 /* MoTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoTableView.m; sourceTree = "<group>"; };
 		929223E91E2D6E0800F1A119 /* HighlightPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightPicker.h; sourceTree = "<group>"; };
@@ -207,8 +207,8 @@
 				9242A5851A82A1A1005AA4B3 /* ItsycalWindow.h */,
 				9242A5861A82A1A1005AA4B3 /* ItsycalWindow.m */,
 				92CDDE7C1A97FFE700D7675C /* MoCode */,
-				921E62B21E26B2F2007B029F /* PrefsVC.h */,
-				921E62B31E26B2F2007B029F /* PrefsVC.m */,
+				926A6D8D1E3EC89100AAA991 /* PrefsVC.h */,
+				926A6D8E1E3EC89100AAA991 /* PrefsVC.m */,
 				921E62C01E26B3EA007B029F /* PrefsGeneralVC.h */,
 				921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */,
 				921E62CE1E26B9D2007B029F /* PrefsAppearanceVC.h */,
@@ -367,6 +367,7 @@
 				9242A5921A82A40B005AA4B3 /* MoCalGrid.m in Sources */,
 				92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */,
 				922232CD1A8DF672003BFAD9 /* EventCenter.m in Sources */,
+				926A6D8F1E3EC89100AAA991 /* PrefsVC.m in Sources */,
 				922D9B261DC7A1CA0050AB2F /* MoUtils.m in Sources */,
 				9242A5651A82A136005AA4B3 /* main.m in Sources */,
 				9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */,
@@ -377,7 +378,6 @@
 				922B6BBB1A85E0EC00DEA9CD /* MoTextField.m in Sources */,
 				9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */,
 				9242A5901A82A40B005AA4B3 /* MoDate.m in Sources */,
-				921E62B41E26B2F2007B029F /* PrefsVC.m in Sources */,
 				925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */,
 				921E62D01E26B9D2007B029F /* PrefsAppearanceVC.m in Sources */,
 				9242A5961A82BE5E005AA4B3 /* Itsycal.m in Sources */,

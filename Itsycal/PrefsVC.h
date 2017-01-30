@@ -1,5 +1,5 @@
 //
-//  Created by Sanjay Madan on 1/11/17.
+//  Created by Sanjay Madan on 1/29/17.
 //  Copyright © 2017 mowglii.com. All rights reserved.
 //
 
@@ -7,7 +7,7 @@
 
 @class EventCenter;
 
-@interface PrefsVC : NSTabViewController
+@interface PrefsVC : NSViewController <NSToolbarDelegate>
 
 @property (nonatomic, weak) EventCenter *ec;
 

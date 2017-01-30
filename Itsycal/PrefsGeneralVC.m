@@ -55,10 +55,8 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 - (void)loadView
 {
     // View controller content view
-    MoView *v = [MoView new];
+    NSView *v = [NSView new];
 
-    v.translatesAutoresizingMaskIntoConstraints = YES;
- 
     // Convenience function for making labels.
     MoTextField* (^label)(NSString*) = ^MoTextField* (NSString *stringValue) {
         MoTextField *txt = [MoTextField labelWithString:stringValue];

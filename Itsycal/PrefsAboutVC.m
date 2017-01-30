@@ -17,9 +17,7 @@
 - (void)loadView
 {
     // View controller content view
-    MoView *v = [MoView new];
-
-    v.translatesAutoresizingMaskIntoConstraints = YES;
+    NSView *v = [NSView new];
 
     // Convenience function for making labels.
     MoTextField* (^label)(NSString*, BOOL) = ^MoTextField* (NSString *stringValue, BOOL isLink) {

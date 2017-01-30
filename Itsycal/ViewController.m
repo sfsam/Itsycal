@@ -279,24 +279,17 @@
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
     
     if (!_prefsWC) {
-        // Create prefs VC. It is a container VC for the VC's that
-        // control each tab.
+        // VCs for each tab in prefs panel.
+        PrefsGeneralVC *prefsGeneralVC = [PrefsGeneralVC new];
+        PrefsAppearanceVC *prefsAppearanceVC = [PrefsAppearanceVC new];
+        PrefsAboutVC *prefsAboutVC = [PrefsAboutVC new];
+        prefsGeneralVC.title = NSLocalizedString(@"General", @"General prefs tab label");
+        prefsAppearanceVC.title = NSLocalizedString(@"Appearance", @"Appearance prefs tab label");
+        prefsAboutVC.title = NSLocalizedString(@"About", @"About prefs tab label");
+        // prefsVC is the container VC the tab VCs.
         PrefsVC *prefsVC = [PrefsVC new];
         prefsVC.ec = _ec;
-        prefsVC.tabStyle = NSTabViewControllerTabStyleToolbar;
-        prefsVC.transitionOptions = NSViewControllerTransitionNone;
-        // Add General prefs VC to prefsVC.
-        PrefsGeneralVC *prefsGeneralVC = [PrefsGeneralVC new];
-        [prefsVC addChildViewController:prefsGeneralVC];
-        [prefsVC tabViewItemForViewController:prefsGeneralVC].label = NSLocalizedString(@"General", @"General prefs tab label");
-        // Add Appearance prefs VC to prefsVC.
-        PrefsAppearanceVC *prefsAppearanceVC = [PrefsAppearanceVC new];
-        [prefsVC addChildViewController:prefsAppearanceVC];
-        [prefsVC tabViewItemForViewController:prefsAppearanceVC].label = NSLocalizedString(@"Appearance", @"Appearance prefs tab label");
-        // Add About prefs VC to prefsVC.
-        PrefsAboutVC *prefsAboutVC = [PrefsAboutVC new];
-        [prefsVC addChildViewController:prefsAboutVC];
-        [prefsVC tabViewItemForViewController:prefsAboutVC].label = NSLocalizedString(@"About", @"About prefs tab label");
+        prefsVC.childViewControllers = @[prefsGeneralVC, prefsAppearanceVC, prefsAboutVC];
         // Create prefs WC.
         NSPanel *panel = [[NSPanel alloc] initWithContentRect:NSZeroRect styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable) backing:NSBackingStoreBuffered defer:NO];
         _prefsWC = [[NSWindowController alloc] initWithWindow:panel];
