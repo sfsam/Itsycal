@@ -52,6 +52,9 @@
 {
     NSViewController *toVC = [self viewControllerForItemIdentifier:item.itemIdentifier];
     if (toVC) {
+
+        if (self.view.subviews[0] == toVC.view) return;
+
         NSWindow *window = self.view.window;
         NSRect contentRect = (NSRect){0, 0, toVC.view.fittingSize};
         NSRect contentFrame = [window frameRectForContentRect:contentRect];
