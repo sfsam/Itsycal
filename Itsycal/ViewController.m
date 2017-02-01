@@ -175,8 +175,7 @@
     unichar keyChar = [charsIgnoringModifiers characterAtIndex:0];
     
     if (keyChar == 'w' && noFlags) {
-        _moCal.showWeeks = !_moCal.showWeeks;
-        [[NSUserDefaults standardUserDefaults] setBool:_moCal.showWeeks forKey:kShowWeeks];
+        [[NSUserDefaults standardUserDefaults] setBool:!_moCal.showWeeks forKey:kShowWeeks];
     }
     else if (keyChar == ',' && cmdFlag) {
         [self showPrefs:self];
