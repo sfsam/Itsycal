@@ -142,6 +142,19 @@
     [_moCal bind:@"showWeeks" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowWeeks] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_moCal bind:@"highlightedDOWs" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightedDOWs] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_moCal bind:@"weekStartDOW" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kWeekStartDOW] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+
+    // A very ugly and questionable hack. Maybe it doesn't work. It
+    // shouldn't work. But I think it might. Somehow prevents(?!?)
+    // defaults from temporarily changing to NULL and then reverting
+    // back after the first access. The bug seems random and hard to
+    // replicate so I don't know if (or why) this works. The idea is
+    // a bogus first access will prevent the bug from happening when
+    // the user changes defaults the first time.
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setBool:YES forKey:@"WakeUpUserDefaults"];
+    [defaults synchronize];
+    [defaults removeObjectForKey:@"WakeUpUserDefaults"];
+    [defaults synchronize];
 }
 
 - (void)viewWillAppear
