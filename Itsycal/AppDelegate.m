@@ -23,14 +23,14 @@
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults registerDefaults:@{
-        kPinItsycal:       @(NO),
-        kShowWeeks:        @(NO),
-        kHighlightedDOWs: @0,
-        kShowEventDays:    @7,
-        kWeekStartDOW:     @0, // Sun=0, Mon=1,... (MoCalendar.h)
-        kShowMonthInIcon:  @(NO),
-        kShowDayOfWeekInIcon: @(NO),
-        kHideIcon: @(NO)
+        kPinItsycal:           @(NO),
+        kShowWeeks:            @(NO),
+        kHighlightedDOWs:      @0,
+        kShowEventDays:        @7,
+        kWeekStartDOW:         @0, // Sun=0, Mon=1,... (MoCalendar.h)
+        kShowMonthInIcon:      @(NO),
+        kShowDayOfWeekInIcon:  @(NO),
+        kHideIcon:             @(NO)
     }];
     
     // Constrain kShowEventDays to values 0...7 in (unlikely) case it is invalid.
@@ -55,7 +55,7 @@
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
          [_vc keyboardShortcutActivated];
      }];
-    
+
     _vc = [ViewController new];
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
     _wc.contentViewController = _vc;
