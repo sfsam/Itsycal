@@ -38,17 +38,19 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
 + (void)initialize
 {
     kShadow = [NSShadow new];
-    kShadow.shadowColor = [NSColor colorWithWhite:0 alpha:0.3];
-    kShadow.shadowBlurRadius = 2;
+    kShadow.shadowColor = [NSColor colorWithWhite:0 alpha:0.2];
+    kShadow.shadowBlurRadius = 1;
     kShadow.shadowOffset = NSMakeSize(0, -1);
     kBorderColor = [NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1];
     kOutlineColor = [NSColor colorWithRed:0.7 green:0.7 blue:0.73 alpha:1];
+    kBorderColor = [NSColor colorWithWhite:0.86 alpha:1];
+    kOutlineColor = [NSColor colorWithWhite:0.76 alpha:1];
     kLightTextColor = [NSColor colorWithWhite:0.15 alpha:0.6];
     kDarkTextColor  = [NSColor colorWithWhite:0.15 alpha:1];
     kHighlightedDOWTextColor = [NSColor colorWithRed:0.75 green:0.2 blue:0.1 alpha:1];
     kBackgroundColor = [NSColor whiteColor];
-    kWeeksBackgroundColor = [NSColor colorWithRed:0.86 green:0.86 blue:0.88 alpha:1];
-    kDatesBackgroundColor = [NSColor colorWithRed:0.95 green:0.95 blue:0.96 alpha:1];
+    kWeeksBackgroundColor = [NSColor colorWithWhite:0.86 alpha:1];
+    kDatesBackgroundColor = [NSColor colorWithWhite:0.95 alpha:1];
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
