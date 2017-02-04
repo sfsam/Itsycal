@@ -340,6 +340,7 @@
     [_statusItem setAutosaveName:@"ItsycalStatusItem"];
 
     [self clockFormatDidChange];
+    [self updateMenubarIcon];
     [self updateStatusItemPositionInfo];
     [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
     
