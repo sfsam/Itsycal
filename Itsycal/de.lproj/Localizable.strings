@@ -56,7 +56,7 @@
 "All-day:" = "Ganztägig:";
 
 /* Appearance prefs tab label */
-"Appearance" = "Ersheinung";
+"Appearance" = "Oberfläche";
 
 /* No comment provided by engineer. */
 "Are you sure you want to delete this event?" = "Sind Sie sicher, dass Sie dieses Ereignis entfernen möchten ?";
@@ -227,7 +227,7 @@ Bitte beenden Sie Itsycal, es in den Programme-Ordner zu verschieben, und erneut
 "Tuesday" = "Dienstag";
 
 /* No comment provided by engineer. */
-"Use outline icon" = "Verwende skizzierte menüleistensymbol";
+"Use outline icon" = "Verwende skizziertes Menüleistensymbol";
 
 /* No comment provided by engineer. */
 "Wednesday" = "Mittwoch";
