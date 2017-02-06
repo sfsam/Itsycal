@@ -34,6 +34,7 @@
 		9242A5921A82A40B005AA4B3 /* MoCalGrid.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A58D1A82A40B005AA4B3 /* MoCalGrid.m */; };
 		9242A5931A82A40B005AA4B3 /* MoCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A58F1A82A40B005AA4B3 /* MoCalendar.m */; };
 		9242A5961A82BE5E005AA4B3 /* Itsycal.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5951A82BE5E005AA4B3 /* Itsycal.m */; };
+		925407191E48FDB300541B9E /* VarelaRoundNeo-SemiBold.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 925407171E48FDA700541B9E /* VarelaRoundNeo-SemiBold.otf */; };
 		925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B47171A93B63100E0329A /* MoCalToolTipWC.m */; };
 		925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B471A1A93CD2A00E0329A /* TooltipViewController.m */; };
 		92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92658E611A9DBD8E002AE86C /* EventViewController.m */; };
@@ -65,6 +66,7 @@
 			dstPath = Fonts;
 			dstSubfolderSpec = 7;
 			files = (
+				925407191E48FDB300541B9E /* VarelaRoundNeo-SemiBold.otf in CopyFiles */,
 				92C2F3141D3811E1009048D9 /* VarelaRoundNeo-Bold.otf in CopyFiles */,
 				92C2F3151D3811E4009048D9 /* VarelaRoundNeo-Regular.otf in CopyFiles */,
 			);
@@ -126,6 +128,7 @@
 		9242A58F1A82A40B005AA4B3 /* MoCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoCalendar.m; sourceTree = "<group>"; };
 		9242A5941A82BE5E005AA4B3 /* Itsycal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Itsycal.h; sourceTree = "<group>"; };
 		9242A5951A82BE5E005AA4B3 /* Itsycal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Itsycal.m; sourceTree = "<group>"; };
+		925407171E48FDA700541B9E /* VarelaRoundNeo-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "VarelaRoundNeo-SemiBold.otf"; path = "_fonts/VarelaRoundNeo-SemiBold.otf"; sourceTree = "<group>"; };
 		925B47161A93B63100E0329A /* MoCalToolTipWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoCalToolTipWC.h; sourceTree = "<group>"; };
 		925B47171A93B63100E0329A /* MoCalToolTipWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoCalToolTipWC.m; sourceTree = "<group>"; };
 		925B47191A93CD2A00E0329A /* TooltipViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TooltipViewController.h; sourceTree = "<group>"; };
@@ -259,6 +262,7 @@
 		927145041A8DF20000745411 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				925407171E48FDA700541B9E /* VarelaRoundNeo-SemiBold.otf */,
 				92C2F3101D380FC2009048D9 /* VarelaRoundNeo-Bold.otf */,
 				92C2F3111D380FC2009048D9 /* VarelaRoundNeo-Regular.otf */,
 			);

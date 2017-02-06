@@ -53,19 +53,26 @@
     MoTextField *masshortcutLink = label(@"MASShortcut", YES);
     masshortcutLink.urlString = @"https://github.com/shpakovski/MASShortcut";
 
+    MoTextField *varelaLink = label(@"Varela Round", YES);
+    varelaLink.urlString = @"https://github.com/alefalefalef/Varela-Round-Hebrew";
+
     // Labels
-    MoTextField *acknowledgments = label(@"Acknowledgments:", NO);
+    MoTextField *acknowledgments = label(@"(๑˃̵ᴗ˂̵)و", NO);
+    acknowledgments.font = [NSFont systemFontOfSize:16];
     MoTextField *sparkleCopyright = label(@"Copyright © 2006 Andy Matuschak", NO);
     sparkleCopyright.font = [NSFont systemFontOfSize:11];
     sparkleCopyright.textColor = [NSColor disabledControlTextColor];
     MoTextField *masshortcutCopyright = label(@"Copyright © 2013 Vadim Shpakovski", NO);
     masshortcutCopyright.font = [NSFont systemFontOfSize:11];
     masshortcutCopyright.textColor = [NSColor disabledControlTextColor];
+    MoTextField *varelaCopyright = label(@"Copyright © 2016 Varela Round Authors", NO);
+    varelaCopyright.font = [NSFont systemFontOfSize:11];
+    varelaCopyright.textColor = [NSColor disabledControlTextColor];
     MoTextField *copyright = label(infoDict[@"NSHumanReadableCopyright"], NO);
     copyright.textColor = [NSColor disabledControlTextColor];
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appName, appLink, twtrLink, acknowledgments, sparkleLink, sparkleCopyright, masshortcutLink, masshortcutCopyright, copyright)];
-    [vfl :@"V:|-m-[appName]-[appLink]-[twtrLink]-30-[acknowledgments]-[sparkleLink][sparkleCopyright]-[masshortcutLink][masshortcutCopyright]-40-[copyright]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appName, appLink, twtrLink, acknowledgments, sparkleLink, sparkleCopyright, masshortcutLink, masshortcutCopyright, varelaLink, varelaCopyright, copyright)];
+    [vfl :@"V:|-m-[appName]-[appLink]-[twtrLink]-20-[acknowledgments]-[sparkleLink][sparkleCopyright]-[masshortcutLink][masshortcutCopyright]-[varelaLink][varelaCopyright]-30-[copyright]-m-|"];
     [vfl :@"H:|-m-[appName]-(>=m)-|"];
     [vfl :@"H:|-m-[appLink]-(>=m)-|"];
     [vfl :@"H:|-m-[twtrLink]-(>=m)-|"];
@@ -74,6 +81,8 @@
     [vfl :@"H:|-m-[sparkleCopyright]-(>=m)-|"];
     [vfl :@"H:|-m-[masshortcutLink]-(>=m)-|"];
     [vfl :@"H:|-m-[masshortcutCopyright]-(>=m)-|"];
+    [vfl :@"H:|-m-[varelaLink]-(>=m)-|"];
+    [vfl :@"H:|-m-[varelaCopyright]-(>=m)-|"];
     [vfl :@"H:|-m-[copyright]-(>=m)-|"];
 
     self.view = v;

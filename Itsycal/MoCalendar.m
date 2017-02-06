@@ -78,7 +78,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     
     _monthLabel = [NSTextField new];
     _monthLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _monthLabel.font = [NSFont fontWithName:@"VarelaRoundNeo-Bold" size:13];
+    _monthLabel.font = [NSFont fontWithName:@"VarelaRoundNeo-SemiBold" size:13];
     _monthLabel.textColor = kDarkTextColor;
     _monthLabel.bezeled = NO;
     _monthLabel.editable = NO;
