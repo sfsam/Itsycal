@@ -9,6 +9,7 @@
 {
     NSToolbar *_toolbar;
     NSMutableArray<NSString *> *_toolbarIdentifiers;
+    NSInteger _selectedItemTag;
 }
 
 - (instancetype)init
@@ -19,6 +20,7 @@
         _toolbar.allowsUserCustomization = NO;
         _toolbar.delegate = self;
         _toolbarIdentifiers = [NSMutableArray new];
+        _selectedItemTag = 0;
     }
     return self;
 }
@@ -50,6 +52,10 @@
 
 - (void)toolbarItemClicked:(NSToolbarItem *)item
 {
+    if (_selectedItemTag == item.tag) return;
+
+    _selectedItemTag = item.tag;
+
     NSViewController *toVC = [self viewControllerForItemIdentifier:item.itemIdentifier];
     if (toVC) {
 
@@ -95,6 +101,7 @@
     item.image = [NSImage imageNamed:NSStringFromClass([[self viewControllerForItemIdentifier:itemIdentifier] class])];
     item.target = self;
     item.action = @selector(toolbarItemClicked:);
+    item.tag = [_toolbarIdentifiers indexOfObject:itemIdentifier];
     return item;
 }
 
