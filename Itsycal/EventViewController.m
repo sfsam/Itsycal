@@ -30,6 +30,7 @@
         txt.translatesAutoresizingMaskIntoConstraints = NO;
         txt.editable = isEditable;
         txt.bezeled = isEditable;
+        txt.bezelStyle = NSTextFieldRoundedBezel;
         txt.drawsBackground = isEditable;
         if (isEditable) {
             txt.placeholderString = stringValue;
