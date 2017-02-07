@@ -295,12 +295,12 @@
         PrefsGeneralVC *prefsGeneralVC = [PrefsGeneralVC new];
         PrefsAppearanceVC *prefsAppearanceVC = [PrefsAppearanceVC new];
         PrefsAboutVC *prefsAboutVC = [PrefsAboutVC new];
+        prefsGeneralVC.ec = _ec;
         prefsGeneralVC.title = NSLocalizedString(@"General", @"General prefs tab label");
         prefsAppearanceVC.title = NSLocalizedString(@"Appearance", @"Appearance prefs tab label");
         prefsAboutVC.title = NSLocalizedString(@"About", @"About prefs tab label");
         // prefsVC is the container VC the tab VCs.
         PrefsVC *prefsVC = [PrefsVC new];
-        prefsVC.ec = _ec;
         prefsVC.childViewControllers = @[prefsGeneralVC, prefsAppearanceVC, prefsAboutVC];
         // Create prefs WC.
         NSPanel *panel = [[NSPanel alloc] initWithContentRect:NSZeroRect styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable) backing:NSBackingStoreBuffered defer:NO];

@@ -4,7 +4,6 @@
 //
 
 #import "PrefsGeneralVC.h"
-#import "PrefsVC.h"
 #import "Itsycal.h"
 #import "MASShortcut/MASShortcutView.h"
 #import "MASShortcut/MASShortcutView+Bindings.h"
@@ -41,12 +40,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     NSPopUpButton *_firstDayPopup;
     NSTableView *_calendarsTV;
     NSPopUpButton *_agendaDaysPopup;
-}
-
-- (EventCenter *)ec
-{
-    PrefsVC *parent = (PrefsVC *)self.parentViewController;
-    return parent.ec;
 }
 
 #pragma mark -

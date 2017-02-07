@@ -5,10 +5,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class EventCenter;
-
 @interface PrefsVC : NSViewController <NSToolbarDelegate>
-
-@property (nonatomic, weak) EventCenter *ec;
 
 @end
