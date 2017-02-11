@@ -27,7 +27,8 @@
     NSCalendar    *_nsCal;
     NSStatusItem  *_statusItem;
     MoButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
-    NSRect         _menuItemFrame, _screenFrame;
+    NSRect         _menuItemFrame;
+    CGFloat        _screenMaxX;
     NSWindowController    *_prefsWC;
     AgendaViewController  *_agendaVC;
     EventViewController   *_eventVC;
@@ -172,7 +173,7 @@
 {
     [super viewDidAppear];
 
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:_screenMaxX];
 }
 
 #pragma mark -
@@ -342,8 +343,8 @@
     [self clockFormatDidChange];
     [self updateMenubarIcon];
     [self updateStatusItemPositionInfo];
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
-    
+    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:_screenMaxX];
+
     // Notification for when status item view moves
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidMoveNotification object:_statusItem.button.window];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidResizeNotification object:_statusItem.button.window];
@@ -508,15 +509,35 @@
 - (void)updateStatusItemPositionInfo
 {
     _menuItemFrame = [_statusItem.button.window convertRectToScreen:_statusItem.button.frame];
-    _screenFrame = [[NSScreen mainScreen] frame];
-    
+
+    // Which screen is the status item on? I'd like to just use
+    // _statusItem.button.window.screen, but that property is nil
+    // when the user is working with a full screen app: the menu
+    // bar isn't drawn and so the status item is offscreen.
+    // Alternatively, I'd like to use [NSScreen mainscreen], but
+    // that method seems to give the wrong answer when the user
+    // is working on an external monitor with a full screen app.
+    // So... I iterate over all the screens and see which one
+    // contains the x-coordinate of the statusItem's origin. I
+    // think this implicitly assumes that screens are arranged
+    // horizontally.
+    NSScreen *statusItemScreen = [NSScreen mainScreen];
+    for (NSScreen *screen in [NSScreen screens]) {
+        if (_menuItemFrame.origin.x >= NSMinX(screen.frame) &&
+            _menuItemFrame.origin.x <= NSMaxX(screen.frame)) {
+            statusItemScreen = screen;
+            break;
+        }
+    }
+    _screenMaxX = NSMaxX(statusItemScreen.frame);
+
     // Constrain the menu item's frame to be no higher than the top
     // of the screen. For some reason, when an app is in fullscreen
     // mode sometimes the menu item frame is reported to be *above*
     // the top of the screen. The result is that the calendar is
     // shown clipped at the top. Prevent that by constraining the
     // top of the menu item to be at most the top of the screen.
-    _menuItemFrame.origin.y = MIN(_menuItemFrame.origin.y, _screenFrame.origin.y + _screenFrame.size.height);
+    _menuItemFrame.origin.y = MIN(_menuItemFrame.origin.y, NSMaxY(statusItemScreen.frame));
 }
 
 - (void)statusItemMoved:(NSNotification *)note
@@ -543,18 +564,13 @@
     // handle this scenario first.
     [self updateStatusItemPositionInfo];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+        [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:_screenMaxX];
     });
 }
 
 - (void)statusItemClicked:(id)sender
 {
     [self updateStatusItemPositionInfo];
-    [self menuIconClickedAction];
-}
-
-- (void)menuIconClickedAction
-{
     // If there are multiple screens and Itsycal is showing
     // on one and the user clicks the menu item on another,
     // instead of a regular toggle, we want Itsycal to hide
@@ -572,7 +588,12 @@
             return;
         }
     }
-    [self toggleItsycalWindow];
+    if ([self.itsycalWindow occlusionState] & NSWindowOcclusionStateVisible) {
+        [self.itsycalWindow orderOut:self];
+    }
+    else {
+        [self showItsycalWindow];
+    }
 }
 
 #pragma mark -
@@ -583,20 +604,10 @@
     return (ItsycalWindow *)self.view.window;
 }
 
-- (void)toggleItsycalWindow
-{
-    if ([self.itsycalWindow occlusionState] & NSWindowOcclusionStateVisible) {
-        [self.itsycalWindow orderOut:self];
-    }
-    else {
-        [self showItsycalWindow];
-    }
-}
-
 - (void)showItsycalWindow
 {
     [[NSApplication sharedApplication] unhideWithoutActivation];
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:_screenMaxX];
     [self.itsycalWindow makeKeyAndOrderFront:self];
     [self.itsycalWindow makeFirstResponder:_moCal];
 }
@@ -609,7 +620,7 @@
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenFrame:_screenFrame];
+    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:_screenMaxX];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification

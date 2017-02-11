@@ -42,6 +42,7 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
         [self setLevel:NSMainMenuWindowLevel];
         [self setMovableByWindowBackground:NO];
         [self setHasShadow:NO];
+        [self setCollectionBehavior:NSWindowCollectionBehaviorMoveToActiveSpace];
         // Fade out when -[NSWindow orderOut:] is called.
         [self setAnimationBehavior:NSWindowAnimationBehaviorUtilityWindow];
     }
@@ -114,7 +115,7 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
     return NSOffsetRect(rect, kWindowSideMargin, kWindowBottomMargin);
 }
 
-- (void)positionRelativeToRect:(NSRect)rect screenFrame:(NSRect)screenFrame
+- (void)positionRelativeToRect:(NSRect)rect screenMaxX:(CGFloat)screenMaxX
 {
     // Calculate window's top left point.
     // First, center window under status item.
@@ -124,11 +125,10 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
     
     // If the calculated x position puts the window too
     // far to the right, shift the window left.
-    CGFloat screenMaxX = NSMaxX(screenFrame);
     if (x + w + kMinimumSpaceBetweenWindowAndScreenEdge > screenMaxX) {
         x = screenMaxX - w - kMinimumSpaceBetweenWindowAndScreenEdge;
     }
-    
+
     // Set the window position.
     [self setFrameTopLeftPoint:NSMakePoint(x, y)];
 
