@@ -27,8 +27,6 @@
     NSCalendar    *_nsCal;
     NSStatusItem  *_statusItem;
     MoButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
-    NSRect         _menuItemFrame;
-    CGFloat        _screenMaxX;
     NSWindowController    *_prefsWC;
     AgendaViewController  *_agendaVC;
     EventViewController   *_eventVC;
@@ -173,7 +171,7 @@
 {
     [super viewDidAppear];
 
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:_screenMaxX];
+    [self positionItsycalWindow];
 }
 
 #pragma mark -
@@ -342,8 +340,7 @@
 
     [self clockFormatDidChange];
     [self updateMenubarIcon];
-    [self updateStatusItemPositionInfo];
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:_screenMaxX];
+    [self positionItsycalWindow];
 
     // Notification for when status item view moves
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidMoveNotification object:_statusItem.button.window];
@@ -506,9 +503,9 @@
     return iconImage;
 }
 
-- (void)updateStatusItemPositionInfo
+- (void)positionItsycalWindow
 {
-    _menuItemFrame = [_statusItem.button.window convertRectToScreen:_statusItem.button.frame];
+    NSRect statusItemFrame = [_statusItem.button.window convertRectToScreen:_statusItem.button.frame];
 
     // Which screen is the status item on? I'd like to just use
     // _statusItem.button.window.screen, but that property is nil
@@ -523,13 +520,13 @@
     // horizontally.
     NSScreen *statusItemScreen = [NSScreen mainScreen];
     for (NSScreen *screen in [NSScreen screens]) {
-        if (_menuItemFrame.origin.x >= NSMinX(screen.frame) &&
-            _menuItemFrame.origin.x <= NSMaxX(screen.frame)) {
+        if (statusItemFrame.origin.x >= NSMinX(screen.frame) &&
+            statusItemFrame.origin.x <= NSMaxX(screen.frame)) {
             statusItemScreen = screen;
             break;
         }
     }
-    _screenMaxX = NSMaxX(statusItemScreen.frame);
+    CGFloat screenMaxX = NSMaxX(statusItemScreen.frame);
 
     // Constrain the menu item's frame to be no higher than the top
     // of the screen. For some reason, when an app is in fullscreen
@@ -537,7 +534,9 @@
     // the top of the screen. The result is that the calendar is
     // shown clipped at the top. Prevent that by constraining the
     // top of the menu item to be at most the top of the screen.
-    _menuItemFrame.origin.y = MIN(_menuItemFrame.origin.y, NSMaxY(statusItemScreen.frame));
+    statusItemFrame.origin.y = MIN(statusItemFrame.origin.y, NSMaxY(statusItemScreen.frame));
+
+    [self.itsycalWindow positionRelativeToRect:statusItemFrame screenMaxX:screenMaxX];
 }
 
 - (void)statusItemMoved:(NSNotification *)note
@@ -562,15 +561,13 @@
     // hiding because that's the logic that would execute in the
     // -statusItemClicked: method. The delay let's -menuItemClicked:
     // handle this scenario first.
-    [self updateStatusItemPositionInfo];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:_screenMaxX];
+        [self positionItsycalWindow];
     });
 }
 
 - (void)statusItemClicked:(id)sender
 {
-    [self updateStatusItemPositionInfo];
     // If there are multiple screens and Itsycal is showing
     // on one and the user clicks the menu item on another,
     // instead of a regular toggle, we want Itsycal to hide
@@ -607,7 +604,7 @@
 - (void)showItsycalWindow
 {
     [[NSApplication sharedApplication] unhideWithoutActivation];
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:_screenMaxX];
+    [self positionItsycalWindow];
     [self.itsycalWindow makeKeyAndOrderFront:self];
     [self.itsycalWindow makeFirstResponder:_moCal];
 }
@@ -620,7 +617,7 @@
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    [self.itsycalWindow positionRelativeToRect:_menuItemFrame screenMaxX:_screenMaxX];
+    [self positionItsycalWindow];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
