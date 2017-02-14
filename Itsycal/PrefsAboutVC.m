@@ -33,7 +33,7 @@
 
     // App name and version
     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
-    MoTextField *appName = label([NSString stringWithFormat:@"Itsycal %@", infoDict[@"CFBundleShortVersionString"]], NO);
+    MoTextField *appName = label([NSString stringWithFormat:@"Itsycal  %@", infoDict[@"CFBundleShortVersionString"]], NO);
     appName.font = [NSFont systemFontOfSize:14 weight:NSFontWeightBold];
     appName.textColor = [NSColor grayColor];
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:appName.stringValue];
@@ -47,6 +47,9 @@
     MoTextField *twtrLink = label(@"@mowgliiapps", YES);
     twtrLink.urlString = @"https://twitter.com/intent/follow?screen_name=mowgliiapps";
 
+    MoTextField *payPalLink = label(@"mowgliiapps", YES);
+    payPalLink.urlString = @"https://paypal.me/mowgliiapps";
+
     MoTextField *sparkleLink = label(@"Sparkle", YES);
     sparkleLink.urlString = @"https://github.com/sparkle-project/Sparkle";
 
@@ -57,9 +60,11 @@
     varelaLink.urlString = @"https://github.com/alefalefalef/Varela-Round-Hebrew";
 
     // Labels
-    MoTextField *web = label(@"web:", NO);
+    MoTextField *web = label(@"visit", NO);
 
-    MoTextField *twitter = label(@"twitter:", NO);
+    MoTextField *twitter = label(@"follow", NO);
+
+    MoTextField *payPal = label(@"donate", NO);
 
     MoTextField *smile = label(@"(๑˃̵ᴗ˂̵)و", NO);
     smile.font = [NSFont systemFontOfSize:16 weight:NSFontWeightLight];
@@ -75,11 +80,12 @@
 
     MoTextField *copyright = label(infoDict[@"NSHumanReadableCopyright"], NO);
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appName, appLink, twtrLink, web, twitter, varelaLink, varelaCopyright, sparkleLink, sparkleCopyright, masshortcutLink, masshortcutCopyright, smile, copyright)];
-    [vfl :@"V:|-m-[appName]-[appLink]-[twtrLink]-30-[varelaLink][varelaCopyright]-[sparkleLink][sparkleCopyright]-[masshortcutLink][masshortcutCopyright]-18-[smile]-20-[copyright]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appName, appLink, twtrLink, payPalLink, web, twitter, payPal, varelaLink, varelaCopyright, sparkleLink, sparkleCopyright, masshortcutLink, masshortcutCopyright, smile, copyright)];
+    [vfl :@"V:|-m-[appName]-[appLink]-[twtrLink]-[payPalLink]-30-[varelaLink][varelaCopyright]-[sparkleLink][sparkleCopyright]-[masshortcutLink][masshortcutCopyright]-18-[smile]-20-[copyright]-m-|"];
     [vfl :@"H:|-m-[appName]-(>=m)-|"];
     [vfl :@"H:[web]-[appLink]-(>=m)-|" : NSLayoutFormatAlignAllFirstBaseline];
-    [vfl :@"H:|-m-[twitter]-[twtrLink]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
+    [vfl :@"H:[twitter]-[twtrLink]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
+    [vfl :@"H:|-m-[payPal]-[payPalLink]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
     [vfl :@"H:|-m-[sparkleLink]-(>=m)-|"];
     [vfl :@"H:|-m-[sparkleCopyright]-(>=m)-|"];
     [vfl :@"H:|-m-[masshortcutLink]-(>=m)-|"];
@@ -89,8 +95,11 @@
     [vfl :@"H:|-(>=m)-[smile]-(>=m)-|"];
     [vfl :@"H:|-m-[copyright]-(>=m)-|"];
 
-    // Align web: and twitter: by trailing attribute
+    // Align web and twitter by trailing attribute
     [v addConstraint:[NSLayoutConstraint constraintWithItem:web attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:twitter attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
+
+    // Align twitter and payPal by trailing attribute
+    [v addConstraint:[NSLayoutConstraint constraintWithItem:twitter attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:payPal attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
 
     // Center smile
     [v addConstraint:[NSLayoutConstraint constraintWithItem:smile attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:v attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
