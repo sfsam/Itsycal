@@ -507,21 +507,26 @@
 {
     NSRect statusItemFrame = [_statusItem.button.window convertRectToScreen:_statusItem.button.frame];
 
+    // Hack alert:
     // Which screen is the status item on? I'd like to just use
     // _statusItem.button.window.screen, but that property is nil
     // when the user is working with a full screen app: the menu
-    // bar isn't drawn and so the status item is offscreen.
+    // bar is hidden and so the status item is offscreen.
     // Alternatively, I'd like to use [NSScreen mainscreen], but
     // that method seems to give the wrong answer when the user
     // is working on an external monitor with a full screen app.
     // So... I iterate over all the screens and see which one
-    // contains the x-coordinate of the statusItem's origin. I
-    // think this implicitly assumes that screens are arranged
-    // horizontally.
+    // contains the statusItem's origin. I adjust the origin
+    // down a bit to account for the case where the menu bar is
+    // hidden (as it is when an app is in fullscreen mode) as
+    // the system *currently* places the status item just above
+    // its screen. This isn't documented behavior and so might
+    // not work in the future.
     NSScreen *statusItemScreen = [NSScreen mainScreen];
+    NSPoint testPoint = statusItemFrame.origin;
+    testPoint.y -= 100;
     for (NSScreen *screen in [NSScreen screens]) {
-        if (statusItemFrame.origin.x >= NSMinX(screen.frame) &&
-            statusItemFrame.origin.x <= NSMaxX(screen.frame)) {
+        if (NSPointInRect(testPoint, screen.frame)) {
             statusItemScreen = screen;
             break;
         }
