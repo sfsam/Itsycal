@@ -29,7 +29,6 @@
     MoButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
     NSWindowController    *_prefsWC;
     AgendaViewController  *_agendaVC;
-    EventViewController   *_eventVC;
     NSLayoutConstraint    *_bottomMargin;
     NSDateFormatter       *_iconDateFormatter;
 
@@ -209,14 +208,12 @@
         return;
     }
 
-    if (!_eventVC) {
-        _eventVC = [EventViewController new];
-        _eventVC.ec = _ec;
-        _eventVC.cal = _nsCal;
-        _eventVC.title = @"";
-    }
-    _eventVC.calSelectedDate = MakeNSDateWithDate(_moCal.selectedDate, _nsCal);
-    [self presentViewControllerAsModalWindow:_eventVC];
+    EventViewController *eventVC = [EventViewController new];
+    eventVC.ec = _ec;
+    eventVC.cal = _nsCal;
+    eventVC.title = @"";
+    eventVC.calSelectedDate = MakeNSDateWithDate(_moCal.selectedDate, _nsCal);
+    [self presentViewControllerAsModalWindow:eventVC];
 }
 
 - (void)showCalendarApp:(id)sender

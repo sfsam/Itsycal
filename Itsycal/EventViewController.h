@@ -13,7 +13,7 @@
 @interface EventViewController : NSViewController <NSTextFieldDelegate>
 
 @property (nonatomic, weak) EventCenter *ec;
-@property (nonatomic) NSCalendar *cal;
+@property (nonatomic, weak) NSCalendar *cal;
 @property (nonatomic) NSDate *calSelectedDate;
 
 @end
