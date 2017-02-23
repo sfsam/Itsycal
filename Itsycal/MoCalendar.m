@@ -12,6 +12,9 @@
 #import "MoCalGrid.h"
 #import "MoButton.h"
 #import "MoVFLHelper.h"
+#import "MoCalResizeHandle.h"
+
+NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 static NSShadow *kShadow=nil;
 static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kBorderColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil, *kHighlightedDOWTextColor=nil;
@@ -26,13 +29,13 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     MoCalToolTipWC *_tooltipWC;
     MoButton *_btnPrev, *_btnNext, *_btnToday;
     NSLayoutConstraint *_weeksConstraint;
-    NSTrackingArea *_trackingArea;
     __weak MoCalCell *_hoveredCell;
     __weak MoCalCell *_selectedCell;
     __weak MoCalCell *_monthStartCell;
     __weak MoCalCell *_monthEndCell;
     NSBezierPath *_highlightPath;
     NSColor *_highlightColor;
+    MoCalResizeHandle *_resizeHandle;
 }
 
 + (void)initialize
@@ -75,7 +78,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
 {
     _formatter = [NSDateFormatter new];
     _tooltipWC = [MoCalToolTipWC new];
-    
+
     _monthLabel = [NSTextField new];
     _monthLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _monthLabel.font = [NSFont fontWithName:@"VarelaRoundNeo-SemiBold" size:13];
@@ -107,27 +110,41 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     _btnPrev  = btn(@"btnPrev",  @selector(showPreviousMonth:));
     _btnToday = btn(@"btnToday", @selector(showTodayMonth:));
     _btnNext  = btn(@"btnNext",  @selector(showNextMonth:));
+
+    NSInteger numRows = [[NSUserDefaults standardUserDefaults] integerForKey:kMoCalendarNumRows];
+    numRows = MIN(MAX(numRows, 6), 10);
     
-    _dateGrid = [[MoCalGrid alloc] initWithRows:6 columns:7 horizontalMargin:6 verticalMargin:6];
-    _weekGrid = [[MoCalGrid alloc] initWithRows:6 columns:1 horizontalMargin:0 verticalMargin:6];
+    _dateGrid = [[MoCalGrid alloc] initWithRows:numRows columns:7 horizontalMargin:6 verticalMargin:6];
+    _weekGrid = [[MoCalGrid alloc] initWithRows:numRows columns:1 horizontalMargin:0 verticalMargin:6];
     _dowGrid  = [[MoCalGrid alloc] initWithRows:1 columns:7 horizontalMargin:6 verticalMargin:0];
-    
+
     for (MoCalCell *cell in _dowGrid.cells) {
         cell.textField.font = [NSFont fontWithName:@"VarelaRoundNeo-Bold" size:11];
         cell.textField.textColor = kDarkTextColor;
     }
-    
+
+    // The _resizeHandle is at the bottom of the calendar.
+    _resizeHandle = [MoCalResizeHandle new];
+    _resizeHandle.translatesAutoresizingMaskIntoConstraints = NO;
+    _resizeHandle.alphaValue = 0;
+
     [self addSubview:_monthLabel];
     [self addSubview:_dateGrid];
     [self addSubview:_weekGrid];
     [self addSubview:_dowGrid];
+    [self addSubview:_resizeHandle];
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_monthLabel, _btnPrev, _btnToday, _btnNext, _dowGrid, _weekGrid, _dateGrid)];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_monthLabel, _btnPrev, _btnToday, _btnNext, _dowGrid, _weekGrid, _dateGrid, _resizeHandle)];
     [vfl :@"H:|-8-[_monthLabel]-4-[_btnPrev]-2-[_btnToday]-2-[_btnNext]-6-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:[_dowGrid]|"];
     [vfl :@"H:[_weekGrid][_dateGrid]|"];
     [vfl :@"V:|-(-3)-[_monthLabel]-1-[_dowGrid][_dateGrid]-1-|"];
     [vfl :@"V:[_weekGrid]-1-|"];
+    [vfl :@"V:[_resizeHandle(7)]|"];
+
+    // _resizeHandle is aligned to leading/trailing of _dateGrid.
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_dateGrid attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_resizeHandle attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_dateGrid attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:_resizeHandle attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
 
     _weeksConstraint = [NSLayoutConstraint constraintWithItem:_weekGrid attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0];
     [self addConstraint:_weeksConstraint];
@@ -310,7 +327,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     MoDate date = AddDaysToDate(-monthStartColumn, firstOfMonth);
     
     // Fill in the calendar grid sequentially.
-    for (NSInteger row = 0; row < 6; row++) {
+    for (NSInteger row = 0; row < _dateGrid.rows; row++) {
         for (NSInteger col = 0; col < 7; col++) {
             MoCalCell *cell = _dateGrid.cells[row * 7 + col];
             cell.textField.stringValue = [NSString stringWithFormat:@"%zd", date.day];
@@ -393,7 +410,8 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     NSUInteger flags = [theEvent modifierFlags];
     BOOL noFlags =  !(flags & (NSEventModifierFlagCommand | NSEventModifierFlagOption | NSEventModifierFlagControl | NSEventModifierFlagShift));
     BOOL shiftFlag = (flags &  NSEventModifierFlagShift) && !(flags & (NSEventModifierFlagCommand | NSEventModifierFlagOption | NSEventModifierFlagControl));
-    
+    BOOL ctrlFlag = (flags &  NSEventModifierFlagControl) && !(flags & (NSEventModifierFlagCommand | NSEventModifierFlagOption | NSEventModifierFlagShift));
+
     unichar keyChar = [charsIgnoringModifiers characterAtIndex:0];
     
     if (keyChar == ' ') {
@@ -423,10 +441,38 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     else if ((keyChar == 'k' && noFlags) || (keyChar == NSUpArrowFunctionKey && shiftFlag)) {
         [self moveSelectionByDays:-7];
     }
+    else if (keyChar == 'j' && ctrlFlag) {
+        [self addRow];
+    }
+    else if (keyChar == 'k' && ctrlFlag) {
+        [self removeRow];
+    }
     else {
         [super keyDown:theEvent];
     }
     [_tooltipWC endTooltip];
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    NSPoint initialDragPoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    BOOL isDragging = NSPointInRect(initialDragPoint, _resizeHandle.frame);
+
+    while (isDragging) {
+        theEvent = [[self window] nextEventMatchingMask: NSEventMaskLeftMouseUp | NSEventMaskLeftMouseDragged];
+        if ([theEvent type] == NSEventTypeLeftMouseUp) {
+            isDragging = NO;
+        }
+        else if ([theEvent type] == NSEventTypeLeftMouseDragged) {
+            NSPoint location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+            if (location.y >= initialDragPoint.y + kMoCalCellHeight && _dateGrid.rows > 6) {
+                [self removeRow];
+            }
+            else if (location.y <= initialDragPoint.y - kMoCalCellHeight && _dateGrid.rows < 10) {
+                [self addRow];
+            }
+        }
+    }
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
@@ -466,25 +512,42 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
         else {
             [_tooltipWC hideTooltip];
         }
+    }
+}
 
+- (void)mouseEntered:(NSEvent *)theEvent
+{
+    if ([[(NSDictionary *)[theEvent userData] valueForKey:@"area"] isEqualToString: @"resizeHandle"]) {
+        _resizeHandle.animator.alphaValue = 1;
     }
 }
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
-    _hoveredCell.isHovered = NO;
-    _hoveredCell = nil;
-    [_tooltipWC hideTooltip];
-    [self setNeedsDisplay:YES];
+    if ([[(NSDictionary *)[theEvent userData] valueForKey:@"area"] isEqualToString: @"resizeHandle"]) {
+        _resizeHandle.animator.alphaValue = 0;
+    }
+    else { // userData[area] == "dateGrid"
+        _hoveredCell.isHovered = NO;
+        _hoveredCell = nil;
+        [_tooltipWC hideTooltip];
+        [self setNeedsDisplay:YES];
+    }
 }
 
 - (void)updateTrackingAreas
 {
-    // trackingRect encompasses the cells in _dateGrid (not including their margins)
-    [self removeTrackingArea:_trackingArea];
-    NSRect trackingRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
-    _trackingArea = [[NSTrackingArea alloc] initWithRect:trackingRect options:(NSTrackingMouseMoved | NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways) owner:self userInfo:nil];
-    [self addTrackingArea:_trackingArea];
+    for (NSTrackingArea *area in self.trackingAreas) {
+        [self removeTrackingArea:area];
+    }
+    // cellsRect encompasses the cells in _dateGrid (not including their margins)
+    NSRect cellsRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
+    NSTrackingArea *cellsTrackingArea = [[NSTrackingArea alloc] initWithRect:cellsRect options:(NSTrackingMouseMoved | NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways) owner:self userInfo:@{@"area": @"dateGrid"}];
+
+    NSTrackingArea *resizeHandleTrackingArea = [[NSTrackingArea alloc] initWithRect:_resizeHandle.frame options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways) owner:self userInfo:@{@"area": @"resizeHandle"}];
+
+    [self addTrackingArea:cellsTrackingArea];
+    [self addTrackingArea:resizeHandleTrackingArea];
     [super updateTrackingAreas];
 }
 
@@ -565,6 +628,32 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
 {
     DOWMask dowmask_for_this_col = 1 << COL_DOW(self.weekStartDOW, col);
     return dowmask_for_this_col & self.highlightedDOWs;
+}
+
+- (void)addRow
+{
+    if (_dateGrid.rows < 10) {
+        [_dateGrid addRow];
+        [_weekGrid addRow];
+        [self updateCalendar];
+        [[NSUserDefaults standardUserDefaults] setInteger:_dateGrid.rows forKey:kMoCalendarNumRows];
+    }
+}
+
+- (void)removeRow
+{
+    if (_dateGrid.rows > 6) {
+        // Move selection up one row (-7 days) if it is
+        // in the row that is about to be removed.
+        NSUInteger selectedCellIndex = [_dateGrid.cells indexOfObject:_selectedCell];
+        if (selectedCellIndex >= _dateGrid.cells.count - 7) {
+            [self moveSelectionByDays:-7];
+        }
+        [_dateGrid removeRow];
+        [_weekGrid removeRow];
+        [self updateCalendar];
+        [[NSUserDefaults standardUserDefaults] setInteger:_dateGrid.rows forKey:kMoCalendarNumRows];
+    }
 }
 
 #pragma mark

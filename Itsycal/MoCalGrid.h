@@ -14,8 +14,19 @@
 @interface MoCalGrid : NSView
 
 @property (nonatomic, readonly) NSArray *cells;
+@property (nonatomic, readonly) NSUInteger rows;
 
 - (instancetype)initWithRows:(NSUInteger)rows columns:(NSUInteger)cols horizontalMargin:(NSUInteger)hMargin verticalMargin:(NSUInteger)vMargin;
+
+//
+// Add a new row of cells to the bottom of the grid.
+//
+- (void)addRow;
+
+//
+// Remove a row of cells from the bottom of the grid.
+//
+- (void)removeRow;
 
 //
 // The cell at a given point

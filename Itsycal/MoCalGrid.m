@@ -45,6 +45,55 @@
     return self;
 }
 
+- (void)addRow
+{
+    NSMutableArray *cells = [_cells mutableCopy];
+
+    // Shift existing cells up.
+    for (MoCalCell *cell in cells) {
+        NSRect frame = cell.frame;
+        frame.origin.y += kMoCalCellHeight;
+        cell.frame = frame;
+    }
+
+    // Add new row of cells.
+    for (NSUInteger col = 0; col < _cols; col++) {
+        CGFloat x = kMoCalCellWidth * col + _hMargin;
+        CGFloat y = kMoCalCellHeight * (_rows + 1) - kMoCalCellHeight * (_rows + 1) + _vMargin;
+        MoCalCell *cell = [MoCalCell new];
+        [cell setFrame:NSMakeRect(x, y, kMoCalCellWidth, kMoCalCellHeight)];
+        [self addSubview:cell];
+        [cells addObject:cell];
+    }
+
+    _rows += 1;
+    _cells = [NSArray arrayWithArray:cells];
+    [self invalidateIntrinsicContentSize];
+}
+
+- (void)removeRow
+{
+    NSMutableArray *cells = [_cells mutableCopy];
+
+    // Remove last row of cells.
+    for (NSUInteger col = 0; col < _cols; col++) {
+        MoCalCell *cell = [cells lastObject];
+        [cell removeFromSuperview];
+        [cells removeLastObject];
+    }
+
+    // Shift remaining cells down.
+    for (MoCalCell *cell in cells) {
+        NSRect frame = cell.frame;
+        frame.origin.y -= kMoCalCellHeight;
+        cell.frame = frame;
+    }
+
+    _rows -= 1;
+    _cells = [NSArray arrayWithArray:cells];
+    [self invalidateIntrinsicContentSize];
+}
+
 - (MoCalCell *)cellAtPoint:(NSPoint)point
 {
     NSInteger col = floorf((point.x - _hMargin) / kMoCalCellWidth);

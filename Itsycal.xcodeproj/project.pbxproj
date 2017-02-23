@@ -34,6 +34,7 @@
 		9242A5921A82A40B005AA4B3 /* MoCalGrid.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A58D1A82A40B005AA4B3 /* MoCalGrid.m */; };
 		9242A5931A82A40B005AA4B3 /* MoCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A58F1A82A40B005AA4B3 /* MoCalendar.m */; };
 		9242A5961A82BE5E005AA4B3 /* Itsycal.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5951A82BE5E005AA4B3 /* Itsycal.m */; };
+		924C518C1E5F721C0049E3A9 /* MoCalResizeHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 924C518B1E5F721C0049E3A9 /* MoCalResizeHandle.m */; };
 		925407191E48FDB300541B9E /* VarelaRoundNeo-SemiBold.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 925407171E48FDA700541B9E /* VarelaRoundNeo-SemiBold.otf */; };
 		925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B47171A93B63100E0329A /* MoCalToolTipWC.m */; };
 		925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B471A1A93CD2A00E0329A /* TooltipViewController.m */; };
@@ -128,6 +129,8 @@
 		9242A58F1A82A40B005AA4B3 /* MoCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoCalendar.m; sourceTree = "<group>"; };
 		9242A5941A82BE5E005AA4B3 /* Itsycal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Itsycal.h; sourceTree = "<group>"; };
 		9242A5951A82BE5E005AA4B3 /* Itsycal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Itsycal.m; sourceTree = "<group>"; };
+		924C518A1E5F721C0049E3A9 /* MoCalResizeHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoCalResizeHandle.h; sourceTree = "<group>"; };
+		924C518B1E5F721C0049E3A9 /* MoCalResizeHandle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoCalResizeHandle.m; sourceTree = "<group>"; };
 		925407171E48FDA700541B9E /* VarelaRoundNeo-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "VarelaRoundNeo-SemiBold.otf"; path = "_fonts/VarelaRoundNeo-SemiBold.otf"; sourceTree = "<group>"; };
 		925B47161A93B63100E0329A /* MoCalToolTipWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoCalToolTipWC.h; sourceTree = "<group>"; };
 		925B47171A93B63100E0329A /* MoCalToolTipWC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoCalToolTipWC.m; sourceTree = "<group>"; };
@@ -255,6 +258,8 @@
 				925B471D1A93E3D800E0329A /* MoCalTooltipProvider.h */,
 				925B47161A93B63100E0329A /* MoCalToolTipWC.h */,
 				925B47171A93B63100E0329A /* MoCalToolTipWC.m */,
+				924C518A1E5F721C0049E3A9 /* MoCalResizeHandle.h */,
+				924C518B1E5F721C0049E3A9 /* MoCalResizeHandle.m */,
 			);
 			name = MoCalendar;
 			sourceTree = "<group>";
@@ -390,6 +395,7 @@
 				9224B0751A8BE75500D63030 /* MoButton.m in Sources */,
 				92B3C0431AA7EF43008A5C05 /* MoView.m in Sources */,
 				9242A5841A82A189005AA4B3 /* ViewController.m in Sources */,
+				924C518C1E5F721C0049E3A9 /* MoCalResizeHandle.m in Sources */,
 				921E62CD1E26B3EA007B029F /* PrefsGeneralVC.m in Sources */,
 				9242A5631A82A136005AA4B3 /* AppDelegate.m in Sources */,
 				921E62D31E26E038007B029F /* PrefsAboutVC.m in Sources */,
