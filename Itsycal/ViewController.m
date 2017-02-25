@@ -198,6 +198,10 @@
 
 - (void)addCalendarEvent:(id)sender
 {
+    // Was prefs window open in the past and then hidden when
+    // app became inactive? This prevents it from reappearing.
+    [_prefsWC close];
+    
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
     
     if (_ec.calendarAccessGranted == NO) {
