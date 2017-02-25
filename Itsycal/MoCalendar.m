@@ -81,7 +81,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
 
     _monthLabel = [NSTextField new];
     _monthLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _monthLabel.font = [NSFont fontWithName:@"VarelaRoundNeo-SemiBold" size:13];
+    _monthLabel.font = [NSFont systemFontOfSize:13.5 weight:NSFontWeightMedium];
     _monthLabel.textColor = kDarkTextColor;
     _monthLabel.bezeled = NO;
     _monthLabel.editable = NO;
@@ -119,7 +119,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     _dowGrid  = [[MoCalGrid alloc] initWithRows:1 columns:7 horizontalMargin:6 verticalMargin:0];
 
     for (MoCalCell *cell in _dowGrid.cells) {
-        cell.textField.font = [NSFont fontWithName:@"VarelaRoundNeo-Bold" size:11];
+        cell.textField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
         cell.textField.textColor = kDarkTextColor;
     }
 
@@ -135,10 +135,12 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [self addSubview:_resizeHandle];
 
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_monthLabel, _btnPrev, _btnToday, _btnNext, _dowGrid, _weekGrid, _dateGrid, _resizeHandle)];
-    [vfl :@"H:|-8-[_monthLabel]-4-[_btnPrev]-2-[_btnToday]-2-[_btnNext]-6-|" :NSLayoutFormatAlignAllCenterY];
+    [vfl :@"H:|-8-[_monthLabel]-4-[_btnPrev]"];
+    [vfl :@"H:[_btnPrev]-2-[_btnToday]-2-[_btnNext]-6-|" :NSLayoutFormatAlignAllBottom];
     [vfl :@"H:[_dowGrid]|"];
     [vfl :@"H:[_weekGrid][_dateGrid]|"];
-    [vfl :@"V:|-(-3)-[_monthLabel]-1-[_dowGrid][_dateGrid]-1-|"];
+    [vfl :@"V:|-2-[_btnPrev]"];
+    [vfl :@"V:|[_monthLabel]-3-[_dowGrid]-(-2)-[_dateGrid]-1-|"];
     [vfl :@"V:[_weekGrid]-1-|"];
     [vfl :@"V:[_resizeHandle(7)]|"];
 

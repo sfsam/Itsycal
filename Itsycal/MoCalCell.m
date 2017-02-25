@@ -24,7 +24,7 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
     self = [super initWithFrame:NSMakeRect(0, 0, kMoCalCellWidth, kMoCalCellHeight)];
     if (self) {
         _textField = [[NSTextField alloc] initWithFrame:NSZeroRect];
-        [_textField setFont:[NSFont fontWithName:@"Varela Round Neo" size:11]];
+        [_textField setFont:[NSFont systemFontOfSize:11 weight:NSFontWeightRegular]];
         [_textField setTextColor:[NSColor blackColor]];
         [_textField setBezeled:NO];
         [_textField setEditable:NO];
@@ -35,7 +35,7 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
         [self addSubview:_textField];
 
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_textField]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[_textField]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-2-[_textField]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
     }
     return self;
 }
