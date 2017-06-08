@@ -81,8 +81,8 @@ NSInteger WeeksInYear(NSInteger year)
     // stackoverflow.com/a/21235587/111418
     NSInteger y = year;
     NSInteger m = 1; // January
-    NSInteger d = 1;
-    NSInteger jan1DOW = (d+=m<3?y--:y-2,23*m/9+d+4+y/4-y/100+y/400)%7;
+    NSInteger d = 1 + (m < 3 ? y-- : y-2);
+    NSInteger jan1DOW = (23*m/9 + d + 4 + y/4 - y/100 + y/400) % 7;
     
     // Is Jan1 a Thursday OR a Wednesday in a leap year?
     if (jan1DOW == 4 || (jan1DOW == 3 && IS_LEAP_YEAR(year))) {
