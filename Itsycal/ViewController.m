@@ -54,7 +54,6 @@
 {
     // View controller content view
     NSView *v = [NSView new];
-    v.translatesAutoresizingMaskIntoConstraints = NO;
     
     // MoCalendar
     _moCal = [MoCalendar new];
@@ -433,10 +432,10 @@
 
             // Draw outlined icon image.
 
-            [[NSColor colorWithWhite:0 alpha:0.9] set];
+            [[NSColor controlTextColor] set];
             [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 3.5, 0.5) xRadius:2 yRadius:2] stroke];
 
-            [[NSColor colorWithWhite:0 alpha:0.15] set];
+            [[NSColor controlTextColor] set];
             NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 4, 1) xRadius:1 yRadius:1];
             [p setLineWidth:2];
             [p stroke];
@@ -447,7 +446,7 @@
             // Draw text.
             NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
             pstyle.alignment = NSTextAlignmentCenter;
-            [text drawInRect:NSOffsetRect(rect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:11.5 weight:NSFontWeightSemibold], NSParagraphStyleAttributeName: pstyle, NSForegroundColorAttributeName: [NSColor blackColor]}];
+            [text drawInRect:NSOffsetRect(rect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:11.5 weight:NSFontWeightSemibold], NSParagraphStyleAttributeName: pstyle, NSForegroundColorAttributeName: [NSColor controlBackgroundColor]}];
         }
         else {
 
@@ -475,13 +474,13 @@
             [NSGraphicsContext setCurrentContext:maskGraphicsContext];
 
             // Draw a white rounded rect background into the mask context
-            [[NSColor whiteColor] setFill];
+            [[NSColor controlBackgroundColor] setFill];
             [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(deviceRect, outsideMargin, 0) xRadius:radius yRadius:radius] fill];
 
             // Draw text.
             NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
             pstyle.alignment = NSTextAlignmentCenter;
-            [text drawInRect:NSOffsetRect(deviceRect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:fontSize weight:NSFontWeightBold], NSForegroundColorAttributeName: [NSColor blackColor], NSParagraphStyleAttributeName: pstyle}];
+            [text drawInRect:NSOffsetRect(deviceRect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:fontSize weight:NSFontWeightBold], NSForegroundColorAttributeName: [NSColor controlBackgroundColor], NSParagraphStyleAttributeName: pstyle}];
 
             // Switch back to the image's context.
             [NSGraphicsContext restoreGraphicsState];
@@ -491,7 +490,7 @@
 
             // Fill the image, clipped by the mask.
             CGContextClipToMask(ctx, rect, alphaMask);
-            [[NSColor blackColor] set];
+            [[NSColor controlTextColor] set];
             NSRectFill(rect);
 
             CGImageRelease(alphaMask);

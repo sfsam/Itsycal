@@ -17,7 +17,7 @@ static const CGFloat kWindowTopMargin    = kCornerRadius + kBorderWidth + kArrow
 static const CGFloat kWindowSideMargin   = kBorderWidth  + kShadowWidth;
 static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShadowWidth + kShadowWidth/2;
 
-@interface ItsycalWindowFrameView : NSView
+@interface ItsycalWindowFrameView : NSVisualEffectView
 @property (nonatomic, assign) CGFloat arrowMidX;
 @end
 
@@ -37,11 +37,13 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
 {
     self = [super initWithContentRect:NSZeroRect styleMask:NSWindowStyleMaskNonactivatingPanel backing:NSBackingStoreBuffered defer:NO];
     if (self) {
+        [self setAppearance:[NSAppearance appearanceNamed:@"NSAppearanceNameVibrantLight"]];
+        //[NSAppearance appearanceNamed:@"NSAppearanceNameVibrantLight"]
         [self setBackgroundColor:[NSColor clearColor]];
         [self setOpaque:NO];
         [self setLevel:NSMainMenuWindowLevel];
         [self setMovableByWindowBackground:NO];
-        [self setHasShadow:NO];
+        [self setHasShadow:YES];
         [self setCollectionBehavior:NSWindowCollectionBehaviorMoveToActiveSpace];
         // Fade out when -[NSWindow orderOut:] is called.
         [self setAnimationBehavior:NSWindowAnimationBehaviorUtilityWindow];
@@ -187,16 +189,16 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
     }
     
     // Shadow, stroke and fill.
-    static NSShadow *shadow = nil;
+    /*static NSShadow *shadow = nil;
     if (shadow == nil) {
         shadow = [NSShadow new];
         shadow.shadowColor = [NSColor colorWithWhite:0 alpha:0.4];
         shadow.shadowBlurRadius = kShadowWidth;
         shadow.shadowOffset = NSMakeSize(0, -kShadowWidth/2);
     }
-    [shadow set];
-    [[NSColor colorWithWhite:0.3 alpha:0.4] setStroke];
-    [[NSColor whiteColor] setFill];
+    [shadow set];*/
+    //[[NSColor colorWithWhite:0.3 alpha:0.4] setStroke];
+    [[NSColor controlBackgroundColor] setFill];
     [rectPath setLineWidth:2*kBorderWidth];
     [rectPath stroke];
     [rectPath fill];

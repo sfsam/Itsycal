@@ -52,7 +52,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
     _tv.backgroundColor = [NSColor whiteColor];
-    _tv.hoverColor = [NSColor colorWithWhite:0.98 alpha:1];
+    _tv.hoverColor = [NSColor secondarySelectedControlColor];
     _tv.floatsGroupRows = YES;
     _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
@@ -288,7 +288,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
     NSString *string = [NSString stringWithFormat:@"%@%@", title, duration];
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:string];
-    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, title.length)];
+    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor labelColor]} range:NSMakeRange(0, title.length)];
     return s;
 }
 
@@ -311,7 +311,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
         _textField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
-        _textField.textColor = [NSColor colorWithWhite:0 alpha:0.9];
+        _textField.textColor = [NSColor labelColor];
         _textField.editable = NO;
         _textField.bezeled = NO;
         _textField.drawsBackground = NO;
@@ -326,11 +326,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)drawRect:(NSRect)dirtyRect
 {
     NSRect r = self.bounds;
-    [[NSColor colorWithWhite:0.86 alpha:1] set];
+    [[NSColor controlBackgroundColor] set];
     NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
 
     r.size.height -= 1;
-    [[NSColor colorWithWhite:0.95 alpha:1] set];
+    [[NSColor controlBackgroundColor] set];
     NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
 }
 
@@ -350,7 +350,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
         _textField.font = [NSFont systemFontOfSize:11];
-        _textField.textColor = [NSColor colorWithWhite:0.5 alpha:1];
+        _textField.textColor = [NSColor labelColor];
         _textField.lineBreakMode = NSLineBreakByWordWrapping;
         _textField.editable = NO;
         _textField.bezeled = NO;
@@ -358,7 +358,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField.stringValue = @"";
         _btnDelete = [MoButton new];
         _btnDelete.image = [NSImage imageNamed:@"btnDel"];
-        _btnDelete.backgroundColor = [NSColor colorWithDeviceWhite:0.98 alpha:1];
+        _btnDelete.backgroundColor = [NSColor controlBackgroundColor];
         [self addSubview:_textField];
         [self addSubview:_btnDelete];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-16-[_textField]-8-|" options:0 metrics:nil views:@{@"_textField": _textField}]];

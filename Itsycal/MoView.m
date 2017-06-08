@@ -13,7 +13,7 @@
 void commonInitForMoView(MoView *moView)
 {
     moView.viewIsOpaque = YES;
-    moView.backgroundColor = [NSColor colorWithWhite:0.95 alpha:1];
+    moView.backgroundColor = [NSColor controlBackgroundColor];
     moView.translatesAutoresizingMaskIntoConstraints = NO;
 }
 

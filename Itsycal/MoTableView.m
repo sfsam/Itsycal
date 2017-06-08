@@ -57,7 +57,7 @@
     [super drawBackgroundInClipRect:clipRect];
     
     [self enumerateAvailableRowViewsUsingBlock:^(NSTableRowView *rowView, NSInteger row) {
-        rowView.backgroundColor = [NSColor clearColor];
+        rowView.backgroundColor = [NSColor controlBackgroundColor];
         BOOL isGroupRow = NO;
         if ([self.delegate respondsToSelector:@selector(tableView:isGroupRow:)]) {
             isGroupRow = [self.delegate tableView:self isGroupRow:row];

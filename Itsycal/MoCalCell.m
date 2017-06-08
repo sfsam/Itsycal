@@ -25,7 +25,7 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
     if (self) {
         _textField = [[NSTextField alloc] initWithFrame:NSZeroRect];
         [_textField setFont:[NSFont systemFontOfSize:11 weight:NSFontWeightRegular]];
-        [_textField setTextColor:[NSColor blackColor]];
+        [_textField setTextColor:[NSColor textColor]];
         [_textField setBezeled:NO];
         [_textField setEditable:NO];
         [_textField setAlignment:NSTextAlignmentCenter];
