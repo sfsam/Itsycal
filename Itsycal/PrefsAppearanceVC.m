@@ -45,7 +45,7 @@
     _hideIcon = chkbx(NSLocalizedString(@"Hide icon", @""));
 
     // Datetime format text field
-    _dateTimeFormat = [NSTextField textFieldWithString:nil];
+    _dateTimeFormat = [NSTextField textFieldWithString:@""];
     _dateTimeFormat.translatesAutoresizingMaskIntoConstraints = false;
     _dateTimeFormat.placeholderString = NSLocalizedString(@"Datetime pattern", @"");
     _dateTimeFormat.refusesFirstResponder = YES;
