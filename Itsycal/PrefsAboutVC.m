@@ -41,13 +41,13 @@
     appName.attributedStringValue = s;
 
     // Links
-    MoTextField *appLink = label(@"visit: mowglii.com", YES);
+    MoTextField *appLink = label(@"mowglii.com", YES);
     appLink.urlString = @"https://mowglii.com";
 
-    MoTextField *twtrLink = label(@"follow: @mowgliiapps", YES);
+    MoTextField *twtrLink = label(@"@mowgliiapps", YES);
     twtrLink.urlString = @"https://twitter.com/intent/follow?screen_name=mowgliiapps";
 
-    MoTextField *payPalLink = label(@"donate to: mowgliiapps", YES);
+    MoTextField *payPalLink = label(@"mowgliiapps", YES);
     payPalLink.urlString = @"https://mowglii.com/donate";
 
     MoTextField *sparkleLink = label(@"Sparkle", YES);
@@ -57,11 +57,11 @@
     masshortcutLink.urlString = @"https://github.com/shpakovski/MASShortcut";
 
     // Labels
-    MoTextField *visit = label(@"🌎", NO);
+    MoTextField *visit = label(@"🌎 visit:", NO);
 
-    MoTextField *follow = label(@"🐦", NO);
+    MoTextField *follow = label(@"🐦 follow:", NO);
 
-    MoTextField *donate = label(@"♥️", NO);
+    MoTextField *donate = label(@"♥️ donate:", NO);
 
     MoTextField *smile = label(@"(๑˃̵ᴗ˂̵)و", NO);
     smile.font = [NSFont systemFontOfSize:16 weight:NSFontWeightLight];
@@ -75,11 +75,11 @@
     MoTextField *copyright = label(infoDict[@"NSHumanReadableCopyright"], NO);
 
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appName, appLink, twtrLink, payPalLink, visit, follow, donate, sparkleLink, sparkleCopyright, masshortcutLink, masshortcutCopyright, smile, copyright)];
-    [vfl :@"V:|-m-[appName]-[appLink]-[twtrLink]-[payPalLink]-18-[smile]-14-[sparkleLink][sparkleCopyright]-[masshortcutLink][masshortcutCopyright]-m-[copyright]-m-|"];
+    [vfl :@"V:|-m-[appName]-14-[appLink]-[twtrLink]-[payPalLink]-18-[smile]-14-[sparkleLink][sparkleCopyright]-[masshortcutLink][masshortcutCopyright]-m-[copyright]-m-|"];
     [vfl :@"H:|-m-[appName]-(>=m)-|"];
-    [vfl :@"H:|-m-[visit]-[appLink]-(>=m)-|" : NSLayoutFormatAlignAllCenterY];
-    [vfl :@"H:|-m-[follow]-[twtrLink]-(>=m)-|" :NSLayoutFormatAlignAllCenterY];
-    [vfl :@"H:|-m-[donate]-[payPalLink]-(>=m)-|" :NSLayoutFormatAlignAllCenterY];
+    [vfl :@"H:|-m-[visit]-4-[appLink]-(>=m)-|" : NSLayoutFormatAlignAllCenterY];
+    [vfl :@"H:|-m-[follow]-4-[twtrLink]-(>=m)-|" :NSLayoutFormatAlignAllCenterY];
+    [vfl :@"H:|-m-[donate]-4-[payPalLink]-(>=m)-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[sparkleLink]-(>=m)-|"];
     [vfl :@"H:|-m-[sparkleCopyright]-(>=m)-|"];
     [vfl :@"H:|-m-[masshortcutLink]-(>=m)-|"];
