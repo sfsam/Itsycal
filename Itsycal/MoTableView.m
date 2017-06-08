@@ -57,12 +57,12 @@
     [super drawBackgroundInClipRect:clipRect];
     
     [self enumerateAvailableRowViewsUsingBlock:^(NSTableRowView *rowView, NSInteger row) {
-        rowView.backgroundColor = [NSColor clearColor];
         BOOL isGroupRow = NO;
         if ([self.delegate respondsToSelector:@selector(tableView:isGroupRow:)]) {
             isGroupRow = [self.delegate tableView:self isGroupRow:row];
         }
         if (row == self.hoverRow && isGroupRow == NO) {
+            rowView.backgroundColor = [NSColor clearColor];
             [self.hoverColor set];
             NSRect rect = NSInsetRect([self rectOfRow:row], 2, 2);
             [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:3 yRadius:3] fill];
