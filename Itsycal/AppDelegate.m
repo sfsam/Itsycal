@@ -15,8 +15,7 @@
 
 @implementation AppDelegate
 {
-    NSWindowController  *_wc;
-    ViewController      *_vc;
+    NSWindowController *_wc;
 }
 
 + (void)initialize
@@ -53,18 +52,18 @@
 
     // Register keyboard shortcut.
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
-         [_vc keyboardShortcutActivated];
+         [(ViewController *)_wc.contentViewController keyboardShortcutActivated];
      }];
 
-    _vc = [ViewController new];
+    ViewController *vc = [ViewController new];
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
-    _wc.contentViewController = _vc;
-    _wc.window.delegate = _vc;
+    _wc.contentViewController = vc;
+    _wc.window.delegate = vc;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
-    [_vc removeStatusItem];
+    [(ViewController *)_wc.contentViewController removeStatusItem];
     [[MASShortcutMonitor sharedMonitor] unregisterAllShortcuts];
 }
 
