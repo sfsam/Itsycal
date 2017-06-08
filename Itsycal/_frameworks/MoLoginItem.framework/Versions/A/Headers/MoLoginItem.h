@@ -11,5 +11,5 @@ FOUNDATION_EXPORT double MoLoginItemVersionNumber;
 //! Project version string for MoLoginItem.
 FOUNDATION_EXPORT const unsigned char MoLoginItemVersionString[];
 
-BOOL MOIsLoginItemEnabled();
+BOOL MOIsLoginItemEnabled(void);
 void MOEnableLoginItem(BOOL enable);

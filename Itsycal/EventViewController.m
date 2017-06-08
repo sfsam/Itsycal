@@ -45,7 +45,7 @@
     };
 
     // DatePicker maker
-    NSDatePicker* (^picker)() = ^NSDatePicker* () {
+    NSDatePicker* (^picker)(void) = ^NSDatePicker* () {
         NSDatePicker *picker = [NSDatePicker new];
         picker.translatesAutoresizingMaskIntoConstraints = NO;
         picker.datePickerStyle = NSTextFieldDatePickerStyle;
@@ -58,7 +58,7 @@
     };
 
     // PopUpButton maker
-    NSPopUpButton* (^popup)() = ^NSPopUpButton* () {
+    NSPopUpButton* (^popup)(void) = ^NSPopUpButton* () {
         NSPopUpButton *pop = [NSPopUpButton new];
         pop.translatesAutoresizingMaskIntoConstraints = NO;
         pop.target = self;
