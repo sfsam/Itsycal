@@ -21,7 +21,6 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSMutableDictionary  *_eventsForDate;
     NSDictionary         *_filteredEventsForDate;
     dispatch_queue_t      _queue;
-
 }
 
 - (instancetype)initWithCalendar:(NSCalendar *)calendar delegate:(id<EventCenterDelegate>)delegate
@@ -50,8 +49,9 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         }];
 
         // Refetch everything when the event store has changed.
+        __weak __typeof__(self) weakSelf = self;
         [[NSNotificationCenter defaultCenter] addObserverForName:EKEventStoreChangedNotification object:_store queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            [self refetchAll];
+            [weakSelf refetchAll];
         }];
     }
     return self;

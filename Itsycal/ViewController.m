@@ -485,6 +485,7 @@
 
             // Switch back to the image's context.
             [NSGraphicsContext restoreGraphicsState];
+            CGContextRelease(maskContext);
 
             // Create an image mask from our mask context.
             CGImageRef alphaMask = CGBitmapContextCreateImage(maskContext);
@@ -851,28 +852,34 @@
 
 - (void)fileNotifications
 {
+    // Weak versions of self/ivars so that we don't capture
+    // ViewController in our notification blocks.
+    __weak __typeof__(self) weakSelf = self;
+    __weak __typeof__(_moCal) weakMoCal = _moCal;
+    __weak __typeof__(_ec) weakEc = _ec;
+
     // Day changed notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        MoDate today = [self todayDate];
-        _moCal.todayDate = today;
-        _moCal.selectedDate = today;
-        [self updateMenubarIcon];
+        MoDate today = [weakSelf todayDate];
+        weakMoCal.todayDate = today;
+        weakMoCal.selectedDate = today;
+        [weakSelf updateMenubarIcon];
     }];
     
     // Timezone changed notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemTimeZoneDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateMenubarIcon];
-        [_ec refetchAll];
+        [weakSelf updateMenubarIcon];
+        [weakEc refetchAll];
     }];
     
     // Locale notifications
     [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateMenubarIcon];
+        [weakSelf updateMenubarIcon];
     }];
     
     // System clock notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateMenubarIcon];
+        [weakSelf updateMenubarIcon];
     }];
 
     // Wake from sleep notification
