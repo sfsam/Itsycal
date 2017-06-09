@@ -45,8 +45,8 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     kShadow.shadowBlurRadius = 1;
     kShadow.shadowOffset = NSMakeSize(0, -1);
     kBorderColor = [NSColor textBackgroundColor];
-    kOutlineColor = [NSColor textColor];
-    kLightTextColor = [NSColor textColor];
+    kOutlineColor = [NSColor controlBackgroundColor];
+    kLightTextColor = [NSColor secondaryLabelColor];
     kDarkTextColor  = [NSColor textColor];
     kHighlightedDOWTextColor = [NSColor colorWithRed:0.75 green:0.2 blue:0.1 alpha:1];
     kBackgroundColor = [NSColor controlBackgroundColor];
@@ -130,7 +130,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [self addSubview:_dateGrid];
     [self addSubview:_weekGrid];
     [self addSubview:_dowGrid];
-    [self addSubview:_resizeHandle];
+    //[self addSubview:_resizeHandle];                              // Seems like I can't change the color of it? Is it really necessary?
 
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_monthLabel, _btnPrev, _btnToday, _btnNext, _dowGrid, _weekGrid, _dateGrid, _resizeHandle)];
     [vfl :@"H:|-8-[_monthLabel]-4-[_btnPrev]"];
@@ -140,11 +140,11 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [vfl :@"V:|-2-[_btnPrev]"];
     [vfl :@"V:|[_monthLabel]-3-[_dowGrid]-(-2)-[_dateGrid]-1-|"];
     [vfl :@"V:[_weekGrid]-1-|"];
-    [vfl :@"V:[_resizeHandle(7)]|"];
+    //[vfl :@"V:[_resizeHandle(7)]|"];
 
     // _resizeHandle is aligned to leading/trailing of _dateGrid.
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_dateGrid attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_resizeHandle attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_dateGrid attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:_resizeHandle attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
+    //[self addConstraint:[NSLayoutConstraint constraintWithItem:_dateGrid attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_resizeHandle attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
+    //[self addConstraint:[NSLayoutConstraint constraintWithItem:_dateGrid attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:_resizeHandle attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
 
     _weeksConstraint = [NSLayoutConstraint constraintWithItem:_weekGrid attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0];
     [self addConstraint:_weeksConstraint];

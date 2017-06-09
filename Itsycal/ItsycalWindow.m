@@ -37,7 +37,7 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
 {
     self = [super initWithContentRect:NSZeroRect styleMask:NSWindowStyleMaskNonactivatingPanel backing:NSBackingStoreBuffered defer:NO];
     if (self) {
-        [self setAppearance:[NSAppearance appearanceNamed:@"NSAppearanceNameVibrantLight"]];
+        [self setAppearance:[NSAppearance appearanceNamed:@"NSAppearanceNameVibrantDark"]];
         //[NSAppearance appearanceNamed:@"NSAppearanceNameVibrantLight"]
         [self setBackgroundColor:[NSColor clearColor]];
         [self setOpaque:NO];
@@ -202,6 +202,10 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
     [rectPath setLineWidth:2*kBorderWidth];
     [rectPath stroke];
     [rectPath fill];
+}
+
+- (BOOL)allowsVibrancy {
+    return YES;
 }
 
 @end
