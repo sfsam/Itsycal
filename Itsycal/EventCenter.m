@@ -49,9 +49,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         }];
 
         // Refetch everything when the event store has changed.
-        __weak __typeof__(self) weakSelf = self;
         [[NSNotificationCenter defaultCenter] addObserverForName:EKEventStoreChangedNotification object:_store queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            [weakSelf refetchAll];
+            [self refetchAll];
         }];
     }
     return self;
