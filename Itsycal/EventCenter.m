@@ -274,19 +274,22 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 
 - (void)filterEvents
 {
-    NSMutableDictionary *filteredEventsForDates = [NSMutableDictionary new];
+    NSMutableDictionary *filteredEventsForDate = [NSMutableDictionary new];
     NSArray *selectedCalendars = [[NSUserDefaults standardUserDefaults] arrayForKey:kSelectedCalendars];
     for (NSDate *date in _eventsForDate) {
         for (EventInfo *info in _eventsForDate[date]) {
             if ([selectedCalendars containsObject:info.event.calendar.calendarIdentifier]) {
-                if (filteredEventsForDates[date] == nil) {
-                    filteredEventsForDates[date] = [NSMutableArray new];
+                if (filteredEventsForDate[date] == nil) {
+                    filteredEventsForDate[date] = [NSMutableArray new];
                 }
-                [filteredEventsForDates[date] addObject:info];
+                [filteredEventsForDate[date] addObject:info];
             }
         }
     }
-    _filteredEventsForDate = [filteredEventsForDates copy];
+    // Main queue reads _filteredEventsForDate so update it there.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _filteredEventsForDate = [filteredEventsForDate copy];
+    });
 }
 
 - (void)refetchAll
