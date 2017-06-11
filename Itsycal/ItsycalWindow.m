@@ -12,10 +12,9 @@ static const CGFloat kMinimumSpaceBetweenWindowAndScreenEdge = 10;
 static const CGFloat kArrowHeight  = 8;
 static const CGFloat kCornerRadius = 8;
 static const CGFloat kBorderWidth  = 1;
-static const CGFloat kShadowWidth  = 12;
 static const CGFloat kWindowTopMargin    = kCornerRadius + kBorderWidth + kArrowHeight;
-static const CGFloat kWindowSideMargin   = kBorderWidth  + kShadowWidth;
-static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShadowWidth + kShadowWidth/2;
+static const CGFloat kWindowSideMargin   = kBorderWidth;
+static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
 
 @interface ItsycalWindowFrameView : NSView
 @property (nonatomic, assign) CGFloat arrowMidX;
@@ -41,7 +40,6 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
         [self setOpaque:NO];
         [self setLevel:NSMainMenuWindowLevel];
         [self setMovableByWindowBackground:NO];
-        [self setHasShadow:NO];
         [self setCollectionBehavior:NSWindowCollectionBehaviorMoveToActiveSpace];
         // Fade out when -[NSWindow orderOut:] is called.
         [self setAnimationBehavior:NSWindowAnimationBehaviorUtilityWindow];
@@ -139,6 +137,8 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
     // the frame view.
     frameView.arrowMidX = NSMidX([super convertRectFromScreen:rect]);
     [frameView setNeedsDisplay:YES];
+    
+    [self invalidateShadow];
 }
 
 @end
@@ -163,8 +163,8 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
     // The rectangular part of frame view must be inset and
     // offset to make room for the arrow and drop shadow.
     NSRect rect = NSInsetRect(self.bounds, kWindowSideMargin, 0);
-    rect.origin.y = kBorderWidth + kShadowWidth + kShadowWidth/2;
-    rect.size.height -= (kArrowHeight + kShadowWidth + kShadowWidth/2 + 2*kBorderWidth);
+    rect.origin.y = kBorderWidth;
+    rect.size.height -= (kArrowHeight + 2*kBorderWidth);
     NSBezierPath *rectPath = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:kCornerRadius yRadius:kCornerRadius];
     
     // Append the arrow to the body if its right ege is inside
@@ -186,15 +186,6 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
         [rectPath appendBezierPath:arrowPath];
     }
     
-    // Shadow, stroke and fill.
-    static NSShadow *shadow = nil;
-    if (shadow == nil) {
-        shadow = [NSShadow new];
-        shadow.shadowColor = [NSColor colorWithWhite:0 alpha:0.4];
-        shadow.shadowBlurRadius = kShadowWidth;
-        shadow.shadowOffset = NSMakeSize(0, -kShadowWidth/2);
-    }
-    [shadow set];
     [[NSColor colorWithWhite:0.3 alpha:0.4] setStroke];
     [[NSColor whiteColor] setFill];
     [rectPath setLineWidth:2*kBorderWidth];
