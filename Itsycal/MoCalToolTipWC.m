@@ -139,11 +139,11 @@ static CGFloat kToolipWindowWidth = 200;
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    // A yellow rounded rect with a light gray border.
+    // A rounded rect with a light gray border.
     NSRect r = NSInsetRect(self.bounds, 1, 1);
     NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:4 yRadius:4];
-    [[NSColor colorWithWhite:0 alpha:0.25] setStroke];
-    [[NSColor colorWithRed:1 green:1 blue:0.95 alpha:1] setFill];
+    [[NSColor colorWithWhite:0 alpha:0.1] setStroke];
+    [[NSColor whiteColor] setFill];
     [p setLineWidth: 2];
     [p stroke];[p fill];
 }

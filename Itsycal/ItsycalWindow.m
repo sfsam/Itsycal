@@ -12,8 +12,9 @@ static const CGFloat kMinimumSpaceBetweenWindowAndScreenEdge = 10;
 static const CGFloat kArrowHeight  = 8;
 static const CGFloat kCornerRadius = 8;
 static const CGFloat kBorderWidth  = 1;
+static const CGFloat kMarginWidth  = 2;
 static const CGFloat kWindowTopMargin    = kCornerRadius + kBorderWidth + kArrowHeight;
-static const CGFloat kWindowSideMargin   = kBorderWidth;
+static const CGFloat kWindowSideMargin   = kMarginWidth  + kBorderWidth;
 static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
 
 @interface ItsycalWindowFrameView : NSView
@@ -161,8 +162,8 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
     NSRectFill(self.bounds);
     
     // The rectangular part of frame view must be inset and
-    // offset to make room for the arrow and drop shadow.
-    NSRect rect = NSInsetRect(self.bounds, kWindowSideMargin, 0);
+    // offset to make room for the arrow and border.
+    NSRect rect = NSInsetRect(self.bounds, kBorderWidth, 0);
     rect.origin.y = kBorderWidth;
     rect.size.height -= (kArrowHeight + 2*kBorderWidth);
     NSBezierPath *rectPath = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:kCornerRadius yRadius:kCornerRadius];
@@ -186,7 +187,7 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
         [rectPath appendBezierPath:arrowPath];
     }
     
-    [[NSColor colorWithWhite:0.3 alpha:0.4] setStroke];
+    [[NSColor colorWithWhite:0.4 alpha:0.4] setStroke];
     [[NSColor whiteColor] setFill];
     [rectPath setLineWidth:2*kBorderWidth];
     [rectPath stroke];

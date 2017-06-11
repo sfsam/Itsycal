@@ -15,6 +15,9 @@ static NSString *kColumnIdentifier    = @"Column";
 static NSString *kDateCellIdentifier  = @"DateCell";
 static NSString *kEventCellIdentifier = @"EventCell";
 
+@interface AgendaRowView : NSTableRowView
+@end
+
 @interface AgendaDateCell : NSView
 @property (nonatomic) NSTextField *textField;
 @end
@@ -52,7 +55,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
     _tv.backgroundColor = [NSColor whiteColor];
-    _tv.hoverColor = [NSColor colorWithWhite:0.98 alpha:1];
+    _tv.hoverColor = [NSColor colorWithRed:0.95 green:0.955 blue:0.96 alpha:1];
     _tv.floatsGroupRows = YES;
     _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
@@ -143,6 +146,16 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return self.events == nil ? 0 : self.events.count;
 }
 
+- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
+{
+    AgendaRowView *rowView = [_tv makeViewWithIdentifier:@"RowView" owner:self];
+    if (rowView == nil) {
+        rowView = [AgendaRowView new];
+        rowView.identifier = @"RowView";
+    }
+    return rowView;
+}
+
 - (NSView *)tableView:(MoTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
     NSView *v = nil;
@@ -173,16 +186,24 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
-    // Keep a cell around for measuring height.
-    static AgendaEventCell *cell = nil;
-    if (cell == nil) { cell = [AgendaEventCell new]; }
+    // Keep a cell around for measuring event cell height.
+    static AgendaEventCell *eventCell = nil;
+    static CGFloat dateCellHeight = 0;
     
-    CGFloat height = 18; // AgendaDateCell height;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        eventCell = [AgendaEventCell new];
+        AgendaDateCell *dateCell = [AgendaDateCell new];
+        [dateCell layoutSubtreeIfNeeded];
+        dateCellHeight = NSHeight(dateCell.frame);
+    });
+    
+    CGFloat height = dateCellHeight;
     id obj = self.events[row];
     if ([obj isKindOfClass:[EventInfo class]]) {
-        cell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
-        cell.textField.attributedStringValue = [self eventStringForInfo:obj];
-        height = cell.height;
+        eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
+        eventCell.textField.attributedStringValue = [self eventStringForInfo:obj];
+        height = eventCell.height;
     }
     return height;
 }
@@ -295,6 +316,31 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @end
 
 #pragma mark -
+#pragma mark Agenda Row View
+
+// =========================================================================
+// AgendaRowView
+// =========================================================================
+
+@implementation AgendaRowView
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    if (self.isGroupRowStyle) {
+        [[self backgroundColor] set]; // tableView's background color
+        NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
+        NSRect r = NSMakeRect(2, 5, self.bounds.size.width - 4, 1);
+        [[NSColor colorWithWhite:0.86 alpha:1] set];
+        NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
+    }
+    else {
+        [super drawRect:dirtyRect];
+    }
+}
+
+@end
+
+#pragma mark -
 #pragma mark Agenda Date and Event cells
 
 // =========================================================================
@@ -311,27 +357,16 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
         _textField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
-        _textField.textColor = [NSColor colorWithWhite:0 alpha:0.9];
+        _textField.textColor = [NSColor colorWithWhite:0.1 alpha:1];
         _textField.editable = NO;
         _textField.bezeled = NO;
         _textField.drawsBackground = NO;
         _textField.stringValue = @"";
         [self addSubview:_textField];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-4-[_textField]-4-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-2-[_textField]" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-3-[_textField]-3-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-12-[_textField]-1-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
     }
     return self;
-}
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-    NSRect r = self.bounds;
-    [[NSColor colorWithWhite:0.86 alpha:1] set];
-    NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
-
-    r.size.height -= 1;
-    [[NSColor colorWithWhite:0.95 alpha:1] set];
-    NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
 }
 
 @end
