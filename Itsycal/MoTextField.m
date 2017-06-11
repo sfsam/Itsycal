@@ -7,6 +7,7 @@
 //
 
 #import "MoTextField.h"
+#import "ItsyColors.h"
 
 @implementation MoTextField
 {
@@ -17,7 +18,7 @@
 {
     self = [super initWithFrame:frameRect];
     if (self) {
-        _linkColor = [NSColor textColor];
+        _linkColor = [ItsyColors getPrimaryTextColor];
         _originalColor = self.textColor;
     }
     return self;
@@ -27,7 +28,7 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        _linkColor = [NSColor textColor];
+        _linkColor = [ItsyColors getPrimaryTextColor];
         _originalColor = self.textColor;
     }
     return self;

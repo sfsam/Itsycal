@@ -37,8 +37,7 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
 {
     self = [super initWithContentRect:NSZeroRect styleMask:NSWindowStyleMaskNonactivatingPanel backing:NSBackingStoreBuffered defer:NO];
     if (self) {
-        [self setAppearance:[NSAppearance appearanceNamed:@"NSAppearanceNameVibrantDark"]];
-        //[NSAppearance appearanceNamed:@"NSAppearanceNameVibrantLight"]
+        [self setAppearance:[ItsyColors getAppearance]];
         [self setBackgroundColor:[NSColor clearColor]];
         [self setOpaque:NO];
         [self setLevel:NSMainMenuWindowLevel];
@@ -198,7 +197,7 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
     }
     [shadow set];*/
     //[[NSColor colorWithWhite:0.3 alpha:0.4] setStroke];
-    [[NSColor controlBackgroundColor] setFill];
+    [[ItsyColors getPrimaryBackgroundColor] setFill];
     [rectPath setLineWidth:2*kBorderWidth];
     [rectPath stroke];
     [rectPath fill];

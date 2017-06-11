@@ -7,6 +7,7 @@
 //
 
 #import "MoCalCell.h"
+#import "ItsyColors.h"
 
 @implementation MoCalCell
 
@@ -14,9 +15,9 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
 
 + (void)initialize
 {
-    kTodayCellColor = [NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:1];
-    kHoveredCellColor = [NSColor colorWithRed:0.2 green:0.2 blue:0.3 alpha:0.2];
-    kSelectedCellColor = [NSColor colorWithRed:0.3 green:0.3 blue:0.4 alpha:0.7];
+    kTodayCellColor = [ItsyColors getHighlightColor];
+    kHoveredCellColor = [ItsyColors getHoverColor];
+    kSelectedCellColor = [ItsyColors getBorderColor];
 }
 
 - (instancetype)init
@@ -25,7 +26,7 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
     if (self) {
         _textField = [[NSTextField alloc] initWithFrame:NSZeroRect];
         [_textField setFont:[NSFont systemFontOfSize:11 weight:NSFontWeightRegular]];
-        [_textField setTextColor:[NSColor textColor]];
+        [_textField setTextColor:[ItsyColors getPrimaryTextColor]];
         [_textField setBezeled:NO];
         [_textField setEditable:NO];
         [_textField setAlignment:NSTextAlignmentCenter];

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		71E66A261EED92A700871F44 /* ItsyColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 71E66A251EED92A700871F44 /* ItsyColors.m */; };
 		9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */; };
 		921E62CD1E26B3EA007B029F /* PrefsGeneralVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */; };
 		921E62D01E26B9D2007B029F /* PrefsAppearanceVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62CF1E26B9D2007B029F /* PrefsAppearanceVC.m */; };
@@ -61,6 +62,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		71E66A241EED92A700871F44 /* ItsyColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItsyColors.h; sourceTree = "<group>"; };
+		71E66A251EED92A700871F44 /* ItsyColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItsyColors.m; sourceTree = "<group>"; };
 		9215AD4A1E3AECA700317FAE /* MoVFLHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoVFLHelper.h; sourceTree = "<group>"; };
 		9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoVFLHelper.m; sourceTree = "<group>"; };
 		921E62C01E26B3EA007B029F /* PrefsGeneralVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsGeneralVC.h; sourceTree = "<group>"; };
@@ -205,6 +208,8 @@
 				929223E91E2D6E0800F1A119 /* HighlightPicker.h */,
 				929223EA1E2D6E0800F1A119 /* HighlightPicker.m */,
 				922232CB1A8DF672003BFAD9 /* EventCenter.h */,
+				71E66A241EED92A700871F44 /* ItsyColors.h */,
+				71E66A251EED92A700871F44 /* ItsyColors.m */,
 				922232CC1A8DF672003BFAD9 /* EventCenter.m */,
 				92CDDE791A955D7F00D7675C /* AgendaViewController.h */,
 				92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */,
@@ -297,7 +302,6 @@
 				TargetAttributes = {
 					9242A55B1A82A136005AA4B3 = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = HFT3T55WND;
 						ProvisioningStyle = Manual;
 					};
 				};
@@ -351,6 +355,7 @@
 				9242A5651A82A136005AA4B3 /* main.m in Sources */,
 				9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */,
 				929223EB1E2D6E0900F1A119 /* HighlightPicker.m in Sources */,
+				71E66A261EED92A700871F44 /* ItsyColors.m in Sources */,
 				925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */,
 				9242A5871A82A1A1005AA4B3 /* ItsycalWindow.m in Sources */,
 				92CDDE7B1A955D7F00D7675C /* AgendaViewController.m in Sources */,
@@ -432,7 +437,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -478,7 +483,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -501,9 +506,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = HFT3T55WND;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Itsycal/_frameworks",
@@ -520,10 +525,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = HFT3T55WND;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Itsycal/_frameworks",

@@ -13,6 +13,7 @@
 #import "MoButton.h"
 #import "MoVFLHelper.h"
 #import "MoCalResizeHandle.h"
+#import "ItsyColors.h"
 
 NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
@@ -40,18 +41,18 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
 
 + (void)initialize
 {
-    //kShadow = [NSShadow new];
-    //kShadow.shadowColor = [NSColor textColor];
+    kShadow = [NSShadow new];
+    kShadow.shadowColor = [ItsyColors getShadowColor];
     kShadow.shadowBlurRadius = 1;
     kShadow.shadowOffset = NSMakeSize(0, -1);
-    kBorderColor = [NSColor textBackgroundColor];
-    kOutlineColor = [NSColor controlBackgroundColor];
-    kLightTextColor = [NSColor secondaryLabelColor];
-    kDarkTextColor  = [NSColor textColor];
-    kHighlightedDOWTextColor = [NSColor colorWithRed:0.75 green:0.2 blue:0.1 alpha:1];
-    kBackgroundColor = [NSColor controlBackgroundColor];
-    kWeeksBackgroundColor = [NSColor controlBackgroundColor];
-    kDatesBackgroundColor = [NSColor controlBackgroundColor];
+    kBorderColor = [ItsyColors getBorderColor];
+    kOutlineColor = [ItsyColors getBorderColor];
+    kLightTextColor = [ItsyColors getSecondaryTextColor];
+    kDarkTextColor  = [ItsyColors getPrimaryTextColor];
+    kHighlightedDOWTextColor = [ItsyColors getHighlightColor];
+    kBackgroundColor = [ItsyColors getPrimaryBackgroundColor];
+    kWeeksBackgroundColor = [ItsyColors getSecondaryBackgroundColor];
+    kDatesBackgroundColor = [ItsyColors getSecondaryBackgroundColor];
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
@@ -124,14 +125,14 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     // The _resizeHandle is at the bottom of the calendar.
     _resizeHandle = [MoCalResizeHandle new];
     _resizeHandle.translatesAutoresizingMaskIntoConstraints = NO;
-    _resizeHandle.alphaValue = 0;
+    _resizeHandle.alphaValue = 1;
 
     [self addSubview:_monthLabel];
     [self addSubview:_dateGrid];
     [self addSubview:_weekGrid];
     [self addSubview:_dowGrid];
-    //[self addSubview:_resizeHandle];                              // Seems like I can't change the color of it? Is it really necessary?
-
+    [self addSubview:_resizeHandle];
+    
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_monthLabel, _btnPrev, _btnToday, _btnNext, _dowGrid, _weekGrid, _dateGrid, _resizeHandle)];
     [vfl :@"H:|-8-[_monthLabel]-4-[_btnPrev]"];
     [vfl :@"H:[_btnPrev]-2-[_btnToday]-2-[_btnNext]-6-|" :NSLayoutFormatAlignAllBottom];
@@ -140,11 +141,11 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [vfl :@"V:|-2-[_btnPrev]"];
     [vfl :@"V:|[_monthLabel]-3-[_dowGrid]-(-2)-[_dateGrid]-1-|"];
     [vfl :@"V:[_weekGrid]-1-|"];
-    //[vfl :@"V:[_resizeHandle(7)]|"];
+    [vfl :@"V:[_resizeHandle(7)]|"];
 
     // _resizeHandle is aligned to leading/trailing of _dateGrid.
-    //[self addConstraint:[NSLayoutConstraint constraintWithItem:_dateGrid attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_resizeHandle attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
-    //[self addConstraint:[NSLayoutConstraint constraintWithItem:_dateGrid attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:_resizeHandle attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_dateGrid attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:_resizeHandle attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_dateGrid attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:_resizeHandle attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
 
     _weeksConstraint = [NSLayoutConstraint constraintWithItem:_weekGrid attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0];
     [self addConstraint:_weeksConstraint];
@@ -688,7 +689,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     [outlinePath setLineWidth:2];
     [outlinePath stroke];
     
-    [[NSColor controlBackgroundColor] set];
+    [[ItsyColors getPrimaryBackgroundColor] set];
     [NSGraphicsContext saveGraphicsState];
     [kShadow set];
     [outlinePath fill];
@@ -697,7 +698,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     if (self.highlightedDOWs) {
         NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
         weekendRect.size.width = kMoCalCellWidth;
-        [[NSColor textColor] set];
+        [[ItsyColors getPrimaryTextColor] set];
         NSInteger numColsToHighlight = 0;
         for (NSInteger col = 0; col <= 7; col++) {
             if (col < 7 && [self columnIsMemberOfHighlightedDOWs:col]) {
@@ -723,7 +724,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
         [t translateXBy:NSMinX(_dateGrid.frame) yBy:0];
         NSBezierPath *highlightPath = [_highlightPath copy];
         [highlightPath transformUsingAffineTransform:t];
-        NSColor *outlineColor = [_highlightColor blendedColorWithFraction:0.6 ofColor:[NSColor textBackgroundColor]];
+        NSColor *outlineColor = [_highlightColor blendedColorWithFraction:0.6 ofColor:[ItsyColors getBorderColor]];
         [[outlineColor colorWithAlphaComponent:0.3] setStroke];
         [[_highlightColor colorWithAlphaComponent:0.2] setFill];
         [highlightPath stroke];

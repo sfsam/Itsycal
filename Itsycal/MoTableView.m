@@ -7,6 +7,7 @@
 //
 
 #import "MoTableView.h"
+#import "ItsyColors.h"
 
 @implementation MoTableView
 {
@@ -37,7 +38,7 @@
 {
     _enableHover = YES;
     _hoverRow    = -1;
-    _hoverColor  = [NSColor colorWithDeviceWhite:0.96 alpha:1];
+    _hoverColor  = [ItsyColors getSecondaryBackgroundColor];
     
     // Notify when enclosing scrollView scrolls.
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(scrollViewScrolled:) name:NSViewBoundsDidChangeNotification object:[[self enclosingScrollView] contentView]];
@@ -57,7 +58,7 @@
     [super drawBackgroundInClipRect:clipRect];
     
     [self enumerateAvailableRowViewsUsingBlock:^(NSTableRowView *rowView, NSInteger row) {
-        rowView.backgroundColor = [NSColor controlBackgroundColor];
+        rowView.backgroundColor = [ItsyColors getPrimaryBackgroundColor];
         BOOL isGroupRow = NO;
         if ([self.delegate respondsToSelector:@selector(tableView:isGroupRow:)]) {
             isGroupRow = [self.delegate tableView:self isGroupRow:row];
