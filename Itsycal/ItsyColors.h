@@ -6,10 +6,15 @@
 //  Copyright © 2017 mowglii.com. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <Cocoa/Cocoa.h>
+#import "Itsycal.h"
 
 @interface ItsyColors : NSObject
+
+typedef NS_OPTIONS(NSInteger, ItsyThemes){
+    TDefault = 0,
+    TLight = 1,
+    TDark = 2
+};
 
 + (NSColor *) getPrimaryTextColor;
 + (NSColor *) getSecondaryTextColor;
@@ -21,5 +26,6 @@
 + (NSColor *) getShadowColor;
 
 + (NSAppearance *) getAppearance;
++ (BOOL)allowsVibrancy;
 
 @end

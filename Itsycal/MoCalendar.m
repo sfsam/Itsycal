@@ -698,7 +698,7 @@ static NSColor *kBackgroundColor=nil, *kWeeksBackgroundColor=nil, *kDatesBackgro
     if (self.highlightedDOWs) {
         NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
         weekendRect.size.width = kMoCalCellWidth;
-        [[ItsyColors getPrimaryTextColor] set];
+        [[[ItsyColors getPrimaryBackgroundColor] colorWithAlphaComponent:0.8]set];
         NSInteger numColsToHighlight = 0;
         for (NSInteger col = 0; col <= 7; col++) {
             if (col < 7 && [self columnIsMemberOfHighlightedDOWs:col]) {

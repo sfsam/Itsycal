@@ -19,6 +19,7 @@
     NSButton *_hideIcon;
     HighlightPicker *_highlight;
     NSButton *_showWeeks;
+    NSPopUpButton *_themeChooser;
 }
 
 #pragma mark -
@@ -29,6 +30,14 @@
     // View controller content view
     NSView *v = [NSView new];
 
+    // Convenience function for making labels.
+    MoTextField* (^label)(NSString*) = ^MoTextField* (NSString *stringValue) {
+        MoTextField *txt = [MoTextField labelWithString:stringValue];
+        txt.translatesAutoresizingMaskIntoConstraints = NO;
+        [v addSubview:txt];
+        return txt;
+    };
+    
     // Convenience function for making checkboxes.
     NSButton* (^chkbx)(NSString *) = ^NSButton* (NSString *title) {
         NSButton *chkbx = [NSButton checkboxWithTitle:title target:self action:nil];
@@ -43,6 +52,13 @@
     _showDayOfWeek = chkbx(NSLocalizedString(@"Show day of week in icon", @""));
     _showWeeks = chkbx(NSLocalizedString(@"Show calendar weeks", @""));
     _hideIcon = chkbx(NSLocalizedString(@"Hide icon", @""));
+    
+    // Theme chooser
+    MoTextField *themeLabel = label(@"Theme:");
+    _themeChooser = [NSPopUpButton new];
+    _themeChooser.translatesAutoresizingMaskIntoConstraints = NO;
+    [_themeChooser addItemsWithTitles:@[@"Default",@"Light",@"Dark"]];
+    [v addSubview:_themeChooser];
 
     // Datetime format text field
     _dateTimeFormat = [NSTextField textFieldWithString:nil];
@@ -70,8 +86,8 @@
     _highlight.action = @selector(didChangeHighlight:);
     [v addSubview:_highlight];
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_useOutlineIcon, _showMonth, _showDayOfWeek, _showWeeks, _dateTimeFormat, helpButton, _hideIcon, _highlight)];
-    [vfl :@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_highlight]-m-[_showWeeks]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_useOutlineIcon, _showMonth, _showDayOfWeek, _showWeeks, _dateTimeFormat, helpButton, _hideIcon, _highlight, _themeChooser, themeLabel)];
+    [vfl :@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_highlight]-m-[_showWeeks]-m-[_themeChooser]|"];
     [vfl :@"H:|-m-[_useOutlineIcon]-(>=m)-|"];
     [vfl :@"H:|-m-[_showMonth]-(>=m)-|"];
     [vfl :@"H:|-m-[_showDayOfWeek]-(>=m)-|"];
@@ -79,6 +95,7 @@
     [vfl :@"H:|-m-[_hideIcon]-(>=m)-|"];
     [vfl :@"H:|-m-[_highlight]-(>=m)-|"];
     [vfl :@"H:|-m-[_showWeeks]-(>=m)-|"];
+    [vfl :@"H:|-m-[themeLabel]-[_themeChooser]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
 
     self.view = v;
 }
@@ -108,6 +125,9 @@
     [_highlight bind:@"weekStartDOW" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kWeekStartDOW] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_highlight bind:@"selectedDOWs" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightedDOWs] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
+    [_themeChooser bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemeName] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+
+    
     [self updateHideIconState];
 
     // We don't want _dateTimeFormat to be first responder.

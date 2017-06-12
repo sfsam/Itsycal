@@ -11,39 +11,129 @@
 @implementation ItsyColors
 
 + (NSColor *) getPrimaryTextColor{
-    return [NSColor textColor];
+    switch ([self curTheme]) {
+        case TDefault:
+            return [NSColor blackColor];
+            break;
+        case TLight:
+        case TDark:
+            return [NSColor textColor];
+            break;
+    }
 }
 
 + (NSColor *) getSecondaryTextColor{
-    return [NSColor secondaryLabelColor];
+    switch ([self curTheme]) {
+        case TDefault:
+            return [NSColor grayColor];
+            break;
+        case TLight:
+        case TDark:
+            return [NSColor secondaryLabelColor];
+            break;
+    }
 }
 
 + (NSColor *) getPrimaryBackgroundColor{
-    return [NSColor controlBackgroundColor];
+    switch ([self curTheme]) {
+        case TDefault:
+            return [NSColor whiteColor];
+            break;
+        case TLight:
+        case TDark:
+            return [NSColor controlBackgroundColor];
+            break;
+    }
 }
 
 + (NSColor *) getSecondaryBackgroundColor{
-    return [NSColor windowBackgroundColor];
+    switch ([self curTheme]) {
+        case TDefault:
+            return [NSColor lightGrayColor];
+            break;
+        case TLight:
+        case TDark:
+            return [NSColor windowBackgroundColor];
+            break;
+    }
 }
 
 + (NSColor *) getBorderColor{
-    return [NSColor scrollBarColor];
+    switch ([self curTheme]) {
+        case TDefault:
+            return [NSColor blackColor];
+            break;
+        case TLight:
+        case TDark:
+            return [NSColor scrollBarColor];
+            break;
+    }
 }
 
 + (NSColor *) getHighlightColor{
-    return [NSColor alternateSelectedControlColor];
+    switch ([self curTheme]) {
+        case TDefault:
+            return [NSColor blueColor];
+            break;
+        case TLight:
+        case TDark:
+            return [NSColor alternateSelectedControlColor];
+            break;
+    }
 }
 
 + (NSColor *) getHoverColor{
-    return [NSColor alternateSelectedControlTextColor];
+    switch ([self curTheme]) {
+        case TDefault:
+            return [NSColor blueColor];
+            break;
+        case TLight:
+        case TDark:
+            return [NSColor alternateSelectedControlColor];
+            break;
+    }
 }
 
 + (NSColor *) getShadowColor{
-    return [NSColor clearColor];
+    switch ([self curTheme]) {
+        case TDefault:
+            return [NSColor blackColor];
+            break;
+        case TLight:
+        case TDark:
+            return [NSColor clearColor];
+            break;
+    }
 }
 
 + (NSAppearance *) getAppearance{
-    return [NSAppearance appearanceNamed:@"NSAppearanceNameVibrantDark"];
+    switch ([self curTheme]) {
+        case TDefault:
+            return nil;
+            break;
+        case TLight:
+            return [NSAppearance appearanceNamed:@"NSAppearanceNameVibrantLight"];
+            break;
+        case TDark:
+            return [NSAppearance appearanceNamed:@"NSAppearanceNameVibrantDark"];
+            break;
+    }
+}
+
++ (BOOL)allowsVibrancy{
+    switch ([self curTheme]) {
+        case TDefault:
+            return NO;
+            break;
+        case TLight:
+        case TDark:
+            return YES;
+            break;
+    }
+}
+
++ (ItsyThemes) curTheme{
+    return [[NSUserDefaults standardUserDefaults] integerForKey:kThemeName];
 }
 
 @end
