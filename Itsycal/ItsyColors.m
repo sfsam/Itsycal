@@ -25,7 +25,7 @@
 + (NSColor *) getSecondaryTextColor{
     switch ([self curTheme]) {
         case TDefault:
-            return [NSColor grayColor];
+            return [NSColor colorWithRed:0.51 green:0.51 blue:0.51 alpha:1];
             break;
         case TLight:
         case TDark:
@@ -49,7 +49,7 @@
 + (NSColor *) getSecondaryBackgroundColor{
     switch ([self curTheme]) {
         case TDefault:
-            return [NSColor lightGrayColor];
+            return [NSColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1];
             break;
         case TLight:
         case TDark:
@@ -61,7 +61,7 @@
 + (NSColor *) getBorderColor{
     switch ([self curTheme]) {
         case TDefault:
-            return [NSColor blackColor];
+            return [NSColor colorWithWhite:0 alpha:0.25];
             break;
         case TLight:
         case TDark:
@@ -73,7 +73,7 @@
 + (NSColor *) getHighlightColor{
     switch ([self curTheme]) {
         case TDefault:
-            return [NSColor blueColor];
+            return [NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:1];
             break;
         case TLight:
         case TDark:
@@ -85,7 +85,7 @@
 + (NSColor *) getHoverColor{
     switch ([self curTheme]) {
         case TDefault:
-            return [NSColor blueColor];
+            return [NSColor colorWithRed:0.2 green:0.2 blue:0.3 alpha:0.2];
             break;
         case TLight:
         case TDark:
@@ -97,7 +97,7 @@
 + (NSColor *) getShadowColor{
     switch ([self curTheme]) {
         case TDefault:
-            return [NSColor blackColor];
+            return [NSColor colorWithWhite:0 alpha:0.2];
             break;
         case TLight:
         case TDark:
@@ -109,7 +109,7 @@
 + (NSAppearance *) getAppearance{
     switch ([self curTheme]) {
         case TDefault:
-            return nil;
+            return [NSAppearance appearanceNamed:@"NSAppearanceNameAqua"];
             break;
         case TLight:
             return [NSAppearance appearanceNamed:@"NSAppearanceNameVibrantLight"];

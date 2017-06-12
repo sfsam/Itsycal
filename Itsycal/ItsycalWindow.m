@@ -204,7 +204,7 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth + kShado
 }
 
 - (BOOL)allowsVibrancy {
-    return YES;
+    return [ItsyColors allowsVibrancy];
 }
 
 @end
