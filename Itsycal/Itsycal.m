@@ -7,6 +7,7 @@
 //
 
 #import "Itsycal.h"
+#import "ItsyColors.h"
 
 // NSUserDefaults keys
 NSString * const kPinItsycal = @"PinItsycal";
@@ -21,3 +22,4 @@ NSString * const kShowDayOfWeekInIcon = @"ShowDayOfWeekInIcon";
 NSString * const kAllowOutsideApplicationsFolder = @"AllowOutsideApplicationsFolder";
 NSString * const kClockFormat = @"ClockFormat";
 NSString * const kHideIcon = @"HideIcon";
+NSString * const kThemeName = @"ThemeName";

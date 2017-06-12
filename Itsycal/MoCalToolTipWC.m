@@ -7,6 +7,7 @@
 //
 
 #import "MoCalToolTipWC.h"
+#import "ItsyColors.h"
 
 static CGFloat kToolipWindowWidth = 200;
 
@@ -115,7 +116,7 @@ static CGFloat kToolipWindowWidth = 200;
 {
     self = [super initWithContentRect:NSZeroRect styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
     if (self) {
-        self.backgroundColor = [NSColor clearColor];
+        self.backgroundColor = [ItsyColors getPrimaryBackgroundColor];
         self.opaque = NO;
         self.level = NSPopUpMenuWindowLevel;
         self.movableByWindowBackground = NO;
@@ -142,8 +143,8 @@ static CGFloat kToolipWindowWidth = 200;
     // A yellow rounded rect with a light gray border.
     NSRect r = NSInsetRect(self.bounds, 1, 1);
     NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:4 yRadius:4];
-    [[NSColor colorWithWhite:0 alpha:0.25] setStroke];
-    [[NSColor colorWithRed:1 green:1 blue:0.95 alpha:1] setFill];
+    [[ItsyColors getBorderColor] setStroke];
+    [[ItsyColors getPrimaryBackgroundColor] setFill];
     [p setLineWidth: 2];
     [p stroke];[p fill];
 }

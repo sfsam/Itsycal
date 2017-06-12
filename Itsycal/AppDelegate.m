@@ -12,6 +12,7 @@
 #import "ViewController.h"
 #import "MASShortcut/MASShortcutBinder.h"
 #import "MASShortcut/MASShortcutMonitor.h"
+#import "ItsyColors.h"
 
 @implementation AppDelegate
 {
@@ -30,7 +31,8 @@
         kWeekStartDOW:         @0, // Sun=0, Mon=1,... (MoCalendar.h)
         kShowMonthInIcon:      @(NO),
         kShowDayOfWeekInIcon:  @(NO),
-        kHideIcon:             @(NO)
+        kHideIcon:             @(NO),
+        kThemeName:             [NSNumber numberWithInt: TDefault]
     }];
     
     // Constrain kShowEventDays to values 0...7 in (unlikely) case it is invalid.

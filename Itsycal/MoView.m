@@ -7,13 +7,14 @@
 //
 
 #import "MoView.h"
+#import "ItsyColors.h"
 
 @implementation MoView
 
 void commonInitForMoView(MoView *moView)
 {
     moView.viewIsOpaque = YES;
-    moView.backgroundColor = [NSColor colorWithWhite:0.95 alpha:1];
+    moView.backgroundColor = [ItsyColors getPrimaryBackgroundColor];
     moView.translatesAutoresizingMaskIntoConstraints = NO;
 }
 

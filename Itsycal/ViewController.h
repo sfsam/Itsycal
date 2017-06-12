@@ -10,6 +10,7 @@
 #import "MoCalendar.h"
 #import "EventCenter.h"
 #import "AgendaViewController.h"
+#import "ItsyColors.h"
 
 @interface ViewController : NSViewController <NSWindowDelegate, AgendaDelegate, MoCalendarDelegate, EventCenterDelegate>
 

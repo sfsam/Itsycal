@@ -4,6 +4,7 @@
 //
 
 #import "MoCalResizeHandle.h"
+#import "ItsyColors.h"
 
 @implementation MoCalResizeHandle
 {
@@ -17,8 +18,8 @@
         NSRect dotRect = NSMakeRect(0, 0, 4, 4);
         _dot = [NSImage imageWithSize:dotRect.size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
             NSGradient *g = [[NSGradient alloc] initWithColors:@[
-                [NSColor colorWithWhite:0 alpha:0.3],
-                [NSColor colorWithWhite:0 alpha:0.1]]];
+                [ItsyColors getPrimaryTextColor],
+                [ItsyColors getSecondaryTextColor]]];
             [g drawInBezierPath:[NSBezierPath bezierPathWithOvalInRect:dotRect] angle:-90];
             return YES;
         }];
@@ -33,7 +34,7 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    [[NSColor colorWithWhite:0.86 alpha:1] set];
+    [[ItsyColors getPrimaryBackgroundColor] setFill];
     NSRectFill(NSMakeRect(0, 0, NSWidth(self.bounds), 6));
     CGFloat x = roundf((NSWidth(self.bounds) - _dot.size.width)/2.0);
     CGFloat y = roundf((6 - _dot.size.height)/2.0);
