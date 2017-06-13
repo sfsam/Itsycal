@@ -8,12 +8,13 @@
 
 #import "TooltipViewController.h"
 #import "EventCenter.h"
+#import "Themer.h"
 
 @implementation TooltipViewController
 
 - (void)toolTipForDate:(MoDate)date
 {
-    self.backgroundColor = [NSColor whiteColor];
+    self.backgroundColor = [[Themer shared] tooltipBackgroundColor];
     self.tv.enclosingScrollView.hasVerticalScroller = NO; // in case user has System Prefs set to always show scroller
     self.events = [self.ec eventsForDate:date];
     [self reloadData];

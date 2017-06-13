@@ -9,6 +9,7 @@
 #import "MoTextField.h"
 #import "HighlightPicker.h"
 #import "MoVFLHelper.h"
+#import "Themer.h"
 
 @implementation PrefsAppearanceVC
 {
@@ -19,6 +20,7 @@
     NSButton *_hideIcon;
     HighlightPicker *_highlight;
     NSButton *_showWeeks;
+    NSPopUpButton *_themePopup;
 }
 
 #pragma mark -
@@ -70,14 +72,28 @@
     _highlight.action = @selector(didChangeHighlight:);
     [v addSubview:_highlight];
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_useOutlineIcon, _showMonth, _showDayOfWeek, _showWeeks, _dateTimeFormat, helpButton, _hideIcon, _highlight)];
-    [vfl :@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_highlight]-m-[_showWeeks]-m-|"];
+    // Theme label
+    NSTextField *themeLabel = [NSTextField labelWithString:NSLocalizedString(@"Theme:", @"")];
+    themeLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [v addSubview:themeLabel];
+
+    // Theme popup
+    _themePopup = [NSPopUpButton new];
+    _themePopup.translatesAutoresizingMaskIntoConstraints = NO;
+    [_themePopup addItemsWithTitles:@[NSLocalizedString(@"Light", @"Light theme name"),
+                                      NSLocalizedString(@"Dark", @"Dark theme name")]];
+    [v addSubview:_themePopup];
+    
+
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_useOutlineIcon, _showMonth, _showDayOfWeek, _showWeeks, _dateTimeFormat, helpButton, _hideIcon, _highlight, themeLabel, _themePopup)];
+    [vfl :@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_highlight]-m-[_themePopup]-m-[_showWeeks]-m-|"];
     [vfl :@"H:|-m-[_useOutlineIcon]-(>=m)-|"];
     [vfl :@"H:|-m-[_showMonth]-(>=m)-|"];
     [vfl :@"H:|-m-[_showDayOfWeek]-(>=m)-|"];
     [vfl :@"H:|-m-[_dateTimeFormat]-[helpButton]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[_hideIcon]-(>=m)-|"];
     [vfl :@"H:|-m-[_highlight]-(>=m)-|"];
+    [vfl :@"H:|-m-[themeLabel]-[_themePopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
     [vfl :@"H:|-m-[_showWeeks]-(>=m)-|"];
 
     self.view = v;
@@ -108,6 +124,9 @@
     [_highlight bind:@"weekStartDOW" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kWeekStartDOW] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_highlight bind:@"selectedDOWs" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightedDOWs] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
+    // Bindings for theme
+    [_themePopup bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemeIndex] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    
     [self updateHideIconState];
 
     // We don't want _dateTimeFormat to be first responder.

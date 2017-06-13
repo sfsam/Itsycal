@@ -83,6 +83,9 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 /* No comment provided by engineer. */
 "Check for Updates..." = "Nach Updates suchen…";
 
+/* Dark theme name */
+"Dark" = "Dunkles Design";
+
 /* No comment provided by engineer. */
 "Datetime pattern" = "Datum & Zeit Muster";
 
@@ -153,6 +156,9 @@ Bitte beenden Sie Itsycal, es in den Programme-Ordner zu verschieben, und erneut
 /* No comment provided by engineer. */
 "Launch at login" = "Starte Itsycal bei der Anmeldung";
 
+/* Light theme name */
+"Light" = "Helles Design";
+
 /* No comment provided by engineer. */
 "Monday" = "Montag";
 
@@ -219,6 +225,9 @@ Bitte beenden Sie Itsycal, es in den Programme-Ordner zu verschieben, und erneut
 
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "Die Kalender-Anwendung konnte nicht gefunden werden.";
+
+/* No comment provided by engineer. */
+"Theme:" = "Design:";
 
 /* No comment provided by engineer. */
 "Thursday" = "Donnerstag";

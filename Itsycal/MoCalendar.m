@@ -13,10 +13,9 @@
 #import "MoButton.h"
 #import "MoVFLHelper.h"
 #import "MoCalResizeHandle.h"
+#import "Themer.h"
 
 NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
-
-static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutlineColor=nil, *kLightTextColor=nil, *kDarkTextColor=nil, *kHighlightedDOWTextColor=nil;
 
 @implementation MoCalendar
 {
@@ -35,16 +34,6 @@ static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutline
     NSBezierPath *_highlightPath;
     NSColor *_highlightColor;
     MoCalResizeHandle *_resizeHandle;
-}
-
-+ (void)initialize
-{
-    kOutlineColor = [NSColor colorWithWhite:0.75 alpha:1];
-    kLightTextColor = [NSColor colorWithWhite:0.33 alpha:0.5];
-    kDarkTextColor  = [NSColor colorWithWhite:0.2 alpha:1];
-    kHighlightedDOWTextColor = [NSColor colorWithRed:0.85 green:0.2 blue:0.1 alpha:1];
-    kWeeksBackgroundColor = [NSColor colorWithWhite:0.92 alpha:1];
-    kDatesBackgroundColor = [NSColor colorWithWhite:0.97 alpha:1];
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
@@ -73,7 +62,7 @@ static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutline
     _monthLabel = [NSTextField new];
     _monthLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _monthLabel.font = [NSFont systemFontOfSize:13.5 weight:NSFontWeightMedium];
-    _monthLabel.textColor = [NSColor blackColor];
+    _monthLabel.textColor = [[Themer shared] monthTextColor];
     _monthLabel.bezeled = NO;
     _monthLabel.editable = NO;
     _monthLabel.drawsBackground = NO;
@@ -116,7 +105,7 @@ static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutline
     // The _resizeHandle is at the bottom of the calendar.
     _resizeHandle = [MoCalResizeHandle new];
     _resizeHandle.translatesAutoresizingMaskIntoConstraints = NO;
-    _resizeHandle.alphaValue = 0.25;
+    _resizeHandle.alphaValue = 0.1;
 
     [self addSubview:_monthLabel];
     [self addSubview:_dateGrid];
@@ -131,7 +120,7 @@ static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutline
     [vfl :@"H:[_weekGrid][_dateGrid]|"];
     [vfl :@"H:|[_resizeHandle]|"];
     [vfl :@"V:|-2-[_btnPrev]"];
-    [vfl :@"V:|[_monthLabel]-3-[_dowGrid]-(-2)-[_dateGrid]-1-|"];
+    [vfl :@"V:|[_monthLabel]-7-[_dowGrid]-(-6)-[_dateGrid]-1-|"];
     [vfl :@"V:[_weekGrid]-1-|"];
     [vfl :@"V:[_resizeHandle(8)]|"];
 
@@ -147,6 +136,8 @@ static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutline
     _selectedDate = MakeDate(1583, 0, 1);   // date set in setMonthDate:selectedDate:
     _todayDate    = MakeDate(1986, 10, 12); // so calendar will draw on first display
     [self setMonthDate:_todayDate selectedDate:_todayDate];
+    
+    REGISTER_FOR_THEME_CHANGE;
 }
 
 - (void)dealloc
@@ -299,7 +290,9 @@ static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutline
             dow = [dow lowercaseString];
         }
         [[_dowGrid.cells[col] textField] setStringValue:dow];
-        [[_dowGrid.cells[col] textField] setTextColor:[self columnIsMemberOfHighlightedDOWs:col] ? kHighlightedDOWTextColor : kDarkTextColor];
+        [[_dowGrid.cells[col] textField] setTextColor:[self columnIsMemberOfHighlightedDOWs:col] 
+         ? [[Themer shared] highlightedDOWTextColor]
+         : [[Themer shared] DOWTextColor]];
     }
     
     // Get the first of the month.
@@ -323,7 +316,9 @@ static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutline
             cell.date = date;
             cell.isToday = CompareDates(date, self.todayDate) == 0;
             if (date.month == self.monthDate.month) {
-                cell.textField.textColor = [self columnIsMemberOfHighlightedDOWs:col] ? kHighlightedDOWTextColor : kDarkTextColor;
+                cell.textField.textColor = [self columnIsMemberOfHighlightedDOWs:col] 
+                  ? [[Themer shared] highlightedDOWTextColor] 
+                  : [[Themer shared] currentMonthTextColor];
                 if (date.day == 1) {
                     _monthStartCell = cell;
                 }
@@ -332,14 +327,16 @@ static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutline
                 }
             }
             else {
-                cell.textField.textColor = [self columnIsMemberOfHighlightedDOWs:col] ? [kHighlightedDOWTextColor colorWithAlphaComponent:0.6] : kLightTextColor;
+                cell.textField.textColor = [self columnIsMemberOfHighlightedDOWs:col] 
+                  ? [[[Themer shared] highlightedDOWTextColor] colorWithAlphaComponent:0.6] 
+                  : [[Themer shared] noncurrentMonthTextColor];
             }
             // ISO 8601 weeks are defined to start on Monday (and
             // really only make sense if self.weekStartDOW is Monday).
             // If the current column is Monday, use this date to
             // calculate the week number for this row.
             if (col == DOW_COL(self.weekStartDOW, 1)) {
-                [_weekGrid.cells[row] textField].textColor = kLightTextColor;
+                [_weekGrid.cells[row] textField].textColor = [[Themer shared] weekTextColor];
                 [_weekGrid.cells[row] textField].stringValue = [NSString stringWithFormat:@"%zd", WeekOfYear(date.year, date.month, date.day)];
             }
             date = AddDaysToDate(1, date);
@@ -386,6 +383,12 @@ static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutline
     _highlightPath = nil;
     _highlightColor = nil;
     [self setNeedsDisplay:YES];
+}
+
+- (void)themeChanged:(id)sender
+{
+    _monthLabel.textColor = [[Themer shared] monthTextColor];
+    [self updateCalendar];
 }
 
 #pragma mark -
@@ -514,7 +517,7 @@ static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutline
 - (void)mouseExited:(NSEvent *)theEvent
 {
     if ([[(NSDictionary *)[theEvent userData] valueForKey:@"area"] isEqualToString: @"resizeHandle"]) {
-        _resizeHandle.animator.alphaValue = 0.25;
+        _resizeHandle.animator.alphaValue = 0.1;
     }
     else { // userData[area] == "dateGrid"
         _hoveredCell.isHovered = NO;
@@ -659,19 +662,18 @@ static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutline
         return;
     }
     
-    NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:4 inset:0 useRects:NO];
+    NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:5 inset:0 useRects:NO];
     
-    [kOutlineColor set];
+    [[[Themer shared] currentMonthOutlineColor] set];
     [outlinePath setLineWidth:2];
     [outlinePath stroke];
-    
-//    [[NSColor whiteColor] set];
+//    [[[Themer shared] currentMonthFillColor] set];
 //    [outlinePath fill];
-
+    
     if (self.highlightedDOWs) {
         NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
         weekendRect.size.width = kMoCalCellWidth;
-        [[NSColor colorWithWhite:0.1 alpha:0.07] set];
+        [[NSColor colorWithWhite:0.1 alpha:0.05] set];
         NSInteger numColsToHighlight = 0;
         for (NSInteger col = 0; col <= 7; col++) {
             if (col < 7 && [self columnIsMemberOfHighlightedDOWs:col]) {
@@ -697,9 +699,11 @@ static NSColor *kWeeksBackgroundColor=nil, *kDatesBackgroundColor=nil, *kOutline
         [t translateXBy:NSMinX(_dateGrid.frame) yBy:0];
         NSBezierPath *highlightPath = [_highlightPath copy];
         [highlightPath transformUsingAffineTransform:t];
-        NSColor *outlineColor = [_highlightColor blendedColorWithFraction:0.6 ofColor:[NSColor blackColor]];
-        [[outlineColor colorWithAlphaComponent:0.3] setStroke];
-        [[_highlightColor colorWithAlphaComponent:0.2] setFill];
+        NSColor *outlineColor = [[Themer shared] themeIndex] != 0
+          ? [_highlightColor blendedColorWithFraction:0.8 ofColor:[NSColor whiteColor]]
+          : [_highlightColor blendedColorWithFraction:0.6 ofColor:[NSColor blackColor]];
+        [[outlineColor colorWithAlphaComponent:0.4] setStroke];
+        [[_highlightColor colorWithAlphaComponent:0.3] setFill];
         [highlightPath stroke];
         [highlightPath fill];
     }

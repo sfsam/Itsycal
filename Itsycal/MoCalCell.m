@@ -7,17 +7,9 @@
 //
 
 #import "MoCalCell.h"
+#import "Themer.h"
 
 @implementation MoCalCell
-
-static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor=nil, *kDotColor=nil;
-
-+ (void)initialize
-{
-    kTodayCellColor = [NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:1];
-    kHoveredCellColor = [NSColor colorWithRed:0.2 green:0.2 blue:0.3 alpha:0.2];
-    kSelectedCellColor = [NSColor colorWithRed:0.3 green:0.3 blue:0.4 alpha:0.7];
-}
 
 - (instancetype)init
 {
@@ -75,22 +67,22 @@ static NSColor *kTodayCellColor=nil, *kHoveredCellColor=nil, *kSelectedCellColor
 - (void)drawRect:(NSRect)dirtyRect
 {
     if (self.isToday) {
-        [kTodayCellColor set];
+        [[[Themer shared] todayCellColor] set];
         NSRect r = NSInsetRect(self.bounds, 2, 2);
         NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3];
         [p setLineWidth:2];
         [p stroke];
     }
     else if (self.isSelected) {
-        [kSelectedCellColor set];
+        [[[Themer shared] selectedCellColor] set];
         NSRect r = NSInsetRect(self.bounds, 2.5, 2.5);
         [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] stroke];
     }
     else if (self.isHovered) {
-        [kHoveredCellColor set];
+        [[[Themer shared] hoveredCellColor] set];
         NSRect r = NSInsetRect(self.bounds, 2.5, 2.5);
         [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] stroke];
-        [[kHoveredCellColor colorWithAlphaComponent:0.1] set];
+        [[[[Themer shared] hoveredCellColor] colorWithAlphaComponent:0.07] set];
         [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] fill];
     }
     if (self.hasDot) {

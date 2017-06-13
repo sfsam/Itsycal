@@ -7,6 +7,7 @@
 //
 
 #import "ItsycalWindow.h"
+#import "Themer.h"
 
 static const CGFloat kMinimumSpaceBetweenWindowAndScreenEdge = 10;
 static const CGFloat kArrowHeight  = 8;
@@ -44,6 +45,8 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
         [self setCollectionBehavior:NSWindowCollectionBehaviorMoveToActiveSpace];
         // Fade out when -[NSWindow orderOut:] is called.
         [self setAnimationBehavior:NSWindowAnimationBehaviorUtilityWindow];
+        
+        REGISTER_FOR_THEME_CHANGE;
     }
     return self;
 }
@@ -142,6 +145,11 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
     [self invalidateShadow];
 }
 
+- (void)themeChanged:(id)sender
+{
+    [[super contentView] setNeedsDisplay:YES];
+}
+
 @end
 
 #pragma mark -
@@ -187,8 +195,8 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
         [rectPath appendBezierPath:arrowPath];
     }
     
-    [[NSColor colorWithWhite:0.4 alpha:0.4] setStroke];
-    [[NSColor whiteColor] setFill];
+    [[[Themer shared] windowBorderColor] setStroke];
+    [[[Themer shared] mainBackgroundColor] setFill];
     [rectPath setLineWidth:2*kBorderWidth];
     [rectPath stroke];
     [rectPath fill];

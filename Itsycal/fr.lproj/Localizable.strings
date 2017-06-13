@@ -83,6 +83,9 @@ Itsycal est plus utile quand il peut afficher les événements de vos calendrier
 /* No comment provided by engineer. */
 "Check for Updates..." = "Rechercher les mises à jour…";
 
+/* Dark theme name */
+"Dark" = "Thème Sombre";
+
 /* No comment provided by engineer. */
 "Datetime pattern" = "Modèle de date et d'heure";
 
@@ -153,6 +156,9 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 /* No comment provided by engineer. */
 "Launch at login" = "Lancer automatiquement à la connexion";
 
+/* Light theme name */
+"Light" = "Thème Clair";
+
 /* No comment provided by engineer. */
 "Monday" = "lundi";
 
@@ -219,6 +225,9 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "L'application Calendrier est introuvable.";
+
+/* No comment provided by engineer. */
+"Theme:" = "Thème:";
 
 /* No comment provided by engineer. */
 "Thursday" = "jeudi";

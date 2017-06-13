@@ -10,6 +10,7 @@
 #import "Itsycal.h"
 #import "ItsycalWindow.h"
 #import "ViewController.h"
+#import "Themer.h"
 #import "MASShortcut/MASShortcutBinder.h"
 #import "MASShortcut/MASShortcutMonitor.h"
 
@@ -54,6 +55,8 @@
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
          [(ViewController *)_wc.contentViewController keyboardShortcutActivated];
      }];
+    
+    [[Themer shared] bind:@"themeIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemeIndex] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     ViewController *vc = [ViewController new];
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];

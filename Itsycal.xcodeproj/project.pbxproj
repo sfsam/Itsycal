@@ -37,6 +37,7 @@
 		924C518C1E5F721C0049E3A9 /* MoCalResizeHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 924C518B1E5F721C0049E3A9 /* MoCalResizeHandle.m */; };
 		925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B47171A93B63100E0329A /* MoCalToolTipWC.m */; };
 		925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B471A1A93CD2A00E0329A /* TooltipViewController.m */; };
+		9261EB301EEF447500DCFFC4 /* Themer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9261EB2F1EEF447500DCFFC4 /* Themer.m */; };
 		92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92658E611A9DBD8E002AE86C /* EventViewController.m */; };
 		926A6D8F1E3EC89100AAA991 /* PrefsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 926A6D8E1E3EC89100AAA991 /* PrefsVC.m */; };
 		9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9278CADA1A990462004B6BB9 /* MoTableView.m */; };
@@ -121,6 +122,8 @@
 		925B47191A93CD2A00E0329A /* TooltipViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TooltipViewController.h; sourceTree = "<group>"; };
 		925B471A1A93CD2A00E0329A /* TooltipViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TooltipViewController.m; sourceTree = "<group>"; };
 		925B471D1A93E3D800E0329A /* MoCalTooltipProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoCalTooltipProvider.h; sourceTree = "<group>"; };
+		9261EB2E1EEF447500DCFFC4 /* Themer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Themer.h; sourceTree = "<group>"; };
+		9261EB2F1EEF447500DCFFC4 /* Themer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Themer.m; sourceTree = "<group>"; };
 		92658E601A9DBD8E002AE86C /* EventViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventViewController.h; sourceTree = "<group>"; };
 		92658E611A9DBD8E002AE86C /* EventViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventViewController.m; sourceTree = "<group>"; };
 		926A6D8D1E3EC89100AAA991 /* PrefsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsVC.h; sourceTree = "<group>"; };
@@ -212,6 +215,8 @@
 				925B471A1A93CD2A00E0329A /* TooltipViewController.m */,
 				92658E601A9DBD8E002AE86C /* EventViewController.h */,
 				92658E611A9DBD8E002AE86C /* EventViewController.m */,
+				9261EB2E1EEF447500DCFFC4 /* Themer.h */,
+				9261EB2F1EEF447500DCFFC4 /* Themer.m */,
 			);
 			path = Itsycal;
 			sourceTree = "<group>";
@@ -354,6 +359,7 @@
 				925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */,
 				9242A5871A82A1A1005AA4B3 /* ItsycalWindow.m in Sources */,
 				92CDDE7B1A955D7F00D7675C /* AgendaViewController.m in Sources */,
+				9261EB301EEF447500DCFFC4 /* Themer.m in Sources */,
 				922B6BBB1A85E0EC00DEA9CD /* MoTextField.m in Sources */,
 				9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */,
 				9242A5901A82A40B005AA4B3 /* MoDate.m in Sources */,

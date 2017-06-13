@@ -10,6 +10,7 @@
 #import "AgendaViewController.h"
 #import "EventCenter.h"
 #import "MoButton.h"
+#import "Themer.h"
 
 static NSString *kColumnIdentifier    = @"Column";
 static NSString *kDateCellIdentifier  = @"DateCell";
@@ -20,6 +21,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 @interface AgendaDateCell : NSView
 @property (nonatomic) NSTextField *textField;
+@property (nonatomic, readonly) CGFloat height;
 @end
 
 @interface AgendaEventCell : NSView
@@ -54,8 +56,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
-    _tv.backgroundColor = [NSColor whiteColor];
-    _tv.hoverColor = [NSColor colorWithRed:0.95 green:0.955 blue:0.96 alpha:1];
+    _tv.backgroundColor = [[Themer shared] mainBackgroundColor];
+    _tv.hoverColor = [[Themer shared] agendaHoverColor];
     _tv.floatsGroupRows = YES;
     _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
@@ -85,6 +87,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [_timeFormatter setTimeZone:[NSTimeZone localTimeZone]];
         [_intervalFormatter setTimeZone:[NSTimeZone localTimeZone]];
     }];
+    REGISTER_FOR_THEME_CHANGE;
 }
 
 - (void)viewWillAppear
@@ -136,6 +139,16 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [_tv scrollRowToVisible:0];
     [[_tv enclosingScrollView] flashScrollers];
     [self.view setNeedsLayout:YES];
+}
+
+- (void)themeChanged:(id)sender
+{
+    _tv.hoverColor = [[Themer shared] agendaHoverColor];    
+    self.backgroundColor = [[Themer shared] mainBackgroundColor];
+    for (NSInteger row = 0; row < _tv.numberOfRows; row++) {
+        NSView *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:YES];
+        [cell setNeedsDisplay:YES];
+    }    
 }
 
 #pragma mark -
@@ -194,8 +207,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
     dispatch_once(&onceToken, ^{
         eventCell = [AgendaEventCell new];
         AgendaDateCell *dateCell = [AgendaDateCell new];
-        [dateCell layoutSubtreeIfNeeded];
-        dateCellHeight = NSHeight(dateCell.frame);
+        dateCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
+        dateCell.textField.stringValue = @"Date 1/2/34";
+        dateCellHeight = dateCell.height;
     });
     
     CGFloat height = dateCellHeight;
@@ -309,7 +323,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
     NSString *string = [NSString stringWithFormat:@"%@%@", title, duration];
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:string];
-    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor]} range:NSMakeRange(0, title.length)];
+    [s addAttributes:@{NSForegroundColorAttributeName: [[Themer shared] agendaEventTextColor]} range:NSMakeRange(0, title.length)];
     return s;
 }
 
@@ -329,8 +343,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (self.isGroupRowStyle) {
         [[self backgroundColor] set]; // tableView's background color
         NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
-        NSRect r = NSMakeRect(2, 5, self.bounds.size.width - 4, 1);
-        [[NSColor colorWithWhite:0.86 alpha:1] set];
+        NSRect r = NSMakeRect(3, 4, self.bounds.size.width - 6, 1);
+        [[[Themer shared] agendaDividerColor] set];
         NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
     }
     else {
@@ -357,16 +371,29 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
         _textField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
-        _textField.textColor = [NSColor colorWithWhite:0.1 alpha:1];
+        _textField.textColor = [[Themer shared] agendaDateTextColor];
         _textField.editable = NO;
         _textField.bezeled = NO;
         _textField.drawsBackground = NO;
         _textField.stringValue = @"";
         [self addSubview:_textField];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-3-[_textField]-3-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-12-[_textField]-1-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-16-[_textField]-3-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-10-[_textField]" options:0 metrics:nil views:@{@"_textField": _textField}]];
     }
     return self;
+}
+
+- (CGFloat)height
+{
+    // The height of the textfield plus the height of the
+    // top and bottom marigns.
+    return [_textField intrinsicContentSize].height + 12; // 12=10+2=top+bottom margin
+}
+
+- (void)setNeedsDisplay:(BOOL)needsDisplay
+{
+    _textField.textColor = [[Themer shared] agendaDateTextColor];
+    [super setNeedsDisplay:needsDisplay];
 }
 
 @end
@@ -385,7 +412,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField = [NSTextField new];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
         _textField.font = [NSFont systemFontOfSize:11];
-        _textField.textColor = [NSColor colorWithWhite:0.5 alpha:1];
+        _textField.textColor = [[Themer shared] agendaEventDateTextColor];
         _textField.lineBreakMode = NSLineBreakByWordWrapping;
         _textField.editable = NO;
         _textField.bezeled = NO;
@@ -393,7 +420,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField.stringValue = @"";
         _btnDelete = [MoButton new];
         _btnDelete.image = [NSImage imageNamed:@"btnDel"];
-        _btnDelete.backgroundColor = [NSColor colorWithDeviceWhite:0.98 alpha:1];
         [self addSubview:_textField];
         [self addSubview:_btnDelete];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-16-[_textField]-8-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
@@ -419,14 +445,17 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return [_textField intrinsicContentSize].height + 6; // 6=3+3=top+bottom margin
 }
 
+- (void)setNeedsDisplay:(BOOL)needsDisplay
+{
+    _textField.textColor = [[Themer shared] agendaEventDateTextColor];
+    [super setNeedsDisplay:needsDisplay];
+}
+
 - (void)drawRect:(NSRect)dirtyRect
 {
-    // Draw a colored circle with a slightly darker border.
-    [[self.eventInfo.event.calendar.color blendedColorWithFraction:0.1 ofColor:[NSColor blackColor]] set];
-    NSRect circleRect = NSMakeRect(4, NSMaxY(self.frame)-14, 8, 8);
-    [[NSBezierPath bezierPathWithOvalInRect:circleRect] fill];
-    [[self.eventInfo.event.calendar.color blendedColorWithFraction:0.5 ofColor:[NSColor whiteColor]] set];
-    circleRect = NSInsetRect(circleRect, 1, 1);
+    // Draw a colored circle.
+    NSRect circleRect = NSMakeRect(5, NSMaxY(self.frame)-13, 6, 6);
+    [self.eventInfo.event.calendar.color set];
     [[NSBezierPath bezierPathWithOvalInRect:circleRect] fill];
 }
 
