@@ -120,8 +120,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [vfl :@"H:[_weekGrid][_dateGrid]|"];
     [vfl :@"H:|[_resizeHandle]|"];
     [vfl :@"V:|-2-[_btnPrev]"];
-    [vfl :@"V:|[_monthLabel]-7-[_dowGrid]-(-6)-[_dateGrid]-1-|"];
-    [vfl :@"V:[_weekGrid]-1-|"];
+    [vfl :@"V:|[_monthLabel]-7-[_dowGrid]-(-6)-[_dateGrid]-5-|"];
+    [vfl :@"V:[_weekGrid]-5-|"];
     [vfl :@"V:[_resizeHandle(8)]|"];
 
     _weeksConstraint = [NSLayoutConstraint constraintWithItem:_weekGrid attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0];
@@ -367,7 +367,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         }
     }
     if (startCell && endCell) {
-        _highlightPath = [self bezierPathWithStartCell:startCell endCell:endCell radius:2 inset:2.5 useRects:YES];
+        _highlightPath = [self bezierPathWithStartCell:startCell endCell:endCell radius:3 inset:2.5 useRects:YES];
         _highlightColor = color;
         // Normalize location of _highlightPath. We will tranlsate it
         // again in drawRect to the correct location.

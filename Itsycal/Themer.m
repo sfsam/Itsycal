@@ -100,8 +100,8 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 - (NSColor *)noncurrentMonthTextColor
 {
     return self.themeIndex != 0
-    ? [NSColor colorWithWhite:0.45 alpha:1]
-    : [NSColor colorWithWhite:0.66 alpha:1];
+    ? [NSColor colorWithWhite:1 alpha:0.4]
+    : [NSColor colorWithWhite:0 alpha:0.33];
 }
 
 - (NSColor *)weekTextColor

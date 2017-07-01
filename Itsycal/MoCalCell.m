@@ -68,7 +68,7 @@
 {
     if (self.isToday) {
         [[[Themer shared] todayCellColor] set];
-        NSRect r = NSInsetRect(self.bounds, 2, 2);
+        NSRect r = NSInsetRect(self.bounds, 3, 3);
         NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3];
         [p setLineWidth:2];
         [p stroke];
