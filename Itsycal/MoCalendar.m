@@ -61,7 +61,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
     _monthLabel = [NSTextField new];
     _monthLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _monthLabel.font = [NSFont systemFontOfSize:13.5 weight:NSFontWeightMedium];
+    _monthLabel.font = [NSFont systemFontOfSize:14 weight:NSFontWeightMedium];
     _monthLabel.textColor = [[Themer shared] monthTextColor];
     _monthLabel.bezeled = NO;
     _monthLabel.editable = NO;
@@ -114,13 +114,12 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [self addSubview:_resizeHandle];
 
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_monthLabel, _btnPrev, _btnToday, _btnNext, _dowGrid, _weekGrid, _dateGrid, _resizeHandle)];
-    [vfl :@"H:|-8-[_monthLabel]-4-[_btnPrev]"];
+    [vfl :@"H:|-8-[_monthLabel]-4-[_btnPrev]" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:[_btnPrev]-2-[_btnToday]-2-[_btnNext]-6-|" :NSLayoutFormatAlignAllBottom];
     [vfl :@"H:[_dowGrid]|"];
     [vfl :@"H:[_weekGrid][_dateGrid]|"];
     [vfl :@"H:|[_resizeHandle]|"];
-    [vfl :@"V:|-2-[_btnPrev]"];
-    [vfl :@"V:|[_monthLabel]-7-[_dowGrid]-(-6)-[_dateGrid]-5-|"];
+    [vfl :@"V:|-(-1)-[_monthLabel]-7-[_dowGrid]-(-6)-[_dateGrid]-5-|"];
     [vfl :@"V:[_weekGrid]-5-|"];
     [vfl :@"V:[_resizeHandle(8)]|"];
 
