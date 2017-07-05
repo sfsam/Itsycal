@@ -66,7 +66,7 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 {
     return self.themeIndex != 0
     ? [NSColor colorWithWhite:0.8 alpha:1]
-    : [NSColor colorWithWhite:0.3 alpha:1];
+    : [NSColor colorWithWhite:0.25 alpha:1];
 }
 
 - (NSColor *)highlightedDOWTextColor
@@ -150,7 +150,7 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 {
     return self.themeIndex != 0
     ? [NSColor colorWithWhite:0.22 alpha:1]
-    : [NSColor colorWithWhite:0.96 alpha:1];
+    : [NSColor colorWithWhite:0.9 alpha:1];
 }
 
 - (NSColor *)agendaHoverColor
@@ -160,11 +160,18 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
     : [NSColor colorWithRed:0.94 green:0.95 blue:0.98 alpha:1];
 }
 
-- (NSColor *)agendaDateTextColor
+- (NSColor *)agendaDayTextColor
 {
     return self.themeIndex != 0
-    ? [NSColor colorWithRed:0.9 green:0.5 blue:0.4 alpha:1]
-    : [NSColor colorWithRed:0.2 green:0.4 blue:0.8 alpha:1];
+    ? [NSColor colorWithWhite:0.86 alpha:1]
+    : [NSColor blackColor];
+}
+
+- (NSColor *)agendaDOWTextColor
+{
+    return self.themeIndex != 0
+    ? [NSColor colorWithWhite:0.7 alpha:1]
+    : [NSColor colorWithWhite:0.5 alpha:1];
 }
 
 - (NSColor *)agendaEventTextColor

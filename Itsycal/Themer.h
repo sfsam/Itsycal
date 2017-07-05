@@ -44,7 +44,8 @@ typedef enum : NSUInteger {
 - (NSColor *)resizeHandleBackgroundColor;
 - (NSColor *)agendaDividerColor;
 - (NSColor *)agendaHoverColor;
-- (NSColor *)agendaDateTextColor;
+- (NSColor *)agendaDayTextColor;
+- (NSColor *)agendaDOWTextColor;
 - (NSColor *)agendaEventTextColor;
 - (NSColor *)agendaEventDateTextColor;
 - (NSColor *)tooltipBackgroundColor;

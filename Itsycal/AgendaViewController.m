@@ -10,6 +10,7 @@
 #import "AgendaViewController.h"
 #import "EventCenter.h"
 #import "MoButton.h"
+#import "MoVFLHelper.h"
 #import "Themer.h"
 
 static NSString *kColumnIdentifier    = @"Column";
@@ -20,7 +21,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @end
 
 @interface AgendaDateCell : NSView
-@property (nonatomic) NSTextField *textField;
+@property (nonatomic) NSTextField *dayTextField;
+@property (nonatomic) NSTextField *DOWTextField;
 @property (nonatomic, readonly) CGFloat height;
 @end
 
@@ -39,11 +41,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 // =========================================================================
 
 @implementation AgendaViewController
-{
-    NSDateFormatter *_dateFormatter;
-    NSDateFormatter *_timeFormatter;
-    NSDateIntervalFormatter *_intervalFormatter;
-}
 
 - (void)loadView
 {
@@ -81,12 +78,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Timezone changed notification
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemTimeZoneDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [_dateFormatter setTimeZone:[NSTimeZone localTimeZone]];
-        [_timeFormatter setTimeZone:[NSTimeZone localTimeZone]];
-        [_intervalFormatter setTimeZone:[NSTimeZone localTimeZone]];
-    }];
     REGISTER_FOR_THEME_CHANGE;
 }
 
@@ -177,7 +168,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if ([obj isKindOfClass:[NSDate class]]) {
         AgendaDateCell *cell = [_tv makeViewWithIdentifier:kDateCellIdentifier owner:self];
         if (cell == nil) cell = [AgendaDateCell new];
-        cell.textField.stringValue = [self dateStringForDate:obj];
+        cell.dayTextField.stringValue = [self dayStringForDate:obj];
+        cell.DOWTextField.stringValue = [self DOWStringForDate:obj];
         v = cell;
     }
     else {
@@ -208,7 +200,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         eventCell = [AgendaEventCell new];
         AgendaDateCell *dateCell = [AgendaDateCell new];
         dateCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
-        dateCell.textField.stringValue = @"Date 1/2/34";
+        dateCell.dayTextField.stringValue = @"21";
         dateCellHeight = dateCell.height;
     });
     
@@ -264,59 +256,63 @@ static NSString *kEventCellIdentifier = @"EventCell";
 #pragma mark -
 #pragma mark Date string
 
-- (NSString *)dateStringForDate:(NSDate *)date
+- (NSString *)dayStringForDate:(NSDate *)date
 {
-    if (!_dateFormatter) {
-        _dateFormatter = [NSDateFormatter new];
+    NSInteger day = [self.nsCal component:NSCalendarUnitDay fromDate:date];
+    return [NSString stringWithFormat:@"%zd ", day];
+}
+
+- (NSString *)DOWStringForDate:(NSDate *)date
+{
+    static NSDateFormatter *dateFormatter = nil;
+    if (dateFormatter == nil) {
+        dateFormatter = [NSDateFormatter new];
     }
-    // First, use _dateFormatter to get the day of the week (dow).
-    _dateFormatter.timeZone = [NSTimeZone localTimeZone];
-    _dateFormatter.dateFormat = @"EEEE";
-    NSString *dow = [_dateFormatter stringFromDate:date];
+    dateFormatter.timeZone = [NSTimeZone localTimeZone];
+    dateFormatter.dateFormat = @"EEEE";
+    NSString *dow = [dateFormatter stringFromDate:date];
     // If the date is today or tomorrow, use "Today" or "Tomorrow" as the dow.
     if (self.nsCal && ([self.nsCal isDateInToday:date] || [self.nsCal isDateInTomorrow:date])) {
-        _dateFormatter.doesRelativeDateFormatting = YES;
-        _dateFormatter.dateStyle = NSDateFormatterShortStyle;
-        dow = [_dateFormatter stringFromDate:date];
+        dateFormatter.doesRelativeDateFormatting = YES;
+        dateFormatter.dateStyle = NSDateFormatterShortStyle;
+        dow = [dateFormatter stringFromDate:date];
     }
-    // Next, use _dateFormatter to get the date string using the standard short style.
-    _dateFormatter.doesRelativeDateFormatting = NO;
-    _dateFormatter.dateStyle = NSDateFormatterShortStyle;
-    // Finally, put them together...
-    return [NSString stringWithFormat:@"%@ ∙ %@", dow, [_dateFormatter stringFromDate:date]];
+    return dow;
 }
 
 - (NSAttributedString *)eventStringForInfo:(EventInfo *)info
 {
-    if (!_timeFormatter) {
-        _timeFormatter = [NSDateFormatter new];
-        _timeFormatter.dateStyle = NSDateFormatterNoStyle;
-        _timeFormatter.timeStyle = NSDateFormatterShortStyle;
-        _timeFormatter.timeZone  = [NSTimeZone localTimeZone];
+    static NSDateFormatter *timeFormatter = nil;
+    static NSDateIntervalFormatter *intervalFormatter = nil;
+    if (timeFormatter == nil) {
+        timeFormatter = [NSDateFormatter new];
+        timeFormatter.dateStyle = NSDateFormatterNoStyle;
+        timeFormatter.timeStyle = NSDateFormatterShortStyle;
     }
-    if (!_intervalFormatter) {
-        _intervalFormatter = [NSDateIntervalFormatter new];
-        _intervalFormatter.dateStyle = NSDateIntervalFormatterNoStyle;
-        _intervalFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
-        _intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
+    if (intervalFormatter == nil) {
+        intervalFormatter = [NSDateIntervalFormatter new];
+        intervalFormatter.dateStyle = NSDateIntervalFormatterNoStyle;
+        intervalFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
     }
     NSString *title = info == nil ? @"" : info.event.title;
     NSString *duration = @"";
+    timeFormatter.timeZone  = [NSTimeZone localTimeZone];
+    intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
     if (info.isAllDay == NO) {
         if (info.isStartDate == YES) {
-            duration = [NSString stringWithFormat:@"\n%@", [_timeFormatter stringFromDate:info.event.startDate]];
+            duration = [NSString stringWithFormat:@"\n%@", [timeFormatter stringFromDate:info.event.startDate]];
         }
         else if (info.isEndDate == YES) {
             NSString *ends = NSLocalizedString(@"ends", @"Spanning event ends");
-            duration = [NSString stringWithFormat:@"\n%@ %@", ends, [_timeFormatter stringFromDate:info.event.endDate]];
+            duration = [NSString stringWithFormat:@"\n%@ %@", ends, [timeFormatter stringFromDate:info.event.endDate]];
         }
         else {
-            duration = [NSString stringWithFormat:@"\n%@", [_intervalFormatter stringFromDate:info.event.startDate toDate:info.event.endDate]];
+            duration = [NSString stringWithFormat:@"\n%@", [intervalFormatter stringFromDate:info.event.startDate toDate:info.event.endDate]];
         }
         // If the locale is English and we are in 12 hour time,
         // remove :00 from the time. Effect is 3:00 PM -> 3 PM.
         if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
-            if ([[_timeFormatter dateFormat] rangeOfString:@"a"].location != NSNotFound) {
+            if ([[timeFormatter dateFormat] rangeOfString:@"a"].location != NSNotFound) {
                 duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
             }
         }
@@ -343,7 +339,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (self.isGroupRowStyle) {
         [[self backgroundColor] set]; // tableView's background color
         NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
-        NSRect r = NSMakeRect(3, 4, self.bounds.size.width - 6, 1);
+        NSRect r = NSMakeRect(6, 8, self.bounds.size.width - 12, 1);
         [[[Themer shared] agendaDividerColor] set];
         NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
     }
@@ -368,17 +364,25 @@ static NSString *kEventCellIdentifier = @"EventCell";
     self = [super init];
     if (self) {
         self.identifier = kDateCellIdentifier;
-        _textField = [NSTextField new];
-        _textField.translatesAutoresizingMaskIntoConstraints = NO;
-        _textField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
-        _textField.textColor = [[Themer shared] agendaDateTextColor];
-        _textField.editable = NO;
-        _textField.bezeled = NO;
-        _textField.drawsBackground = NO;
-        _textField.stringValue = @"";
-        [self addSubview:_textField];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-16-[_textField]-3-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-10-[_textField]" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        _dayTextField = [NSTextField labelWithString:@""];
+        _dayTextField.translatesAutoresizingMaskIntoConstraints = NO;
+        _dayTextField.font = [NSFont systemFontOfSize:14 weight:NSFontWeightMedium];
+        _dayTextField.textColor = [[Themer shared] agendaDayTextColor];
+        _dayTextField.drawsBackground = YES;
+        _dayTextField.backgroundColor = [[Themer shared] mainBackgroundColor];
+        [_dayTextField setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
+        
+        _DOWTextField = [NSTextField labelWithString:@""];
+        _DOWTextField.translatesAutoresizingMaskIntoConstraints = NO;
+        _DOWTextField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
+        _DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
+
+        [self addSubview:_dayTextField];
+        [self addSubview:_DOWTextField];
+        MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_dayTextField, _DOWTextField)];
+        [vfl :@"H:|-4-[_dayTextField]"];
+        [vfl :@"H:[_dayTextField][_DOWTextField]" :NSLayoutFormatAlignAllLastBaseline];
+        [vfl :@"V:|-5-[_dayTextField]-3-|"];
     }
     return self;
 }
@@ -387,12 +391,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     // The height of the textfield plus the height of the
     // top and bottom marigns.
-    return [_textField intrinsicContentSize].height + 12; // 12=10+2=top+bottom margin
+    return [_dayTextField intrinsicContentSize].height + 8; // 5 + 3 = top + bottom margin
 }
 
 - (void)setNeedsDisplay:(BOOL)needsDisplay
 {
-    _textField.textColor = [[Themer shared] agendaDateTextColor];
+    _dayTextField.backgroundColor = [[Themer shared] mainBackgroundColor];
+    _dayTextField.textColor = [[Themer shared] agendaDayTextColor];
+    _DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
     [super setNeedsDisplay:needsDisplay];
 }
 
@@ -454,7 +460,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)drawRect:(NSRect)dirtyRect
 {
     // Draw a colored circle.
-    NSRect circleRect = NSMakeRect(5, NSMaxY(self.frame)-13, 6, 6);
+    NSRect circleRect = NSMakeRect(6, NSMaxY(self.frame)-13, 6, 6);
     [self.eventInfo.event.calendar.color set];
     [[NSBezierPath bezierPathWithOvalInRect:circleRect] fill];
 }
