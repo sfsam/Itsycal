@@ -65,7 +65,7 @@
             rowView.backgroundColor = [NSColor clearColor];
             [self.hoverColor set];
             NSRect rect = NSInsetRect([self rectOfRow:row], 2, 1);
-            [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:3 yRadius:3] fill];
+            [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:5 yRadius:5] fill];
         }
     }];
 }
