@@ -15,6 +15,7 @@
 - (void)toolTipForDate:(MoDate)date
 {
     self.backgroundColor = [[Themer shared] tooltipBackgroundColor];
+    self.tv.enableHover = NO;
     self.tv.enclosingScrollView.hasVerticalScroller = NO; // in case user has System Prefs set to always show scroller
     self.events = [self.ec eventsForDate:date];
     [self reloadData];
