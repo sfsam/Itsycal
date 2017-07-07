@@ -62,6 +62,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6F21F6F31F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.strings"; sourceTree = "<group>"; };
+		6F21F6F41F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		6F21F6F51F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		9215AD4A1E3AECA700317FAE /* MoVFLHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoVFLHelper.h; sourceTree = "<group>"; };
 		9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoVFLHelper.m; sourceTree = "<group>"; };
 		921E62C01E26B3EA007B029F /* PrefsGeneralVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsGeneralVC.h; sourceTree = "<group>"; };
@@ -318,6 +321,7 @@
 				es,
 				it,
 				de,
+				"zh-Hans",
 			);
 			mainGroup = 9242A5531A82A136005AA4B3;
 			productRefGroup = 9242A55D1A82A136005AA4B3 /* Products */;
@@ -388,6 +392,7 @@
 				922B6BD21A881DBF00DEA9CD /* fr */,
 				922B6BD71A88359800DEA9CD /* es */,
 				922B6BDB1A88667700DEA9CD /* it */,
+				6F21F6F51F0CDA7D00F443BE /* zh-Hans */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -399,6 +404,7 @@
 				922B6BD31A8821A200DEA9CD /* fr */,
 				922B6BD61A88359800DEA9CD /* es */,
 				922B6BDC1A886C6900DEA9CD /* it */,
+				6F21F6F41F0CDA7D00F443BE /* zh-Hans */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -411,6 +417,7 @@
 				922B6BD41A8821A300DEA9CD /* fr */,
 				922B6BD51A88359800DEA9CD /* es */,
 				922B6BDD1A886C6900DEA9CD /* it */,
+				6F21F6F31F0CDA7D00F443BE /* zh-Hans */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
