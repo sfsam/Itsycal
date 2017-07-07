@@ -136,10 +136,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     _tv.hoverColor = [[Themer shared] agendaHoverColor];    
     self.backgroundColor = [[Themer shared] mainBackgroundColor];
-    for (NSInteger row = 0; row < _tv.numberOfRows; row++) {
-        NSView *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:YES];
-        [cell setNeedsDisplay:YES];
-    }    
+    // setNeedsDisplay is automatically called on rows when
+    // tableview background color is changed.
 }
 
 #pragma mark -
