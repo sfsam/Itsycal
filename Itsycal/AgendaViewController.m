@@ -267,15 +267,16 @@ static NSString *kEventCellIdentifier = @"EventCell";
         dateFormatter = [NSDateFormatter new];
     }
     dateFormatter.timeZone = [NSTimeZone localTimeZone];
-    dateFormatter.dateFormat = @"EEEE";
-    NSString *dow = [dateFormatter stringFromDate:date];
-    // If the date is today or tomorrow, use "Today" or "Tomorrow" as the dow.
-    if (self.nsCal && ([self.nsCal isDateInToday:date] || [self.nsCal isDateInTomorrow:date])) {
+    if ([self.nsCal isDateInToday:date] || [self.nsCal isDateInTomorrow:date]) {
         dateFormatter.doesRelativeDateFormatting = YES;
-        dateFormatter.dateStyle = NSDateFormatterShortStyle;
-        dow = [dateFormatter stringFromDate:date];
+        dateFormatter.dateStyle = NSDateFormatterMediumStyle;
+        dateFormatter.timeStyle = NSDateFormatterNoStyle;
     }
-    return dow;
+    else {
+        dateFormatter.doesRelativeDateFormatting = NO;
+        [dateFormatter setLocalizedDateFormatFromTemplate:@"EEEE"];
+    }
+    return [dateFormatter stringFromDate:date];
 }
 
 - (NSAttributedString *)eventStringForInfo:(EventInfo *)info

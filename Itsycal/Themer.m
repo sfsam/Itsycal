@@ -171,7 +171,7 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 {
     return self.themeIndex != 0
     ? [NSColor colorWithWhite:0.7 alpha:1]
-    : [NSColor colorWithWhite:0.5 alpha:1];
+    : [NSColor colorWithWhite:0.4 alpha:1];
 }
 
 - (NSColor *)agendaEventTextColor
