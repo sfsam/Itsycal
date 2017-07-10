@@ -17,6 +17,9 @@ static NSString *kColumnIdentifier    = @"Column";
 static NSString *kDateCellIdentifier  = @"DateCell";
 static NSString *kEventCellIdentifier = @"EventCell";
 
+@interface ThemedScroller : NSScroller
+@end
+
 @interface AgendaRowView : NSTableRowView
 @end
 
@@ -67,6 +70,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     tvContainer.drawsBackground = NO;
     tvContainer.hasVerticalScroller = YES;
     tvContainer.documentView = _tv;
+    tvContainer.verticalScroller = [ThemedScroller new];
     
     [v addSubview:tvContainer];
     [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tv]|" options:0 metrics:nil views:@{@"tv": tvContainer}]];
@@ -134,7 +138,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)themeChanged:(id)sender
 {
-    _tv.hoverColor = [[Themer shared] agendaHoverColor];    
+    _tv.hoverColor = [[Themer shared] agendaHoverColor];
+    [_tv.enclosingScrollView.verticalScroller setNeedsDisplay];
     self.backgroundColor = [[Themer shared] mainBackgroundColor];
     // setNeedsDisplay is automatically called on rows when
     // tableview background color is changed.
@@ -320,6 +325,27 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:string];
     [s addAttributes:@{NSForegroundColorAttributeName: [[Themer shared] agendaEventTextColor]} range:NSMakeRange(0, title.length)];
     return s;
+}
+
+@end
+
+#pragma mark -
+#pragma mark ThemedScroller
+
+// =========================================================================
+// ThemedScroller
+// =========================================================================
+
+@implementation ThemedScroller
+
++ (BOOL)isCompatibleWithOverlayScrollers {
+    return self == [ThemedScroller class];
+}
+
+- (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)flag
+{
+    [[[Themer shared] mainBackgroundColor] set];
+    NSRectFill(slotRect);
 }
 
 @end
