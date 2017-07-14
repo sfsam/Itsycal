@@ -66,12 +66,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
     tvContainer.translatesAutoresizingMaskIntoConstraints = NO;
     tvContainer.drawsBackground = NO;
     tvContainer.hasVerticalScroller = YES;
+    tvContainer.scrollerInsets = NSEdgeInsetsMake(9., 0., 0., 0.);
     tvContainer.documentView = _tv;
     
     [v addSubview:tvContainer];
     [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tv]|" options:0 metrics:nil views:@{@"tv": tvContainer}]];
     [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[tv]|" options:0 metrics:nil views:@{@"tv": tvContainer}]];
-    
+
     self.view = v;
 }
 
@@ -85,6 +86,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     [super viewWillAppear];
     [_tv reloadData];
+    
+    // AppKit sets NSScrollView.scrollerStyle after -viewDidLoad, so we need to update scroller style here.
+    [self updateScrollerStyle];
 }
 
 - (void)viewDidLayout
@@ -138,6 +142,17 @@ static NSString *kEventCellIdentifier = @"EventCell";
     self.backgroundColor = [[Themer shared] mainBackgroundColor];
     // setNeedsDisplay is automatically called on rows when
     // tableview background color is changed.
+    
+    [self updateScrollerStyle];
+}
+
+- (void)updateScrollerStyle {
+    // NSScrollerStyleLegacy on Dark window looks awful. Force NSScrollerStyleOverlay in that case.
+    // Otherwise, honor preferred scroller style.
+    NSScrollView *scrollView = _tv.enclosingScrollView;
+    if (scrollView.hasVerticalScroller) {
+        scrollView.scrollerStyle = [Themer shared].themeIndex == ThemeLight ? [NSScroller preferredScrollerStyle] : NSScrollerStyleOverlay;
+    }
 }
 
 #pragma mark -
