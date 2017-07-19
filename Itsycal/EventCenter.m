@@ -285,10 +285,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             }
         }
     }
-    // Main queue reads _filteredEventsForDate so update it there.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _filteredEventsForDate = [filteredEventsForDate copy];
-    });
+    _filteredEventsForDate = [filteredEventsForDate copy];
 }
 
 - (void)refetchAll
