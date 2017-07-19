@@ -141,6 +141,9 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
 "Highlight:" = "Resaltar:";
 
 /* No comment provided by engineer. */
+"Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal no puede crear un nuevo evento si no hay al menos un calendario con permisos para ser modificado.";
+
+/* No comment provided by engineer. */
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal es más útil cuando usted lo permite para agregar eventos a su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad.";
 
 /* No comment provided by engineer. */
@@ -228,6 +231,9 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 
 /* No comment provided by engineer. */
 "Theme:" = "Tema:";
+
+/* No comment provided by engineer. */
+"There are no modifiable calendars." = "No hay calendarios modificables.";
 
 /* No comment provided by engineer. */
 "Thursday" = "Jueves";

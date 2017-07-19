@@ -141,6 +141,9 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Highlight:" = "高亮：";
 
 /* No comment provided by engineer. */
+"Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "除非有至少一个有权限修改的日历，否则 Itsycal 无法创建新事件。";
+
+/* No comment provided by engineer. */
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "当你允许 Itsycal 将事件添加到你的日历中时会更好用。 你可以在 “系统偏好设置>安全隐私>隐私” 中更改此设置。";
 
 /* No comment provided by engineer. */
@@ -228,6 +231,9 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 
 /* No comment provided by engineer. */
 "Theme:" = "主题：";
+
+/* No comment provided by engineer. */
+"There are no modifiable calendars." = "没有可修改的日历。";
 
 /* No comment provided by engineer. */
 "Thursday" = "星期四";

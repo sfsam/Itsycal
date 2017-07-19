@@ -211,6 +211,23 @@
         [alert runModal];
         return;
     }
+    
+    // Confirm that there are calendars which can be modified.
+    BOOL atLeastOneModifiableCalendar = NO;
+    for (id obj in [_ec sourcesAndCalendars]) {
+        if ([obj isKindOfClass:[CalendarInfo class]] && 
+            ((CalendarInfo *)obj).calendar.allowsContentModifications) {
+            atLeastOneModifiableCalendar = YES;
+            break;
+        }
+    }
+    if (atLeastOneModifiableCalendar == NO) {
+        NSAlert *alert = [NSAlert new];
+        alert.messageText = NSLocalizedString(@"There are no modifiable calendars.", @"");
+        alert.informativeText = NSLocalizedString(@"Itsycal cannot create a new event unless there is at least one calendar you have permission to modify.", @"");
+        [alert runModal];
+        return;
+    }
 
     EventViewController *eventVC = [EventViewController new];
     eventVC.ec = _ec;
