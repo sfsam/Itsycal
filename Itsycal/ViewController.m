@@ -450,13 +450,8 @@
 
             // Draw outlined icon image.
 
-            [[NSColor colorWithWhite:0 alpha:0.9] set];
+            [[NSColor blackColor] set];
             [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 3.5, 0.5) xRadius:2 yRadius:2] stroke];
-
-            [[NSColor colorWithWhite:0 alpha:0.15] set];
-            NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 4, 1) xRadius:1 yRadius:1];
-            [p setLineWidth:2];
-            [p stroke];
 
             // Turning off smoothing looks better (why??).
             CGContextSetShouldSmoothFonts(ctx, false);
