@@ -149,8 +149,8 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 - (NSColor *)agendaDividerColor
 {
     return self.themeIndex != ThemeLight
-    ? [NSColor colorWithWhite:0.22 alpha:1]
-    : [NSColor colorWithWhite:0.9 alpha:1];
+    ? [NSColor colorWithWhite:0.27 alpha:1]
+    : [NSColor colorWithWhite:0.86 alpha:1];
 }
 
 - (NSColor *)agendaHoverColor
@@ -170,14 +170,14 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 - (NSColor *)agendaDOWTextColor
 {
     return self.themeIndex != ThemeLight
-    ? [NSColor colorWithWhite:0.7 alpha:1]
-    : [NSColor colorWithWhite:0.4 alpha:1];
+    ? [NSColor colorWithWhite:0.86 alpha:1]
+    : [NSColor colorWithWhite:0.5 alpha:1];
 }
 
 - (NSColor *)agendaEventTextColor
 {
     return self.themeIndex != ThemeLight
-    ? [NSColor colorWithWhite:0.8 alpha:1]
+    ? [NSColor colorWithWhite:0.75 alpha:1]
     : [NSColor colorWithWhite:0.1 alpha:1];
 }
 

@@ -366,7 +366,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (self.isGroupRowStyle) {
         [[self backgroundColor] set]; // tableView's background color
         NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
-        NSRect r = NSMakeRect(6, 8, self.bounds.size.width - 12, 1);
+        NSRect r = NSMakeRect(4, 5, self.bounds.size.width - 8, 1);
         [[[Themer shared] agendaDividerColor] set];
         NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
     }
@@ -393,22 +393,19 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self.identifier = kDateCellIdentifier;
         _dayTextField = [NSTextField labelWithString:@""];
         _dayTextField.translatesAutoresizingMaskIntoConstraints = NO;
-        _dayTextField.font = [NSFont systemFontOfSize:14 weight:NSFontWeightMedium];
+        _dayTextField.font = [NSFont systemFontOfSize:13 weight:NSFontWeightSemibold];
         _dayTextField.textColor = [[Themer shared] agendaDayTextColor];
-        _dayTextField.drawsBackground = YES;
-        _dayTextField.backgroundColor = [[Themer shared] mainBackgroundColor];
         [_dayTextField setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
         
         _DOWTextField = [NSTextField labelWithString:@""];
         _DOWTextField.translatesAutoresizingMaskIntoConstraints = NO;
-        _DOWTextField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
+        _DOWTextField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightMedium];
         _DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
 
         [self addSubview:_dayTextField];
         [self addSubview:_DOWTextField];
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_dayTextField, _DOWTextField)];
-        [vfl :@"H:|-4-[_dayTextField]"];
-        [vfl :@"H:[_dayTextField][_DOWTextField]" :NSLayoutFormatAlignAllLastBaseline];
+        [vfl :@"H:|-4-[_dayTextField][_DOWTextField]" :NSLayoutFormatAlignAllLastBaseline];
         [vfl :@"V:|-5-[_dayTextField]-3-|"];
     }
     return self;
@@ -423,7 +420,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)setNeedsDisplay:(BOOL)needsDisplay
 {
-    _dayTextField.backgroundColor = [[Themer shared] mainBackgroundColor];
     _dayTextField.textColor = [[Themer shared] agendaDayTextColor];
     _DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
     [super setNeedsDisplay:needsDisplay];
