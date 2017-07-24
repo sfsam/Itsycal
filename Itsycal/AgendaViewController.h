@@ -18,6 +18,7 @@
 @property (nonatomic) NSArray *events;
 @property (nonatomic) NSColor *backgroundColor;
 @property (nonatomic, weak) id<AgendaDelegate> delegate;
+@property (nonatomic) BOOL showLocation;
 
 - (void)reloadData;
 

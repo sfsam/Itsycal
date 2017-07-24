@@ -128,6 +128,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.backgroundColor = backgroundColor;
 }
 
+- (void)setShowLocation:(BOOL)showLocation
+{
+    _showLocation = showLocation;
+    [self reloadData];
+}
+
 - (void)reloadData
 {
     [_tv reloadData];
@@ -182,7 +188,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
         if (!cell) cell = [AgendaEventCell new];
         cell.textField.attributedStringValue = [self eventStringForInfo:info];
-        cell.toolTip = info.event.location;
+        cell.toolTip = self.showLocation ? nil : info.event.location;
         cell.eventInfo = info;
         BOOL allowsModification = cell.eventInfo.event.calendar.allowsContentModifications;
         cell.btnDelete.hidden = (tableView.hoverRow == row && allowsModification) ? NO : YES;
@@ -301,9 +307,17 @@ static NSString *kEventCellIdentifier = @"EventCell";
         intervalFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
     }
     NSString *title = info == nil ? @"" : info.event.title;
+    NSString *location = @"";
     NSString *duration = @"";
     timeFormatter.timeZone  = [NSTimeZone localTimeZone];
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
+    
+    if (self.showLocation) {
+        if (info.event.location) {
+            location = [NSString stringWithFormat:@"\n%@", info.event.location];
+        }
+    }
+    
     if (info.isAllDay == NO) {
         if (info.isStartDate == YES) {
             duration = [NSString stringWithFormat:@"\n%@", [timeFormatter stringFromDate:info.event.startDate]];
@@ -323,9 +337,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
             }
         }
     }
-    NSString *string = [NSString stringWithFormat:@"%@%@", title, duration];
+    NSString *string = [NSString stringWithFormat:@"%@%@%@", title, location, duration];
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:string];
     [s addAttributes:@{NSForegroundColorAttributeName: [[Themer shared] agendaEventTextColor]} range:NSMakeRange(0, title.length)];
+    if (self.showLocation) {
+        NSFont *italicFont = [[NSFontManager sharedFontManager] convertFont:[NSFont systemFontOfSize:11] toHaveTrait:NSFontItalicTrait];
+        [s addAttributes:@{NSFontAttributeName: italicFont} range:NSMakeRange(title.length, location.length)];
+    }
     return s;
 }
 
