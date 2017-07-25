@@ -58,18 +58,16 @@
 
     // Labels
     MoTextField *visit = label(@"🌎 visit:", NO);
-
     MoTextField *follow = label(@"🐦 follow:", NO);
-
     MoTextField *donate = label(@"♥️ donate:", NO);
 
     MoTextField *smile = label(@"(๑˃̵ᴗ˂̵)و", NO);
     smile.font = [NSFont systemFontOfSize:16 weight:NSFontWeightLight];
 
-    MoTextField *sparkleCopyright = label(@"Copyright © 2006 Andy Matuschak", NO);
+    MoTextField *sparkleCopyright = label(@"© 2006 Andy Matuschak", NO);
     sparkleCopyright.font = [NSFont systemFontOfSize:11];
 
-    MoTextField *masshortcutCopyright = label(@"Copyright © 2013 Vadim Shpakovski", NO);
+    MoTextField *masshortcutCopyright = label(@"© 2013 Vadim Shpakovski", NO);
     masshortcutCopyright.font = [NSFont systemFontOfSize:11];
 
     MoTextField *copyright = label(infoDict[@"NSHumanReadableCopyright"], NO);
