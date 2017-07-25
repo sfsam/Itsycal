@@ -34,6 +34,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @property (nonatomic, weak) EventInfo *eventInfo;
 @property (nonatomic, readonly) CGFloat height;
 @property (nonatomic) MoButton *btnDelete;
+@property (nonatomic) NSView *colorCircle;
 @end
 
 #pragma mark -
@@ -53,6 +54,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
     // Calendars table view
     _tv = [MoTableView new];
+    _tv.wantsLayer = YES; // 10.13+: so layer-backed btnDelete draws in correct position consistently
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
@@ -147,10 +149,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.hoverColor = [[Themer shared] agendaHoverColor];
     [_tv.enclosingScrollView.verticalScroller setNeedsDisplay];
     self.backgroundColor = [[Themer shared] mainBackgroundColor];
-    for (NSInteger row = 0; row < _tv.numberOfRows; row++) {
-        NSView *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:YES];
-        [cell setNeedsDisplay:YES];
-    }    
 }
 
 #pragma mark -
@@ -195,6 +193,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         cell.btnDelete.tag = row;
         cell.btnDelete.target = self;
         cell.btnDelete.action = @selector(btnDeleteClicked:);
+        cell.colorCircle.layer.backgroundColor = info.event.calendar.color.CGColor;
         v = cell;
     }
     return v;
@@ -425,6 +424,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_dayTextField, _DOWTextField)];
         [vfl :@"H:|-4-[_dayTextField][_DOWTextField]" :NSLayoutFormatAlignAllLastBaseline];
         [vfl :@"V:|-5-[_dayTextField]-3-|"];
+        REGISTER_FOR_THEME_CHANGE;
     }
     return self;
 }
@@ -436,11 +436,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return [_dayTextField intrinsicContentSize].height + 8; // 5 + 3 = top + bottom margin
 }
 
-- (void)setNeedsDisplay:(BOOL)needsDisplay
+- (void)themeChanged:(id)sender
 {
     _dayTextField.textColor = [[Themer shared] agendaDayTextColor];
     _DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
-    [super setNeedsDisplay:needsDisplay];
 }
 
 @end
@@ -467,12 +466,21 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField.stringValue = @"";
         _btnDelete = [MoButton new];
         _btnDelete.image = [NSImage imageNamed:@"btnDel"];
+        _colorCircle = [NSView new];
+        _colorCircle.translatesAutoresizingMaskIntoConstraints = NO;
+        _colorCircle.wantsLayer = YES;
+        _colorCircle.layer.cornerRadius = 3;
         [self addSubview:_textField];
         [self addSubview:_btnDelete];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-16-[_textField]-8-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-3-[_textField]" options:0 metrics:nil views:@{@"_textField": _textField}]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[_btnDelete]-6-|" options:0 metrics:nil views:@{@"_btnDelete": _btnDelete}]];
+        [self addSubview:_colorCircle];
+        MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_textField, _btnDelete, _colorCircle)];
+        [vfl :@"H:|-16-[_textField]-8-|"];
+        [vfl :@"V:|-3-[_textField]"];
+        [vfl :@"H:[_btnDelete]-6-|"];
+        [vfl :@"H:|-6-[_colorCircle(6)]"];
+        [vfl :@"V:|-7-[_colorCircle(6)]"];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_btnDelete attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
+        REGISTER_FOR_THEME_CHANGE;
     }
     return self;
 }
@@ -492,18 +500,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return [_textField intrinsicContentSize].height + 6; // 6=3+3=top+bottom margin
 }
 
-- (void)setNeedsDisplay:(BOOL)needsDisplay
+- (void)themeChanged:(id)sender
 {
     _textField.textColor = [[Themer shared] agendaEventDateTextColor];
-    [super setNeedsDisplay:needsDisplay];
-}
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-    // Draw a colored circle.
-    NSRect circleRect = NSMakeRect(6, NSMaxY(self.frame)-13, 6, 6);
-    [self.eventInfo.event.calendar.color set];
-    [[NSBezierPath bezierPathWithOvalInRect:circleRect] fill];
 }
 
 @end
