@@ -30,6 +30,6 @@
 
 @optional
 - (void)agendaHoveredOverRow:(NSInteger)row;
-- (void)agendaWantsToDeleteEvent:(EKEvent *)event;
+- (void)agendaWantsToDeleteEvent:(EKEvent *)event eventString:(NSString *)eventString;
 
 @end

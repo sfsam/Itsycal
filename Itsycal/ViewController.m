@@ -677,7 +677,7 @@
     }
 }
 
-- (void)agendaWantsToDeleteEvent:(EKEvent *)event
+- (void)agendaWantsToDeleteEvent:(EKEvent *)event eventString:(NSString *)eventString
 {
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
 
@@ -687,12 +687,13 @@
     NSAlert *alert = [NSAlert new];
     if (eventRepeats == YES) {
         alert.messageText = NSLocalizedString(@"You're deleting an event.", @"");
-        alert.informativeText = NSLocalizedString(@"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?", @"");
+        alert.informativeText = [NSString stringWithFormat:@"%@\n\n%@", eventString, NSLocalizedString(@"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?", @"")];
         [alert addButtonWithTitle:NSLocalizedString(@"Delete Only This Event", @"")];
         [alert addButtonWithTitle:NSLocalizedString(@"Delete All Future Events", @"")];
     }
     else {
         alert.messageText = NSLocalizedString(@"Are you sure you want to delete this event?", @"");
+        alert.informativeText = eventString;
         [alert addButtonWithTitle:NSLocalizedString(@"Delete This Event", @"")];
     }
     [alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"")];

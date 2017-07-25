@@ -187,7 +187,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         EventInfo *info = obj;
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
         if (!cell) cell = [AgendaEventCell new];
-        cell.textField.attributedStringValue = [self eventStringForInfo:info];
+        cell.textField.attributedStringValue = [self eventStringForInfo:info showLocation:self.showLocation];
         cell.toolTip = self.showLocation ? nil : info.event.location;
         cell.eventInfo = info;
         BOOL allowsModification = cell.eventInfo.event.calendar.allowsContentModifications;
@@ -219,7 +219,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     id obj = self.events[row];
     if ([obj isKindOfClass:[EventInfo class]]) {
         eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
-        eventCell.textField.attributedStringValue = [self eventStringForInfo:obj];
+        eventCell.textField.attributedStringValue = [self eventStringForInfo:obj showLocation:self.showLocation];
         height = eventCell.height;
     }
     return height;
@@ -258,9 +258,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)btnDeleteClicked:(MoButton *)btn
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToDeleteEvent:)]) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToDeleteEvent:eventString:)]) {
         EventInfo *info = self.events[btn.tag];
-        [self.delegate agendaWantsToDeleteEvent:info.event];
+        [self.delegate agendaWantsToDeleteEvent:info.event eventString:[[self eventStringForInfo:info showLocation:NO] string]];
     }
 }
 
@@ -292,7 +292,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return [dateFormatter stringFromDate:date];
 }
 
-- (NSAttributedString *)eventStringForInfo:(EventInfo *)info
+- (NSAttributedString *)eventStringForInfo:(EventInfo *)info showLocation:(BOOL)showLocation
 {
     static NSDateFormatter *timeFormatter = nil;
     static NSDateIntervalFormatter *intervalFormatter = nil;
@@ -312,7 +312,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     timeFormatter.timeZone  = [NSTimeZone localTimeZone];
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
     
-    if (self.showLocation) {
+    if (showLocation) {
         if (info.event.location) {
             location = [NSString stringWithFormat:@"\n%@", info.event.location];
         }
@@ -340,7 +340,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSString *string = [NSString stringWithFormat:@"%@%@%@", title, location, duration];
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:string];
     [s addAttributes:@{NSForegroundColorAttributeName: [[Themer shared] agendaEventTextColor]} range:NSMakeRange(0, title.length)];
-    if (self.showLocation) {
+    if (showLocation) {
         NSFont *italicFont = [[NSFontManager sharedFontManager] convertFont:[NSFont systemFontOfSize:11] toHaveTrait:NSFontItalicTrait];
         [s addAttributes:@{NSFontAttributeName: italicFont} range:NSMakeRange(title.length, location.length)];
     }
