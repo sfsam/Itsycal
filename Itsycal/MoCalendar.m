@@ -464,6 +464,11 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
             }
         }
     }
+
+    // Dim resizeHandle if drag ends outside of it (-mouseExited: won't catch this).
+    NSPoint finalDragPoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    BOOL isInResizeHandle = NSPointInRect(finalDragPoint, _resizeHandle.frame);
+    _resizeHandle.animator.alphaValue = isInResizeHandle ? 1 : 0.1;
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
