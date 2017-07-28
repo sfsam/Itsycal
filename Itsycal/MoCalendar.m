@@ -311,7 +311,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     for (NSInteger row = 0; row < _dateGrid.rows; row++) {
         for (NSInteger col = 0; col < 7; col++) {
             MoCalCell *cell = _dateGrid.cells[row * 7 + col];
-            cell.textField.stringValue = [NSString stringWithFormat:@"%zd", date.day];
+            cell.textField.integerValue = date.day;
             cell.date = date;
             cell.isToday = CompareDates(date, self.todayDate) == 0;
             if (date.month == self.monthDate.month) {
@@ -336,7 +336,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
             // calculate the week number for this row.
             if (col == DOW_COL(self.weekStartDOW, 1)) {
                 [_weekGrid.cells[row] textField].textColor = [[Themer shared] weekTextColor];
-                [_weekGrid.cells[row] textField].stringValue = [NSString stringWithFormat:@"%zd", WeekOfYear(date.year, date.month, date.day)];
+                [_weekGrid.cells[row] textField].integerValue = WeekOfYear(date.year, date.month, date.day);
             }
             date = AddDaysToDate(1, date);
         }

@@ -182,21 +182,21 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if ([obj isKindOfClass:[NSDate class]]) {
         AgendaDateCell *cell = [_tv makeViewWithIdentifier:kDateCellIdentifier owner:self];
         if (cell == nil) cell = [AgendaDateCell new];
-        cell.dayTextField.textColor = [[Themer shared] agendaDayTextColor];
-        cell.dayTextField.stringValue = [self dayStringForDate:obj];
-        cell.DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
-        cell.DOWTextField.stringValue = [self DOWStringForDate:obj];
         cell.date = obj;
+        cell.dayTextField.integerValue = [self.nsCal component:NSCalendarUnitDay fromDate:cell.date];
+        cell.DOWTextField.stringValue = [self DOWStringForDate:obj];
+        cell.dayTextField.textColor = [[Themer shared] agendaDayTextColor];
+        cell.DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
         v = cell;
     }
     else {
         EventInfo *info = obj;
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
         if (!cell) cell = [AgendaEventCell new];
-        cell.textField.textColor = [[Themer shared] agendaEventDateTextColor];
-        cell.textField.attributedStringValue = [self eventStringForInfo:info showLocation:self.showLocation];
-        cell.toolTip = self.showLocation ? nil : info.event.location;
         cell.eventInfo = info;
+        cell.textField.attributedStringValue = [self eventStringForInfo:info showLocation:self.showLocation];
+        cell.textField.textColor = [[Themer shared] agendaEventDateTextColor];
+        cell.toolTip = self.showLocation ? nil : info.event.location;
         BOOL allowsModification = cell.eventInfo.event.calendar.allowsContentModifications;
         cell.btnDelete.hidden = (tableView.hoverRow == row && allowsModification) ? NO : YES;
         cell.btnDelete.tag = row;
@@ -220,7 +220,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         eventCell = [AgendaEventCell new];
         AgendaDateCell *dateCell = [AgendaDateCell new];
         dateCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
-        dateCell.dayTextField.stringValue = @"21";
+        dateCell.dayTextField.integerValue = 21;
         dateCellHeight = dateCell.height;
     });
     
@@ -275,12 +275,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 #pragma mark -
 #pragma mark Date string
-
-- (NSString *)dayStringForDate:(NSDate *)date
-{
-    NSInteger day = [self.nsCal component:NSCalendarUnitDay fromDate:date];
-    return [NSString stringWithFormat:@"%zd ", day];
-}
 
 - (NSString *)DOWStringForDate:(NSDate *)date
 {
@@ -459,7 +453,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [self addSubview:_dayTextField];
         [self addSubview:_DOWTextField];
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_dayTextField, _DOWTextField)];
-        [vfl :@"H:|-4-[_dayTextField][_DOWTextField]" :NSLayoutFormatAlignAllLastBaseline];
+        [vfl :@"H:|-4-[_dayTextField]-4-[_DOWTextField]" :NSLayoutFormatAlignAllLastBaseline];
         [vfl :@"V:|-5-[_dayTextField]-3-|"];
     }
     return self;
