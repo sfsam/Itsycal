@@ -149,6 +149,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.hoverColor = [[Themer shared] agendaHoverColor];
     [_tv.enclosingScrollView.verticalScroller setNeedsDisplay];
     self.backgroundColor = [[Themer shared] mainBackgroundColor];
+    [self reloadData];
 }
 
 #pragma mark -
@@ -177,7 +178,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if ([obj isKindOfClass:[NSDate class]]) {
         AgendaDateCell *cell = [_tv makeViewWithIdentifier:kDateCellIdentifier owner:self];
         if (cell == nil) cell = [AgendaDateCell new];
+        cell.dayTextField.textColor = [[Themer shared] agendaDayTextColor];
         cell.dayTextField.stringValue = [self dayStringForDate:obj];
+        cell.DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
         cell.DOWTextField.stringValue = [self DOWStringForDate:obj];
         v = cell;
     }
@@ -185,6 +188,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         EventInfo *info = obj;
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
         if (!cell) cell = [AgendaEventCell new];
+        cell.textField.textColor = [[Themer shared] agendaEventDateTextColor];
         cell.textField.attributedStringValue = [self eventStringForInfo:info showLocation:self.showLocation];
         cell.toolTip = self.showLocation ? nil : info.event.location;
         cell.eventInfo = info;
@@ -424,7 +428,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_dayTextField, _DOWTextField)];
         [vfl :@"H:|-4-[_dayTextField][_DOWTextField]" :NSLayoutFormatAlignAllLastBaseline];
         [vfl :@"V:|-5-[_dayTextField]-3-|"];
-        REGISTER_FOR_THEME_CHANGE;
     }
     return self;
 }
@@ -434,12 +437,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // The height of the textfield plus the height of the
     // top and bottom marigns.
     return [_dayTextField intrinsicContentSize].height + 8; // 5 + 3 = top + bottom margin
-}
-
-- (void)themeChanged:(id)sender
-{
-    _dayTextField.textColor = [[Themer shared] agendaDayTextColor];
-    _DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
 }
 
 @end
@@ -480,7 +477,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [vfl :@"H:|-6-[_colorCircle(6)]"];
         [vfl :@"V:|-7-[_colorCircle(6)]"];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_btnDelete attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
-        REGISTER_FOR_THEME_CHANGE;
     }
     return self;
 }
@@ -498,11 +494,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // The height of the textfield (which may have word-wrapped)
     // plus the height of the top and bottom marigns.
     return [_textField intrinsicContentSize].height + 6; // 6=3+3=top+bottom margin
-}
-
-- (void)themeChanged:(id)sender
-{
-    _textField.textColor = [[Themer shared] agendaEventDateTextColor];
 }
 
 @end
