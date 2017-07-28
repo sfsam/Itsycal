@@ -26,6 +26,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @interface AgendaDateCell : NSView
 @property (nonatomic) NSTextField *dayTextField;
 @property (nonatomic) NSTextField *DOWTextField;
+@property (nonatomic, weak) NSDate *date;
 @property (nonatomic, readonly) CGFloat height;
 @end
 
@@ -90,7 +91,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)viewWillAppear
 {
     [super viewWillAppear];
-    [_tv reloadData];
+    [self reloadData];
 }
 
 - (void)viewDidLayout
@@ -132,8 +133,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)setShowLocation:(BOOL)showLocation
 {
-    _showLocation = showLocation;
-    [self reloadData];
+    if (_showLocation != showLocation) {
+        _showLocation = showLocation;
+        [self reloadData];
+    }
 }
 
 - (void)reloadData
@@ -141,6 +144,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [_tv reloadData];
     [_tv scrollRowToVisible:0];
     [[_tv enclosingScrollView] flashScrollers];
+    [self dimEventsIfNecessary];
     [self.view setNeedsLayout:YES];
 }
 
@@ -182,6 +186,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         cell.dayTextField.stringValue = [self dayStringForDate:obj];
         cell.DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
         cell.DOWTextField.stringValue = [self DOWStringForDate:obj];
+        cell.date = obj;
         v = cell;
     }
     else {
@@ -198,6 +203,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         cell.btnDelete.target = self;
         cell.btnDelete.action = @selector(btnDeleteClicked:);
         cell.colorCircle.layer.backgroundColor = info.event.calendar.color.CGColor;
+        cell.colorCircle.alphaValue = 1;
         v = cell;
     }
     return v;
@@ -348,6 +354,33 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [s addAttributes:@{NSFontAttributeName: italicFont} range:NSMakeRange(title.length, location.length)];
     }
     return s;
+}
+
+#pragma mark -
+#pragma mark Dim past events
+
+- (void)dimEventsIfNecessary
+{
+    // Iterate through the rows of the table and dim past
+    // events if they are today.
+    BOOL isToday = NO;
+    NSDate *now = [NSDate new];
+    for (NSInteger row = 0; row < _tv.numberOfRows; row++) {
+        NSView *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:YES];
+        if ([cell isKindOfClass:[AgendaDateCell class]]) {
+            isToday = [self.nsCal isDateInToday:((AgendaDateCell *)cell).date];
+        }
+        else if (isToday) {
+            AgendaEventCell *eventCell = (AgendaEventCell *)cell;
+            if ([now compare:eventCell.eventInfo.event.endDate] == NSOrderedDescending) {
+                // This looks pointless, but I'm clearing the attributes so the
+                // next line where I set textColor will color the whole string.
+                eventCell.textField.stringValue = eventCell.textField.stringValue;
+                eventCell.textField.textColor = [[Themer shared] agendaEventDateTextColor];
+                eventCell.colorCircle.alphaValue = 0.5;
+            }
+        }
+    }
 }
 
 @end

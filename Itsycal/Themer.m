@@ -79,8 +79,8 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 - (NSColor *)currentMonthOutlineColor
 {
     return self.themeIndex != ThemeLight
-    ? [NSColor colorWithWhite:0.66 alpha:1]
-    : [NSColor colorWithWhite:0.73 alpha:1];
+    ? [NSColor colorWithWhite:0.55 alpha:1]
+    : [NSColor colorWithWhite:0.77 alpha:1];
 }
 
 - (NSColor *)currentMonthFillColor
@@ -177,7 +177,7 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 - (NSColor *)agendaEventTextColor
 {
     return self.themeIndex != ThemeLight
-    ? [NSColor colorWithWhite:0.8 alpha:1]
+    ? [NSColor colorWithWhite:0.82 alpha:1]
     : [NSColor colorWithWhite:0.1 alpha:1];
 }
 

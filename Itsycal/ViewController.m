@@ -31,9 +31,9 @@
     AgendaViewController  *_agendaVC;
     NSLayoutConstraint    *_bottomMargin;
     NSDateFormatter       *_iconDateFormatter;
-
-    NSString  *_clockFormat;
+    NSTimer   *_pastEventsTimer;
     NSTimer   *_clockTimer;
+    NSString  *_clockFormat;
     BOOL       _clockUsesSeconds;
 }
 
@@ -133,6 +133,8 @@
     tooltipVC.ec = _ec;
     _moCal.tooltipVC = tooltipVC;
 
+    [self updatePastEventsTimer];
+    
     // Now that everything else is set up, we file for notifications.
     // Some of the notification handlers rely on stuff we just set up.
     [self fileNotifications];
@@ -766,6 +768,30 @@
     _bottomMargin.constant = _agendaVC.events.count == 0 ? 26 : 30;
 }
 
+- (void)updatePastEventsTimer
+{
+    [_pastEventsTimer invalidate];
+    
+    typeof(self) __weak weakSelf = self;
+    _pastEventsTimer = [NSTimer timerWithTimeInterval:60 repeats:NO block:^(NSTimer * _Nonnull timer) {
+        [weakSelf updatePastEventsTimer];
+    }];
+    
+    // Align the timer's fireDate to real-time minutes plus 1 second.
+    // We do this by subtracting the extra seconds or fractional
+    // seconds from the fireDate and then adding 1 extra second.
+    NSCalendarUnit extraUnits = NSCalendarUnitSecond | NSCalendarUnitNanosecond;
+    NSDateComponents *extraComponents = [_nsCal components:extraUnits fromDate:_pastEventsTimer.fireDate];
+    NSTimeInterval extraSeconds = (NSTimeInterval)extraComponents.nanosecond / (NSTimeInterval)NSEC_PER_SEC;
+    extraSeconds += extraComponents.second + 1; // add extra second so we are 1 second past the minute.
+    _pastEventsTimer.fireDate = [_pastEventsTimer.fireDate dateByAddingTimeInterval:-extraSeconds];
+    
+    // Add the timer to the main runloop.
+    [[NSRunLoop mainRunLoop] addTimer:_pastEventsTimer forMode:NSRunLoopCommonModes];
+    
+    [_agendaVC dimEventsIfNecessary];
+}
+
 #pragma mark -
 #pragma mark Time
 
@@ -891,6 +917,7 @@
     // System clock notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [self updateMenubarIcon];
+        [_ec refetchAll];
     }];
 
     // Wake from sleep notification

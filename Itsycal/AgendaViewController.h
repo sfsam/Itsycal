@@ -21,6 +21,7 @@
 @property (nonatomic) BOOL showLocation;
 
 - (void)reloadData;
+- (void)dimEventsIfNecessary;
 
 @end
 
