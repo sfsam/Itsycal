@@ -343,10 +343,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSString *string = [NSString stringWithFormat:@"%@%@%@", title, location, duration];
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:string];
     [s addAttributes:@{NSForegroundColorAttributeName: [[Themer shared] agendaEventTextColor]} range:NSMakeRange(0, title.length)];
-    if (showLocation) {
-        NSFont *italicFont = [[NSFontManager sharedFontManager] convertFont:[NSFont systemFontOfSize:11] toHaveTrait:NSFontItalicTrait];
-        [s addAttributes:@{NSFontAttributeName: italicFont} range:NSMakeRange(title.length, location.length)];
-    }
     return s;
 }
 
