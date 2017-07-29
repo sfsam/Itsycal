@@ -679,9 +679,33 @@
     }
 }
 
-- (void)agendaWantsToDeleteEvent:(EKEvent *)event eventString:(NSString *)eventString
+- (void)agendaWantsToDeleteEvent:(EKEvent *)event
 {
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+    
+    // Make a string showing the event title and duration.
+    static NSDateIntervalFormatter *durationFormatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        durationFormatter = [NSDateIntervalFormatter new];
+        durationFormatter.dateStyle = NSDateIntervalFormatterMediumStyle;
+    });
+    NSDate *endDate = event.endDate;
+    if (event.isAllDay) {
+        // EKEvent allDay events go from 12 AM to 12 AM. So, a one-day event
+        // will just barely span two days. For example, a one-day event on Aug 4
+        // results in a duration of Aug 4-5. By subtracting some time, we get the
+        // duration in days we would expect.
+        endDate = [_nsCal dateByAddingUnit:NSCalendarUnitHour value:-4 toDate:event.endDate options:0];
+        durationFormatter.timeStyle = NSDateIntervalFormatterNoStyle;
+    }
+    else {
+        durationFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
+    }
+    durationFormatter.timeStyle = event.isAllDay ? NSDateIntervalFormatterNoStyle : NSDateIntervalFormatterShortStyle;
+    NSString *title = event.title == nil ? @"" : event.title;
+    NSString *duration = [durationFormatter stringFromDate:event.startDate toDate:endDate];
+    NSString *eventString = [NSString stringWithFormat:@"%@\n%@", title, duration];
 
     BOOL eventRepeats = event.hasRecurrenceRules;
     

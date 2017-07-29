@@ -194,7 +194,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
         if (!cell) cell = [AgendaEventCell new];
         cell.eventInfo = info;
-        cell.textField.attributedStringValue = [self eventStringForInfo:info showLocation:self.showLocation];
+        cell.textField.attributedStringValue = [self eventStringForInfo:info];
         cell.textField.textColor = [[Themer shared] agendaEventDateTextColor];
         cell.toolTip = self.showLocation ? nil : info.event.location;
         BOOL allowsModification = cell.eventInfo.event.calendar.allowsContentModifications;
@@ -228,7 +228,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     id obj = self.events[row];
     if ([obj isKindOfClass:[EventInfo class]]) {
         eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
-        eventCell.textField.attributedStringValue = [self eventStringForInfo:obj showLocation:self.showLocation];
+        eventCell.textField.attributedStringValue = [self eventStringForInfo:obj];
         height = eventCell.height;
     }
     return height;
@@ -267,9 +267,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)btnDeleteClicked:(MoButton *)btn
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToDeleteEvent:eventString:)]) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToDeleteEvent:)]) {
         EventInfo *info = self.events[btn.tag];
-        [self.delegate agendaWantsToDeleteEvent:info.event eventString:[[self eventStringForInfo:info showLocation:NO] string]];
+        [self.delegate agendaWantsToDeleteEvent:info.event];
     }
 }
 
@@ -295,7 +295,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return [dateFormatter stringFromDate:date];
 }
 
-- (NSAttributedString *)eventStringForInfo:(EventInfo *)info showLocation:(BOOL)showLocation
+- (NSAttributedString *)eventStringForInfo:(EventInfo *)info
 {
     static NSDateFormatter *timeFormatter = nil;
     static NSDateIntervalFormatter *intervalFormatter = nil;
@@ -315,7 +315,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     timeFormatter.timeZone  = [NSTimeZone localTimeZone];
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
     
-    if (showLocation) {
+    if (self.showLocation) {
         if (info.event.location) {
             location = [NSString stringWithFormat:@"\n%@", info.event.location];
         }
