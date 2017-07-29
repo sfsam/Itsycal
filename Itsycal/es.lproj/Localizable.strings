@@ -218,6 +218,9 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "Show day of week in icon" = "El icono muestra día de la semana";
 
 /* No comment provided by engineer. */
+"Show event location" = "Mostrar ubicación del evento";
+
+/* No comment provided by engineer. */
 "Show month in icon" = "El icono muestra mes";
 
 /* No comment provided by engineer. */

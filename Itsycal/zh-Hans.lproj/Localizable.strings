@@ -218,6 +218,9 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Show day of week in icon" = "在图标中显示星期几";
 
 /* No comment provided by engineer. */
+"Show event location" = "显示事件位置";
+
+/* No comment provided by engineer. */
 "Show month in icon" = "在图标中显示月份";
 
 /* No comment provided by engineer. */
