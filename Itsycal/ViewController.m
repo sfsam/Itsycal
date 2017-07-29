@@ -796,7 +796,7 @@
 {
     [_pastEventsTimer invalidate];
     
-    typeof(self) __weak weakSelf = self;
+    __weak typeof(self) weakSelf = self;
     _pastEventsTimer = [NSTimer timerWithTimeInterval:60 repeats:NO block:^(NSTimer * _Nonnull timer) {
         [weakSelf updatePastEventsTimer];
     }];
@@ -837,7 +837,10 @@
     // any time specifiers.
     NSTimeInterval clockInterval = _clockUsesSeconds ? 1 : 60;
 
-    _clockTimer = [NSTimer timerWithTimeInterval:clockInterval target:self selector:@selector(updateMenubarIcon) userInfo:nil repeats:NO];
+    __weak typeof(self) weakSelf = self;
+    _clockTimer = [NSTimer timerWithTimeInterval:clockInterval repeats:NO block:^(NSTimer * _Nonnull timer) {
+        [weakSelf updateMenubarIcon];
+    }];
 
     // Align the timer's fireDate to real-time minutes or seconds.
     // We do this by subtracting the extra seconds or fractional
