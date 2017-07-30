@@ -190,9 +190,7 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 
 - (NSColor *)tooltipBackgroundColor
 {
-    return self.themeIndex != ThemeLight
-    ? [NSColor colorWithWhite:0.2 alpha:1]
-    : [self mainBackgroundColor];
+    return [self mainBackgroundColor];
 }
 
 @end
