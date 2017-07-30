@@ -90,11 +90,20 @@
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
     NSAlert *alert = [NSAlert new];
     alert.messageText = NSLocalizedString(@"Move Itsycal to the Applications folder", nil);
-    alert.informativeText = [NSLocalizedString(@"Itsycal must be run from the Applications folder in order to work properly.\n\nPlease quit Itsycal, move it to the Applications folder, and relaunch.", nil) stringByAppendingString:[NSString stringWithFormat:@"\n\n%@\n%@", bundlePath, applicationDirs]];
+    alert.informativeText = [NSLocalizedString(@"Itsycal must be run from the Applications folder in order to work properly.\n\nPlease quit Itsycal, move it to the Applications folder, and relaunch.", nil) stringByAppendingString:[NSString stringWithFormat:@"\n\n%@", bundlePath]];
     alert.icon = [NSImage imageNamed:@"move"];
+    alert.showsHelp = YES;
+    alert.delegate = self;
     [alert addButtonWithTitle:NSLocalizedString(@"Quit Itsycal", @"")];
     [alert runModal];
     [NSApp terminate:nil];
+}
+
+- (BOOL)alertShowHelp:(NSAlert *)alert
+{
+    NSURL *url = [NSURL URLWithString:@"https://mowglii.com/itsycal/appfolder.html"];
+    [[NSWorkspace sharedWorkspace] openURL:url];
+    return YES;
 }
 
 #pragma mark -
