@@ -80,7 +80,7 @@
         return;
     }
     NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
-    NSArray *applicationDirs = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSLocalDomainMask, YES);
+    NSArray *applicationDirs = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSLocalDomainMask | NSUserDomainMask, YES);
     for (NSString *appDir in applicationDirs) {
         if ([bundlePath hasPrefix:appDir]) {
             return; // Ok, Itsycal is being run from /Applications.
