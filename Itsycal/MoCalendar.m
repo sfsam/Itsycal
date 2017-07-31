@@ -666,7 +666,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         return;
     }
     
-    NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:5 inset:0 useRects:NO];
+    NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:6 inset:0 useRects:NO];
     
     [[[Themer shared] currentMonthOutlineColor] set];
     [outlinePath setLineWidth:2];

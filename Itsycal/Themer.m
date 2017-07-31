@@ -58,7 +58,7 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 - (NSColor *)monthTextColor
 {
     return self.themeIndex != ThemeLight
-    ? [NSColor colorWithWhite:0.86 alpha:1]
+    ? [NSColor colorWithWhite:0.83 alpha:1]
     : [NSColor blackColor];
 }
 
@@ -114,7 +114,7 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 - (NSColor *)todayCellColor
 {
     return self.themeIndex != ThemeLight
-    ? [NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:1]
+    ? [NSColor colorWithRed:0.32 green:0.48 blue:0.8 alpha:1]
     : [NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:1];
 }
 
@@ -162,9 +162,7 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 
 - (NSColor *)agendaDayTextColor
 {
-    return self.themeIndex != ThemeLight
-    ? [NSColor colorWithWhite:0.86 alpha:1]
-    : [NSColor blackColor];
+    return [self monthTextColor];
 }
 
 - (NSColor *)agendaDOWTextColor
