@@ -117,13 +117,13 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [vfl :@"H:|-8-[_monthLabel]-4-[_btnPrev]" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:[_btnPrev]-2-[_btnToday]-2-[_btnNext]-6-|" :NSLayoutFormatAlignAllBottom];
     [vfl :@"H:[_dowGrid]|"];
-    [vfl :@"H:[_weekGrid][_dateGrid]|"];
+    [vfl :@"H:[_weekGrid]-(-2)-[_dateGrid]|"];
     [vfl :@"H:|[_resizeHandle]|"];
     [vfl :@"V:|-(-1)-[_monthLabel]-7-[_dowGrid]-(-6)-[_dateGrid]-5-|"];
     [vfl :@"V:[_weekGrid]-5-|"];
     [vfl :@"V:[_resizeHandle(8)]|"];
 
-    _weeksConstraint = [NSLayoutConstraint constraintWithItem:_weekGrid attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0];
+    _weeksConstraint = [NSLayoutConstraint constraintWithItem:_weekGrid attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:2];
     [self addConstraint:_weeksConstraint];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleLocaleNotification:) name:NSCurrentLocaleDidChangeNotification object:nil];
@@ -212,7 +212,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 - (void)setShowWeeks:(BOOL)showWeeks
 {
     _showWeeks = showWeeks;
-    CGFloat constant = showWeeks ? NSWidth(_weekGrid.frame) : 0;
+    CGFloat constant = showWeeks ? NSWidth(_weekGrid.frame) : 2;
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *ctx) {
         [ctx setDuration:0.1];
         [_weeksConstraint.animator setConstant:constant];
