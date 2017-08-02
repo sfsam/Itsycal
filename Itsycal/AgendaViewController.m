@@ -494,7 +494,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [self addSubview:_btnDelete];
         [self addSubview:_colorCircle];
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_textField, _btnDelete, _colorCircle)];
-        [vfl :@"H:|-16-[_textField]-8-|"];
+        [vfl :@"H:|-16-[_textField]-22-|"]; // make room for colored dot and delete button
         [vfl :@"V:|-3-[_textField]"];
         [vfl :@"H:[_btnDelete]-6-|"];
         [vfl :@"H:|-6-[_colorCircle(6)]"];
@@ -509,7 +509,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [super setFrame:frame];
     // Setting preferredMaxLayoutWidth on _textfield allows us
     // to calculate its height after word-wrapping.
-    _textField.preferredMaxLayoutWidth = NSWidth(frame) - 24; // 24=16+8=left+right margin
+    _textField.preferredMaxLayoutWidth = NSWidth(frame) - 38; // 38=16+22=left+right margin
 }
 
 - (CGFloat)height
