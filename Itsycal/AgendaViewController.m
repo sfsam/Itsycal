@@ -55,7 +55,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
     // Calendars table view
     _tv = [MoTableView new];
-    _tv.wantsLayer = YES; // 10.13+: so layer-backed btnDelete draws in correct position consistently
+    if (OSVersionIsAtLeast(10, 13, 0)) {
+        // 10.13+: so layer-backed btnDelete draws in correct position consistently
+        _tv.wantsLayer = YES; 
+    }
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
