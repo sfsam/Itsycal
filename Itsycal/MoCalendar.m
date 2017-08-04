@@ -61,7 +61,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
     _monthLabel = [NSTextField new];
     _monthLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _monthLabel.font = [NSFont systemFontOfSize:14 weight:NSFontWeightMedium];
+    _monthLabel.font = [NSFont systemFontOfSize:14 weight:NSFontWeightSemibold];
     _monthLabel.textColor = [[Themer shared] monthTextColor];
     _monthLabel.bezeled = NO;
     _monthLabel.editable = NO;

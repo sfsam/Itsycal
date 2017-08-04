@@ -186,7 +186,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         AgendaDateCell *cell = [_tv makeViewWithIdentifier:kDateCellIdentifier owner:self];
         if (cell == nil) cell = [AgendaDateCell new];
         cell.date = obj;
-        cell.dayTextField.integerValue = [self.nsCal component:NSCalendarUnitDay fromDate:cell.date];
+        cell.dayTextField.stringValue = [self dayStringForDate:obj];
         cell.DOWTextField.stringValue = [self DOWStringForDate:obj];
         cell.dayTextField.textColor = [[Themer shared] agendaDayTextColor];
         cell.DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
@@ -278,6 +278,17 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 #pragma mark -
 #pragma mark Date string
+
+- (NSString *)dayStringForDate:(NSDate *)date
+{
+    static NSDateFormatter *dateFormatter = nil;
+    if (dateFormatter == nil) {
+        dateFormatter = [NSDateFormatter new];
+    }
+    dateFormatter.timeZone = [NSTimeZone localTimeZone];
+    [dateFormatter setLocalizedDateFormatFromTemplate:@"dMMM"];
+    return [dateFormatter stringFromDate:date];
+}
 
 - (NSString *)DOWStringForDate:(NSDate *)date
 {
@@ -413,7 +424,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (self.isGroupRowStyle) {
         [[self backgroundColor] set]; // tableView's background color
         NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
-        NSRect r = NSMakeRect(4, 5, self.bounds.size.width - 8, 1);
+        NSRect r = NSMakeRect(4, 3, self.bounds.size.width - 8, 1);
         [[[Themer shared] agendaDividerColor] set];
         NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
     }
@@ -440,20 +451,20 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self.identifier = kDateCellIdentifier;
         _dayTextField = [NSTextField labelWithString:@""];
         _dayTextField.translatesAutoresizingMaskIntoConstraints = NO;
-        _dayTextField.font = [NSFont systemFontOfSize:13 weight:NSFontWeightSemibold];
+        _dayTextField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
         _dayTextField.textColor = [[Themer shared] agendaDayTextColor];
         [_dayTextField setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
         
         _DOWTextField = [NSTextField labelWithString:@""];
         _DOWTextField.translatesAutoresizingMaskIntoConstraints = NO;
-        _DOWTextField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightMedium];
+        _DOWTextField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
         _DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
 
         [self addSubview:_dayTextField];
         [self addSubview:_DOWTextField];
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_dayTextField, _DOWTextField)];
-        [vfl :@"H:|-4-[_dayTextField]-4-[_DOWTextField]" :NSLayoutFormatAlignAllLastBaseline];
-        [vfl :@"V:|-5-[_dayTextField]-3-|"];
+        [vfl :@"H:|-4-[_DOWTextField]-(>=4)-[_dayTextField]-4-|" :NSLayoutFormatAlignAllLastBaseline];
+        [vfl :@"V:|-6-[_dayTextField]-1-|"];
     }
     return self;
 }
@@ -462,7 +473,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     // The height of the textfield plus the height of the
     // top and bottom marigns.
-    return [_dayTextField intrinsicContentSize].height + 8; // 5 + 3 = top + bottom margin
+    return [_dayTextField intrinsicContentSize].height + 7; // 6+1=top+bottom margin
 }
 
 @end
@@ -497,9 +508,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [self addSubview:_btnDelete];
         [self addSubview:_colorCircle];
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_textField, _btnDelete, _colorCircle)];
-        [vfl :@"H:|-16-[_textField]-22-|"]; // make room for colored dot and delete button
+        [vfl :@"H:|-16-[_textField]-20-|"]; // margins for colored dot, delete button
         [vfl :@"V:|-3-[_textField]"];
-        [vfl :@"H:[_btnDelete]-6-|"];
+        [vfl :@"H:[_btnDelete]-4-|"];
         [vfl :@"H:|-6-[_colorCircle(6)]"];
         [vfl :@"V:|-7-[_colorCircle(6)]"];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_btnDelete attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
@@ -512,7 +523,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [super setFrame:frame];
     // Setting preferredMaxLayoutWidth on _textfield allows us
     // to calculate its height after word-wrapping.
-    _textField.preferredMaxLayoutWidth = NSWidth(frame) - 38; // 38=16+22=left+right margin
+    _textField.preferredMaxLayoutWidth = NSWidth(frame) - 36; // 36=16+20=left+right margin
 }
 
 - (CGFloat)height

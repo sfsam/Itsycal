@@ -98,7 +98,7 @@
     [vfl :@"H:|[_moCal]|"];
     [vfl :@"H:|[agenda]|"];
     [vfl :@"H:|-6-[_btnAdd]-(>=0)-[_btnPin]-10-[_btnCal]-10-[_btnOpt]-6-|" :NSLayoutFormatAlignAllCenterY];
-    [vfl :@"V:|[_moCal]-8-[_btnOpt]"];
+    [vfl :@"V:|[_moCal]-6-[_btnOpt]"];
     [vfl :@"V:[agenda]-(-1)-|"];
     
     // Margin between bottom of _moCal and top of agenda. When the agenda
