@@ -75,15 +75,17 @@
     }
     else if (self.isSelected) {
         [[[Themer shared] selectedCellColor] set];
-        NSRect r = NSInsetRect(self.bounds, 2.5, 2.5);
-        [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] stroke];
+        NSRect r = NSInsetRect(self.bounds, 3, 3);
+        NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3];
+        [p setLineWidth:2];
+        [p stroke];
     }
     else if (self.isHovered) {
         [[[Themer shared] hoveredCellColor] set];
-        NSRect r = NSInsetRect(self.bounds, 2.5, 2.5);
-        [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] stroke];
-        [[[[Themer shared] hoveredCellColor] colorWithAlphaComponent:0.07] set];
-        [[NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3] fill];
+        NSRect r = NSInsetRect(self.bounds, 3, 3);
+        NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3];
+        [p setLineWidth:2];
+        [p stroke];
     }
     if (self.hasDot) {
         [self.textField.textColor set];

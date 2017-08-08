@@ -66,7 +66,7 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 {
     return self.themeIndex != ThemeLight
     ? [NSColor colorWithWhite:0.8 alpha:1]
-    : [NSColor colorWithWhite:0.25 alpha:1];
+    : [NSColor colorWithWhite:0.2 alpha:1];
 }
 
 - (NSColor *)highlightedDOWTextColor
@@ -114,22 +114,20 @@ NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 - (NSColor *)todayCellColor
 {
     return self.themeIndex != ThemeLight
-    ? [NSColor colorWithRed:0.32 green:0.48 blue:0.8 alpha:1]
+    ? [NSColor colorWithRed:0.36 green:0.54 blue:0.9 alpha:1]
     : [NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:1];
 }
 
 - (NSColor *)hoveredCellColor
 {
-    return self.themeIndex != ThemeLight
-    ? [NSColor colorWithWhite:0.55 alpha:1]
-    : [NSColor colorWithRed:0.2 green:0.2 blue:0.3 alpha:0.2];
+    return [self currentMonthOutlineColor];
 }
 
 - (NSColor *)selectedCellColor
 {
     return self.themeIndex != ThemeLight
-    ? [NSColor colorWithWhite:0.8 alpha:1]
-    : [NSColor colorWithRed:0.3 green:0.3 blue:0.4 alpha:0.7];
+    ? [NSColor colorWithWhite:0.75 alpha:1]
+    : [NSColor colorWithWhite:0.55 alpha:1];
 }
 
 - (NSColor *)resizeHandleForegroundColor

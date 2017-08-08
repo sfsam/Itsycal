@@ -366,7 +366,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         }
     }
     if (startCell && endCell) {
-        _highlightPath = [self bezierPathWithStartCell:startCell endCell:endCell radius:3 inset:2.5 useRects:YES];
+        _highlightPath = [self bezierPathWithStartCell:startCell endCell:endCell radius:3 inset:3 useRects:YES];
         _highlightColor = color;
         // Normalize location of _highlightPath. We will tranlsate it
         // again in drawRect to the correct location.
@@ -703,12 +703,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         [t translateXBy:NSMinX(_dateGrid.frame) yBy:0];
         NSBezierPath *highlightPath = [_highlightPath copy];
         [highlightPath transformUsingAffineTransform:t];
-        NSColor *outlineColor = [[Themer shared] themeIndex] != 0
-          ? [_highlightColor blendedColorWithFraction:0.8 ofColor:[NSColor whiteColor]]
-          : [_highlightColor blendedColorWithFraction:0.6 ofColor:[NSColor blackColor]];
-        [[outlineColor colorWithAlphaComponent:0.4] setStroke];
-        [[_highlightColor colorWithAlphaComponent:0.3] setFill];
-        [highlightPath stroke];
+        [[_highlightColor colorWithAlphaComponent:0.36] setFill];
         [highlightPath fill];
     }
 }
