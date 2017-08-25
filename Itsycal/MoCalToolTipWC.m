@@ -38,10 +38,15 @@ static CGFloat kToolipWindowWidth = 200;
 {
     _positioningRect = rect;
     _screenFrame = screenFrame;
+    BOOL dateHasEvent = NO;
     if (self.vc) {
-        [self.vc toolTipForDate:date];
+        dateHasEvent = [self.vc toolTipForDate:date];
     }
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(showTooltip) object:nil];
+    if (!dateHasEvent) {
+        [self hideTooltip];
+        return;
+    }
     if (self.window.occlusionState & NSWindowOcclusionStateVisible) {
         // Switching from one tooltip to another
         [_fadeTimer invalidate];

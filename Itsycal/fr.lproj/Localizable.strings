@@ -218,6 +218,9 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Show day of week in icon" = "L'icône de la barre des menus affiche le jour de la semaine";
 
 /* No comment provided by engineer. */
+"Show event dots" = "Afficher les indicateurs d'évènements";
+
+/* No comment provided by engineer. */
 "Show event location" = "Afficher l'emplacement de l'événement";
 
 /* No comment provided by engineer. */

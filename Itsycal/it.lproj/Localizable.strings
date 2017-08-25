@@ -218,6 +218,9 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "Show day of week in icon" = "L'icona nella barra dei menu mostra giorno della settimana";
 
 /* No comment provided by engineer. */
+"Show event dots" = "Mostra punti per gli eventi";
+
+/* No comment provided by engineer. */
 "Show event location" = "Mostra la posizione dell'evento";
 
 /* No comment provided by engineer. */

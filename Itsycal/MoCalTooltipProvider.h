@@ -11,6 +11,7 @@
 
 @protocol MoCalTooltipProvider <NSObject>
 
-- (void)toolTipForDate:(MoDate)date;
+// Return YES for success (date has a tooltip).
+- (BOOL)toolTipForDate:(MoDate)date;
 
 @end

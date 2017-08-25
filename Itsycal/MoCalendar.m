@@ -219,6 +219,12 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     } completionHandler:NULL];
 }
 
+- (void)setShowEventDots:(BOOL)showEventDots
+{
+    _showEventDots = showEventDots;
+    [self updateCalendar];
+}
+
 - (void)setHighlightedDOWs:(DOWMask)highlightedDOWs
 {
     _highlightedDOWs = highlightedDOWs;
@@ -349,7 +355,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 - (void)reloadData
 {
     for (MoCalCell *c in _dateGrid.cells) {
-        c.hasDot = [self.delegate dateHasDot:c.date];
+        c.hasDot = self.showEventDots && [self.delegate dateHasDot:c.date];
     }
     [_tooltipWC endTooltip];
 }
@@ -499,7 +505,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         _hoveredCell = hoveredCell;
         _hoveredCell.isHovered = YES;
         
-        if (_hoveredCell.hasDot && _tooltipVC != nil) {
+        if (_tooltipWC.vc != nil) {
             NSRect rect = [self convertRect:_hoveredCell.frame fromView:_dateGrid];
             rect = NSOffsetRect(rect, self.frame.origin.x, self.frame.origin.y);
             rect = [self.window convertRectToScreen:rect];
