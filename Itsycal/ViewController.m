@@ -810,6 +810,9 @@
     NSTimeInterval extraSeconds = (NSTimeInterval)extraComponents.nanosecond / (NSTimeInterval)NSEC_PER_SEC;
     extraSeconds += extraComponents.second + 1; // add extra second so we are 1 second past the minute.
     _pastEventsTimer.fireDate = [_pastEventsTimer.fireDate dateByAddingTimeInterval:-extraSeconds];
+
+    // Tolerance lets system wake up more efficiently at the expense of some accuracy.
+    _pastEventsTimer.tolerance = 6;
     
     // Add the timer to the main runloop.
     [[NSRunLoop mainRunLoop] addTimer:_pastEventsTimer forMode:NSRunLoopCommonModes];
@@ -851,6 +854,9 @@
     NSTimeInterval extraSeconds = (NSTimeInterval)extraComponents.nanosecond / (NSTimeInterval)NSEC_PER_SEC;
     extraSeconds += _clockUsesSeconds ? 0 : extraComponents.second;
     _clockTimer.fireDate = [_clockTimer.fireDate dateByAddingTimeInterval:-extraSeconds];
+
+    // Tolerance lets system wake up more efficiently at the expense of some accuracy.
+    _clockTimer.tolerance = 0.3;
 
     // Add the timer to the main runloop.
     [[NSRunLoop mainRunLoop] addTimer:_clockTimer forMode:NSRunLoopCommonModes];
