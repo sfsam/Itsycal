@@ -35,6 +35,7 @@
     NSTimer   *_clockTimer;
     NSString  *_clockFormat;
     BOOL       _clockUsesSeconds;
+    BOOL       _clockUsesTime;
 }
 
 - (void)dealloc
@@ -797,20 +798,19 @@
 {
     [_pastEventsTimer invalidate];
     
+    // Timer fireDate is 1 second after the next minute.
+    
+    NSCalendarUnit units = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
+    NSDateComponents *components = [_nsCal components:units fromDate:[NSDate new]];
+    components.minute += 1;
+    components.second  = 1;
+    NSDate *fireDate = [_nsCal dateFromComponents:components];
+    
     __weak typeof(self) weakSelf = self;
-    _pastEventsTimer = [NSTimer timerWithTimeInterval:60 repeats:NO block:^(NSTimer * _Nonnull timer) {
+    _pastEventsTimer = [[NSTimer alloc] initWithFireDate:fireDate interval:0 repeats:NO block:^(NSTimer * _Nonnull timer) {
         [weakSelf updatePastEventsTimer];
     }];
     
-    // Align the timer's fireDate to real-time minutes plus 1 second.
-    // We do this by subtracting the extra seconds or fractional
-    // seconds from the fireDate and then adding 1 extra second.
-    NSCalendarUnit extraUnits = NSCalendarUnitSecond | NSCalendarUnitNanosecond;
-    NSDateComponents *extraComponents = [_nsCal components:extraUnits fromDate:_pastEventsTimer.fireDate];
-    NSTimeInterval extraSeconds = (NSTimeInterval)extraComponents.nanosecond / (NSTimeInterval)NSEC_PER_SEC;
-    extraSeconds += extraComponents.second + 1; // add extra second so we are 1 second past the minute.
-    _pastEventsTimer.fireDate = [_pastEventsTimer.fireDate dateByAddingTimeInterval:-extraSeconds];
-
     // Tolerance lets system wake up more efficiently at the expense of some accuracy.
     _pastEventsTimer.tolerance = 6;
     
@@ -832,28 +832,29 @@
 - (void)updateClock
 {
     [_clockTimer invalidate];
-
+    
+    if (!_clockUsesTime) return;
+    
     // If the clock uses seconds, fire the timer after a second.
     // Otherwise, fire after 60 seconds. We could just fire every
     // second in either case, but we want to be as efficient as
-    // possible and only fire when needed. Even firing every 60
-    // seconds is too much if the format string doesn't contain
-    // any time specifiers.
-    NSTimeInterval clockInterval = _clockUsesSeconds ? 1 : 60;
+    // possible and only fire when needed.
+
+    NSCalendarUnit units = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
+    
+    if (_clockUsesSeconds) { units |= NSCalendarUnitSecond; }
+    
+    NSDateComponents *components = [_nsCal components:units fromDate:[NSDate new]];
+    
+    if (_clockUsesSeconds) { components.second += 1; }
+    else                   { components.minute += 1; }
+
+    NSDate *fireDate = [_nsCal dateFromComponents:components];
 
     __weak typeof(self) weakSelf = self;
-    _clockTimer = [NSTimer timerWithTimeInterval:clockInterval repeats:NO block:^(NSTimer * _Nonnull timer) {
+    _clockTimer = [[NSTimer alloc] initWithFireDate:fireDate interval:0 repeats:NO block:^(NSTimer * _Nonnull timer) {
         [weakSelf updateMenubarIcon];
     }];
-
-    // Align the timer's fireDate to real-time minutes or seconds.
-    // We do this by subtracting the extra seconds or fractional
-    // seconds from the fireDate.
-    NSCalendarUnit extraUnits = _clockUsesSeconds ? NSCalendarUnitNanosecond : NSCalendarUnitSecond | NSCalendarUnitNanosecond;
-    NSDateComponents *extraComponents = [_nsCal components:extraUnits fromDate:_clockTimer.fireDate];
-    NSTimeInterval extraSeconds = (NSTimeInterval)extraComponents.nanosecond / (NSTimeInterval)NSEC_PER_SEC;
-    extraSeconds += _clockUsesSeconds ? 0 : extraComponents.second;
-    _clockTimer.fireDate = [_clockTimer.fireDate dateByAddingTimeInterval:-extraSeconds];
 
     // Tolerance lets system wake up more efficiently at the expense of some accuracy.
     _clockTimer.tolerance = 0.3;
@@ -881,7 +882,7 @@
     // Did the user set a custom clock format string?
     if (format != nil && ![format isEqualToString:@""]) {
         NSLog(@"Use custom clock format: [%@]", format);
-        _clockUsesSeconds = [self formatContainsSecondsSpecifier:format];
+        [self processFormatForTimeAndSecondsSpecifiers:format];
         _clockFormat = format;
     }
     else {
@@ -894,12 +895,16 @@
     [self updateMenubarIcon];
 }
 
-- (BOOL)formatContainsSecondsSpecifier:(NSString *)format
+- (void)processFormatForTimeAndSecondsSpecifiers:(NSString *)format
 {
-    // The seconds specifier is an s-character. Does format
-    // contain an s that isn't inside a quoted string? A
-    // quoted string is delimited by single-quote chars.
+    // A time specifier is one of the following: a, H, h, K, k, j, m, s.
+    // The seconds specifier is an s-character. Does format contain
+    // a time specifier or s that isn't inside a quoted string? a quoted
+    // string is delimited by single-quote chars.
 
+    NSString *timeSpecifiers = @"aHhKkjms";
+    
+    __block BOOL timeSpecifierFound = NO;
     __block BOOL secondsSpecifierFound = NO;
     __block BOOL insideQuotedString = NO;
 
@@ -914,14 +919,23 @@
         // Did we find an s that isn't inside a quoted string?
         if (insideQuotedString == NO && [substring isEqualToString:@"s"]) {
             secondsSpecifierFound = YES;
+            timeSpecifierFound = YES;
             *stop = YES;
+        }
+        // Did we find a time specifier that isn't inside a quoted string?
+        else if (insideQuotedString == NO && [timeSpecifiers containsString:substring]) {
+            timeSpecifierFound = YES;
         }
         // Are we inside a quoted string? They are delimited with single-quotes.
         else if ([substring isEqualToString:@"'"]) {
             insideQuotedString = !insideQuotedString;
         }
     }];
-    return secondsSpecifierFound;
+    _clockUsesTime = timeSpecifierFound;
+    _clockUsesSeconds = secondsSpecifierFound;
+
+    if (_clockUsesTime) NSLog(@"Format has time");
+    if (_clockUsesSeconds) NSLog(@"Format has seconds");
 }
 
 #pragma mark -
