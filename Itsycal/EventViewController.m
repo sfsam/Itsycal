@@ -8,7 +8,6 @@
 
 #import "EventViewController.h"
 #import "EventCenter.h"
-#import "MoView.h"
 #import "MoVFLHelper.h"
 
 @implementation EventViewController
@@ -22,7 +21,7 @@
 - (void)loadView
 {
     // View controller content view
-    MoView *v = [MoView new];
+    NSView *v = [NSView new];
     
     // TextField maker
     NSTextField* (^txt)(NSString*, BOOL) = ^NSTextField* (NSString *stringValue, BOOL isEditable) {

@@ -5,7 +5,6 @@
 
 #import "PrefsAboutVC.h"
 #import "Itsycal.h"
-#import "MoView.h"
 #import "MoTextField.h"
 #import "MoVFLHelper.h"
 
