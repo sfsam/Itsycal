@@ -6,9 +6,17 @@
 # it places on the Desktop. Those files can then
 # all be uploaded to the web.
 
+# Exit with error if any subcommand fails:
+set -o errexit
+
 # Get the bundle version from the plist.
 PLIST_FILE="Itsycal/Info.plist"
 VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" $PLIST_FILE)
+
+if [ ! -z "$(git status --porcelain)" ]; then
+    >&2 echo "Error: must be a clean working copy"
+    exit 1
+fi
 
 # Set up file names and paths.
 BUILD_PATH=$(mktemp -d "$TMPDIR/Itsycal.XXXXXX")
@@ -19,6 +27,10 @@ XML_PATH="$HOME/Desktop/itsycal.xml"
 
 # Build Itsycal in a temporary build location.
 xcodebuild -scheme Itsycal -configuration Release -derivedDataPath "$BUILD_PATH" build
+
+# Tag release in git
+git tag v$VERSION
+git push --tags origin master
 
 # Go into the temporary build directory.
 cd "$BUILD_PATH/Build/Products/Release"
