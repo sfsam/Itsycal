@@ -225,6 +225,12 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [self updateCalendar];
 }
 
+- (void)setShowMonthOutline:(BOOL)showMonthOutline
+{
+    _showMonthOutline = showMonthOutline;
+    [self updateCalendar];
+}
+
 - (void)setHighlightedDOWs:(DOWMask)highlightedDOWs
 {
     _highlightedDOWs = highlightedDOWs;
@@ -672,11 +678,13 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         return;
     }
     
-    NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:6 inset:0 useRects:NO];
-    
-    [[[Themer shared] currentMonthOutlineColor] set];
-    [outlinePath setLineWidth:2];
-    [outlinePath stroke];
+    if (_showMonthOutline) {
+        NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:6 inset:0 useRects:NO];
+        
+        [[[Themer shared] currentMonthOutlineColor] set];
+        [outlinePath setLineWidth: 2];
+        [outlinePath stroke];
+    }
 //    [[[Themer shared] currentMonthFillColor] set];
 //    [outlinePath fill];
     
