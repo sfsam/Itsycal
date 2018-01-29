@@ -228,7 +228,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 - (void)setShowMonthOutline:(BOOL)showMonthOutline
 {
     _showMonthOutline = showMonthOutline;
-    [self updateCalendar];
+    [self setNeedsDisplay:true];
 }
 
 - (void)setHighlightedDOWs:(DOWMask)highlightedDOWs
