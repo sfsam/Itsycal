@@ -337,14 +337,20 @@ static NSString *kEventCellIdentifier = @"EventCell";
     
     if (info.isAllDay == NO) {
         if (info.isStartDate == YES) {
-            duration = [NSString stringWithFormat:@"\n%@", [timeFormatter stringFromDate:info.event.startDate]];
+            if (info.event.startDate != nil) {
+                duration = [NSString stringWithFormat:@"\n%@", [timeFormatter stringFromDate:info.event.startDate]];
+            }
         }
         else if (info.isEndDate == YES) {
-            NSString *ends = NSLocalizedString(@"ends", @"Spanning event ends");
-            duration = [NSString stringWithFormat:@"\n%@ %@", ends, [timeFormatter stringFromDate:info.event.endDate]];
+            if (info.event.endDate != nil) {
+                NSString *ends = NSLocalizedString(@"ends", @"Spanning event ends");
+                duration = [NSString stringWithFormat:@"\n%@ %@", ends, [timeFormatter stringFromDate:info.event.endDate]];
+            }
         }
         else {
-            duration = [NSString stringWithFormat:@"\n%@", [intervalFormatter stringFromDate:info.event.startDate toDate:info.event.endDate]];
+            if (info.event.startDate != nil && info.event.endDate != nil) {
+                duration = [NSString stringWithFormat:@"\n%@", [intervalFormatter stringFromDate:info.event.startDate toDate:info.event.endDate]];
+            }
         }
         // If the locale is English and we are in 12 hour time,
         // remove :00 from the time. Effect is 3:00 PM -> 3 PM.
