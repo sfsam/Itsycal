@@ -17,6 +17,7 @@
     NSButton *_showDayOfWeek;
     NSTextField *_dateTimeFormat;
     NSButton *_hideIcon;
+    NSButton *_flashSeparator;
     HighlightPicker *_highlight;
     NSButton *_showEventDots;
     NSButton *_showWeeks;
@@ -48,6 +49,7 @@
     _showWeeks = chkbx(NSLocalizedString(@"Show calendar weeks", @""));
     _showLocation = chkbx(NSLocalizedString(@"Show event location", @""));
     _hideIcon = chkbx(NSLocalizedString(@"Hide icon", @""));
+    _flashSeparator = chkbx(NSLocalizedString(@"Flash time separator (:)", @""));
 
     // Datetime format text field
     _dateTimeFormat = [NSTextField textFieldWithString:@""];
@@ -87,13 +89,14 @@
                                       NSLocalizedString(@"Dark", @"Dark theme name")]];
     [v addSubview:_themePopup];
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_useOutlineIcon, _showMonth, _showDayOfWeek, _showEventDots, _showWeeks, _showLocation, _dateTimeFormat, helpButton, _hideIcon, _highlight, themeLabel, _themePopup)];
-    [vfl :@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_highlight]-m-[_themePopup]-m-[_showEventDots]-[_showLocation]-[_showWeeks]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_useOutlineIcon, _showMonth, _showDayOfWeek, _showEventDots, _showWeeks, _showLocation, _dateTimeFormat, helpButton, _hideIcon, _flashSeparator, _highlight, themeLabel, _themePopup)];
+    [vfl :@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-[_flashSeparator]-m-[_highlight]-m-[_themePopup]-m-[_showEventDots]-[_showLocation]-[_showWeeks]-m-|"];
     [vfl :@"H:|-m-[_useOutlineIcon]-(>=m)-|"];
     [vfl :@"H:|-m-[_showMonth]-(>=m)-|"];
     [vfl :@"H:|-m-[_showDayOfWeek]-(>=m)-|"];
     [vfl :@"H:|-m-[_dateTimeFormat]-[helpButton]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[_hideIcon]-(>=m)-|"];
+    [vfl :@"H:|-m-[_flashSeparator]-(>=m)-|"];
     [vfl :@"H:|-m-[_highlight]-(>=m)-|"];
     [vfl :@"H:|-m-[themeLabel]-[_themePopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
     [vfl :@"H:|-m-[_showEventDots]-(>=m)-|"];
@@ -112,6 +115,7 @@
     [_showMonth bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_showDayOfWeek bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowDayOfWeekInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_hideIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_flashSeparator bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kFlashSeparator] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bind icon prefs enabled state to hide icon's value
     [_useOutlineIcon bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];

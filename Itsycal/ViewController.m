@@ -423,7 +423,18 @@
     }
     if (_clockFormat) {
         [_iconDateFormatter setDateFormat:_clockFormat];
-        _statusItem.button.title = [_iconDateFormatter stringFromDate:[NSDate new]];
+
+        NSDate *now = [NSDate new];
+        NSString *formatDate = [_iconDateFormatter stringFromDate:now];
+
+        BOOL flashSeparator = [[NSUserDefaults standardUserDefaults] boolForKey:kFlashSeparator];
+
+        if (flashSeparator && [[NSCalendar currentCalendar] component:NSCalendarUnitSecond fromDate:now] % 2 == 0) {
+            _clockUsesSeconds = YES;
+            formatDate = [formatDate stringByReplacingOccurrencesOfString:@":" withString:@" "];
+        }
+
+        _statusItem.button.title = formatDate;
         [self updateClock];
     }
 }
@@ -972,7 +983,7 @@
     [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(updateMenubarIcon) name:NSWorkspaceDidWakeNotification object:nil];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kHideIcon, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kHideIcon, kFlashSeparator, kClockFormat]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -988,7 +999,8 @@
     else if ([keyPath isEqualToString:kUseOutlineIcon] ||
              [keyPath isEqualToString:kShowMonthInIcon] ||
              [keyPath isEqualToString:kShowDayOfWeekInIcon] ||
-             [keyPath isEqualToString:kHideIcon]) {
+             [keyPath isEqualToString:kHideIcon] ||
+             [keyPath isEqualToString:kFlashSeparator]) {
         [self updateMenubarIcon];
     }
     else if ([keyPath isEqualToString:kClockFormat]) {
