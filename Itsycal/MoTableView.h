@@ -18,7 +18,6 @@
 
 @interface MoTableView : NSTableView
 
-@property (nonnull, nonatomic) NSColor *hoverColor;
 @property (nonatomic) BOOL enableHover;
 @property (nonatomic, readonly) NSInteger hoverRow;
 @property (nullable, weak) id<MoTableViewDelegate> delegate;

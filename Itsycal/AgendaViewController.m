@@ -21,6 +21,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @end
 
 @interface AgendaRowView : NSTableRowView
+@property (nonatomic) BOOL isHovered;
 @end
 
 @interface AgendaDateCell : NSView
@@ -55,15 +56,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
     // Calendars table view
     _tv = [MoTableView new];
-    if (OSVersionIsAtLeast(10, 13, 0)) {
-        // 10.13+: so layer-backed btnDelete draws in correct position consistently
-        _tv.wantsLayer = YES; 
-    }
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
     _tv.backgroundColor = [[Themer shared] mainBackgroundColor];
-    _tv.hoverColor = [[Themer shared] agendaHoverColor];
     _tv.floatsGroupRows = YES;
     _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
@@ -153,7 +149,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)themeChanged:(id)sender
 {
-    _tv.hoverColor = [[Themer shared] agendaHoverColor];
     [_tv.enclosingScrollView.verticalScroller setNeedsDisplay];
     self.backgroundColor = [[Themer shared] mainBackgroundColor];
     [self reloadData];
@@ -167,13 +162,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return self.events == nil ? 0 : self.events.count;
 }
 
-- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
+- (NSTableRowView *)tableView:(MoTableView *)tableView rowViewForRow:(NSInteger)row
 {
     AgendaRowView *rowView = [_tv makeViewWithIdentifier:@"RowView" owner:self];
     if (rowView == nil) {
         rowView = [AgendaRowView new];
         rowView.identifier = @"RowView";
     }
+    rowView.isHovered = tableView.hoverRow == row;
     return rowView;
 }
 
@@ -258,6 +254,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
             AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
             BOOL allowsModification = cell.eventInfo.event.calendar.allowsContentModifications;
             cell.btnDelete.hidden = (row == hoveredRow && allowsModification) ? NO : YES;
+            AgendaRowView *rowView = [_tv rowViewAtRow:row makeIfNecessary:NO];
+            rowView.isHovered = (row == hoveredRow);
         }
     }
     if (self.delegate && [self.delegate respondsToSelector:@selector(agendaHoveredOverRow:)]) {
@@ -436,6 +434,22 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
     else {
         [super drawRect:dirtyRect];
+    }
+}
+
+- (void)drawBackgroundInRect:(NSRect)dirtyRect {
+    [super drawBackgroundInRect:dirtyRect];
+    if (self.isHovered) {
+        [[[Themer shared] agendaHoverColor] set];
+        NSRect rect = NSInsetRect(self.bounds, 2, 1);
+        [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:5 yRadius:5] fill];
+    }
+}
+
+- (void)setIsHovered:(BOOL)isHovered {
+    if (_isHovered != isHovered) {
+        _isHovered = isHovered;
+        [self setNeedsDisplay:YES];
     }
 }
 
