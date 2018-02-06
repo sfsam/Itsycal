@@ -36,7 +36,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @property (nonatomic, weak) EventInfo *eventInfo;
 @property (nonatomic, readonly) CGFloat height;
 @property (nonatomic) MoButton *btnDelete;
-@property (nonatomic) NSView *colorCircle;
+@property (nonatomic) BOOL dim;
 @end
 
 #pragma mark -
@@ -201,8 +201,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         cell.btnDelete.tag = row;
         cell.btnDelete.target = self;
         cell.btnDelete.action = @selector(btnDeleteClicked:);
-        cell.colorCircle.layer.backgroundColor = info.event.calendar.color.CGColor;
-        cell.colorCircle.alphaValue = 1;
+        cell.dim = NO;
         v = cell;
     }
     return v;
@@ -385,7 +384,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
                 // next line where I set textColor will color the whole string.
                 eventCell.textField.stringValue = eventCell.textField.stringValue;
                 eventCell.textField.textColor = [[Themer shared] agendaEventDateTextColor];
-                eventCell.colorCircle.alphaValue = 0.5;
+                eventCell.dim = YES;
             }
         }
     }
@@ -520,19 +519,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _textField.stringValue = @"";
         _btnDelete = [MoButton new];
         _btnDelete.image = [NSImage imageNamed:@"btnDel"];
-        _colorCircle = [NSView new];
-        _colorCircle.translatesAutoresizingMaskIntoConstraints = NO;
-        _colorCircle.wantsLayer = YES;
-        _colorCircle.layer.cornerRadius = 3;
         [self addSubview:_textField];
         [self addSubview:_btnDelete];
-        [self addSubview:_colorCircle];
-        MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_textField, _btnDelete, _colorCircle)];
+        MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_textField, _btnDelete)];
         [vfl :@"H:|-16-[_textField]-20-|"]; // margins for colored dot, delete button
         [vfl :@"V:|-3-[_textField]"];
         [vfl :@"H:[_btnDelete]-4-|"];
-        [vfl :@"H:|-6-[_colorCircle(6)]"];
-        [vfl :@"V:|-7-[_colorCircle(6)]"];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:_btnDelete attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
     }
     return self;
@@ -551,6 +543,21 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // The height of the textfield (which may have word-wrapped)
     // plus the height of the top and bottom marigns.
     return [_textField intrinsicContentSize].height + 6; // 6=3+3=top+bottom margin
+}
+
+- (void)setDim:(BOOL)dim {
+    if (_dim != dim) {
+        _dim = dim;
+        [self setNeedsDisplay:YES];
+    }
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    CGFloat alpha = self.dim ? 0.5 : 1;
+    NSColor *dotColor = self.eventInfo.event.calendar.color;
+    [[dotColor colorWithAlphaComponent:alpha] set];
+    [[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(6, NSHeight(self.bounds) - 13, 6, 6)] fill];
 }
 
 @end
