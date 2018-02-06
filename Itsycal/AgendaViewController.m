@@ -143,7 +143,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [_tv reloadData];
     [_tv scrollRowToVisible:0];
     [[_tv enclosingScrollView] flashScrollers];
-    [self dimEventsIfNecessary];
     [self.view setNeedsLayout:YES];
 }
 
@@ -202,6 +201,16 @@ static NSString *kEventCellIdentifier = @"EventCell";
         cell.btnDelete.target = self;
         cell.btnDelete.action = @selector(btnDeleteClicked:);
         cell.dim = NO;
+        // If event's endDate is today and is past, dim event.
+        if (!info.isStartDate && !info.isAllDay &&
+            [self.nsCal isDateInToday:info.event.endDate] &&
+            [NSDate.date compare:info.event.endDate] == NSOrderedDescending) {
+            // This looks pointless, but I'm clearing the attributes so the
+            // next line where I set textColor will color the whole string.
+            cell.textField.stringValue = cell.textField.stringValue;
+            cell.textField.textColor = [[Themer shared] agendaEventDateTextColor];
+            cell.dim = YES;
+        }
         v = cell;
     }
     return v;
@@ -368,25 +377,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)dimEventsIfNecessary
 {
-    // Iterate through the rows of the table and dim past
-    // events if they are today.
-    BOOL isToday = NO;
-    NSDate *now = [NSDate new];
-    for (NSInteger row = 0; row < _tv.numberOfRows; row++) {
-        NSView *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:YES];
-        if ([cell isKindOfClass:[AgendaDateCell class]]) {
-            isToday = [self.nsCal isDateInToday:((AgendaDateCell *)cell).date];
-        }
-        else if (isToday) {
-            AgendaEventCell *eventCell = (AgendaEventCell *)cell;
-            if ([now compare:eventCell.eventInfo.event.endDate] == NSOrderedDescending) {
-                // This looks pointless, but I'm clearing the attributes so the
-                // next line where I set textColor will color the whole string.
-                eventCell.textField.stringValue = eventCell.textField.stringValue;
-                eventCell.textField.textColor = [[Themer shared] agendaEventDateTextColor];
-                eventCell.dim = YES;
-            }
-        }
+    // If the user has the window showing, reload the agenda cells.
+    // This will redraw the events, dimming if necessary.
+    if (self.view.window.isVisible) {
+        [_tv reloadData];
     }
 }
 
