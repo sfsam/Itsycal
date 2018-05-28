@@ -11,7 +11,7 @@
 
 @protocol AgendaDelegate;
 
-@interface AgendaViewController : NSViewController <NSTableViewDataSource, NSTableViewDelegate, MoTableViewDelegate>
+@interface AgendaViewController : NSViewController <NSTableViewDataSource, NSTableViewDelegate, MoTableViewDelegate, NSMenuDelegate>
 
 @property (nonatomic, weak) NSCalendar *nsCal;
 @property (nonatomic) MoTableView *tv;

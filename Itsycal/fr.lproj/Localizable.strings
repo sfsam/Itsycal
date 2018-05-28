@@ -83,6 +83,9 @@ Itsycal est plus utile quand il peut afficher les événements de vos calendrier
 /* No comment provided by engineer. */
 "Check for Updates..." = "Rechercher les mises à jour…";
 
+/* No comment provided by engineer. */
+"Copy" = "Copier";
+
 /* Dark theme name */
 "Dark" = "Thème Sombre";
 

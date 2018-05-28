@@ -1,4 +1,4 @@
-﻿/* No comment provided by engineer. */
+/* No comment provided by engineer. */
 "1 day" = "1 天";
 
 /* No comment provided by engineer. */
@@ -82,6 +82,9 @@ Itsycal is more useful when it can display events from your calendars. You can c
 
 /* No comment provided by engineer. */
 "Check for Updates..." = "检查更新…";
+
+/* No comment provided by engineer. */
+"Copy" = "复制";
 
 /* Dark theme name */
 "Dark" = "深色";

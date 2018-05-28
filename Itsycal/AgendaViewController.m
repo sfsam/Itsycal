@@ -54,8 +54,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSView *v = [NSView new];
     v.translatesAutoresizingMaskIntoConstraints = NO;
 
+    // Calendars table view context menu
+    NSMenu *contextMenu = [NSMenu new];
+    contextMenu.delegate = self;
+
     // Calendars table view
     _tv = [MoTableView new];
+    _tv.menu = contextMenu;
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
@@ -151,6 +156,26 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [_tv.enclosingScrollView.verticalScroller setNeedsDisplay];
     self.backgroundColor = [[Themer shared] mainBackgroundColor];
     [self reloadData];
+}
+
+#pragma mark -
+#pragma mark Context Menu
+
+- (void)menuNeedsUpdate:(NSMenu *)menu
+{
+    // Show a context menu ONLY for non-group rows.
+    [menu removeAllItems];
+    if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
+    [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
+}
+
+- (void)copyEventToPasteboard:(id)sender
+{
+    if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
+    AgendaEventCell *cell = [_tv viewAtColumn:0 row:_tv.clickedRow makeIfNecessary:NO];
+    NSPasteboard *pb = [NSPasteboard generalPasteboard];
+    [pb clearContents];
+    [pb writeObjects:@[[NSString stringWithFormat:@"%@\n", cell.textField.stringValue]]];
 }
 
 #pragma mark -

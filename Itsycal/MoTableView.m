@@ -69,6 +69,10 @@
     }
 }
 
+// Prevent context menu highlight from drawing.
+// stackoverflow.com/a/30594427/111418
+- (void)drawContextMenuHighlightForRow:(NSInteger)row {}
+
 #pragma mark -
 #pragma mark NSTrackingArea
 
