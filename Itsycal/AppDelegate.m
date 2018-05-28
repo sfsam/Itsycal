@@ -34,8 +34,8 @@
         kHideIcon:             @(NO)
     }];
     
-    // Constrain kShowEventDays to values 0...7 in (unlikely) case it is invalid.
-    NSInteger validDays = MIN(MAX([defaults integerForKey:kShowEventDays], 0), 7);
+    // Constrain kShowEventDays to values 0...9 in (unlikely) case it is invalid.
+    NSInteger validDays = MIN(MAX([defaults integerForKey:kShowEventDays], 0), 9);
     [defaults setInteger:validDays forKey:kShowEventDays];
 }
 

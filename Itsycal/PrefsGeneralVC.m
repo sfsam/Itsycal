@@ -124,7 +124,9 @@ static NSString * const kCalendarCellId = @"CalendarCell";
                                      NSLocalizedString(@"4 days", @""),
                                      NSLocalizedString(@"5 days", @""),
                                      NSLocalizedString(@"6 days", @""),
-                                     NSLocalizedString(@"7 days", @""),]];
+                                     NSLocalizedString(@"7 days", @""),
+                                     NSLocalizedString(@"14 days", @""),
+                                     NSLocalizedString(@"31 days", @"")]];
     [v addSubview:_agendaDaysPopup];
 
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_login, _checkUpdates, firstDayLabel, _firstDayPopup, shortcutLabel, shortcutView, tvContainer, agendaDaysLabel, _agendaDaysPopup)];

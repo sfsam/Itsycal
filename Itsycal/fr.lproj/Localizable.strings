@@ -38,10 +38,16 @@
 "10 minutes before" = "10 minutes avant";
 
 /* No comment provided by engineer. */
+"14 days" = "14 jours";
+
+/* No comment provided by engineer. */
 "15 minutes before" = "15 minutes avant";
 
 /* No comment provided by engineer. */
 "30 minutes before" = "30 minutes avant";
+
+/* No comment provided by engineer. */
+"31 days" = "31 jours";
 
 /* About prefs tab label */
 "About" = "À propos";

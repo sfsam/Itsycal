@@ -788,7 +788,9 @@
 - (void)updateAgenda
 {
     NSInteger days = [[NSUserDefaults standardUserDefaults] integerForKey:kShowEventDays];
-    days = MIN(MAX(days, 0), 7); // days is in range 0..7
+    days = MIN(MAX(days, 0), 9); // days is in range 0..9
+    // days == 8 really means 14; 9 really means 31
+    if (days == 8) days = 14; else if (days == 9) days = 31;
     _agendaVC.events = [_ec datesAndEventsForDate:_moCal.selectedDate days:days];
     [_agendaVC reloadData];
     _bottomMargin.constant = _agendaVC.events.count == 0 ? 26 : 30;
