@@ -155,7 +155,7 @@ static CGFloat kToolipWindowWidth = 200;
     // A rounded rect with a light gray border.
     NSRect r = NSInsetRect(self.bounds, 1, 1);
     NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:4 yRadius:4];
-    [[[Themer shared] windowBorderColor] setStroke];
+    [[NSColor colorWithWhite:0.6 alpha:0.8] setStroke];
     [[[Themer shared] tooltipBackgroundColor] setFill];
     [p setLineWidth: 2];
     [p stroke];[p fill];
