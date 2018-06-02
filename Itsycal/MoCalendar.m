@@ -492,6 +492,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         if (self.target && self.doubleAction) {
             [NSApp sendAction:self.doubleAction to:self.target from:self];
         }
+        [_tooltipWC endTooltip];
     }
 }
 
