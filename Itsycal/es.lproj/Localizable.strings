@@ -120,7 +120,16 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
 "Event list shows:" = "La lista de eventos muestra:";
 
 /* No comment provided by engineer. */
-"Every 2 Weeks" = "Cada 2 semanas";
+"Every %zd Days" = "Cada %zd días";
+
+/* No comment provided by engineer. */
+"Every %zd Months" = "Cada %zd meses";
+
+/* No comment provided by engineer. */
+"Every %zd Weeks" = "Cada %zd semanas";
+
+/* No comment provided by engineer. */
+"Every %zd Years" = "Cada %zd años";
 
 /* No comment provided by engineer. */
 "Every Day" = "Todos los días";

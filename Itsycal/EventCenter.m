@@ -246,6 +246,9 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             info.isAllDay    = (event.allDay ||
                                 ([event.startDate compare:date] == NSOrderedAscending &&
                                  [event.endDate compare:nextDate] == NSOrderedDescending));
+            info.isSingleDay = (event.isAllDay &&
+                                [event.startDate compare:date] == NSOrderedSame &&
+                                [event.endDate compare:nextDate] == NSOrderedSame);
             // ...and add it to the array in eventsForDate.
             if (eventsForDate[date] == nil) {
                 eventsForDate[date] = [NSMutableArray new];

@@ -120,7 +120,16 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 "Event list shows:" = "Ereignisliste zeigt:";
 
 /* No comment provided by engineer. */
-"Every 2 Weeks" = "Alle 2 Wochen";
+"Every %zd Days" = "Alle %zd Tage";
+
+/* No comment provided by engineer. */
+"Every %zd Months" = "Alle %zd Monate";
+
+/* No comment provided by engineer. */
+"Every %zd Weeks" = "Alle %zd Wochen";
+
+/* No comment provided by engineer. */
+"Every %zd Years" = "Alle %zd Jahre";
 
 /* No comment provided by engineer. */
 "Every Day" = "Täglich";

@@ -120,7 +120,16 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Event list shows:" = "显示事件列表：";
 
 /* No comment provided by engineer. */
-"Every 2 Weeks" = "每 2 周";
+"Every %zd Days" = "每 %zd 天";
+
+/* No comment provided by engineer. */
+"Every %zd Months" = "每 %zd 月";
+
+/* No comment provided by engineer. */
+"Every %zd Weeks" = "每 %zd 周";
+
+/* No comment provided by engineer. */
+"Every %zd Years" = "每 %zd 年";
 
 /* No comment provided by engineer. */
 "Every Day" = "每天";

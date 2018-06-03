@@ -101,7 +101,7 @@
     [_repPopup addItemsWithTitles:@[NSLocalizedString(@"None", @"Repeat none"),
                                     NSLocalizedString(@"Every Day", @""),
                                     NSLocalizedString(@"Every Week", @""),
-                                    NSLocalizedString(@"Every 2 Weeks", @""),
+                                    [NSString stringWithFormat:NSLocalizedString(@"Every %zd Weeks", nil), (NSInteger)2],
                                     NSLocalizedString(@"Every Month", @""),
                                     NSLocalizedString(@"Every Year", @"")]];
     
