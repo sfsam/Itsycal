@@ -46,5 +46,7 @@
 	<integer>86400</integer>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<true/>
+	<key>NSRequiresAquaSystemAppearance</key>
+	<false/>
 </dict>
 </plist>

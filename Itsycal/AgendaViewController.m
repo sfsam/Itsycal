@@ -526,20 +526,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 @implementation AgendaRowView
 
-- (void)drawRect:(NSRect)dirtyRect
-{
-    if (self.isGroupRowStyle) {
-        [[self backgroundColor] set]; // tableView's background color
-        NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
-        NSRect r = NSMakeRect(4, 3, self.bounds.size.width - 8, 1);
-        [[[Themer shared] agendaDividerColor] set];
-        NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
-    }
-    else {
-        [super drawRect:dirtyRect];
-    }
-}
-
 - (void)drawBackgroundInRect:(NSRect)dirtyRect {
     [super drawBackgroundInRect:dirtyRect];
     if (self.isHovered) {
@@ -597,6 +583,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // The height of the textfield plus the height of the
     // top and bottom marigns.
     return [_dayTextField intrinsicContentSize].height + 7; // 6+1=top+bottom margin
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    [[[Themer shared] mainBackgroundColor] set];
+    NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
+    NSRect r = NSMakeRect(4, self.bounds.size.height - 4, self.bounds.size.width - 8, 1);
+    [[[Themer shared] agendaDividerColor] set];
+    NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
 }
 
 @end

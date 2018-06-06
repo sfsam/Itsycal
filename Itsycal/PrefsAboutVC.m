@@ -36,7 +36,7 @@
     appName.font = [NSFont systemFontOfSize:14 weight:NSFontWeightMedium];
     appName.textColor = [NSColor grayColor];
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithString:appName.stringValue];
-    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor blackColor], NSFontAttributeName: [NSFont systemFontOfSize:14 weight:NSFontWeightBold]} range:NSMakeRange(0, 7)];
+    [s addAttributes:@{NSForegroundColorAttributeName: [NSColor labelColor], NSFontAttributeName: [NSFont systemFontOfSize:14 weight:NSFontWeightBold]} range:NSMakeRange(0, 7)];
     appName.attributedStringValue = s;
 
     // Links

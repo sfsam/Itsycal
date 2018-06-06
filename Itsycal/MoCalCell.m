@@ -60,8 +60,8 @@
 {
     if (hasDot != _hasDot) {
         _hasDot = hasDot;
-        [self setNeedsDisplay:YES];
     }
+    [self setNeedsDisplay:YES];
 }
 
 - (void)drawRect:(NSRect)dirtyRect

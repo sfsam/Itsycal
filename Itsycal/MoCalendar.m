@@ -664,15 +664,9 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    // If dirtyRect is contained in the top part of the calendar
-    // which is just the plain background color, just return.
-    // This will happen, for example, when the buttons are pressed.
-    // Otherwise, redraw the whole view.
-    
-    if (NSMinY(dirtyRect) > NSMaxY(_dateGrid.frame)+1) {
-        return;
-    }
-    
+    [[[Themer shared] mainBackgroundColor] set];
+    NSRectFill(self.bounds);
+
     NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:6 inset:0 useRects:NO];
     
     [[[Themer shared] currentMonthOutlineColor] set];
