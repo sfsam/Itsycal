@@ -99,6 +99,9 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Datetime pattern" = "日期时间模式";
 
 /* No comment provided by engineer. */
+"Delete" = "删除";
+
+/* No comment provided by engineer. */
 "Delete All Future Events" = "删除所有未来事件";
 
 /* No comment provided by engineer. */

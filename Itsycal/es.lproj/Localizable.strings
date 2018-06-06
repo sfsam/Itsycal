@@ -99,6 +99,9 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
 "Datetime pattern" = "Patrón de fecha y hora";
 
 /* No comment provided by engineer. */
+"Delete" = "Eliminar";
+
+/* No comment provided by engineer. */
 "Delete All Future Events" = "Eliminar todos los eventos futuros";
 
 /* No comment provided by engineer. */

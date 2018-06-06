@@ -182,12 +182,19 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [menu removeAllItems];
     if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
     [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
+    EventInfo *info = self.events[_tv.clickedRow];
+    if (info.event.calendar.allowsContentModifications) {
+        NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete", nil) action:@selector(btnDeleteClicked:) keyEquivalent:@""];
+        item.tag = _tv.clickedRow;
+    }
 }
+
+#pragma mark -
+#pragma mark Copy
 
 - (void)copyEventToPasteboard:(id)sender
 {
     if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
-    
     static NSDateIntervalFormatter *intervalFormatter = nil;
     if (intervalFormatter == nil) {
         intervalFormatter = [NSDateIntervalFormatter new];
@@ -368,10 +375,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
 #pragma mark -
 #pragma mark Delete event
 
-- (void)btnDeleteClicked:(MoButton *)btn
+- (void)btnDeleteClicked:(id)sender
 {
+    NSInteger row = [(MoButton *)sender tag];
+    if (row < 0) return;
     if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToDeleteEvent:)]) {
-        EventInfo *info = self.events[btn.tag];
+        EventInfo *info = self.events[row];
         [self.delegate agendaWantsToDeleteEvent:info.event];
     }
 }

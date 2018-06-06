@@ -99,6 +99,9 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 "Datetime pattern" = "Datum & Zeit Muster";
 
 /* No comment provided by engineer. */
+"Delete" = "Löschen";
+
+/* No comment provided by engineer. */
 "Delete All Future Events" = "Alle zukünftigen Ereignisse löschen";
 
 /* No comment provided by engineer. */
