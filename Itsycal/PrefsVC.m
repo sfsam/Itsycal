@@ -38,6 +38,26 @@
     }
 }
 
+- (void)showAbout
+{
+    NSString *identifier = NSLocalizedString(@"About", @"About prefs tab label");
+    NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:identifier];
+    item.tag = 2; // 2 == index of About panel
+    _toolbar.selectedItemIdentifier = identifier;
+    [self switchToTabForToolbarItem:item animated:NO];
+}
+
+- (void)showPrefs
+{
+    if (_selectedItemTag == 2) { // 2 == index of About panel
+        NSString *identifier = NSLocalizedString(@"General", @"General prefs tab label");
+        NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:identifier];
+        item.tag = 0; // 0 == index of General panel.
+        _toolbar.selectedItemIdentifier = identifier;
+        [self switchToTabForToolbarItem:item animated:NO];
+    }
+}
+
 - (void)setChildViewControllers:(NSArray<__kindof NSViewController *> *)childViewControllers
 {
     [super setChildViewControllers:childViewControllers];
@@ -51,6 +71,11 @@
 }
 
 - (void)toolbarItemClicked:(NSToolbarItem *)item
+{
+    [self switchToTabForToolbarItem:item animated:YES];
+}
+
+- (void)switchToTabForToolbarItem:(NSToolbarItem *)item animated:(BOOL)animated
 {
     if (_selectedItemTag == item.tag) return;
 
@@ -73,7 +98,7 @@
         [self.view addSubview:toVC.view];
 
         [NSAnimationContext runAnimationGroup:^(NSAnimationContext * _Nonnull context) {
-            [context setDuration:0.2];
+            [context setDuration:animated ? 0.2 : 0];
             [window.animator setFrame:newFrame display:NO];
             [toVC.view.animator setAlphaValue:1];
             [self.view.subviews[0].animator setAlphaValue:0];

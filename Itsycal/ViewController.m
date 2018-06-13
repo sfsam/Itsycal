@@ -208,7 +208,7 @@
 {
     // Was prefs window open in the past and then hidden when
     // app became inactive? This prevents it from reappearing.
-    [_prefsWC close];
+    [self.prefsWC close];
     
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
     
@@ -296,9 +296,10 @@
     NSMenu *optMenu = [[NSMenu alloc] initWithTitle:@"Options Menu"];
     NSInteger i = 0;
 
-    [optMenu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
-    [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
+    [optMenu insertItemWithTitle:NSLocalizedString(@"About Itsycal", @"") action:@selector(showAbout:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Check for Updates...", @"") action:@selector(checkForUpdates:) keyEquivalent:@"" atIndex:i++];
+    [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
+    [optMenu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
     NSPoint pt = NSOffsetRect(_btnOpt.frame, -5, -10).origin;
@@ -311,10 +312,8 @@
     [[NSUserDefaults standardUserDefaults] setBool:pin forKey:kPinItsycal];
 }
 
-- (void)showPrefs:(id)sender
+- (NSWindowController *)prefsWC
 {
-    [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
-    
     if (!_prefsWC) {
         // VCs for each tab in prefs panel.
         PrefsGeneralVC *prefsGeneralVC = [PrefsGeneralVC new];
@@ -334,7 +333,26 @@
         _prefsWC.window.contentView.wantsLayer = YES;
         [_prefsWC.window center];
     }
-    [_prefsWC showWindow:self];
+    return _prefsWC;
+}
+
+- (PrefsVC *)prefsVC
+{
+    return (PrefsVC *)self.prefsWC.contentViewController;
+}
+
+- (void)showAbout:(id)sender
+{
+    [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+    [self.prefsVC showAbout];
+    [self.prefsWC showWindow:self];
+}
+
+- (void)showPrefs:(id)sender
+{
+    [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+    [self.prefsVC showPrefs];
+    [self.prefsWC showWindow:self];
 }
 
 - (void)checkForUpdates:(id)sender
