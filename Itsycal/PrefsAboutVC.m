@@ -58,7 +58,7 @@
     // Labels
     MoTextField *visit = label(@"🌎 visit:", NO);
     MoTextField *follow = label(@"🐦 follow:", NO);
-    MoTextField *donate = label(@"♥️ donate:", NO);
+    MoTextField *donate = label(@"😊 donate:", NO);
 
     MoTextField *smile = label(@"(๑˃̵ᴗ˂̵)و", NO);
     smile.font = [NSFont systemFontOfSize:16 weight:NSFontWeightLight];
