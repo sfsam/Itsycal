@@ -71,8 +71,8 @@
 
     MoTextField *copyright = label(infoDict[@"NSHumanReadableCopyright"], NO);
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(appName, appLink, twtrLink, payPalLink, visit, follow, donate, sparkleLink, sparkleCopyright, masshortcutLink, masshortcutCopyright, smile, copyright)];
-    [vfl :@"V:|-m-[appName]-14-[appLink]-[twtrLink]-[payPalLink]-18-[smile]-14-[sparkleLink][sparkleCopyright]-[masshortcutLink][masshortcutCopyright]-m-[copyright]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @40, @"b": @20} views:NSDictionaryOfVariableBindings(appName, appLink, twtrLink, payPalLink, visit, follow, donate, sparkleLink, sparkleCopyright, masshortcutLink, masshortcutCopyright, smile, copyright)];
+    [vfl :@"V:|-b-[appName]-14-[appLink]-[twtrLink]-[payPalLink]-18-[smile]-14-[sparkleLink][sparkleCopyright]-[masshortcutLink][masshortcutCopyright]-b-[copyright]-b-|"];
     [vfl :@"H:|-m-[appName]-(>=m)-|"];
     [vfl :@"H:|-m-[visit]-4-[appLink]-(>=m)-|" : NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[follow]-4-[twtrLink]-(>=m)-|" :NSLayoutFormatAlignAllCenterY];
