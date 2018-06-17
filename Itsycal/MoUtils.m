@@ -10,8 +10,6 @@
 
 BOOL OSVersionIsAtLeast(NSInteger majorVersion, NSInteger minorVersion, NSInteger patchVersion)
 {
-    NSOperatingSystemVersion os = [[NSProcessInfo processInfo] operatingSystemVersion];
-    return (os.majorVersion >  majorVersion) ||
-    (os.majorVersion == majorVersion && os.minorVersion >  minorVersion) ||
-    (os.majorVersion == majorVersion && os.minorVersion == minorVersion && os.patchVersion >= patchVersion) ? YES : NO;
+    NSOperatingSystemVersion v = {majorVersion, minorVersion, patchVersion};
+    return [NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:v];
 }
