@@ -33,7 +33,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>© 2014-2017 mowglii.com</string>
+	<string>© 2014-2018 mowglii.com</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
