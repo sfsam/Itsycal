@@ -6,7 +6,7 @@
 #import <Cocoa/Cocoa.h>
 
 // NSUserDefaults key
-extern NSString * const kThemeIndex;
+extern NSString * const kThemePreference;
 
 // Notification names
 extern NSString * const kThemeDidChangeNotification;
@@ -19,14 +19,15 @@ extern NSString * const kThemeDidChangeNotification;
                                         [self themeChanged:nil]; \
                                     }];
 
-typedef enum : NSUInteger {
-    ThemeLight = 0,
-    ThemeDark  = 1
-} ThemeIndex;
+typedef enum : NSInteger {
+    ThemePreferenceSystem = 0,
+    ThemePreferenceLight = 1,
+    ThemePreferenceDark  = 2
+} ThemePreference;
 
 @interface Themer : NSObject
 
-@property (nonatomic) ThemeIndex themeIndex;
+@property (nonatomic) ThemePreference themePreference;
 
 + (instancetype)shared;
 

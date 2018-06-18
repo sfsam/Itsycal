@@ -31,12 +31,19 @@
         kShowMonthInIcon:      @(NO),
         kShowDayOfWeekInIcon:  @(NO),
         kShowEventDots:        @(YES),
+        kThemePreference:      @0,
         kHideIcon:             @(NO)
     }];
     
     // Constrain kShowEventDays to values 0...9 in (unlikely) case it is invalid.
     NSInteger validDays = MIN(MAX([defaults integerForKey:kShowEventDays], 0), 9);
     [defaults setInteger:validDays forKey:kShowEventDays];
+    
+    // Set kThemePreference to 0 in (unlikely) case it is invalid.
+    NSInteger themePref = [defaults integerForKey:kThemePreference];
+    if (themePref < 0 || themePref > 2) {
+        [defaults setInteger:0 forKey:kThemePreference];
+    }
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -51,13 +58,17 @@
 
     // 0.11.1 introduced a new way to highlight columns in the calendar.
     [self weekendHighlightFixup];
+    
+    // 0.11.11 uses a new theme preference scheme that enables following
+    // the system's appearance.
+    [self themeFixup];
 
     // Register keyboard shortcut.
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
          [(ViewController *)_wc.contentViewController keyboardShortcutActivated];
      }];
     
-    [[Themer shared] bind:@"themeIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemeIndex] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [[Themer shared] bind:@"themePreference" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     ViewController *vc = [ViewController new];
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
@@ -137,6 +148,14 @@
     [defaults removeObjectForKey:@"HighlightWeekend"];
     [defaults removeObjectForKey:@"WeekendIsFridaySaturday"];
     [defaults removeObjectForKey:@"WeekendIsSaturdaySunday"];
+}
+
+// Itsycal 0.11.11 uses ThemePreference instead of ThemeIndex to
+// express the user's theme preference. ThemePreference can be
+// System in addition to explicitly Light or Dark.
+- (void)themeFixup
+{
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"ThemeIndex"];
 }
 
 @end

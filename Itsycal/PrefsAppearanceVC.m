@@ -83,7 +83,8 @@
     // Theme popup
     _themePopup = [NSPopUpButton new];
     _themePopup.translatesAutoresizingMaskIntoConstraints = NO;
-    [_themePopup addItemsWithTitles:@[NSLocalizedString(@"Light", @"Light theme name"),
+    [_themePopup addItemsWithTitles:@[NSLocalizedString(@"System", @"System theme name"),
+                                      NSLocalizedString(@"Light", @"Light theme name"),
                                       NSLocalizedString(@"Dark", @"Dark theme name")]];
     [v addSubview:_themePopup];
 
@@ -135,7 +136,7 @@
     [_highlight bind:@"selectedDOWs" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightedDOWs] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bindings for theme
-    [_themePopup bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemeIndex] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_themePopup bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
     [self updateHideIconState];
 
