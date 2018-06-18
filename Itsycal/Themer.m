@@ -151,13 +151,6 @@ typedef enum : NSInteger {
     : [NSColor colorWithWhite:0.77 alpha:1];
 }
 
-- (NSColor *)currentMonthFillColor
-{
-    return self.theme != ThemeLight
-    ? [NSColor clearColor]
-    : [NSColor clearColor];
-}
-
 - (NSColor *)currentMonthTextColor
 {
     return self.theme != ThemeLight

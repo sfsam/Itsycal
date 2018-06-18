@@ -672,8 +672,6 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [[[Themer shared] currentMonthOutlineColor] set];
     [outlinePath setLineWidth:2];
     [outlinePath stroke];
-//    [[[Themer shared] currentMonthFillColor] set];
-//    [outlinePath fill];
     
     if (self.highlightedDOWs) {
         NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
