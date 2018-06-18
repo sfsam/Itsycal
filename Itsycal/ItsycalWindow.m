@@ -8,6 +8,7 @@
 
 #import "ItsycalWindow.h"
 #import "Themer.h"
+#import "MoUtils.h"
 
 static const CGFloat kMinimumSpaceBetweenWindowAndScreenEdge = 10;
 static const CGFloat kArrowHeight  = 8;
@@ -194,11 +195,13 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
         [arrowPath relativeCurveToPoint:NSMakePoint(kArrowHeight + curveOffset, -kArrowHeight) controlPoint1:NSMakePoint(curveOffset, 0) controlPoint2:NSMakePoint(kArrowHeight, -kArrowHeight)];
         [rectPath appendBezierPath:arrowPath];
     }
-    
-    [[[Themer shared] windowBorderColor] setStroke];
+    // Let macOS 10.14+ draw border, otherwise we draw it.
+    if (!OSVersionIsAtLeast(10, 14, 0)) {
+        [[[Themer shared] windowBorderColor] setStroke];
+        [rectPath setLineWidth:2*kBorderWidth];
+        [rectPath stroke];
+    }
     [[[Themer shared] mainBackgroundColor] setFill];
-    [rectPath setLineWidth:2*kBorderWidth];
-    [rectPath stroke];
     [rectPath fill];
 }
 

@@ -8,6 +8,7 @@
 
 #import "MoCalToolTipWC.h"
 #import "Themer.h"
+#import "MoUtils.h"
 
 static CGFloat kToolipWindowWidth = 200;
 
@@ -155,10 +156,14 @@ static CGFloat kToolipWindowWidth = 200;
     // A rounded rect with a light gray border.
     NSRect r = NSInsetRect(self.bounds, 1, 1);
     NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:4 yRadius:4];
-    [[NSColor colorWithWhite:0.6 alpha:0.8] setStroke];
+    // Let macOS 10.14+ draw border, otherwise we draw it.
+    if (!OSVersionIsAtLeast(10, 14, 0)) {
+        [[NSColor colorWithWhite:0.6 alpha:0.8] setStroke];
+        [p setLineWidth: 2];
+        [p stroke];
+    }
     [[[Themer shared] tooltipBackgroundColor] setFill];
-    [p setLineWidth: 2];
-    [p stroke];[p fill];
+    [p fill];
 }
 
 @end
