@@ -12,9 +12,10 @@ NSString * const kThemePreference = @"ThemePreference";
 // Notification names
 NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
 
-// Apple key in NSUserDefaults for system appearance.
-// stackoverflow.com/a/25214873/111418
-NSString * const kAppleInterfaceStyle = @"AppleInterfaceStyle";
+// Apple default and notification keys for system appearance.
+// developer.weareyeah.com/detecting-dark-mode-on-os-x-yosemite/
+NSString * const kMoAppleInterfaceStyleKey = @"AppleInterfaceStyle";
+NSString * const kMoAppleInterfaceThemeChangedNotification = @"AppleInterfaceThemeChangedNotification";
 
 typedef enum : NSInteger {
     ThemeLight = 0,
@@ -53,33 +54,26 @@ typedef enum : NSInteger {
         else {
             _theme = ThemeLight;
         }
-        // Observe NSUserDefaults for system appearance change.
-        [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kAppleInterfaceStyle options:NSKeyValueObservingOptionNew context:NULL];
+        // Watch for system appearance change.
+        [[NSDistributedNotificationCenter defaultCenter] addObserverForName:kMoAppleInterfaceThemeChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notification) {
+            if (self.themePreference == ThemePreferenceSystem) {
+                self.theme = [self systemUsesDarkMode] ? ThemeDark : ThemeLight;
+            }
+        }];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kAppleInterfaceStyle];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
-{
-    // System appearance changed. If user's theme preference is
-    // ThemePreferenceSystem, set the theme to match the system.
-    if ([keyPath isEqualToString:kAppleInterfaceStyle]) {
-        if (self.themePreference == ThemePreferenceSystem) {
-            self.theme = [self systemUsesDarkMode] ? ThemeDark : ThemeLight;
-        }
-    }
+    [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (BOOL)systemUsesDarkMode
 {
     // mode will be @"Dark" for dark mode, else nil.
     // stackoverflow.com/a/25214873/111418
-    NSString *mode = [[NSUserDefaults standardUserDefaults] stringForKey:kAppleInterfaceStyle];
+    NSString *mode = [[NSUserDefaults standardUserDefaults] stringForKey:kMoAppleInterfaceStyleKey];
     return [@"Dark" caseInsensitiveCompare:mode] == NSOrderedSame;
 }
 
