@@ -693,6 +693,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Convenience function for making labels.
     NSTextField* (^label)(CGFloat, CGFloat) = ^NSTextField* (CGFloat size, CGFloat weight) {
         NSTextField *lbl = [NSTextField labelWithString:@""];
+        lbl.selectable = YES;
         lbl.font = [NSFont systemFontOfSize:size weight:weight];
         lbl.lineBreakMode = NSLineBreakByWordWrapping;
         lbl.textColor = [[Themer shared] agendaEventTextColor];
