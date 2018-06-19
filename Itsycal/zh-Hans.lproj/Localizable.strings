@@ -256,6 +256,9 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 /* No comment provided by engineer. */
 "Sunday" = "星期天";
 
+/* System theme name */
+"System" = "系统";
+
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "找不到日历应用程序。";
 

@@ -256,6 +256,9 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 /* No comment provided by engineer. */
 "Sunday" = "Domenica";
 
+/* System theme name */
+"System" = "Sistema";
+
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "L'applicazione Calendario non è stato trovato.";
 

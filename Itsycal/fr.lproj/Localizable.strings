@@ -256,6 +256,9 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 /* No comment provided by engineer. */
 "Sunday" = "dimanche";
 
+/* System theme name */
+"System" = "Système";
+
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "L'application Calendrier est introuvable.";
 
