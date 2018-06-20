@@ -5,7 +5,6 @@
 
 #import "PrefsAppearanceVC.h"
 #import "Itsycal.h"
-#import "MoTextField.h"
 #import "HighlightPicker.h"
 #import "MoVFLHelper.h"
 #import "Themer.h"
