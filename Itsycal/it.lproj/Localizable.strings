@@ -117,6 +117,9 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 "Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Vuoi eliminare questa e tutte le ricorrenze future di questo evento o solo quella selezionata?";
 
 /* No comment provided by engineer. */
+"Donate with" = "Dona con";
+
+/* No comment provided by engineer. */
 "End Repeat:" = "Fine ripetizione:";
 
 /* No comment provided by engineer. */
@@ -151,6 +154,9 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 
 /* No comment provided by engineer. */
 "First day of week:" = "Primo giorno della settimana:";
+
+/* No comment provided by engineer. */
+"Follow" = "Segui";
 
 /* No comment provided by engineer. */
 "Friday" = "Venerdì";
@@ -216,6 +222,9 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 
 /* No comment provided by engineer. */
 "Options" = "Opzioni";
+
+/* No comment provided by engineer. */
+"or" = "o";
 
 /* No comment provided by engineer. */
 "Pin Itsycal... P" = "Mantieni Itsycal visibile… P";
