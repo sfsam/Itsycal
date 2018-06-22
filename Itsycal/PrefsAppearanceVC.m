@@ -8,6 +8,7 @@
 #import "HighlightPicker.h"
 #import "MoVFLHelper.h"
 #import "Themer.h"
+#import "MoUtils.h"
 
 @implementation PrefsAppearanceVC
 {
@@ -82,9 +83,24 @@
     // Theme popup
     _themePopup = [NSPopUpButton new];
     _themePopup.translatesAutoresizingMaskIntoConstraints = NO;
-    [_themePopup addItemsWithTitles:@[NSLocalizedString(@"System", @"System theme name"),
-                                      NSLocalizedString(@"Light", @"Light theme name"),
-                                      NSLocalizedString(@"Dark", @"Dark theme name")]];
+    // On macOS 10.14+, there is a System theme preference in
+    // addition to Light and Dark.
+    if (OSVersionIsAtLeast(10, 14, 0)) {
+        [_themePopup addItemWithTitle:NSLocalizedString(@"System", @"System theme name")];
+    }
+    [_themePopup addItemWithTitle:NSLocalizedString(@"Light", @"Light theme name")];
+    [_themePopup addItemWithTitle:NSLocalizedString(@"Dark", @"Dark theme name")];
+    // The tags will be used to bind the selected theme
+    // preference to NSUserDefaults.
+    if (OSVersionIsAtLeast(10, 14, 0)) {
+        [_themePopup itemAtIndex:0].tag = 0; // System
+        [_themePopup itemAtIndex:1].tag = 1; // Light
+        [_themePopup itemAtIndex:2].tag = 2; // Dark
+    }
+    else {
+        [_themePopup itemAtIndex:0].tag = 1; // Light
+        [_themePopup itemAtIndex:1].tag = 2; // Dark
+    }
     [v addSubview:_themePopup];
 
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_useOutlineIcon, _showMonth, _showDayOfWeek, _showEventDots, _showWeeks, _showLocation, _dateTimeFormat, helpButton, _hideIcon, _highlight, themeLabel, _themePopup)];
@@ -135,7 +151,7 @@
     [_highlight bind:@"selectedDOWs" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightedDOWs] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bindings for theme
-    [_themePopup bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_themePopup bind:@"selectedTag" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
     [self updateHideIconState];
 

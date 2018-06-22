@@ -5,17 +5,13 @@
 
 #import "Themer.h"
 #import "Itsycal.h"
+#import "MoUtils.h"
 
 // NSUserDefaults key
 NSString * const kThemePreference = @"ThemePreference";
 
 // Notification names
 NSString * const kThemeDidChangeNotification = @"ThemeDidChangeNotification";
-
-// Apple default and notification keys for system appearance.
-// developer.weareyeah.com/detecting-dark-mode-on-os-x-yosemite/
-NSString * const kMoAppleInterfaceStyleKey = @"AppleInterfaceStyle";
-NSString * const kMoAppleInterfaceThemeChangedNotification = @"AppleInterfaceThemeChangedNotification";
 
 typedef enum : NSInteger {
     ThemeLight = 0,
@@ -54,33 +50,38 @@ typedef enum : NSInteger {
         else {
             _theme = ThemeLight;
         }
-        // Watch for system appearance change.
-        [[NSDistributedNotificationCenter defaultCenter] addObserverForName:kMoAppleInterfaceThemeChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notification) {
-            if (self.themePreference == ThemePreferenceSystem) {
-                self.theme = [self systemUsesDarkMode] ? ThemeDark : ThemeLight;
-            }
-        }];
+        // Watch for appearance changes on 10.14+.
+        if (OSVersionIsAtLeast(10, 14, 0)) {
+            [NSApp.windows[0] addObserver:self forKeyPath:@"effectiveAppearance" options:NSKeyValueObservingOptionNew context:nil];
+        }
     }
     return self;
 }
 
-- (void)dealloc
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-    [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
+    // Only called from 10.14+.
+    if ([keyPath isEqualToString:@"effectiveAppearance"]) {
+        if (self.themePreference == ThemePreferenceSystem) {
+            self.theme = [self systemUsesDarkMode] ? ThemeDark : ThemeLight;
+        }
+    }
 }
 
 - (BOOL)systemUsesDarkMode
 {
-    // mode will be @"Dark" for dark mode, else nil.
-    // stackoverflow.com/a/25214873/111418
-    NSString *mode = [[NSUserDefaults standardUserDefaults] stringForKey:kMoAppleInterfaceStyleKey];
-    return [@"Dark" caseInsensitiveCompare:mode] == NSOrderedSame;
+    // Only called from 10.14+.
+    // Determine appearance based on the main window.
+    return ![NSApp.windows[0].effectiveAppearance.name isEqualToString:NSAppearanceNameAqua];
 }
 
 - (void)setThemePreference:(ThemePreference)themePref
 {
     // Validate themePref.
-    themePref = (themePref < 0 || themePref > 2) ? 0 : themePref;
+    // If it's out of range, set it to its minimum value.
+    // minThemePref is 0 (System) for macOS 10.14+, else 1 (Light).
+    NSInteger minThemePref = OSVersionIsAtLeast(10, 14, 0) ? 0 : 1;
+    themePref = (themePref < minThemePref || themePref > 2) ? minThemePref : themePref;
 
     _themePreference = themePref;
     
