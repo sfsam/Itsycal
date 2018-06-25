@@ -436,6 +436,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSString *location = @"";
     NSString *duration = @"";
     timeFormatter.timeZone  = [NSTimeZone localTimeZone];
+    intervalFormatter.timeZone = nil; // Force tz update on macOS 10.13
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
     
     if (info && info.event) {
