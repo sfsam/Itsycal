@@ -7,4 +7,6 @@
 
 @interface MoCalResizeHandle : NSView
 
+- (void)dim:(BOOL)shouldDim;
+
 @end

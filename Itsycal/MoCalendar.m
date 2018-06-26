@@ -105,7 +105,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     // The _resizeHandle is at the bottom of the calendar.
     _resizeHandle = [MoCalResizeHandle new];
     _resizeHandle.translatesAutoresizingMaskIntoConstraints = NO;
-    _resizeHandle.alphaValue = 0.1;
+    [_resizeHandle dim:YES];
 
     [self addSubview:_monthLabel];
     [self addSubview:_dateGrid];
@@ -474,7 +474,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     // Dim resizeHandle if drag ends outside of it (-mouseExited: won't catch this).
     NSPoint finalDragPoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     BOOL isInResizeHandle = NSPointInRect(finalDragPoint, _resizeHandle.frame);
-    _resizeHandle.animator.alphaValue = isInResizeHandle ? 1 : 0.1;
+    [_resizeHandle dim:!isInResizeHandle];
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
@@ -521,14 +521,14 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 - (void)mouseEntered:(NSEvent *)theEvent
 {
     if ([[(NSDictionary *)[theEvent userData] valueForKey:@"area"] isEqualToString: @"resizeHandle"]) {
-        _resizeHandle.animator.alphaValue = 1;
+        [_resizeHandle dim:NO];
     }
 }
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
     if ([[(NSDictionary *)[theEvent userData] valueForKey:@"area"] isEqualToString: @"resizeHandle"]) {
-        _resizeHandle.animator.alphaValue = 0.1;
+        [_resizeHandle dim:YES];
     }
     else { // userData[area] == "dateGrid"
         _hoveredCell.isHovered = NO;

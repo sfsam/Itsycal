@@ -196,8 +196,8 @@ typedef enum : NSInteger {
 - (NSColor *)resizeHandleBackgroundColor
 {
     return self.theme != ThemeLight
-    ? [NSColor colorWithWhite:0.17 alpha:1]
-    : [NSColor colorWithWhite:0.98 alpha:1];
+    ? [NSColor colorWithWhite:0.22 alpha:1]
+    : [NSColor colorWithWhite:0.95 alpha:1];
 }
 
 - (NSColor *)agendaDividerColor
