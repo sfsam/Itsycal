@@ -37,7 +37,7 @@
         else {
             txt.stringValue = stringValue;
             txt.alignment = NSTextAlignmentRight;
-            txt.textColor = [NSColor grayColor];
+            txt.textColor = [NSColor secondaryLabelColor];
         }
         [v addSubview:txt];
         return txt;
