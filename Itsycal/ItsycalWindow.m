@@ -172,9 +172,8 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
     
     // The rectangular part of frame view must be inset and
     // offset to make room for the arrow and border.
-    NSRect rect = NSInsetRect(self.bounds, kBorderWidth, 0);
-    rect.origin.y = kBorderWidth;
-    rect.size.height -= (kArrowHeight + 2*kBorderWidth);
+    NSRect rect = NSInsetRect(self.bounds, kBorderWidth, kBorderWidth);
+    rect.size.height -= kArrowHeight;
     NSBezierPath *rectPath = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:kCornerRadius yRadius:kCornerRadius];
     
     // Append the arrow to the body if its right ege is inside
@@ -195,12 +194,9 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
         [arrowPath relativeCurveToPoint:NSMakePoint(kArrowHeight + curveOffset, -kArrowHeight) controlPoint1:NSMakePoint(curveOffset, 0) controlPoint2:NSMakePoint(kArrowHeight, -kArrowHeight)];
         [rectPath appendBezierPath:arrowPath];
     }
-    // Let macOS 10.14+ draw border, otherwise we draw it.
-    if (!OSVersionIsAtLeast(10, 14, 0)) {
-        [[[Themer shared] windowBorderColor] setStroke];
-        [rectPath setLineWidth:2*kBorderWidth];
-        [rectPath stroke];
-    }
+    [[[Themer shared] windowBorderColor] setStroke];
+    [rectPath setLineWidth:2*kBorderWidth];
+    [rectPath stroke];
     [[[Themer shared] mainBackgroundColor] setFill];
     [rectPath fill];
 }

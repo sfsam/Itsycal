@@ -114,7 +114,7 @@ typedef enum : NSInteger {
 - (NSColor *)windowBorderColor
 {
     return self.theme != ThemeLight
-    ? [NSColor colorWithWhite:0.0 alpha:0.6]
+    ? [NSColor colorWithWhite:0.6 alpha:0.4]
     : [NSColor colorWithWhite:0.4 alpha:0.4];
 }
 
