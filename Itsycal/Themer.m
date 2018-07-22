@@ -228,16 +228,14 @@ typedef enum : NSInteger {
 
 - (NSColor *)agendaEventTextColor
 {
-    return self.theme != ThemeLight
-    ? [NSColor colorWithWhite:0.73 alpha:1]
-    : [NSColor colorWithWhite:0.12 alpha:1];
+    return [self monthTextColor];
 }
 
 - (NSColor *)agendaEventDateTextColor
 {
     return self.theme != ThemeLight
-    ? [NSColor colorWithWhite:0.5 alpha:1]
-    : [NSColor colorWithWhite:0.5 alpha:1];
+    ? [NSColor colorWithWhite:0.55 alpha:1]
+    : [NSColor colorWithWhite:0.55 alpha:1];
 }
 
 - (NSColor *)tooltipBackgroundColor
