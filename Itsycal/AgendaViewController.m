@@ -687,6 +687,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSTextField *_location;
     NSTextField *_duration;
     NSTextField *_recurrence;
+    NSTextField *_notes;
+    NSDataDetector *_linkDetector;
 }
 
 - (instancetype)init
@@ -708,12 +710,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _location = label(11, NSFontWeightRegular);
         _duration = label(11, NSFontWeightRegular);
         _recurrence = label(11, NSFontWeightRegular);
+        _notes = label(11, NSFontWeightRegular);
+        _notes.allowsEditingTextAttributes = YES; // for clickable URLs
         _btnDelete = [MoButton new];
         _btnDelete.image = [NSImage imageNamed:@"btnDel"];
         _textGrid = [NSGridView gridViewWithViews:@[@[_title],
                                                     @[_location],
                                                     @[_duration],
-                                                    @[_recurrence]]];
+                                                    @[_recurrence],
+                                                    @[_notes]]];
         _textGrid.translatesAutoresizingMaskIntoConstraints = NO;
         _textGrid.rowSpacing = 5;
         [_textGrid columnAtIndex:0].width = _title.preferredMaxLayoutWidth;
@@ -722,6 +727,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _grid.rowSpacing = 0;
         _grid.columnSpacing = 5;
         _grid.yPlacement = NSGridCellPlacementCenter;
+        _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
     }
     return self;
 }
@@ -759,8 +765,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Hide location row IF there's no location string.
     [_textGrid rowAtIndex:1].hidden = location.length == 0;
     
-    // Hide recurrence row IF there's no recurrence rule;
+    // Hide recurrence row IF there's no recurrence rule.
     [_textGrid rowAtIndex:3].hidden = !info.event.hasRecurrenceRules;
+    
+    // Hide note row IF there's no note.
+    [_textGrid rowAtIndex:4].hidden = !info.event.hasNotes;
     
     // Hide delete button if event doesn't allow modification.
     [_grid columnAtIndex:1].hidden = !info.event.calendar.allowsContentModifications;
@@ -832,6 +841,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
             }
         }
     }
+    
+    if (info.event.hasNotes) {
+        NSMutableAttributedString *notes = [[NSMutableAttributedString alloc] initWithString:info.event.notes];
+        [_linkDetector enumerateMatchesInString:info.event.notes options:kNilOptions range:NSMakeRange(0, notes.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+            [notes addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];
+         }];
+        [notes addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:11] range:NSMakeRange(0, info.event.notes.length)];
+        _notes.attributedStringValue = notes;
+    }
     _title.stringValue = title;
     _location.stringValue = location;
     _duration.stringValue = duration;
@@ -841,6 +859,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _location.textColor = [[Themer shared] agendaEventTextColor];
     _duration.textColor = [[Themer shared] agendaEventTextColor];
     _recurrence.textColor = [[Themer shared] agendaEventTextColor];
+    _notes.textColor = [[Themer shared] agendaEventTextColor];
 }
 
 - (NSSize)size
