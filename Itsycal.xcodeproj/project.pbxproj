@@ -152,6 +152,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9228A5A5210509910076BFFC /* Prefs */ = {
+			isa = PBXGroup;
+			children = (
+				926A6D8D1E3EC89100AAA991 /* PrefsVC.h */,
+				926A6D8E1E3EC89100AAA991 /* PrefsVC.m */,
+				921E62C01E26B3EA007B029F /* PrefsGeneralVC.h */,
+				921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */,
+				921E62CE1E26B9D2007B029F /* PrefsAppearanceVC.h */,
+				921E62CF1E26B9D2007B029F /* PrefsAppearanceVC.m */,
+				921E62D11E26E038007B029F /* PrefsAboutVC.h */,
+				921E62D21E26E038007B029F /* PrefsAboutVC.m */,
+			);
+			name = Prefs;
+			sourceTree = "<group>";
+		};
 		923E78DB1D385CD80012979B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -197,14 +212,7 @@
 				9242A5851A82A1A1005AA4B3 /* ItsycalWindow.h */,
 				9242A5861A82A1A1005AA4B3 /* ItsycalWindow.m */,
 				92CDDE7C1A97FFE700D7675C /* MoCode */,
-				926A6D8D1E3EC89100AAA991 /* PrefsVC.h */,
-				926A6D8E1E3EC89100AAA991 /* PrefsVC.m */,
-				921E62C01E26B3EA007B029F /* PrefsGeneralVC.h */,
-				921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */,
-				921E62CE1E26B9D2007B029F /* PrefsAppearanceVC.h */,
-				921E62CF1E26B9D2007B029F /* PrefsAppearanceVC.m */,
-				921E62D11E26E038007B029F /* PrefsAboutVC.h */,
-				921E62D21E26E038007B029F /* PrefsAboutVC.m */,
+				9228A5A5210509910076BFFC /* Prefs */,
 				929223E91E2D6E0800F1A119 /* HighlightPicker.h */,
 				929223EA1E2D6E0800F1A119 /* HighlightPicker.m */,
 				922232CB1A8DF672003BFAD9 /* EventCenter.h */,
