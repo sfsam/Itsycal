@@ -120,8 +120,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     for (NSInteger row = 0; row < rows; ++row) {
         height += [self tableView:_tv heightOfRow:row];
     }
-    // Limit view height to a max of 500.
-    height = MIN(height, 500);
+    if ([self.identifier isEqualToString:@"AgendaVC"]) {
+        // Limit height so everything fits on the screen.
+        height = MIN(height, [self.delegate agendaMaxPossibleHeight]);
+    }
     // If height is 0, we make it 0.001 which is effectively the
     // same dimension. When preferredContentSize is zero, it is
     // ignored, so we use a non-zero value that has the same

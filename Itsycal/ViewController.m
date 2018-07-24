@@ -36,6 +36,7 @@
     NSString  *_clockFormat;
     BOOL       _clockUsesSeconds;
     BOOL       _clockUsesTime;
+    NSRect     _screenFrame;
 }
 
 - (void)dealloc
@@ -91,6 +92,7 @@
     // Agenda
     _agendaVC = [AgendaViewController new];
     _agendaVC.delegate = self;
+    _agendaVC.identifier = @"AgendaVC";
     NSView *agenda = _agendaVC.view;
     [v addSubview:agenda];
 
@@ -169,13 +171,6 @@
     _moCal.showWeeks = [defaults boolForKey:kShowWeeks];
 
     [self.itsycalWindow makeFirstResponder:_moCal];
-}
-
-- (void)viewDidAppear
-{
-    [super viewDidAppear];
-
-    [self positionItsycalWindow];
 }
 
 #pragma mark -
@@ -571,6 +566,7 @@
             break;
         }
     }
+    _screenFrame = statusItemScreen.frame;
     CGFloat screenMaxX = NSMaxX(statusItemScreen.frame);
 
     // Constrain the menu item's frame to be no higher than the top
@@ -580,6 +576,9 @@
     // shown clipped at the top. Prevent that by constraining the
     // top of the menu item to be at most the top of the screen.
     statusItemFrame.origin.y = MIN(statusItemFrame.origin.y, NSMaxY(statusItemScreen.frame));
+    
+    // So that agenda height can adjust to fit screen if needed.
+    [_agendaVC.view setNeedsLayout:YES];
 
     [self.itsycalWindow positionRelativeToRect:statusItemFrame screenMaxX:screenMaxX];
 }
@@ -758,6 +757,11 @@
     if (result == NO && error != nil) {
         [[NSAlert alertWithError:error] runModal];
     }
+}
+
+- (CGFloat)agendaMaxPossibleHeight
+{
+    return NSHeight(_screenFrame) - NSHeight(_moCal.frame) - 140;
 }
 
 #pragma mark -

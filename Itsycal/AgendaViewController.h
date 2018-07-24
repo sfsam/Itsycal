@@ -32,5 +32,6 @@
 @optional
 - (void)agendaHoveredOverRow:(NSInteger)row;
 - (void)agendaWantsToDeleteEvent:(EKEvent *)event;
+- (CGFloat)agendaMaxPossibleHeight;
 
 @end
