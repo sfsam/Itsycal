@@ -811,7 +811,7 @@
     if (days == 8) days = 14; else if (days == 9) days = 31;
     _agendaVC.events = [_ec datesAndEventsForDate:_moCal.selectedDate days:days];
     [_agendaVC reloadData];
-    _bottomMargin.constant = _agendaVC.events.count == 0 ? 26 : 30;
+    _bottomMargin.constant = _agendaVC.events.count == 0 ? 25 : 30;
 }
 
 - (void)updatePastEventsTimer
