@@ -9,9 +9,6 @@
 #import <AppKit/AppKit.h>
 #import "MoDate.h"
 
-#define kMoCalCellWidth  (23)
-#define kMoCalCellHeight (23)
-
 @interface MoCalCell : NSView
 
 @property (nonatomic) NSTextField *textField;

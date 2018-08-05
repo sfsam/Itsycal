@@ -8,6 +8,7 @@
 
 #import "MoCalGrid.h"
 #import "MoCalCell.h"
+#import "Sizer.h"
 
 @implementation MoCalGrid
 {
@@ -18,13 +19,14 @@
 {
     self = [super initWithFrame:NSZeroRect];
     if (self) {
+        CGFloat sz = [[Sizer shared] cellSize];
         NSMutableArray *cells = [NSMutableArray new];
         for (NSUInteger row = 0; row < rows; row++) {
             for (NSUInteger col = 0; col < cols; col++) {
-                CGFloat x = kMoCalCellWidth * col + hMargin;
-                CGFloat y = kMoCalCellHeight * rows - kMoCalCellHeight * (row + 1) + vMargin;
+                CGFloat x = sz * col + hMargin;
+                CGFloat y = sz * rows - sz * (row + 1) + vMargin;
                 MoCalCell *cell = [MoCalCell new];
-                [cell setFrame:NSMakeRect(x, y, kMoCalCellWidth, kMoCalCellHeight)];
+                [cell setFrame:NSMakeRect(x, y, sz, sz)];
                 [self addSubview:cell];
                 [cells addObject:cell];
             }
@@ -41,6 +43,8 @@
         // Hug the cells tightly
         [self setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationVertical];
         [self setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
+        
+        REGISTER_FOR_SIZE_CHANGE;
     }
     return self;
 }
@@ -52,16 +56,17 @@
     // Shift existing cells up.
     for (MoCalCell *cell in cells) {
         NSRect frame = cell.frame;
-        frame.origin.y += kMoCalCellHeight;
+        frame.origin.y += [[Sizer shared] cellSize];
         cell.frame = frame;
     }
 
     // Add new row of cells.
+    CGFloat sz = [[Sizer shared] cellSize];
     for (NSUInteger col = 0; col < _cols; col++) {
-        CGFloat x = kMoCalCellWidth * col + _hMargin;
-        CGFloat y = kMoCalCellHeight * (_rows + 1) - kMoCalCellHeight * (_rows + 1) + _vMargin;
+        CGFloat x = sz * col + _hMargin;
+        CGFloat y = sz * (_rows + 1) - sz * (_rows + 1) + _vMargin;
         MoCalCell *cell = [MoCalCell new];
-        [cell setFrame:NSMakeRect(x, y, kMoCalCellWidth, kMoCalCellHeight)];
+        [cell setFrame:NSMakeRect(x, y, sz, sz)];
         [self addSubview:cell];
         [cells addObject:cell];
     }
@@ -83,9 +88,10 @@
     }
 
     // Shift remaining cells down.
+    CGFloat sz = [[Sizer shared] cellSize];
     for (MoCalCell *cell in cells) {
         NSRect frame = cell.frame;
-        frame.origin.y -= kMoCalCellHeight;
+        frame.origin.y -= sz;
         cell.frame = frame;
     }
 
@@ -96,8 +102,9 @@
 
 - (MoCalCell *)cellAtPoint:(NSPoint)point
 {
-    NSInteger col = floorf((point.x - _hMargin) / kMoCalCellWidth);
-    NSInteger row = floorf((point.y - _vMargin) / kMoCalCellHeight);
+    CGFloat sz = [[Sizer shared] cellSize];
+    NSInteger col = floorf((point.x - _hMargin) / sz);
+    NSInteger row = floorf((point.y - _vMargin) / sz);
     row = _rows - row - 1; // flip row coordinate
     if (col < 0 || row < 0 || col >= _cols || row >= _rows) {
         return nil;
@@ -122,9 +129,24 @@
 
 - (NSSize)intrinsicContentSize
 {
-    CGFloat width  = kMoCalCellWidth  * _cols + 2 * _hMargin;
-    CGFloat height = kMoCalCellHeight * _rows + 2 * _vMargin;
+    CGFloat sz = [[Sizer shared] cellSize];
+    CGFloat width  = sz  * _cols + 2 * _hMargin;
+    CGFloat height = sz * _rows + 2 * _vMargin;
     return NSMakeSize(width, height);
+}
+
+- (void)sizeChanged:(id)sender
+{
+    CGFloat sz = [[Sizer shared] cellSize];
+    for (NSUInteger row = 0; row < _rows; row++) {
+        for (NSUInteger col = 0; col < _cols; col++) {
+            CGFloat x = sz * col + _hMargin;
+            CGFloat y = sz * _rows - sz * (row + 1) + _vMargin;
+            MoCalCell *cell = _cells[row*_cols + col];
+            [cell setFrame:NSMakeRect(x, y, sz, sz)];
+        }
+    }
+    [self invalidateIntrinsicContentSize];
 }
 
 @end

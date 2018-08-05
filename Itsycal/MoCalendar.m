@@ -14,6 +14,7 @@
 #import "MoVFLHelper.h"
 #import "MoCalResizeHandle.h"
 #import "Themer.h"
+#import "Sizer.h"
 
 NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
@@ -61,7 +62,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
     _monthLabel = [NSTextField new];
     _monthLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _monthLabel.font = [NSFont systemFontOfSize:14 weight:NSFontWeightSemibold];
+    _monthLabel.font = [NSFont systemFontOfSize:[[Sizer shared] calendarTitleFontSize] weight:NSFontWeightSemibold];
     _monthLabel.textColor = [[Themer shared] monthTextColor];
     _monthLabel.bezeled = NO;
     _monthLabel.editable = NO;
@@ -99,7 +100,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     _dowGrid  = [[MoCalGrid alloc] initWithRows:1 columns:7 horizontalMargin:6 verticalMargin:0];
 
     for (MoCalCell *cell in _dowGrid.cells) {
-        cell.textField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
+        cell.textField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
     }
 
     // The _resizeHandle is at the bottom of the calendar.
@@ -137,6 +138,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [self setMonthDate:_todayDate selectedDate:_todayDate];
     
     REGISTER_FOR_THEME_CHANGE;
+    
+    REGISTER_FOR_SIZE_CHANGE;
 }
 
 - (void)dealloc
@@ -396,6 +399,23 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [self updateCalendar];
 }
 
+- (void)sizeChanged:(id)sender
+{
+    // Perform calendar size changes after grid cells have resized.
+    [self performSelector:@selector(delayedSizeChanges:) withObject:nil afterDelay:0.05];
+}
+
+- (void)delayedSizeChanges:(id)sender {
+    // Font sizes.
+    _monthLabel.font = [NSFont systemFontOfSize:[[Sizer shared] calendarTitleFontSize] weight:NSFontWeightSemibold];
+    for (MoCalCell *cell in _dowGrid.cells) {
+        cell.textField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
+    }
+    if (self.showWeeks) {
+        _weeksConstraint.constant = NSWidth(_weekGrid.frame);
+    }
+}
+
 #pragma mark -
 #pragma mark Process input
 
@@ -452,6 +472,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
+    CGFloat sz = [[Sizer shared] cellSize];
     NSPoint initialDragPoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     BOOL isDragging = NSPointInRect(initialDragPoint, _resizeHandle.frame);
 
@@ -462,10 +483,10 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         }
         else if ([theEvent type] == NSEventTypeLeftMouseDragged) {
             NSPoint location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-            if (location.y >= initialDragPoint.y + kMoCalCellHeight && _dateGrid.rows > 6) {
+            if (location.y >= initialDragPoint.y + sz && _dateGrid.rows > 6) {
                 [self removeRow];
             }
-            else if (location.y <= initialDragPoint.y - kMoCalCellHeight && _dateGrid.rows < 10) {
+            else if (location.y <= initialDragPoint.y - sz && _dateGrid.rows < 10) {
                 [self addRow];
             }
         }
@@ -673,9 +694,10 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [outlinePath setLineWidth:2];
     [outlinePath stroke];
     
+    CGFloat sz = [[Sizer shared] cellSize];
     if (self.highlightedDOWs) {
         NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
-        weekendRect.size.width = kMoCalCellWidth;
+        weekendRect.size.width = sz;
         [[NSColor colorWithWhite:0.1 alpha:0.05] set];
         NSInteger numColsToHighlight = 0;
         for (NSInteger col = 0; col <= 7; col++) {
@@ -685,7 +707,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
             else {
                 if (numColsToHighlight) {
                     NSInteger startCol = col - numColsToHighlight;
-                    NSRect rect = NSOffsetRect(weekendRect, startCol * kMoCalCellWidth, 0);
+                    NSRect rect = NSOffsetRect(weekendRect, startCol * sz, 0);
                     rect.size.width *= numColsToHighlight;
                     [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:4 yRadius:4] fill];
                 }

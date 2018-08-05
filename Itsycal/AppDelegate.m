@@ -11,6 +11,7 @@
 #import "ItsycalWindow.h"
 #import "ViewController.h"
 #import "Themer.h"
+#import "Sizer.h"
 #import "MASShortcut/MASShortcutBinder.h"
 #import "MASShortcut/MASShortcutMonitor.h"
 #import "MoUtils.h"
@@ -71,7 +72,13 @@
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
          [(ViewController *)_wc.contentViewController keyboardShortcutActivated];
      }];
-    
+
+    // This call instantiates the Sizer shared object and then
+    // establishes the binding to NSUserDefaultsController. This call
+    // must be made BEFORE the window is created because sizes are
+    // used when initializing views.
+    [[Sizer shared] bind:@"sizePreference" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+
     ViewController *vc = [ViewController new];
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
     _wc.contentViewController = vc;

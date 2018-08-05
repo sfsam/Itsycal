@@ -8,7 +8,7 @@
 // NSUserDefaults key
 extern NSString * const kThemePreference;
 
-// Notification names
+// Notification name
 extern NSString * const kThemeDidChangeNotification;
 
 // Convenience macro for notification observer for themable components

@@ -8,15 +8,20 @@
 
 #import "MoCalCell.h"
 #import "Themer.h"
+#import "Sizer.h"
 
 @implementation MoCalCell
+{
+    NSLayoutConstraint *_textFieldVerticalSpace;
+}
 
 - (instancetype)init
 {
-    self = [super initWithFrame:NSMakeRect(0, 0, kMoCalCellWidth, kMoCalCellHeight)];
+    CGFloat sz = [[Sizer shared] cellSize];
+    self = [super initWithFrame:NSMakeRect(0, 0, sz, sz)];
     if (self) {
         _textField = [[NSTextField alloc] initWithFrame:NSZeroRect];
-        [_textField setFont:[NSFont systemFontOfSize:11 weight:NSFontWeightMedium]];
+        [_textField setFont:[NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightMedium]];
         [_textField setTextColor:[NSColor blackColor]];
         [_textField setBezeled:NO];
         [_textField setEditable:NO];
@@ -27,9 +32,21 @@
         [self addSubview:_textField];
 
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_textField]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-2-[_textField]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
+//        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-2-[_textField]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
+        
+        _textFieldVerticalSpace = [NSLayoutConstraint constraintWithItem:_textField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:[[Sizer shared] cellTextFieldVerticalSpace]];
+        [self addConstraint:_textFieldVerticalSpace];
+
+        
+        REGISTER_FOR_SIZE_CHANGE;
     }
     return self;
+}
+
+- (void)sizeChanged:(id)sender
+{
+    [_textField setFont:[NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightMedium]];
+    _textFieldVerticalSpace.constant = [[Sizer shared] cellTextFieldVerticalSpace];
 }
 
 - (void)setIsToday:(BOOL)isToday
@@ -88,10 +105,12 @@
         [p stroke];
     }
     if (self.hasDot) {
+        CGFloat sz = [[Sizer shared] cellSize];
+        CGFloat dotWidth = [[Sizer shared] cellDotWidth];
         [self.textField.textColor set];
-        NSRect r = NSMakeRect(0, 0, 3, 3);
-        r.origin.x = self.bounds.origin.x + kMoCalCellWidth/2.0 - 1.5;
-        r.origin.y = self.bounds.origin.y + 5;
+        NSRect r = NSMakeRect(0, 0, dotWidth, dotWidth);
+        r.origin.x = self.bounds.origin.x + sz/2.0 - dotWidth/2.0;
+        r.origin.y = self.bounds.origin.y + dotWidth + 2;
         [[NSBezierPath bezierPathWithOvalInRect:r] fill];
     }
 }

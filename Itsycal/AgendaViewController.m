@@ -12,6 +12,7 @@
 #import "MoButton.h"
 #import "MoVFLHelper.h"
 #import "Themer.h"
+#import "Sizer.h"
 
 static NSString *kColumnIdentifier    = @"Column";
 static NSString *kDateCellIdentifier  = @"DateCell";
@@ -326,19 +327,18 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
     // Keep a cell around for measuring event cell height.
+    static AgendaDateCell *dateCell = nil;
     static AgendaEventCell *eventCell = nil;
-    static CGFloat dateCellHeight = 0;
     
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         eventCell = [AgendaEventCell new];
-        AgendaDateCell *dateCell = [AgendaDateCell new];
+        dateCell = [AgendaDateCell new];
         dateCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
         dateCell.dayTextField.integerValue = 21;
-        dateCellHeight = dateCell.height;
     });
     
-    CGFloat height = dateCellHeight;
+    CGFloat height = dateCell.height;
     id obj = self.events[row];
     if ([obj isKindOfClass:[EventInfo class]]) {
         eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
@@ -563,13 +563,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self.identifier = kDateCellIdentifier;
         _dayTextField = [NSTextField labelWithString:@""];
         _dayTextField.translatesAutoresizingMaskIntoConstraints = NO;
-        _dayTextField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
+        _dayTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
         _dayTextField.textColor = [[Themer shared] agendaDayTextColor];
         [_dayTextField setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
         
         _DOWTextField = [NSTextField labelWithString:@""];
         _DOWTextField.translatesAutoresizingMaskIntoConstraints = NO;
-        _DOWTextField.font = [NSFont systemFontOfSize:11 weight:NSFontWeightSemibold];
+        _DOWTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
         _DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
 
         [self addSubview:_dayTextField];
@@ -577,8 +577,16 @@ static NSString *kEventCellIdentifier = @"EventCell";
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_dayTextField, _DOWTextField)];
         [vfl :@"H:|-4-[_DOWTextField]-(>=4)-[_dayTextField]-4-|" :NSLayoutFormatAlignAllLastBaseline];
         [vfl :@"V:|-6-[_dayTextField]-1-|"];
+        
+        REGISTER_FOR_SIZE_CHANGE;
     }
     return self;
+}
+
+- (void)sizeChanged:(id)sender
+{
+    _dayTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
+    _DOWTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
 }
 
 - (CGFloat)height
@@ -610,7 +618,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Convenience function for making labels.
     NSTextField* (^label)() = ^NSTextField* () {
         NSTextField *lbl = [NSTextField labelWithString:@""];
-        lbl.font = [NSFont systemFontOfSize:11];
+        lbl.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
         lbl.lineBreakMode = NSLineBreakByWordWrapping;
         lbl.cell.truncatesLastVisibleLine = YES;
         return lbl;
@@ -632,8 +640,17 @@ static NSString *kEventCellIdentifier = @"EventCell";
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_grid)];
         [vfl :@"H:|-16-[_grid]-10-|"];
         [vfl :@"V:|-3-[_grid]"];
+        
+        REGISTER_FOR_SIZE_CHANGE;
     }
     return self;
+}
+
+- (void)sizeChanged:(id)sender
+{
+    _titleTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
+    _locationTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
+    _durationTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
 }
 
 - (void)setFrame:(NSRect)frame
@@ -665,9 +682,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)drawRect:(NSRect)dirtyRect
 {
     CGFloat alpha = self.dim ? 0.5 : 1;
+    CGFloat yOffset = [[Sizer shared] fontSize] + 2;
     NSColor *dotColor = self.eventInfo.event.calendar.color;
     [[dotColor colorWithAlphaComponent:alpha] set];
-    [[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(6, NSHeight(self.bounds) - 13, 6, 6)] fill];
+    [[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(6, NSHeight(self.bounds) - yOffset, 6, 6)] fill];
 }
 
 @end
@@ -696,10 +714,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (instancetype)init
 {
     // Convenience function for making labels.
-    NSTextField* (^label)(CGFloat, CGFloat) = ^NSTextField* (CGFloat size, CGFloat weight) {
+    NSTextField* (^label)(CGFloat) = ^NSTextField* (CGFloat weight) {
         NSTextField *lbl = [NSTextField labelWithString:@""];
         lbl.selectable = YES;
-        lbl.font = [NSFont systemFontOfSize:size weight:weight];
+        lbl.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:weight];
         lbl.lineBreakMode = NSLineBreakByWordWrapping;
         lbl.textColor = [[Themer shared] agendaEventTextColor];
         lbl.preferredMaxLayoutWidth = POPOVER_TEXT_WIDTH;
@@ -708,11 +726,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     };
     self = [super init];
     if (self) {
-        _title = label(12, NSFontWeightMedium);
-        _location = label(11, NSFontWeightRegular);
-        _duration = label(11, NSFontWeightRegular);
-        _recurrence = label(11, NSFontWeightRegular);
-        _notes = label(11, NSFontWeightRegular);
+        _title = label(NSFontWeightMedium);
+        _location = label(NSFontWeightRegular);
+        _duration = label(NSFontWeightRegular);
+        _recurrence = label(NSFontWeightRegular);
+        _notes = label(NSFontWeightRegular);
         _notes.allowsEditingTextAttributes = YES; // for clickable URLs
         _btnDelete = [MoButton new];
         _btnDelete.image = [NSImage imageNamed:@"btnDel"];
@@ -730,6 +748,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _grid.columnSpacing = 5;
         _grid.yPlacement = NSGridCellPlacementCenter;
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
+        
+        REGISTER_FOR_SIZE_CHANGE;
     }
     return self;
 }
@@ -744,6 +764,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [vfl :@"H:|-10-[_grid]-10-|"];
     [vfl :@"V:|-8-[_grid]-8-|"];
     self.view = view;
+}
+
+- (void)sizeChanged:(id)sender
+{
+    _title.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightMedium];
+    _location.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
+    _duration.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
+    _recurrence.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
+    _notes.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
 }
 
 - (void)populateWithEventInfo:(EventInfo *)info
@@ -849,7 +878,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [_linkDetector enumerateMatchesInString:info.event.notes options:kNilOptions range:NSMakeRange(0, notes.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
             [notes addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];
          }];
-        [notes addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:11] range:NSMakeRange(0, info.event.notes.length)];
+        [notes addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:[[Sizer shared] fontSize]] range:NSMakeRange(0, info.event.notes.length)];
         _notes.attributedStringValue = notes;
     }
     _title.stringValue = title;

@@ -49,4 +49,9 @@
 //
 - (NSRect)cellsRect;
 
+//
+// Resize grid.
+//
+- (void)sizeChanged:(id)sender;
+
 @end
