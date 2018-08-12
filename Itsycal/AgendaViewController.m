@@ -732,6 +732,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _recurrence = label(NSFontWeightRegular);
         _notes = label(NSFontWeightRegular);
         _notes.allowsEditingTextAttributes = YES; // for clickable URLs
+        _notes.cell.truncatesLastVisibleLine = YES;
         _btnDelete = [MoButton new];
         _btnDelete.image = [NSImage imageNamed:@"btnDel"];
         _textGrid = [NSGridView gridViewWithViews:@[@[_title],
@@ -874,12 +875,18 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
     
     if (info.event.hasNotes) {
-        NSMutableAttributedString *notes = [[NSMutableAttributedString alloc] initWithString:info.event.notes];
-        [_linkDetector enumerateMatchesInString:info.event.notes options:kNilOptions range:NSMakeRange(0, notes.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
-            [notes addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];
-         }];
-        [notes addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:[[Sizer shared] fontSize]] range:NSMakeRange(0, info.event.notes.length)];
-        _notes.attributedStringValue = notes;
+        NSString *trimmedNotes = [info.event.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if ([trimmedNotes isEqualToString:@""]) {
+            [_textGrid rowAtIndex:4].hidden = YES;
+        }
+        else {
+            NSMutableAttributedString *notes = [[NSMutableAttributedString alloc] initWithString:trimmedNotes];
+            [notes addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:[[Sizer shared] fontSize]] range:NSMakeRange(0, notes.length)];
+            [_linkDetector enumerateMatchesInString:trimmedNotes options:kNilOptions range:NSMakeRange(0, trimmedNotes.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+                [notes addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];
+            }];
+            _notes.attributedStringValue = notes;
+        }
     }
     _title.stringValue = title;
     _location.stringValue = location;
