@@ -707,8 +707,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSTextField *_location;
     NSTextField *_duration;
     NSTextField *_recurrence;
-    NSTextField *_notes;
+    NSTextView *_note;
     NSDataDetector *_linkDetector;
+    NSLayoutConstraint *_noteHeight;
 }
 
 - (instancetype)init
@@ -730,18 +731,33 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _location = label(NSFontWeightRegular);
         _duration = label(NSFontWeightRegular);
         _recurrence = label(NSFontWeightRegular);
-        _notes = label(NSFontWeightRegular);
-        _notes.allowsEditingTextAttributes = YES; // for clickable URLs
-        _notes.cell.truncatesLastVisibleLine = YES;
+        
+        NSScrollView *scrollView = [NSScrollView new];
+        scrollView.frame = NSMakeRect(0, 0, POPOVER_TEXT_WIDTH, 100);
+        scrollView.autoresizingMask = NSViewHeightSizable;
+        scrollView.drawsBackground = NO;
+        
+        _note = [NSTextView new];
+        _note.frame = scrollView.bounds;
+        _note.autoresizingMask = NSViewHeightSizable;
+        _note.editable = NO;
+        _note.selectable = YES;
+        _note.drawsBackground = NO;
+        _note.textContainer.lineFragmentPadding = 0;
+        _note.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
+        _note.textContainer.widthTracksTextView = YES;
+        
+        scrollView.documentView = _note;
+        
         _btnDelete = [MoButton new];
         _btnDelete.image = [NSImage imageNamed:@"btnDel"];
         _textGrid = [NSGridView gridViewWithViews:@[@[_title],
                                                     @[_location],
                                                     @[_duration],
                                                     @[_recurrence],
-                                                    @[_notes]]];
-        _textGrid.translatesAutoresizingMaskIntoConstraints = NO;
-        _textGrid.rowSpacing = 5;
+                                                    @[scrollView]]];
+        _textGrid.rowSpacing = 8;
+        [_textGrid rowAtIndex:4].topPadding = 4;
         [_textGrid columnAtIndex:0].width = _title.preferredMaxLayoutWidth;
         _grid = [NSGridView gridViewWithViews:@[@[_textGrid, _btnDelete]]];
         _grid.translatesAutoresizingMaskIntoConstraints = NO;
@@ -749,6 +765,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _grid.columnSpacing = 5;
         _grid.yPlacement = NSGridCellPlacementCenter;
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
+        
+        [scrollView.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
+        _noteHeight = [scrollView.heightAnchor constraintEqualToConstant:100];
+        _noteHeight.active = YES;
         
         REGISTER_FOR_SIZE_CHANGE;
     }
@@ -773,7 +793,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _location.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
     _duration.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
     _recurrence.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
-    _notes.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
 }
 
 - (void)populateWithEventInfo:(EventInfo *)info
@@ -882,10 +901,20 @@ static NSString *kEventCellIdentifier = @"EventCell";
         else {
             NSMutableAttributedString *notes = [[NSMutableAttributedString alloc] initWithString:trimmedNotes];
             [notes addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:[[Sizer shared] fontSize]] range:NSMakeRange(0, notes.length)];
+            [notes addAttribute:NSForegroundColorAttributeName value:[[Themer shared] agendaEventTextColor] range:NSMakeRange(0, notes.length)];
             [_linkDetector enumerateMatchesInString:trimmedNotes options:kNilOptions range:NSMakeRange(0, trimmedNotes.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
                 [notes addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];
             }];
-            _notes.attributedStringValue = notes;
+            _note.textStorage.attributedString = notes;
+            // Force layout and then calculate text height.
+            // stackoverflow.com/a/44969138/111418
+            (void) [_note.layoutManager glyphRangeForTextContainer:_note.textContainer];
+            NSRect textRect = [_note.layoutManager usedRectForTextContainer:_note.textContainer];
+            
+            // Set noteHeight to note text height, but no more than 200.
+            _noteHeight.constant = MIN(textRect.size.height, 200);
+            
+            [_note scrollToBeginningOfDocument:nil];
         }
     }
     _title.stringValue = title;
@@ -897,7 +926,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _location.textColor = [[Themer shared] agendaEventTextColor];
     _duration.textColor = [[Themer shared] agendaEventTextColor];
     _recurrence.textColor = [[Themer shared] agendaEventTextColor];
-    _notes.textColor = [[Themer shared] agendaEventTextColor];
 }
 
 - (NSSize)size
