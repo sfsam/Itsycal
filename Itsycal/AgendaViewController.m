@@ -718,9 +718,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSTextField* (^label)(CGFloat) = ^NSTextField* (CGFloat weight) {
         NSTextField *lbl = [NSTextField labelWithString:@""];
         lbl.selectable = YES;
-        lbl.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:weight];
         lbl.lineBreakMode = NSLineBreakByWordWrapping;
-        lbl.textColor = [[Themer shared] agendaEventTextColor];
         lbl.preferredMaxLayoutWidth = POPOVER_TEXT_WIDTH;
         [lbl setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
         return lbl;
@@ -769,8 +767,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [scrollView.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
         _noteHeight = [scrollView.heightAnchor constraintEqualToConstant:100];
         _noteHeight.active = YES;
-        
-        REGISTER_FOR_SIZE_CHANGE;
     }
     return self;
 }
@@ -785,14 +781,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [vfl :@"H:|-10-[_grid]-10-|"];
     [vfl :@"V:|-8-[_grid]-8-|"];
     self.view = view;
-}
-
-- (void)sizeChanged:(id)sender
-{
-    _title.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightMedium];
-    _location.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
-    _duration.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
-    _recurrence.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
 }
 
 - (void)populateWithEventInfo:(EventInfo *)info
@@ -922,6 +910,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _duration.stringValue = duration;
     _recurrence.stringValue = recurrence;
     
+    _title.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightMedium];
+    _location.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
+    _duration.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
+    _recurrence.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
+
     _title.textColor = [[Themer shared] agendaEventTextColor];
     _location.textColor = [[Themer shared] agendaEventTextColor];
     _duration.textColor = [[Themer shared] agendaEventTextColor];
