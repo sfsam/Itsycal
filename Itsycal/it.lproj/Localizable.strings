@@ -284,7 +284,10 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "Tuesday" = "Martedì";
 
 /* No comment provided by engineer. */
-"Use outline icon" = "Utilizza l'icona nella barra dei menu contorno";
+"Use larger text" = "Usa un carattere più grande";
+
+/* No comment provided by engineer. */
+"Use outline icon" = "Usa l'icona nella barra dei menu contorno";
 
 /* No comment provided by engineer. */
 "Wednesday" = "Mercoledì";
