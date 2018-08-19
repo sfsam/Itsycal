@@ -290,6 +290,10 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     NSArray *dows = [_formatter veryShortWeekdaySymbols];
     NSString *month = [NSString stringWithFormat:@"%@ %zd", months[self.monthDate.month], self.monthDate.year];
     [_monthLabel setStringValue:month];
+    // macOS gives the wrong veryShortWeekdaySymbols for Esperanto.
+    if ([[NSLocale currentLocale].localeIdentifier hasPrefix:@"eo"]) {
+        dows = @[@"D", @"L", @"M", @"M", @"Ĵ", @"V", @"S"];
+    }
     for (NSInteger col = 0; col < 7; col++) {
         NSString *dow = [NSString stringWithFormat:@"%@", dows[COL_DOW(self.weekStartDOW, col)]];
         // Make French dow strings lowercase because that is the convention
