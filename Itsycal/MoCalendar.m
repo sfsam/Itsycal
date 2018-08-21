@@ -60,13 +60,10 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     _formatter = [NSDateFormatter new];
     _tooltipWC = [MoCalToolTipWC new];
 
-    _monthLabel = [NSTextField new];
+    _monthLabel = [NSTextField labelWithString:@""];
     _monthLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _monthLabel.font = [NSFont systemFontOfSize:[[Sizer shared] calendarTitleFontSize] weight:NSFontWeightSemibold];
     _monthLabel.textColor = [[Themer shared] monthTextColor];
-    _monthLabel.bezeled = NO;
-    _monthLabel.editable = NO;
-    _monthLabel.drawsBackground = NO;
     
     // Make long labels compress and show ellipsis instead of forcing the window wider.
     // Prevent short label from pulling buttons leftward toward it.

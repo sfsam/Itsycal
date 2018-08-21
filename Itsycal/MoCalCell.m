@@ -20,13 +20,10 @@
     CGFloat sz = [[Sizer shared] cellSize];
     self = [super initWithFrame:NSMakeRect(0, 0, sz, sz)];
     if (self) {
-        _textField = [[NSTextField alloc] initWithFrame:NSZeroRect];
+        _textField = [NSTextField labelWithString:@""];
         [_textField setFont:[NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightMedium]];
         [_textField setTextColor:[NSColor blackColor]];
-        [_textField setBezeled:NO];
-        [_textField setEditable:NO];
         [_textField setAlignment:NSTextAlignmentCenter];
-        [_textField setDrawsBackground:NO];
         [_textField setTranslatesAutoresizingMaskIntoConstraints:NO];
 
         [self addSubview:_textField];

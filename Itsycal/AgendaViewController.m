@@ -716,9 +716,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     // Convenience function for making labels.
     NSTextField* (^label)(CGFloat) = ^NSTextField* (CGFloat weight) {
-        NSTextField *lbl = [NSTextField labelWithString:@""];
-        lbl.selectable = YES;
-        lbl.lineBreakMode = NSLineBreakByWordWrapping;
+        NSTextField *lbl = [NSTextField wrappingLabelWithString:@""];
         lbl.preferredMaxLayoutWidth = POPOVER_TEXT_WIDTH;
         [lbl setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
         return lbl;

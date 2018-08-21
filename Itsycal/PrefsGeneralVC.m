@@ -267,11 +267,9 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     self = [super init];
     if (self) {
         self.identifier = kSourceCellId;
-        _textField = [NSTextField new];
+        _textField = [NSTextField labelWithString:@""];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
         _textField.font = [NSFont boldSystemFontOfSize:12];
-        _textField.editable = NO;
-        _textField.bezeled = NO;
         _textField.stringValue = @"";
         [self addSubview:_textField];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-4-[_textField]-4-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
