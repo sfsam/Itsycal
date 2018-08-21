@@ -290,17 +290,17 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     NSArray *dows = [_formatter veryShortWeekdaySymbols];
     NSString *month = [NSString stringWithFormat:@"%@ %zd", months[self.monthDate.month], self.monthDate.year];
     [_monthLabel setStringValue:month];
-    // macOS gives the wrong veryShortWeekdaySymbols for Esperanto.
-    if ([[NSLocale currentLocale].localeIdentifier hasPrefix:@"eo"]) {
+    // Make French dow strings lowercase because that is the convention
+    // in France. -veryShortWeekdaySymbols should have done this for us.
+    if ([[NSLocale currentLocale].localeIdentifier hasPrefix:@"fr"]) {
+        dows = @[@"d", @"l", @"m", @"m", @"j", @"v", @"s"];
+    }
+    // macOS gives the English veryShortWeekdaySymbols for Esperanto.
+    else if ([[NSLocale currentLocale].localeIdentifier hasPrefix:@"eo"]) {
         dows = @[@"D", @"L", @"M", @"M", @"Ĵ", @"V", @"S"];
     }
     for (NSInteger col = 0; col < 7; col++) {
         NSString *dow = [NSString stringWithFormat:@"%@", dows[COL_DOW(self.weekStartDOW, col)]];
-        // Make French dow strings lowercase because that is the convention
-        // in France. -veryShortWeekdaySymbols should have done this for us.
-        if ([[NSLocale currentLocale].localeIdentifier hasPrefix:@"fr"]) {
-            dow = [dow lowercaseString];
-        }
         [[_dowGrid.cells[col] textField] setStringValue:dow];
         [[_dowGrid.cells[col] textField] setTextColor:[self columnIsMemberOfHighlightedDOWs:col] 
          ? [[Themer shared] highlightedDOWTextColor]
