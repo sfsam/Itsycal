@@ -8,7 +8,6 @@
 
 #import "MoCalToolTipWC.h"
 #import "Themer.h"
-#import "MoUtils.h"
 
 static CGFloat kToolipWindowWidth = 200;
 

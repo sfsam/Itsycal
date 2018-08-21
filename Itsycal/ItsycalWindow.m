@@ -8,7 +8,6 @@
 
 #import "ItsycalWindow.h"
 #import "Themer.h"
-#import "MoUtils.h"
 
 static const CGFloat kMinimumSpaceBetweenWindowAndScreenEdge = 10;
 static const CGFloat kArrowHeight  = 8;

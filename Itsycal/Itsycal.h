@@ -8,7 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 #import "MoDate.h"
-#import "MoUtils.h"
 
 // NSUserDefaults keys
 extern NSString * const kPinItsycal;
