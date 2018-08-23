@@ -625,8 +625,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 - (void)moveSelectionByDays:(NSInteger)days
 {
     MoDate newSelectedDate = AddDaysToDate(days, self.selectedDate);
-    MoDate firstCellDate = [(MoCalCell *)_dateGrid.cells.firstObject date];
-    MoDate lastCellDate  = [(MoCalCell *)_dateGrid.cells.lastObject date];
+    MoDate firstCellDate = [_dateGrid.cells.firstObject date];
+    MoDate lastCellDate  = [_dateGrid.cells.lastObject date];
     if (CompareDates(newSelectedDate, firstCellDate) < 0) {
         MoDate prevMonthDate = AddMonthsToMonth(-1, self.monthDate);
         [self setMonthDate:prevMonthDate selectedDate:newSelectedDate];

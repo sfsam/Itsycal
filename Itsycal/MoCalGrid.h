@@ -13,7 +13,7 @@
 
 @interface MoCalGrid : NSView
 
-@property (nonatomic, readonly) NSArray *cells;
+@property (nonatomic, readonly) NSArray<MoCalCell *> *cells;
 @property (nonatomic, readonly) NSUInteger rows;
 
 - (instancetype)initWithRows:(NSUInteger)rows columns:(NSUInteger)cols horizontalMargin:(NSUInteger)hMargin verticalMargin:(NSUInteger)vMargin;
