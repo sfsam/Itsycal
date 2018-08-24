@@ -484,6 +484,9 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     else if ([[NSCharacterSet decimalDigitCharacterSet] characterIsMember:keyChar] && noFlags) {
         [self repeatCountUpdate:keyChar];
     }
+    else if (keyChar == '#' && shiftFlag) {
+        [self showDateInfo];
+    }
     else {
         [super keyDown:theEvent];
     }
@@ -641,6 +644,40 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     NSInteger result = (_repeatCount > 0) ? n * _repeatCount : n;
     [self repeatCountClear];
     return result;
+}
+
+#pragma mark
+#pragma mark Day info
+
+- (void)showDateInfo
+{
+    static NSNumberFormatter *groupingFormatter = nil;
+    if (!groupingFormatter) {
+        groupingFormatter = [NSNumberFormatter new];
+        groupingFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+        groupingFormatter.groupingSeparator = [NSLocale.currentLocale objectForKey:NSLocaleGroupingSeparator];
+    }
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(clearDateInfo) object:nil];
+    // Get selectedDate's offset from today.
+    NSInteger dayDiff = CompareDates(self.selectedDate, self.todayDate);
+    NSString *dayInfo = [groupingFormatter stringFromNumber:@(labs(dayDiff))];
+    dayInfo = (dayDiff >= 0)?
+        [@"+" stringByAppendingString:dayInfo]:
+        [@"−" stringByAppendingString:dayInfo];
+    // Get day of the year.
+    MoDate firstOfYear = MakeDate(self.selectedDate.year, 0, 1);
+    NSInteger dayOfYear = CompareDates(self.selectedDate, firstOfYear) + 1;
+    dayInfo = [NSString stringWithFormat:@"%@ ∕ %zd", dayInfo, dayOfYear];
+    [_monthLabel setStringValue:dayInfo];
+    [self performSelector:@selector(clearDateInfo) withObject:nil afterDelay:2];
+}
+
+- (void)clearDateInfo
+{
+    // This should match month code in -updateCalendar
+    NSArray *months = [_formatter shortMonthSymbols];
+    NSString *month = [NSString stringWithFormat:@"%@ %zd", months[self.monthDate.month], self.monthDate.year];
+    [_monthLabel setStringValue:month];
 }
 
 #pragma mark
