@@ -34,6 +34,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     NSBezierPath *_highlightPath;
     NSColor *_highlightColor;
     MoCalResizeHandle *_resizeHandle;
+    NSInteger _repeatCount;
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
@@ -435,34 +436,53 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         [_btnToday performClick:self];
     }
     else if ((keyChar == 'H' && shiftFlag) || (keyChar == NSLeftArrowFunctionKey && noFlags)) {
-        [_btnPrev performClick:self];
+        NSInteger n = [self repeatCountify:-1];
+        if (n < -1) {
+            self.monthDate = AddMonthsToMonth(n, self.monthDate);
+        } else {
+            [_btnPrev performClick:self];
+        }
     }
     else if ((keyChar == 'L' && shiftFlag) || (keyChar == NSRightArrowFunctionKey && noFlags)) {
-        [_btnNext performClick:self];
+        NSInteger n = [self repeatCountify:1];
+        if (n > 1) {
+            self.monthDate = AddMonthsToMonth(n, self.monthDate);
+        } else {
+            [_btnNext performClick:self];
+        }
     }
     else if ((keyChar == 'J' && shiftFlag) || (keyChar == NSDownArrowFunctionKey && noFlags)) {
-        [self showNextYear:self];
+        NSInteger n = [self repeatCountify:12];
+        self.monthDate = AddMonthsToMonth(n, self.monthDate);
     }
     else if ((keyChar == 'K' && shiftFlag) || (keyChar == NSUpArrowFunctionKey && noFlags)) {
-        [self showPreviousYear:self];
+        NSInteger n = [self repeatCountify:-12];
+        self.monthDate = AddMonthsToMonth(n, self.monthDate);
     }
     else if ((keyChar == 'h' && noFlags) || (keyChar == NSLeftArrowFunctionKey && shiftFlag)) {
-        [self moveSelectionByDays:-1];
+        NSInteger n = [self repeatCountify:-1];
+        [self moveSelectionByDays:n];
     }
     else if ((keyChar == 'l' && noFlags) || (keyChar == NSRightArrowFunctionKey && shiftFlag)) {
-        [self moveSelectionByDays:1];
+        NSInteger n = [self repeatCountify:1];
+        [self moveSelectionByDays:n];
     }
     else if ((keyChar == 'j' && noFlags) || (keyChar == NSDownArrowFunctionKey && shiftFlag)) {
-        [self moveSelectionByDays:7];
+        NSInteger n = [self repeatCountify:7];
+        [self moveSelectionByDays:n];
     }
     else if ((keyChar == 'k' && noFlags) || (keyChar == NSUpArrowFunctionKey && shiftFlag)) {
-        [self moveSelectionByDays:-7];
+        NSInteger n = [self repeatCountify:-7];
+        [self moveSelectionByDays:n];
     }
     else if (keyChar == 'j' && ctrlFlag) {
         [self addRow];
     }
     else if (keyChar == 'k' && ctrlFlag) {
         [self removeRow];
+    }
+    else if ([[NSCharacterSet decimalDigitCharacterSet] characterIsMember:keyChar] && noFlags) {
+        [self repeatCountUpdate:keyChar];
     }
     else {
         [super keyDown:theEvent];
@@ -597,6 +617,33 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 }
 
 #pragma mark
+#pragma mark Repeat count
+
+- (void)repeatCountUpdate:(unichar)keyChar
+{
+    // Is there a better way to convert unichar to NSInteger?
+    NSInteger n = (NSInteger)keyChar - 48;
+    if (_repeatCount < 100) { // max _repeatCount allowed is 999
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(repeatCountClear) object:nil];
+        _repeatCount = _repeatCount*10 + n;
+        [self performSelector:@selector(repeatCountClear) withObject:nil afterDelay:3];
+    }
+}
+
+- (void)repeatCountClear
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(repeatCountClear) object:nil];
+    _repeatCount = 0;
+}
+
+- (NSInteger)repeatCountify:(NSInteger)n
+{
+    NSInteger result = (_repeatCount > 0) ? n * _repeatCount : n;
+    [self repeatCountClear];
+    return result;
+}
+
+#pragma mark
 #pragma mark Utilities
 
 - (void)setMonthDate:(MoDate)monthDate selectedDate:(MoDate)selectedDate
@@ -627,13 +674,9 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     MoDate newSelectedDate = AddDaysToDate(days, self.selectedDate);
     MoDate firstCellDate = [_dateGrid.cells.firstObject date];
     MoDate lastCellDate  = [_dateGrid.cells.lastObject date];
-    if (CompareDates(newSelectedDate, firstCellDate) < 0) {
-        MoDate prevMonthDate = AddMonthsToMonth(-1, self.monthDate);
-        [self setMonthDate:prevMonthDate selectedDate:newSelectedDate];
-    }
-    else if (CompareDates(newSelectedDate, lastCellDate) > 0) {
-        MoDate nextMonthDate = AddMonthsToMonth(1, self.monthDate);
-        [self setMonthDate:nextMonthDate selectedDate:newSelectedDate];
+    if (CompareDates(newSelectedDate, firstCellDate) < 0 ||
+        CompareDates(newSelectedDate, lastCellDate ) > 0) {
+        [self setMonthDate:newSelectedDate selectedDate:newSelectedDate];
     }
     else {
         [self setMonthDate:self.monthDate selectedDate:newSelectedDate];
