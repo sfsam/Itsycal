@@ -738,7 +738,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _note.autoresizingMask = NSViewHeightSizable;
         _note.editable = NO;
         _note.selectable = YES;
-        _note.drawsBackground = NO;
+        _note.drawsBackground = YES;
+        _note.backgroundColor = [[Themer shared] mainBackgroundColor];
         _note.textContainer.lineFragmentPadding = 0;
         _note.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
         _note.textContainer.widthTracksTextView = YES;
@@ -917,6 +918,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _location.textColor = [[Themer shared] agendaEventTextColor];
     _duration.textColor = [[Themer shared] agendaEventTextColor];
     _recurrence.textColor = [[Themer shared] agendaEventTextColor];
+    
+    _note.backgroundColor = [[Themer shared] mainBackgroundColor];
 }
 
 - (NSSize)size
