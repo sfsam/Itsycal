@@ -122,8 +122,15 @@
     _iconDateFormatter = [NSDateFormatter new];
     _inactiveTime = 0;
 
-    // Calendar is 'autoupdating' so it handles timezone changes properly.
-    _nsCal = [NSCalendar autoupdatingCurrentCalendar];
+    if ([[NSLocale currentLocale].localeIdentifier rangeOfString:@"JP"].location != NSNotFound) {
+        // without this, NSCalendarUnitYear will got year of the reign of the current Japanese Emperor
+        _nsCal = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    } else {
+        // Calendar is 'autoupdating' so it handles timezone changes properly.
+        _nsCal = [NSCalendar autoupdatingCurrentCalendar];
+    }
+    
+    
     _agendaVC.nsCal = _nsCal;
     
     MoDate today = [self todayDate];
