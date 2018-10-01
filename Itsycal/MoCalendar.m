@@ -74,14 +74,10 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     // Convenience function to make buttons.
     MoButton* (^btn)(NSString*, SEL) = ^MoButton* (NSString *imageName, SEL action) {
         MoButton *btn = [MoButton new];
-        [btn setButtonType:NSMomentaryChangeButton];
-        [btn setBordered:NO];
         [btn setImage:[NSImage imageNamed:imageName]];
         [btn setAlternateImage:[NSImage imageNamed:[imageName stringByAppendingString:@"Alt"]]];
         [btn setTarget:self];
         [btn setAction:action];
-        [btn setImagePosition:NSImageOnly];
-        [btn setTranslatesAutoresizingMaskIntoConstraints:NO];
         [self addSubview:btn];
         return btn;
     };

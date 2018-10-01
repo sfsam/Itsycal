@@ -69,7 +69,6 @@
     // Convenience function to config buttons.
     MoButton* (^btn)(NSString*, NSString*, NSString*, SEL) = ^MoButton* (NSString *imageName, NSString *tip, NSString *key, SEL action) {
         MoButton *btn = [MoButton new];
-        [btn setButtonType:NSMomentaryChangeButton];
         [btn setTarget:self];
         [btn setAction:action];
         [btn setToolTip:tip];
@@ -87,7 +86,7 @@
     _btnPin = btn(@"btnPin", NSLocalizedString(@"Pin Itsycal... P", @""), @"p", @selector(pin:));
     _btnPin.keyEquivalentModifierMask = 0;
     _btnPin.alternateImage = [NSImage imageNamed:@"btnPinAlt"];
-    [_btnPin setButtonType:NSToggleButton];
+    [_btnPin setButtonType:NSButtonTypeToggle];
     
     // Agenda
     _agendaVC = [AgendaViewController new];
