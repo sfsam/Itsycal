@@ -480,7 +480,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     else if ([[NSCharacterSet decimalDigitCharacterSet] characterIsMember:keyChar] && noFlags) {
         [self repeatCountUpdate:keyChar];
     }
-    else if (keyChar == '#' && shiftFlag) {
+    else if ([theEvent.characters hasPrefix:@"#"]) {
         [self showDateInfo];
     }
     else {
