@@ -686,7 +686,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     
     BOOL didChangeMonth = NO;
     
-    monthDate.day = 1;
+    monthDate = MakeDate(monthDate.year, monthDate.month, 1);
+    
     if (CompareDates(monthDate, self.monthDate) != 0) {
         _monthDate = monthDate;
         [self updateCalendar];
