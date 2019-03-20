@@ -538,6 +538,17 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 - (void)mouseMoved:(NSEvent *)theEvent
 {
+    if (!self.window.isVisible) {
+        // On macOS 10.14, -mouseMoved: can be called even when the
+        // calendar (and its window) are *not visible* under certain
+        // circumstances. This leads to tooltips mysteriously popping
+        // up out of nowhere when the user's mouse is where Itsycal's
+        // window *would be* if it were actually showing. By updating
+        // the tracking areas, -mouseMoved: is no longer erroneously
+        // called.
+        [self updateTrackingAreas];
+        return;
+    }
     NSPoint locationInWindow = [theEvent locationInWindow];
     NSPoint locationInDates  = [_dateGrid convertPoint:locationInWindow fromView:nil];
     MoCalCell *hoveredCell   = [_dateGrid cellAtPoint:locationInDates];
