@@ -795,12 +795,12 @@
 
 - (MoDate)fetchStartDate
 {
-    return AddDaysToDate(-40, _moCal.monthDate);
+    return AddDaysToDate(-8, _moCal.monthDate);
 }
 
 - (MoDate)fetchEndDate
 {
-    return AddDaysToDate(80, _moCal.monthDate);
+    return AddDaysToDate(72, _moCal.monthDate);
 }
 
 #pragma mark -
