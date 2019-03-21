@@ -20,7 +20,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSCalendar           *_cal;
     NSMutableDictionary  *_eventsForDate;
     NSDictionary         *_filteredEventsForDate;
-    dispatch_queue_t      _queue;
+    NSMutableIndexSet    *_previouslyFetchedDates;
 }
 
 - (instancetype)initWithCalendar:(NSCalendar *)calendar delegate:(id<EventCenterDelegate>)delegate
@@ -32,12 +32,13 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         _sourcesAndCalendars = [NSArray new];
         _eventsForDate  = [NSMutableDictionary new];
         _filteredEventsForDate = [NSDictionary new];
-        _queue = dispatch_queue_create("com.mowglii.Itsycal.eventQueue", DISPATCH_QUEUE_SERIAL);
+        _previouslyFetchedDates = [NSMutableIndexSet new];
         _store = [EKEventStore new];
         [_store requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
             if (granted) {
-                [self fetchSourcesAndCalendars];
-                [self fetchEvents];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self refetchAll];
+                });
             }
             else {
                 // Fail silently. The alternative is to kick out to the
@@ -131,9 +132,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 
 - (NSArray *)eventsForDate:(MoDate)date
 {
-    // TODO: Do we need to check if theDate is in the range
-    //       of events we've already fetched?
-
+    if (![_previouslyFetchedDates containsIndex:date.julian]) return nil;
     NSDate *nsDate = MakeNSDateWithDate(date, _cal);
     return _filteredEventsForDate[nsDate];
 }
@@ -156,44 +155,31 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 
 - (void)fetchEvents
 {
-    MoDate startDate = [self.delegate fetchStartDate];
-    MoDate endDate   = [self.delegate fetchEndDate];
-    
-    dispatch_async(_queue, ^{
-        @autoreleasepool {
-            
-            // Because fetchEventsWithStartDate:endDate: is called on a serial
-            // dispatch queue, by the time it is invoked, the user may have
-            // navigated away from the month for which it is fetching events.
-            // If so, we skip it so that the next block of work on the queue
-            // can be processed.
-            
-            MoDate currentStartDate = [self.delegate fetchStartDate];
-            if (CompareDates(startDate, currentStartDate) == 0) {
-                
-                [self fetchEventsWithStartDate:startDate endDate:endDate];
-                
-                // We do a similar check here since the fetch we just completed
-                // is slow. It may be the case that the user has navigated away
-                // from that month. If so, no need to tell the delegate about
-                // this fetch since it is for a montht that is no longer
-                // displaying.
-                
-                MoDate currentStartDate = [self.delegate fetchStartDate];
-                if (CompareDates(startDate, currentStartDate) == 0) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.delegate eventCenterEventsChanged];
-                    });
-                }
-                else {
-                    NSLog(@"==== START DATES DIFFER, SKIP DELEGATE CALLBACK ====");
-                }
-            }
-            else {
-                NSLog(@"**** START DATES DIFFER, SKIP ENTIRE BLOCK ****");
-            }
+    MoDate startMoDate = [self.delegate fetchStartDate];
+    MoDate endMoDate   = [self.delegate fetchEndDate];
+
+    // Return immediately if we've already fetched for this date range.
+    NSRange dateRange = NSMakeRange(startMoDate.julian, endMoDate.julian - startMoDate.julian);
+    if ([_previouslyFetchedDates containsIndexesInRange:dateRange]) return;
+
+    // Reduce the range [startMoDate, endMoDate] based on dates previously fetched.
+    NSMutableIndexSet *notYetFetchedDates = [NSMutableIndexSet new];
+    for (NSInteger julian = startMoDate.julian; julian <= endMoDate.julian; julian++) {
+        if (![_previouslyFetchedDates containsIndex:julian]) {
+            [notYetFetchedDates addIndex:julian];
         }
-    });
+    }
+    if (notYetFetchedDates.count > 0) {
+        startMoDate = MakeGregorian(notYetFetchedDates.firstIndex);
+        endMoDate   = MakeGregorian(notYetFetchedDates.lastIndex);
+    }
+
+    // Update _previouslyFetchedDates for this fetch.
+    [_previouslyFetchedDates addIndexesInRange:dateRange];
+
+    // Finally, fetch.
+    [self fetchEventsWithStartDate:startMoDate endDate:endMoDate];
+    [self.delegate eventCenterEventsChanged];
 }
 
 - (void)fetchEventsWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate
@@ -298,7 +284,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // and refetch everything.
     
     _eventsForDate = [NSMutableDictionary new];
-
+    _previouslyFetchedDates = [NSMutableIndexSet new];
     [self fetchSourcesAndCalendars];
     [self fetchEvents];
 }
