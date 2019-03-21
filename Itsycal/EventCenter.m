@@ -15,16 +15,17 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 @implementation CalendarInfo @end
 @implementation EventInfo    @end
 
-@implementation EventCenter
-{
+@implementation EventCenter {                      // Accessed on:
     NSCalendar           *_cal;
-    NSMutableDictionary  *_eventsForDate;
-    NSDictionary         *_filteredEventsForDate;
-    NSMutableIndexSet    *_previouslyFetchedDates;
+    NSMutableDictionary  *_eventsForDate;          // _queueWork
+    NSDictionary         *_filteredEventsForDate;  // _queueIsol
+    NSMutableIndexSet    *_previouslyFetchedDates; // main thread
+    //NSArray            *_sourcesAndCalendars     // main thread
+    dispatch_queue_t      _queueWork;
+    dispatch_queue_t      _queueIsol;
 }
 
-- (instancetype)initWithCalendar:(NSCalendar *)calendar delegate:(id<EventCenterDelegate>)delegate
-{
+- (instancetype)initWithCalendar:(NSCalendar *)calendar delegate:(id<EventCenterDelegate>)delegate {
     self = [super init];
     if (self) {
         _cal = calendar;
@@ -33,6 +34,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         _eventsForDate  = [NSMutableDictionary new];
         _filteredEventsForDate = [NSDictionary new];
         _previouslyFetchedDates = [NSMutableIndexSet new];
+        _queueWork = dispatch_queue_create("com.mowglii.Itsycal.queueWork", DISPATCH_QUEUE_SERIAL);
+        _queueIsol = dispatch_queue_create("com.mowglii.Itsycal.queueIsol", DISPATCH_QUEUE_CONCURRENT);
         _store = [EKEventStore new];
         [_store requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
             if (granted) {
@@ -57,27 +60,90 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (BOOL)calendarAccessGranted
-{
+#pragma mark - Public properties (main thread)
+
+- (BOOL)calendarAccessGranted {
     return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusAuthorized;
 }
 
-- (NSString *)defaultCalendarIdentifier
-{
+- (NSString *)defaultCalendarIdentifier {
     EKCalendar *cal = [_store defaultCalendarForNewEvents];
     return cal.calendarIdentifier;
 }
 
-#pragma mark -
-#pragma mark Calendars
+#pragma mark - Public methods (main thread)
 
-- (void)fetchSourcesAndCalendars
-{
+- (void)updateSelectedCalendars {
+    // The user has selected/unselected a calendar in Prefs.
+    // Update the kSelectedCalendars array in NSUserDefaults.
+    NSMutableArray *selectedCalendars = [NSMutableArray new];
+    for (id obj in _sourcesAndCalendars) {
+        if ([obj isKindOfClass:[CalendarInfo class]] &&
+            [(CalendarInfo *)obj selected]) {
+            CalendarInfo *info = obj;
+            [selectedCalendars addObject:info.calendar.calendarIdentifier];
+        }
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:selectedCalendars forKey:kSelectedCalendars];
+    
+    // Filter events based on new calendar selection.
+    dispatch_async(_queueWork, ^{
+        [self _filterEvents];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate eventCenterEventsChanged];
+        });
+    });
+}
+
+- (NSArray *)eventsForDate:(MoDate)date {
+    if (![_previouslyFetchedDates containsIndex:date.julian]) return nil;
+    NSDate *nsDate = MakeNSDateWithDate(date, _cal);
+    __block NSArray *filteredEventsForNSDate;
+    dispatch_sync(_queueIsol, ^{
+        filteredEventsForNSDate = [_filteredEventsForDate[nsDate] copy];
+    });
+    return filteredEventsForNSDate;
+}
+
+- (NSArray *)datesAndEventsForDate:(MoDate)date days:(NSInteger)days {
+    __block NSDictionary *filteredEventsForDate;
+    dispatch_sync(_queueIsol, ^{
+        filteredEventsForDate = [_filteredEventsForDate copy];
+    });
+    NSMutableArray *datesAndEvents = [NSMutableArray new];
+    MoDate endDate = AddDaysToDate(days, date);
+    while (CompareDates(date, endDate) < 0) {
+        NSDate *nsDate = MakeNSDateWithDate(date, _cal);
+        NSArray *events = filteredEventsForDate[nsDate];
+        if (events != nil) {
+            [datesAndEvents addObject:nsDate];
+            [datesAndEvents addObjectsFromArray:events];
+        }
+        date = AddDaysToDate(1, date);
+    }
+    return datesAndEvents;
+}
+
+- (void)fetchEvents {
+    [self _fetchEvents:NO];
+}
+
+- (void)refetchAll {
+    // Either the system told us the event store has changed or
+    // we were called by the main controller. Clear the cache
+    // and refetch everything.
+    _previouslyFetchedDates = [NSMutableIndexSet new];
+    [self _fetchSourcesAndCalendars];
+    [self _fetchEvents:YES];
+}
+
+#pragma mark - Private methods (main thread)
+
+- (void)_fetchSourcesAndCalendars {
     // Get an array of the user's calendars sorted first by
     // source title and then by calendar title.
     NSArray *calendars = [[_store calendarsForEntityType:EKEntityTypeEvent] sortedArrayUsingComparator:^NSComparisonResult(EKCalendar *cal1, EKCalendar *cal2) {
@@ -91,7 +157,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSSet *selectedCalendars = [NSSet setWithArray:[defaults arrayForKey:kSelectedCalendars]];
-
+    
     // Make an array of source titles and calendar info.
     NSMutableArray *sourcesAndCalendars = [NSMutableArray new];
     NSString *currentSourceTitle = @"";
@@ -108,60 +174,14 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     _sourcesAndCalendars = [NSArray arrayWithArray:sourcesAndCalendars];
 }
 
-- (void)updateSelectedCalendars
-{
-    // The user has selected/unselected a calendar in Prefs.
-    // Update the kSelectedCalendars array in NSUserDefaults.
-    NSMutableArray *selectedCalendars = [NSMutableArray new];
-    for (id obj in self.sourcesAndCalendars) {
-        if ([obj isKindOfClass:[CalendarInfo class]] &&
-            [(CalendarInfo *)obj selected]) {
-            CalendarInfo *info = obj;
-            [selectedCalendars addObject:info.calendar.calendarIdentifier];
-        }
-    }
-    [[NSUserDefaults standardUserDefaults] setObject:selectedCalendars forKey:kSelectedCalendars];
-    
-    // Filter events based on new calendar selection.
-    [self filterEvents];
-    [self.delegate eventCenterEventsChanged];
-}
-
-#pragma mark -
-#pragma mark Events
-
-- (NSArray *)eventsForDate:(MoDate)date
-{
-    if (![_previouslyFetchedDates containsIndex:date.julian]) return nil;
-    NSDate *nsDate = MakeNSDateWithDate(date, _cal);
-    return _filteredEventsForDate[nsDate];
-}
-
-- (NSArray *)datesAndEventsForDate:(MoDate)date days:(NSInteger)days
-{
-    NSMutableArray *datesAndEvents = [NSMutableArray new];
-    MoDate endDate = AddDaysToDate(days, date);
-    while (CompareDates(date, endDate) < 0) {
-        NSDate *nsDate = MakeNSDateWithDate(date, _cal);
-        NSArray *events = _filteredEventsForDate[nsDate];
-        if (events != nil) {
-            [datesAndEvents addObject:nsDate];
-            [datesAndEvents addObjectsFromArray:events];
-        }
-        date = AddDaysToDate(1, date);
-    }
-    return datesAndEvents;
-}
-
-- (void)fetchEvents
-{
+- (void)_fetchEvents:(BOOL)refetch {
     MoDate startMoDate = [self.delegate fetchStartDate];
     MoDate endMoDate   = [self.delegate fetchEndDate];
-
+    
     // Return immediately if we've already fetched for this date range.
     NSRange dateRange = NSMakeRange(startMoDate.julian, endMoDate.julian - startMoDate.julian);
     if ([_previouslyFetchedDates containsIndexesInRange:dateRange]) return;
-
+    
     // Reduce the range [startMoDate, endMoDate] based on dates previously fetched.
     NSMutableIndexSet *notYetFetchedDates = [NSMutableIndexSet new];
     for (NSInteger julian = startMoDate.julian; julian <= endMoDate.julian; julian++) {
@@ -173,17 +193,27 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         startMoDate = MakeGregorian(notYetFetchedDates.firstIndex);
         endMoDate   = MakeGregorian(notYetFetchedDates.lastIndex);
     }
-
+    
     // Update _previouslyFetchedDates for this fetch.
     [_previouslyFetchedDates addIndexesInRange:dateRange];
-
+    
     // Finally, fetch.
-    [self fetchEventsWithStartDate:startMoDate endDate:endMoDate];
-    [self.delegate eventCenterEventsChanged];
+    @autoreleasepool {
+        dispatch_async(_queueWork, ^{
+            if (refetch) {
+                _eventsForDate = [NSMutableDictionary new];
+            }
+            [self _fetchEventsWithStartDate:startMoDate endDate:endMoDate];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate eventCenterEventsChanged];
+            });
+        });
+    }
 }
 
-- (void)fetchEventsWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate
-{
+#pragma mark - Private methods (GCD thread pool)
+
+- (void)_fetchEventsWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate {
     NSDate *startDate = MakeNSDateWithDate(startMoDate, _cal);
     NSDate *endDate   = MakeNSDateWithDate(endMoDate,   _cal);
     NSPredicate *predicate = [_store predicateForEventsWithStartDate:startDate endDate:endDate calendars:nil];
@@ -194,7 +224,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // populate a dictionary, eventsForDate, that maps each date
     // to an array of events that fall on that date.
     for (EKEvent *event in events) {
-
+        
         // Skip events the current user has declined.
         // This code is very slow. Apparently, loading the 'attendees'
         // property is time consuming. We avoid some of that by first
@@ -211,7 +241,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             }
         }
         if (skipEventBecauseUserDeclinedIt) continue; // ...continue outer loop
-
+        
         // Iterate through the days this event spans. We only care about
         // days for this event that are between startDate and endDate.
         NSDate *date  = [event.startDate laterDate:startDate];
@@ -257,11 +287,10 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     }
     
     [_eventsForDate addEntriesFromDictionary:eventsForDate];
-    [self filterEvents];
+    [self _filterEvents];
 }
 
-- (void)filterEvents
-{
+- (void)_filterEvents {
     NSMutableDictionary *filteredEventsForDate = [NSMutableDictionary new];
     NSArray *selectedCalendars = [[NSUserDefaults standardUserDefaults] arrayForKey:kSelectedCalendars];
     for (NSDate *date in _eventsForDate) {
@@ -274,19 +303,9 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             }
         }
     }
-    _filteredEventsForDate = [filteredEventsForDate copy];
-}
-
-- (void)refetchAll
-{
-    // Either the system told us the event store has changed or
-    // we were called by the main controller. Clear the cache
-    // and refetch everything.
-    
-    _eventsForDate = [NSMutableDictionary new];
-    _previouslyFetchedDates = [NSMutableIndexSet new];
-    [self fetchSourcesAndCalendars];
-    [self fetchEvents];
+    dispatch_barrier_async(_queueIsol, ^{
+        _filteredEventsForDate = [filteredEventsForDate copy];
+    });
 }
 
 @end
