@@ -9,6 +9,9 @@
 #import "MoVFLHelper.h"
 
 @implementation PrefsAboutVC
+{
+    NSTextField *_emoji;
+}
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -39,7 +42,7 @@
     MoTextField *paypal = label(@"PayPal", YES);
     NSTextField *or = label(NSLocalizedString(@"or", nil), NO);
     MoTextField *square = label(@"Square", YES);
-    NSTextField *emoji = label(@"♥️", NO);
+    _emoji = label(@"♥️", NO);
     NSTextField *follow = label(NSLocalizedString(@"Follow", nil), NO);
     NSTextField *smile = label(@"(๑˃̵ᴗ˂̵)و", NO);
     smile.font = [NSFont systemFontOfSize:16 weight:NSFontWeightLight];
@@ -57,11 +60,11 @@
     sparkle.urlString = @"https://github.com/sparkle-project/Sparkle";
     masshortcut.urlString = @"https://github.com/shpakovski/MASShortcut";
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(appName, version, donateWith, paypal, or, square, emoji, follow, smile, mowgliiapps, sparkle, sparkleCopyright, masshortcut, masshortcutCopyright, copyright1, copyright2)];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(appName, version, donateWith, paypal, or, square, _emoji, follow, smile, mowgliiapps, sparkle, sparkleCopyright, masshortcut, masshortcutCopyright, copyright1, copyright2)];
     [vfl :@"V:|-m-[appName]-8-[version]-m-[donateWith]-10-[follow]-18-[smile]-12-[sparkle][sparkleCopyright]-10-[masshortcut][masshortcutCopyright]-m-[copyright1]-m-|"];
     [vfl :@"H:|-m-[appName]-(>=m)-|"];
     [vfl :@"H:|-m-[version]-(>=m)-|"];
-    [vfl :@"H:|-m-[donateWith]-4-[paypal]-4-[or]-4-[square]-6-[emoji]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-m-[donateWith]-4-[paypal]-4-[or]-4-[square]-6-[_emoji]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-m-[follow]-4-[mowgliiapps]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-m-[sparkle]-(>=m)-|"];
     [vfl :@"H:|-m-[masshortcut]-(>=m)-|"];
@@ -72,6 +75,21 @@
     [smile.centerXAnchor constraintEqualToAnchor:v.centerXAnchor].active = YES;
 
     self.view = v;
+}
+
+- (void)viewWillAppear
+{
+    [super viewWillAppear];
+    static NSInteger index = 0;
+    static NSArray *emojis = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        emojis = @[@"♥️", @"😀", @"😜",
+                   @"😍", @"😊", @"😝",
+                   @"🤗", @"😘", @"✌️"];
+    });
+    _emoji.stringValue = emojis[index];
+    index = (index + 1) % emojis.count;
 }
 
 @end
