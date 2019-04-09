@@ -969,15 +969,15 @@
     // Day changed notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         MoDate today = [self todayDate];
-        _moCal.todayDate = today;
-        _moCal.selectedDate = today;
+        self->_moCal.todayDate = today;
+        self->_moCal.selectedDate = today;
         [self updateMenubarIcon];
     }];
     
     // Timezone changed notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemTimeZoneDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [self updateMenubarIcon];
-        [_ec refetchAll];
+        [self->_ec refetchAll];
     }];
     
     // Locale notifications
@@ -988,7 +988,7 @@
     // System clock notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [self updateMenubarIcon];
-        [_ec refetchAll];
+        [self->_ec refetchAll];
     }];
 
     // Wake from sleep notification

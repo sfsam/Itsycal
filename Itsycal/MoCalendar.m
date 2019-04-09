@@ -211,7 +211,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     CGFloat constant = showWeeks ? NSWidth(_weekGrid.frame) : 2;
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *ctx) {
         [ctx setDuration:0.1];
-        [_weeksConstraint.animator setConstant:constant];
+        [self->_weeksConstraint.animator setConstant:constant];
     } completionHandler:NULL];
 }
 

@@ -242,10 +242,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _popover = [NSPopover new];
-        _popover.contentViewController = [AgendaPopoverVC new];
-        _popover.behavior = NSPopoverBehaviorTransient;
-        _popover.animates = NO;
+        self->_popover = [NSPopover new];
+        self->_popover.contentViewController = [AgendaPopoverVC new];
+        self->_popover.behavior = NSPopoverBehaviorTransient;
+        self->_popover.animates = NO;
     });
     
     AgendaEventCell *cell = [_tv viewAtColumn:0 row:_tv.clickedRow makeIfNecessary:NO];
@@ -334,7 +334,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     dispatch_once(&onceToken, ^{
         eventCell = [AgendaEventCell new];
         dateCell = [AgendaDateCell new];
-        dateCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
+        dateCell.frame = NSMakeRect(0, 0, NSWidth(self->_tv.frame), 999); // only width is important here
         dateCell.dayTextField.integerValue = 21;
     });
     
@@ -616,7 +616,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (instancetype)init
 {
     // Convenience function for making labels.
-    NSTextField* (^label)() = ^NSTextField* () {
+    NSTextField* (^label)(void) = ^NSTextField* () {
         NSTextField *lbl = [NSTextField labelWithString:@""];
         lbl.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
         lbl.lineBreakMode = NSLineBreakByWordWrapping;

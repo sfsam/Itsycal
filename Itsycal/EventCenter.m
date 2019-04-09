@@ -104,7 +104,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSDate *nsDate = MakeNSDateWithDate(date, _cal);
     __block NSArray *filteredEventsForNSDate;
     dispatch_sync(_queueIsol, ^{
-        filteredEventsForNSDate = [_filteredEventsForDate[nsDate] copy];
+        filteredEventsForNSDate = [self->_filteredEventsForDate[nsDate] copy];
     });
     return filteredEventsForNSDate;
 }
@@ -112,7 +112,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 - (NSArray *)datesAndEventsForDate:(MoDate)date days:(NSInteger)days {
     __block NSDictionary *filteredEventsForDate;
     dispatch_sync(_queueIsol, ^{
-        filteredEventsForDate = [_filteredEventsForDate copy];
+        filteredEventsForDate = [self->_filteredEventsForDate copy];
     });
     NSMutableArray *datesAndEvents = [NSMutableArray new];
     MoDate endDate = AddDaysToDate(days, date);
@@ -201,7 +201,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     @autoreleasepool {
         dispatch_async(_queueWork, ^{
             if (refetch) {
-                _eventsForDate = [NSMutableDictionary new];
+                self->_eventsForDate = [NSMutableDictionary new];
             }
             [self _fetchEventsWithStartDate:startMoDate endDate:endMoDate];
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -304,7 +304,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         }
     }
     dispatch_barrier_async(_queueIsol, ^{
-        _filteredEventsForDate = [filteredEventsForDate copy];
+        self->_filteredEventsForDate = [filteredEventsForDate copy];
     });
 }
 

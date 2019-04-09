@@ -70,7 +70,7 @@
 
     // Register keyboard shortcut.
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
-         [(ViewController *)_wc.contentViewController keyboardShortcutActivated];
+         [(ViewController *)self->_wc.contentViewController keyboardShortcutActivated];
      }];
 
     // This call instantiates the Sizer shared object and then
