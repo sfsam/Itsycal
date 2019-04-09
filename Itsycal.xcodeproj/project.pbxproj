@@ -67,6 +67,7 @@
 		6F21F6F51F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		9215AD4A1E3AECA700317FAE /* MoVFLHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoVFLHelper.h; sourceTree = "<group>"; };
 		9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoVFLHelper.m; sourceTree = "<group>"; };
+		921949F3225D283E00223258 /* Itsycal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Itsycal.entitlements; sourceTree = "<group>"; };
 		921E62C01E26B3EA007B029F /* PrefsGeneralVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsGeneralVC.h; sourceTree = "<group>"; };
 		921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsGeneralVC.m; sourceTree = "<group>"; };
 		921E62CE1E26B9D2007B029F /* PrefsAppearanceVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsAppearanceVC.h; sourceTree = "<group>"; };
@@ -199,6 +200,7 @@
 		9242A55E1A82A136005AA4B3 /* Itsycal */ = {
 			isa = PBXGroup;
 			children = (
+				921949F3225D283E00223258 /* Itsycal.entitlements */,
 				923E78DB1D385CD80012979B /* Frameworks */,
 				9242A55F1A82A136005AA4B3 /* Supporting Files */,
 				9242A5661A82A136005AA4B3 /* Images.xcassets */,
@@ -315,6 +317,11 @@
 						CreatedOnToolsVersion = 6.1.1;
 						DevelopmentTeam = HFT3T55WND;
 						ProvisioningStyle = Manual;
+						SystemCapabilities = {
+							com.apple.HardenedRuntime = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -541,6 +548,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = HFT3T55WND;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Itsycal/_frameworks",
@@ -561,6 +569,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = HFT3T55WND;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Itsycal/_frameworks",
