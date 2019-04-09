@@ -294,6 +294,7 @@
 				9242A5591A82A136005AA4B3 /* Frameworks */,
 				9242A55A1A82A136005AA4B3 /* Resources */,
 				9252DF361AFD3557007B079F /* CopyFiles */,
+				921949F4225D287F00223258 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -361,6 +362,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		921949F4225D287F00223258 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# For notarization we need to deep codesign Sparkle.\n# github.com/sparkle-project/Sparkle/issues/1266#issuecomment-421182578\nLOCATION=\"${BUILT_PRODUCTS_DIR}\"/\"${FRAMEWORKS_FOLDER_PATH}\"\nIDENTITY=\"${CODE_SIGN_IDENTITY}\"\ncodesign --verbose --force --deep -o runtime --sign \"$IDENTITY\" \"$LOCATION/Sparkle.framework/Versions/A/Resources/AutoUpdate.app\"\ncodesign --verbose --force -o runtime --sign \"$IDENTITY\" \"$LOCATION/Sparkle.framework/Versions/A\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9242A5581A82A136005AA4B3 /* Sources */ = {
