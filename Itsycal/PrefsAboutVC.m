@@ -51,7 +51,7 @@
     MoTextField *sparkleCopyright = label(@"© 2006 Andy Matuschak", NO);
     MoTextField *masshortcut = label(@"MASShortcut", YES);
     MoTextField *masshortcutCopyright = label(@"© 2013 Vadim Shpakovski", NO);
-    NSTextField *copyright1 = label(@"© 2012 − 2018", NO);
+    NSTextField *copyright1 = label(@"© 2012 − 2019", NO);
     MoTextField *copyright2 = label(@"mowglii.com", YES);
 
     paypal.urlString = @"https://www.paypal.me/mowgliiapps";
