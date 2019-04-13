@@ -182,6 +182,7 @@
     NSUInteger flags = [theEvent modifierFlags];
     BOOL noFlags = !(flags & (NSEventModifierFlagCommand | NSEventModifierFlagShift | NSEventModifierFlagOption | NSEventModifierFlagControl));
     BOOL cmdFlag = (flags & NSEventModifierFlagCommand) &&  !(flags & (NSEventModifierFlagShift | NSEventModifierFlagOption | NSEventModifierFlagControl));
+    BOOL cmdOptFlag = (flags & NSEventModifierFlagCommand) && (flags & NSEventModifierFlagOption) &&  !(flags & (NSEventModifierFlagShift | NSEventModifierFlagControl));
     unichar keyChar = [charsIgnoringModifiers characterAtIndex:0];
     
     if (keyChar == 'w' && noFlags) {
@@ -192,6 +193,20 @@
     }
     else if (keyChar == ',' && cmdFlag) {
         [self showPrefs:self];
+    }
+    else if (keyChar == 'r' && cmdOptFlag) {
+        NSLog(@"Reset EventCenter");
+        // First, close prefs window and set _prefsWC to nil so
+        // General Prefs will pick up the new _ec the next time
+        // [self prefsWC] is called.
+        // Next, nil out _ec, _moCal, and _agendaVC event data.
+        // Finally, recreate _ec and reassign tooltip ec.
+        [_prefsWC close];
+        _prefsWC = nil;
+        _ec = nil;
+        [self eventCenterEventsChanged];
+        _ec = [[EventCenter alloc] initWithCalendar:_nsCal delegate:self];
+        ((TooltipViewController *)_moCal.tooltipVC).ec = _ec;
     }
     else {
         [super keyDown:theEvent];
