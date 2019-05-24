@@ -54,7 +54,11 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 
         // Refetch everything when the event store has changed.
         [[NSNotificationCenter defaultCenter] addObserverForName:EKEventStoreChangedNotification object:_store queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            [self refetchAll];
+            // Coalesce notifications arriving within 1 second of
+            // each other because some actions, like creating or
+            // deleting events, generate multiple notifications.
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(refetchAll) object:nil];
+            [self performSelector:@selector(refetchAll) withObject:nil afterDelay:1];
         }];
     }
     return self;
