@@ -16,6 +16,11 @@ static const NSInteger kMonthDaysSoFar[12] = {
     0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
 };
 
+NSString *NSStringFromMoDate(MoDate date)
+{
+    return [NSString stringWithFormat:@"%ld-%02ld-%02ld (%ld)", date.year, date.month+1, date.day, date.julian];
+}
+
 MoDate MakeDate(NSInteger year, NSInteger month, NSInteger day)
 {
     MoDate date;

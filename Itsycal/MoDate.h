@@ -42,6 +42,13 @@ typedef struct {
 } MoDate;
 
 //
+// Date as NSString
+// date    the date
+// return  an NSString: "yyy-mm-dd (julian)"
+//
+NSString *NSStringFromMoDate(MoDate date);
+
+//
 // Make a date
 // year, month day  the components of the date
 // return           a date including julian day
