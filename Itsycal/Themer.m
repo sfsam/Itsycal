@@ -169,6 +169,9 @@ typedef enum : NSInteger {
 
 - (NSColor *)todayCellColor
 {
+    if (@available(macOS 10.14, *)) {
+        return [NSColor controlAccentColor];
+    }
     return self.theme != ThemeLight
     ? [NSColor colorWithRed:0.36 green:0.54 blue:0.9 alpha:1]
     : [NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:1];
