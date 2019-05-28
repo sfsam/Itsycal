@@ -144,6 +144,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // we were called by the main controller. Clear the cache
     // and refetch everything.
     _previouslyFetchedDates = [NSMutableIndexSet new];
+    [_store reset];
     [self _fetchSourcesAndCalendars];
     [self _fetchEvents:YES];
 }
