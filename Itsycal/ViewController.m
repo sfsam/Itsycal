@@ -195,18 +195,7 @@
         [self showPrefs:self];
     }
     else if (keyChar == 'r' && cmdOptFlag) {
-        NSLog(@"Reset EventCenter");
-        // First, close prefs window and set _prefsWC to nil so
-        // General Prefs will pick up the new _ec the next time
-        // [self prefsWC] is called.
-        // Next, nil out _ec, _moCal, and _agendaVC event data.
-        // Finally, recreate _ec and reassign tooltip ec.
-        [_prefsWC close];
-        _prefsWC = nil;
-        _ec = nil;
-        [self eventCenterEventsChanged];
-        _ec = [[EventCenter alloc] initWithCalendar:_nsCal delegate:self];
-        ((TooltipViewController *)_moCal.tooltipVC).ec = _ec;
+        [self resetEventCenter];
     }
     else {
         [super keyDown:theEvent];
@@ -367,6 +356,19 @@
 - (void)checkForUpdates:(id)sender
 {
     [[SUUpdater sharedUpdater] checkForUpdates:self];
+}
+
+- (void)resetEventCenter
+{
+    // This is an emergency move for when Itsycal loses
+    // calendars or events. It is akin to rebooting the
+    // computer when you don't know the real fix. :P
+    [_prefsWC close];
+    _prefsWC = nil;
+    _ec = nil;
+    [self eventCenterEventsChanged];
+    _ec = [[EventCenter alloc] initWithCalendar:_nsCal delegate:self];
+    ((TooltipViewController *)_moCal.tooltipVC).ec = _ec;
 }
 
 #pragma mark -
