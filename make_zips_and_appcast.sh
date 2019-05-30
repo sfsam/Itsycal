@@ -1,12 +1,23 @@
 #!/bin/sh
 
+# If Itsycal.app is not found on the Desktop, quit.
+APP_PATH="$HOME/Desktop/Itsycal.app"
+if [ ! -d "$APP_PATH" ]
+then
+    echo "\n"
+    echo "  + \033[0;31mNOT FOUND:\033[0m $APP_PATH"
+    echo "  + Export notarized Itsycal.app to Desktop."
+    echo "  + See BUILD.md for instructions."
+    echo "\n"
+    exit 1
+fi
+
 # Get the bundle version from the plist.
-PLIST_FILE="Itsycal/Info.plist"
+PLIST_FILE="$APP_PATH/Contents/Info.plist"
 VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" $PLIST_FILE)
 SHORT_VERSION_STRING=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" $PLIST_FILE)
 
 # Set up file names and paths.
-APP_PATH="$HOME/Desktop/Itsycal.app"
 ZIP_NAME="Itsycal-$SHORT_VERSION_STRING.zip"
 ZIP_NAME=${ZIP_NAME// /-}
 DEST_DIR="$HOME/Desktop/Itsycal-$SHORT_VERSION_STRING"
@@ -14,18 +25,16 @@ XML_PATH="$DEST_DIR/itsycal.xml"
 ZIP_PATH1="$DEST_DIR/$ZIP_NAME"
 ZIP_PATH2="$DEST_DIR/Itsycal.zip"
 
-if [ -d "$APP_PATH" ]
-then
-	echo "Making zips and appcast..."
-else
-    echo ""
-	echo "$APP_PATH: NOT FOUND!"
-    echo ""
-    echo "Export notarized Itsycal.app to Desktop."
-    echo "See BUILD.md for instructions."
-    echo ""
-    exit 1
-fi
+# Run some diagnostics so we can see all is ok."
+echo ""
+( set -x; spctl -vvv --assess --type exec $APP_PATH )
+echo ""
+( set -x; codesign -vvv --deep --strict $APP_PATH )
+echo ""
+( set -x; codesign -dvv $APP_PATH )
+
+echo ""
+echo "Making zips and appcast for \033[0;32m$SHORT_VERSION_STRING ($VERSION)\033[0m..."
 
 # Make output dir (if necessary) and clear its contents.
 rm -frd "$DEST_DIR"
@@ -68,6 +77,7 @@ cat > "$XML_PATH" <<EOF
 EOF
 
 echo "Done!"
+echo ""
 
 open -R "$DEST_DIR/itsycal.xml"
 
