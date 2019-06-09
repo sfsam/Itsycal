@@ -256,7 +256,8 @@
     // Use URL scheme to open BusyCal or Fantastical2 on the
     // date selected in our calendar.
     
-    if ([defaultCalendarAppBundleID isEqualToString:@"com.busymac.busycal2"]) {
+    if ([defaultCalendarAppBundleID isEqualToString:@"com.busymac.busycal2"] ||
+        [defaultCalendarAppBundleID isEqualToString:@"com.busymac.busycal3"]) {
         [self showCalendarAppWithURLScheme:@"busycalevent://date"];
         return;
     }
