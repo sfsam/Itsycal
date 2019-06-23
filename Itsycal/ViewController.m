@@ -922,12 +922,10 @@
 
     // Did the user set a custom clock format string?
     if (format != nil && ![format isEqualToString:@""]) {
-        NSLog(@"Use custom clock format: [%@]", format);
         [self processFormatForTimeAndSecondsSpecifiers:format];
         _clockFormat = format;
     }
     else {
-        NSLog(@"Use normal icon");
         [_clockTimer invalidate];
         _clockTimer = nil;
         _clockFormat = nil;
@@ -974,9 +972,6 @@
     }];
     _clockUsesTime = timeSpecifierFound;
     _clockUsesSeconds = secondsSpecifierFound;
-
-    if (_clockUsesTime) NSLog(@"Format has time");
-    if (_clockUsesSeconds) NSLog(@"Format has seconds");
 }
 
 #pragma mark -
