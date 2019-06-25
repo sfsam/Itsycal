@@ -933,7 +933,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (NSMutableAttributedString *)notesWithHTML:(NSString *)html
 {
-    NSData *htmlData = [html dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *htmlData = [html dataUsingEncoding:NSUnicodeStringEncoding];
     return [[NSMutableAttributedString alloc] initWithHTML:htmlData documentAttributes:nil];
 }
 
