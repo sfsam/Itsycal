@@ -327,7 +327,7 @@
 
     // Create the event.
     NSCharacterSet *whitespaceSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-    EKEvent *event  = [EKEvent eventWithEventStore:self.ec.store];
+    EKEvent *event  = [self.ec newEvent];
     event.title     = [_title.stringValue stringByTrimmingCharactersInSet:whitespaceSet];
     event.location  = [_location.stringValue stringByTrimmingCharactersInSet:whitespaceSet];
     event.allDay    = _allDayCheckbox.state == NSOnState;
@@ -403,7 +403,7 @@
     
     // Commit the event.
     NSError *error = NULL;
-    BOOL saved = [self.ec.store saveEvent:event span:EKSpanThisEvent commit:YES error:&error];
+    BOOL saved = [self.ec saveEvent:event error:&error];
     if (saved == NO && error != nil) {
         [[NSAlert alertWithError:error] runModal];
     }

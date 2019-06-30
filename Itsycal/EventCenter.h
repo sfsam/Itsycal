@@ -19,9 +19,6 @@
 
 @interface EventCenter : NSObject
 
-// The event store
-@property (nonatomic) EKEventStore *store;
-
 // Did the user grant calendar access?
 @property (nonatomic, readonly) BOOL calendarAccessGranted;
 
@@ -38,6 +35,12 @@
 @property (nonatomic, weak) id<EventCenterDelegate> delegate;
 
 - (instancetype)initWithCalendar:(NSCalendar *)calendar delegate:(id<EventCenterDelegate>)delegate;
+
+- (EKEvent *)newEvent;
+
+- (BOOL)saveEvent:(EKEvent *)event error:(NSError **)error;
+
+- (BOOL)removeEvent:(EKEvent *)event span:(EKSpan)span error:(NSError **)error;
 
 - (void)fetchEvents;
 

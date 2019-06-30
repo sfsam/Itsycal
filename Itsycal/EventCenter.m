@@ -16,6 +16,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 @implementation EventInfo    @end
 
 @implementation EventCenter {                      // Accessed on:
+    EKEventStore         *_store;
     NSCalendar           *_cal;
     NSMutableDictionary  *_eventsForDate;          // _queueWork
     NSDictionary         *_filteredEventsForDate;  // _queueIsol
@@ -83,6 +84,18 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 }
 
 #pragma mark - Public methods (main thread)
+
+- (EKEvent *)newEvent {
+    return [EKEvent eventWithEventStore:_store];
+}
+
+- (BOOL)saveEvent:(EKEvent *)event error:(NSError **)error {
+    return [_store saveEvent:event span:EKSpanThisEvent commit:YES error:error];
+}
+
+- (BOOL)removeEvent:(EKEvent *)event span:(EKSpan)span error:(NSError **)error {
+    return [_store removeEvent:event span:span commit:YES error:error];
+}
 
 - (void)updateSelectedCalendars {
     // The user has selected/unselected a calendar in Prefs.

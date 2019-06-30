@@ -770,7 +770,7 @@
     // Delete this event (or future events).
     NSError *error = NULL;
     EKSpan span = (eventRepeats && response == NSAlertSecondButtonReturn) ? EKSpanFutureEvents : EKSpanThisEvent;
-    BOOL result = [_ec.store removeEvent:event span:span commit:YES error:&error];
+    BOOL result = [_ec removeEvent:event span:span error:&error];
     if (result == NO && error != nil) {
         [[NSAlert alertWithError:error] runModal];
     }
