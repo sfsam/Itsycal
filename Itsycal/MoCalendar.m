@@ -786,7 +786,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     if (self.highlightedDOWs) {
         NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
         weekendRect.size.width = sz;
-        [[NSColor colorWithWhite:0.1 alpha:0.05] set];
+        [[[Themer shared] highlightedDOWBackgroundColor] set];
         NSInteger numColsToHighlight = 0;
         for (NSInteger col = 0; col <= 7; col++) {
             if (col < 7 && [self columnIsMemberOfHighlightedDOWs:col]) {
@@ -797,7 +797,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
                     NSInteger startCol = col - numColsToHighlight;
                     NSRect rect = NSOffsetRect(weekendRect, startCol * sz, 0);
                     rect.size.width *= numColsToHighlight;
-                    [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:4 yRadius:4] fill];
+                    [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:6 yRadius:6] fill];
                 }
                 numColsToHighlight = 0;
             }

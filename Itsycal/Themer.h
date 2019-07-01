@@ -36,6 +36,7 @@ typedef enum : NSInteger {
 - (NSColor *)monthTextColor;
 - (NSColor *)DOWTextColor;
 - (NSColor *)highlightedDOWTextColor;
+- (NSColor *)highlightedDOWBackgroundColor;
 - (NSColor *)currentMonthOutlineColor;
 - (NSColor *)currentMonthTextColor;
 - (NSColor *)noncurrentMonthTextColor;

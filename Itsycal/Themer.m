@@ -136,14 +136,19 @@ typedef enum : NSInteger {
 {
     return self.theme != ThemeLight
     ? [NSColor colorWithRed:0.95 green:0.5 blue:0.4 alpha:1]
-    : [NSColor colorWithRed:0.91 green:0.3 blue:0.1 alpha:1];
+    : [NSColor colorWithRed:0.95 green:0.2 blue:0 alpha:1];
+}
+
+- (NSColor *)highlightedDOWBackgroundColor
+{
+    return self.theme != ThemeLight
+    ? [NSColor colorWithWhite:1 alpha:0.05]
+    : [NSColor colorWithWhite:0 alpha:0.05];
 }
 
 - (NSColor *)currentMonthOutlineColor
 {
-    return self.theme != ThemeLight
-    ? [NSColor colorWithWhite:0.55 alpha:1]
-    : [NSColor colorWithWhite:0.77 alpha:1];
+    return [NSColor colorWithWhite:0.53 alpha:1];
 }
 
 - (NSColor *)currentMonthTextColor
@@ -179,14 +184,14 @@ typedef enum : NSInteger {
 
 - (NSColor *)hoveredCellColor
 {
-    return [self currentMonthOutlineColor];
+    return self.theme != ThemeLight
+    ? [NSColor colorWithWhite:0.38 alpha:1]
+    : [NSColor colorWithWhite:0.72 alpha:1];
 }
 
 - (NSColor *)selectedCellColor
 {
-    return self.theme != ThemeLight
-    ? [NSColor colorWithWhite:0.75 alpha:1]
-    : [NSColor colorWithWhite:0.55 alpha:1];
+    return [self currentMonthOutlineColor];
 }
 
 - (NSColor *)resizeHandleForegroundColor
