@@ -41,6 +41,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         [_store requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
             if (granted) {
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    [self->_store reset];
                     [self refetchAll];
                 });
             }
@@ -157,7 +158,6 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // we were called by the main controller. Clear the cache
     // and refetch everything.
     _previouslyFetchedDates = [NSMutableIndexSet new];
-    [_store reset];
     [self _fetchSourcesAndCalendars];
     [self _fetchEvents:YES];
 }
