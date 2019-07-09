@@ -361,15 +361,8 @@
 
 - (void)resetEventCenter
 {
-    // This is an emergency move for when Itsycal loses
-    // calendars or events. It is akin to rebooting the
-    // computer when you don't know the real fix. :P
-    [_prefsWC close];
-    _prefsWC = nil;
-    _ec = nil;
-    [self eventCenterEventsChanged];
-    _ec = [[EventCenter alloc] initWithCalendar:_nsCal delegate:self];
-    ((TooltipViewController *)_moCal.tooltipVC).ec = _ec;
+    [_ec reset];
+    [_ec refresh];
 }
 
 #pragma mark -

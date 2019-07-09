@@ -61,6 +61,10 @@
 // Clear cached events and refetch.
 - (void)refetchAll;
 
+// Reset/refresh event store
+- (void)reset;
+- (void)refresh;
+
 @end
 
 // =========================================================================
