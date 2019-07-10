@@ -259,10 +259,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
         popoverVC.btnDelete.tag = _tv.clickedRow;
         popoverVC.btnDelete.target = self;
         popoverVC.btnDelete.action = @selector(btnDeleteClicked:);
+        unichar backspaceKey = NSBackspaceCharacter;
+        popoverVC.btnDelete.keyEquivalent = [NSString stringWithCharacters:&backspaceKey length:1];
     }
     
     [_popover setContentSize:popoverVC.size];
     [_popover showRelativeToRect:[_tv rectOfRow:_tv.clickedRow] ofView:_tv preferredEdge:NSRectEdgeMinX];
+    
+    // Prevent popoverVC's _note from eating key presses (like esc and delete).
+    [popoverVC.view.window makeFirstResponder:popoverVC.btnDelete];
 
     // Hack to color entire popover background, including arrow.
     // stackoverflow.com/a/40186763/111418
@@ -748,6 +753,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         
         _btnDelete = [MoButton new];
         _btnDelete.image = [NSImage imageNamed:@"btnDel"];
+        _btnDelete.focusRingType = NSFocusRingTypeNone;
         _textGrid = [NSGridView gridViewWithViews:@[@[_title],
                                                     @[_location],
                                                     @[_duration],
