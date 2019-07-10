@@ -67,7 +67,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Public properties (main thread)
+#pragma mark - Public (main thread)
 
 - (BOOL)calendarAccessGranted {
     return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusAuthorized;
@@ -77,8 +77,6 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     EKCalendar *cal = [_store defaultCalendarForNewEvents];
     return cal.calendarIdentifier;
 }
-
-#pragma mark - Public methods (main thread)
 
 - (EKEvent *)newEvent {
     return [EKEvent eventWithEventStore:_store];
@@ -168,7 +166,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     });
 }
 
-#pragma mark - Private methods (main thread)
+#pragma mark - Private (main thread)
 
 - (void)_fetchSourcesAndCalendars {
     // Get an array of the user's calendars sorted first by
@@ -238,7 +236,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     });
 }
 
-#pragma mark - Private methods (GCD thread pool)
+#pragma mark - Private (GCD thread pool)
 
 - (void)_fetchEventsWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate {
     NSDate *startDate = MakeNSDateWithDate(startMoDate, _cal);
