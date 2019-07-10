@@ -231,8 +231,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     [_previouslyFetchedDates addIndexesInRange:dateRange];
     
     // Finally, fetch.
-    @autoreleasepool {
-        dispatch_async(_queueWork, ^{
+    dispatch_async(_queueWork, ^{
+        @autoreleasepool {
             if (refetch) {
                 self->_eventsForDate = [NSMutableDictionary new];
             }
@@ -240,8 +240,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate eventCenterEventsChanged];
             });
-        });
-    }
+        }
+    });
 }
 
 #pragma mark - Private methods (GCD thread pool)
