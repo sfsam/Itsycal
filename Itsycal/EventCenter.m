@@ -55,15 +55,9 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         }];
 
         // Refetch everything when the event store has changed.
-        // Use weakSelf so -dealloc can be called after user calls
-        // -resetEventCenter in ViewController.
         __weak __typeof(self) weakSelf = self;
         [[NSNotificationCenter defaultCenter] addObserverForName:EKEventStoreChangedNotification object:_store queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            // Coalesce notifications arriving within 1 second of
-            // each other because some actions, like creating or
-            // deleting events, generate multiple notifications.
-            [NSObject cancelPreviousPerformRequestsWithTarget:weakSelf selector:@selector(refetchAll) object:nil];
-            [weakSelf performSelector:@selector(refetchAll) withObject:nil afterDelay:1];
+            [weakSelf refetchAll];
         }];
     }
     return self;
