@@ -36,7 +36,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         _filteredEventsForDate = [NSDictionary new];
         _previouslyFetchedDates = [NSMutableIndexSet new];
         _queueWork = dispatch_queue_create("com.mowglii.Itsycal.queueWork", DISPATCH_QUEUE_SERIAL);
-        _queueIsol = dispatch_queue_create("com.mowglii.Itsycal.queueIsol", DISPATCH_QUEUE_CONCURRENT);
+        _queueIsol = dispatch_queue_create("com.mowglii.Itsycal.queueIsol", DISPATCH_QUEUE_SERIAL);
         _store = [EKEventStore new];
         [_store requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
             if (granted) {
@@ -323,7 +323,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             }
         }
     }
-    dispatch_barrier_async(_queueIsol, ^{
+    dispatch_async(_queueIsol, ^{
         self->_filteredEventsForDate = [filteredEventsForDate copy];
     });
 }
