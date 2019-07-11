@@ -251,14 +251,21 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     for (EKEvent *event in events) {
         
         // Skip events the current user has declined.
-        // Use 'valueForKey' to get private 'participationStatus' property.
-        // This is much faster than accessing the 'attendees' property
-        // and then looping over the participants to see if the current
-        // user has declined the event.
-        if (event.hasAttendees &&
-            [[event valueForKey:@"participationStatus"] integerValue] == EKParticipantStatusDeclined) {
-            continue;
+        // This code is very slow. Apparently, loading the 'attendees'
+        // property is time consuming. We avoid some of that by first
+        // checking the 'hasAttendees' property. But events that do
+        // have attendees will be slow to process.
+        BOOL skipEventBecauseUserDeclinedIt = NO;
+        if (event.hasAttendees) {
+            for (EKParticipant *participant in event.attendees) {
+                if (participant.isCurrentUser &&
+                    participant.participantStatus == EKParticipantStatusDeclined) {
+                    skipEventBecauseUserDeclinedIt = YES;
+                    break; // break out of inner loop and...
+                }
+            }
         }
+        if (skipEventBecauseUserDeclinedIt) continue; // ...continue outer loop
         
         // Iterate through the days this event spans. We only care about
         // days for this event that are between startDate and endDate.
