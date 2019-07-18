@@ -40,8 +40,6 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>NSRequiresAquaSystemAppearance</key>
-	<false/>
 	<key>SUAllowsAutomaticUpdates</key>
 	<false/>
 	<key>SUEnableAutomaticChecks</key>
