@@ -86,24 +86,14 @@
     // Theme popup
     _themePopup = [NSPopUpButton new];
     _themePopup.translatesAutoresizingMaskIntoConstraints = NO;
-    // On macOS 10.14+, there is a System theme preference in
-    // addition to Light and Dark.
-    if (OSVersionIsAtLeast(10, 14, 0)) {
-        [_themePopup addItemWithTitle:NSLocalizedString(@"System", @"System theme name")];
-    }
+    [_themePopup addItemWithTitle:NSLocalizedString(@"System", @"System theme name")];
     [_themePopup addItemWithTitle:NSLocalizedString(@"Light", @"Light theme name")];
     [_themePopup addItemWithTitle:NSLocalizedString(@"Dark", @"Dark theme name")];
     // The tags will be used to bind the selected theme
     // preference to NSUserDefaults.
-    if (OSVersionIsAtLeast(10, 14, 0)) {
-        [_themePopup itemAtIndex:0].tag = 0; // System
-        [_themePopup itemAtIndex:1].tag = 1; // Light
-        [_themePopup itemAtIndex:2].tag = 2; // Dark
-    }
-    else {
-        [_themePopup itemAtIndex:0].tag = 1; // Light
-        [_themePopup itemAtIndex:1].tag = 2; // Dark
-    }
+    [_themePopup itemAtIndex:0].tag = ThemePreferenceSystem;
+    [_themePopup itemAtIndex:1].tag = ThemePreferenceLight;
+    [_themePopup itemAtIndex:2].tag = ThemePreferenceDark;
     [v addSubview:_themePopup];
     
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_bigger, _useOutlineIcon, _showMonth, _showDayOfWeek, _showEventDots, _showWeeks, _showLocation, _dateTimeFormat, helpButton, _hideIcon, _highlight, themeLabel, _themePopup)];
