@@ -139,6 +139,13 @@ typedef enum : NSInteger {
     : [NSColor colorWithRed:0.95 green:0.2 blue:0 alpha:1];
 }
 
+- (NSColor *)highlightedDOWTextColorAlpha
+{
+    return self.theme != ThemeLight
+    ? [NSColor colorWithRed:0.95 green:0.5 blue:0.4 alpha:0.6]
+    : [NSColor colorWithRed:0.95 green:0.2 blue:0 alpha:0.6];
+}
+
 - (NSColor *)highlightedDOWBackgroundColor
 {
     return self.theme != ThemeLight

@@ -320,21 +320,15 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
             cell.textField.integerValue = date.day;
             cell.date = date;
             cell.isToday = CompareDates(date, self.todayDate) == 0;
+            cell.isHighlighted = [self columnIsMemberOfHighlightedDOWs:col];
+            cell.isInCurrentMonth = (date.month == self.monthDate.month);
             if (date.month == self.monthDate.month) {
-                cell.textField.textColor = [self columnIsMemberOfHighlightedDOWs:col] 
-                  ? [[Themer shared] highlightedDOWTextColor] 
-                  : [[Themer shared] currentMonthTextColor];
                 if (date.day == 1) {
                     _monthStartCell = cell;
                 }
                 else if (date.day == DaysInMonth(date.year, date.month)) {
                     _monthEndCell = cell;
                 }
-            }
-            else {
-                cell.textField.textColor = [self columnIsMemberOfHighlightedDOWs:col] 
-                  ? [[[Themer shared] highlightedDOWTextColor] colorWithAlphaComponent:0.6] 
-                  : [[Themer shared] noncurrentMonthTextColor];
             }
             // ISO 8601 weeks are defined to start on Monday (and
             // really only make sense if self.weekStartDOW is Monday).

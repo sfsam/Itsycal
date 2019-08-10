@@ -45,12 +45,19 @@
     _textFieldVerticalSpace.constant = [[Sizer shared] cellTextFieldVerticalSpace];
 }
 
-- (void)setIsToday:(BOOL)isToday
-{
-    if (isToday != _isToday) {
-        _isToday = isToday;
-        [self setNeedsDisplay:YES];
-    }
+- (void)setIsToday:(BOOL)isToday {
+    _isToday = isToday;
+    [self setNeedsDisplay:YES];
+}
+
+- (void)setIsHighlighted:(BOOL)isHighlighted {
+    _isHighlighted = isHighlighted;
+    [self updateTextColor];
+}
+
+- (void)setIsInCurrentMonth:(BOOL)isInCurrentMonth {
+    _isInCurrentMonth = isInCurrentMonth;
+    [self updateTextColor];
 }
 
 - (void)setIsSelected:(BOOL)isSelected
@@ -75,6 +82,15 @@
         _hasDot = hasDot;
     }
     [self setNeedsDisplay:YES];
+}
+
+- (void)updateTextColor {
+    if (self.isInCurrentMonth) {
+        self.textField.textColor = self.isHighlighted ? [[Themer shared] highlightedDOWTextColor] : [[Themer shared] currentMonthTextColor];
+    }
+    else {
+        self.textField.textColor = self.isHighlighted ? [[Themer shared] highlightedDOWTextColorAlpha] : [[Themer shared] noncurrentMonthTextColor];
+    }
 }
 
 - (void)drawRect:(NSRect)dirtyRect
