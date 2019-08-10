@@ -11,7 +11,7 @@
 
 static const CGFloat kMinimumSpaceBetweenWindowAndScreenEdge = 10;
 static const CGFloat kArrowHeight  = 8;
-static const CGFloat kCornerRadius = 8;
+static const CGFloat kCornerRadius = 10;
 static const CGFloat kBorderWidth  = 1;
 static const CGFloat kMarginWidth  = 2;
 static const CGFloat kWindowTopMargin    = kCornerRadius + kBorderWidth + kArrowHeight;
