@@ -79,24 +79,25 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
+    CGFloat radius = [[Sizer shared] cellRadius];
     if (self.isToday) {
         [[[Themer shared] todayCellColor] set];
         NSRect r = NSInsetRect(self.bounds, 3, 3);
-        NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3];
+        NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius];
         [p setLineWidth:2];
         [p stroke];
     }
     else if (self.isSelected) {
         [[[Themer shared] selectedCellColor] set];
         NSRect r = NSInsetRect(self.bounds, 3, 3);
-        NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3];
+        NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius];
         [p setLineWidth:2];
         [p stroke];
     }
     else if (self.isHovered) {
         [[[Themer shared] hoveredCellColor] set];
         NSRect r = NSInsetRect(self.bounds, 3, 3);
-        NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3];
+        NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius];
         [p setLineWidth:2];
         [p stroke];
     }

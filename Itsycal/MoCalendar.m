@@ -372,7 +372,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         }
     }
     if (startCell && endCell) {
-        _highlightPath = [self bezierPathWithStartCell:startCell endCell:endCell radius:3 inset:3 useRects:YES];
+        CGFloat radius = [[Sizer shared] cellRadius];
+        _highlightPath = [self bezierPathWithStartCell:startCell endCell:endCell radius:radius inset:3 useRects:YES];
         _highlightColor = color;
         // Normalize location of _highlightPath. We will tranlsate it
         // again in drawRect to the correct location.
@@ -776,7 +777,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [[[Themer shared] mainBackgroundColor] set];
     NSRectFill(self.bounds);
 
-    NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:6 inset:0 useRects:NO];
+    CGFloat radius = [[Sizer shared] cellRadius] + 3;
+    NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:radius inset:0 useRects:NO];
     
     [[[Themer shared] currentMonthOutlineColor] set];
     [outlinePath setLineWidth:2];
@@ -797,7 +799,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
                     NSInteger startCol = col - numColsToHighlight;
                     NSRect rect = NSOffsetRect(weekendRect, startCol * sz, 0);
                     rect.size.width *= numColsToHighlight;
-                    [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:6 yRadius:6] fill];
+                    [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:radius yRadius:radius] fill];
                 }
                 numColsToHighlight = 0;
             }

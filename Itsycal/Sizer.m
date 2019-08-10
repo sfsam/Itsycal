@@ -39,6 +39,10 @@ NSString * const kSizeDidChangeNotification = @"SizeDidChangeNotification";
     return SMALL_OR_BIG(3, 4);
 }
 
+- (CGFloat)cellRadius {
+    return SMALL_OR_BIG(3, 5);
+}
+
 - (CGFloat)fontSize {
     return SMALL_OR_BIG(11, 13);
 }

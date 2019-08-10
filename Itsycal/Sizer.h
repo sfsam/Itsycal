@@ -27,6 +27,7 @@ typedef enum : NSInteger {
 @property (nonatomic, readonly) CGFloat cellSize;
 @property (nonatomic, readonly) CGFloat cellTextFieldVerticalSpace;
 @property (nonatomic, readonly) CGFloat cellDotWidth;
+@property (nonatomic, readonly) CGFloat cellRadius;
 @property (nonatomic, readonly) CGFloat fontSize;
 @property (nonatomic, readonly) CGFloat calendarTitleFontSize;
 
