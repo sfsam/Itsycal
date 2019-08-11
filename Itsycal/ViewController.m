@@ -32,6 +32,7 @@
     AgendaViewController  *_agendaVC;
     NSLayoutConstraint    *_bottomMargin;
     NSDateFormatter       *_iconDateFormatter;
+    NSTimeInterval         _inactiveTime;
     NSTimer   *_timer;
     NSString  *_clockFormat;
     BOOL       _clockUsesSeconds;
@@ -118,6 +119,7 @@
     // depend on previous ones.
     
     _iconDateFormatter = [NSDateFormatter new];
+    _inactiveTime = 0;
 
     // Calendar is 'autoupdating' so it handles timezone changes properly.
     _nsCal = [NSCalendar autoupdatingCurrentCalendar];
@@ -648,7 +650,7 @@
         }
     }
     if ([self.itsycalWindow occlusionState] & NSWindowOcclusionStateVisible) {
-        [self.itsycalWindow orderOut:self];
+        [self hideItsycalWindow];
     }
     else {
         [self showItsycalWindow];
@@ -669,12 +671,19 @@
     [self positionItsycalWindow];
     [self.itsycalWindow makeKeyAndOrderFront:self];
     [self.itsycalWindow makeFirstResponder:_moCal];
+    _inactiveTime = 0;
+}
+
+- (void)hideItsycalWindow
+{
+    [self.itsycalWindow orderOut:self];
+    _inactiveTime = MonotonicClockTime();
 }
 
 - (void)cancel:(id)sender
 {
     // User pressed 'esc'.
-    [self.itsycalWindow orderOut:self];
+    [self hideItsycalWindow];
 }
 
 - (void)windowDidResize:(NSNotification *)notification
@@ -685,7 +694,7 @@
 - (void)windowDidResignKey:(NSNotification *)notification
 {
     if (_btnPin.state == NSOffState) {
-        [self.itsycalWindow orderOut:self];
+        [self hideItsycalWindow];
     }
 }
 
@@ -845,6 +854,13 @@
     return MakeDate(c.year, c.month-1, c.day);
 }
 
+- (void)resetCalendarToToday
+{
+    MoDate today = [self todayDate];
+    _moCal.todayDate = today;
+    _moCal.selectedDate = today;
+}
+
 - (void)updateTimer
 {
     // Set up _timer to fire on next minute or second.
@@ -868,6 +884,12 @@
     if (elapsedTime > 60 || fabs(elapsedTime - 60) < 0.5) {
         [_agendaVC dimEventsIfNecessary];
         dimEventsTime = currentTime;
+    }
+    // Reset calendar to today after 10 minutes of inactivity.
+    elapsedTime = currentTime - _inactiveTime;
+    if (_inactiveTime && (elapsedTime > 600 || fabs(elapsedTime - 600) < 0.5)) {
+        [self resetCalendarToToday];
+        _inactiveTime = 0;
     }
     // Update clock if necessary.
     if (_clockUsesTime) [self updateMenubarIcon];
@@ -951,9 +973,7 @@
 {
     // Day changed notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        MoDate today = [self todayDate];
-        self->_moCal.todayDate = today;
-        self->_moCal.selectedDate = today;
+        [self resetCalendarToToday];
         [self updateMenubarIcon];
         [self updateTimer];
     }];
