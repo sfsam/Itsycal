@@ -299,6 +299,7 @@
     [optMenu insertItemWithTitle:NSLocalizedString(@"Check for Updates...", @"") action:@selector(checkForUpdates:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
+    [optMenu insertItemWithTitle:NSLocalizedString(@"Date & Time...", @"") action:@selector(openDateAndTimePrefs:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
     NSPoint pt = NSOffsetRect(_btnOpt.frame, -5, -10).origin;
@@ -357,6 +358,14 @@
 - (void)checkForUpdates:(id)sender
 {
     [[SUUpdater sharedUpdater] checkForUpdates:self];
+}
+
+- (void)openDateAndTimePrefs:(id)sender
+{
+    // Can this be done without hardcoding a path?
+    NSString *path = @"/System/Library/PreferencePanes/DateAndTime.prefPane";
+    NSURL *url = [NSURL fileURLWithPath:path];
+    [NSWorkspace.sharedWorkspace openURL:url];
 }
 
 - (void)resetEventCenter

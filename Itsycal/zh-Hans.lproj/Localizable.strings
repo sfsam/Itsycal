@@ -99,6 +99,9 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Dark" = "深色";
 
 /* No comment provided by engineer. */
+"Date & Time..." = "日期与时间...";
+
+/* No comment provided by engineer. */
 "Datetime pattern" = "日期时间模式";
 
 /* No comment provided by engineer. */
