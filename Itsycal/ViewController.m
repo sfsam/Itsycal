@@ -18,6 +18,7 @@
 #import "TooltipViewController.h"
 #import "MoButton.h"
 #import "MoVFLHelper.h"
+#import "MoUtils.h"
 #import "Sparkle/SUUpdater.h"
 
 @implementation ViewController
@@ -31,8 +32,7 @@
     AgendaViewController  *_agendaVC;
     NSLayoutConstraint    *_bottomMargin;
     NSDateFormatter       *_iconDateFormatter;
-    NSTimer   *_pastEventsTimer;
-    NSTimer   *_clockTimer;
+    NSTimer   *_timer;
     NSString  *_clockFormat;
     BOOL       _clockUsesSeconds;
     BOOL       _clockUsesTime;
@@ -135,7 +135,7 @@
     tooltipVC.ec = _ec;
     _moCal.tooltipVC = tooltipVC;
 
-    [self updatePastEventsTimer];
+    [self updateTimer];
     
     // Now that everything else is set up, we file for notifications.
     // Some of the notification handlers rely on stuff we just set up.
@@ -456,7 +456,6 @@
     if (_clockFormat) {
         [_iconDateFormatter setDateFormat:_clockFormat];
         _statusItem.button.title = [_iconDateFormatter stringFromDate:[NSDate new]];
-        [self updateClock];
     }
 }
 
@@ -837,32 +836,6 @@
     _bottomMargin.constant = _agendaVC.events.count == 0 ? 25 : 30;
 }
 
-- (void)updatePastEventsTimer
-{
-    [_pastEventsTimer invalidate];
-    
-    // Timer fireDate is 1 second after the next minute.
-    
-    NSCalendarUnit units = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
-    NSDateComponents *components = [_nsCal components:units fromDate:[NSDate new]];
-    components.minute += 1;
-    components.second  = 1;
-    NSDate *fireDate = [_nsCal dateFromComponents:components];
-    
-    __weak typeof(self) weakSelf = self;
-    _pastEventsTimer = [[NSTimer alloc] initWithFireDate:fireDate interval:0 repeats:NO block:^(NSTimer * _Nonnull timer) {
-        [weakSelf updatePastEventsTimer];
-    }];
-    
-    // Tolerance lets system wake up more efficiently at the expense of some accuracy.
-    _pastEventsTimer.tolerance = 6;
-    
-    // Add the timer to the main runloop.
-    [[NSRunLoop mainRunLoop] addTimer:_pastEventsTimer forMode:NSRunLoopCommonModes];
-    
-    [_agendaVC dimEventsIfNecessary];
-}
-
 #pragma mark -
 #pragma mark Time
 
@@ -872,38 +845,32 @@
     return MakeDate(c.year, c.month-1, c.day);
 }
 
-- (void)updateClock
+- (void)updateTimer
 {
-    [_clockTimer invalidate];
-    
-    if (!_clockUsesTime) return;
-    
-    // If the clock uses seconds, fire the timer after a second.
-    // Otherwise, fire after 60 seconds. We could just fire every
-    // second in either case, but we want to be as efficient as
-    // possible and only fire when needed.
-
-    NSCalendarUnit units = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
-    
-    if (_clockUsesSeconds) { units |= NSCalendarUnitSecond; }
-    
-    NSDateComponents *components = [_nsCal components:units fromDate:[NSDate new]];
-    
-    if (_clockUsesSeconds) { components.second += 1; }
-    else                   { components.minute += 1; }
-
+    // Set up _timer to fire on next minute or second.
+    NSDateComponents *components = [_nsCal components:NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond fromDate:[NSDate new]];
+    if (_clockUsesSeconds) {
+        components.second += 1;
+    }
+    else {
+        components.minute += 1;
+        components.second = 0;
+    }
     NSDate *fireDate = [_nsCal dateFromComponents:components];
-
-    __weak typeof(self) weakSelf = self;
-    _clockTimer = [[NSTimer alloc] initWithFireDate:fireDate interval:0 repeats:NO block:^(NSTimer * _Nonnull timer) {
-        [weakSelf updateMenubarIcon];
-    }];
-
-    // Tolerance lets system wake up more efficiently at the expense of some accuracy.
-    _clockTimer.tolerance = 0.3;
-
-    // Add the timer to the main runloop.
-    [[NSRunLoop mainRunLoop] addTimer:_clockTimer forMode:NSRunLoopCommonModes];
+    [_timer invalidate];
+    _timer = [[NSTimer alloc] initWithFireDate:fireDate interval:0 target:self selector:@selector(updateTimer) userInfo:nil repeats:NO];
+    [NSRunLoop.mainRunLoop addTimer:_timer forMode:NSRunLoopCommonModes];
+    
+    // Check if past events should be dimmed each minute.
+    static NSTimeInterval dimEventsTime = 0;
+    NSTimeInterval currentTime = MonotonicClockTime();
+    NSTimeInterval elapsedTime = currentTime - dimEventsTime;
+    if (elapsedTime > 60 || fabs(elapsedTime - 60) < 0.5) {
+        [_agendaVC dimEventsIfNecessary];
+        dimEventsTime = currentTime;
+    }
+    // Update clock if necessary.
+    if (_clockUsesTime) [self updateMenubarIcon];
 }
 
 #pragma mark -
@@ -928,12 +895,13 @@
         _clockFormat = format;
     }
     else {
-        [_clockTimer invalidate];
-        _clockTimer = nil;
+        _clockUsesTime = NO;
+        _clockUsesSeconds = NO;
         _clockFormat = nil;
         _statusItem.button.title = @"";
     }
     [self updateMenubarIcon];
+    [self updateTimer];
 }
 
 - (void)processFormatForTimeAndSecondsSpecifiers:(NSString *)format
@@ -987,27 +955,34 @@
         self->_moCal.todayDate = today;
         self->_moCal.selectedDate = today;
         [self updateMenubarIcon];
+        [self updateTimer];
     }];
     
     // Timezone changed notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemTimeZoneDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [self updateMenubarIcon];
+        [self updateTimer];
         [self->_ec refetchAll];
     }];
     
     // Locale notifications
     [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [self updateMenubarIcon];
+        [self updateTimer];
     }];
     
     // System clock notification
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [self updateMenubarIcon];
+        [self updateTimer];
         [self->_ec refetchAll];
     }];
 
     // Wake from sleep notification
-    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(updateMenubarIcon) name:NSWorkspaceDidWakeNotification object:nil];
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserverForName:NSWorkspaceDidWakeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+        [self updateMenubarIcon];
+        [self updateTimer];
+    }];
 
     // Observe NSUserDefaults for preference changes
     for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kHideIcon, kClockFormat]) {
