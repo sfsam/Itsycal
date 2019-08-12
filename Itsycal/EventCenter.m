@@ -114,9 +114,6 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // Filter events based on new calendar selection.
     dispatch_async(_queueWork, ^{
         [self _filterEvents];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate eventCenterEventsChanged];
-        });
     });
 }
 
@@ -301,10 +298,6 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     
     [_eventsForDate addEntriesFromDictionary:eventsForDate];
     [self _filterEvents];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegate eventCenterEventsChanged];
-    });
 }
 
 - (void)_filterEvents {
@@ -322,6 +315,9 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     }
     dispatch_async(_queueIsol, ^{
         self->_filteredEventsForDate = [filteredEventsForDate copy];
+    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.delegate eventCenterEventsChanged];
     });
 }
 
