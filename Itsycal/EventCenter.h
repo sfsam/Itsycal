@@ -55,8 +55,7 @@
 // Clear cached events and refetch.
 - (void)refetchAll;
 
-// Reset/refresh event store
-- (void)reset;
+// Refresh event store.
 - (void)refresh;
 
 @end

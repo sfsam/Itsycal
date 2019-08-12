@@ -197,7 +197,7 @@
         [self showPrefs:self];
     }
     else if (keyChar == 'r' && cmdOptFlag) {
-        [self resetEventCenter];
+        [_ec refresh];
     }
     else {
         [super keyDown:theEvent];
@@ -368,12 +368,6 @@
     NSString *path = @"/System/Library/PreferencePanes/DateAndTime.prefPane";
     NSURL *url = [NSURL fileURLWithPath:path];
     [NSWorkspace.sharedWorkspace openURL:url];
-}
-
-- (void)resetEventCenter
-{
-    [_ec reset];
-    [_ec refresh];
 }
 
 #pragma mark -

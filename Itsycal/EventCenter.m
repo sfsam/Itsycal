@@ -133,14 +133,9 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     [self _fetchEvents:YES];
 }
 
-- (void)reset {
-    dispatch_async(_queueWork, ^{
-        [self->_store reset];
-    });
-}
-
 - (void)refresh {
     dispatch_async(_queueWork, ^{
+        [self->_store reset];
         [self->_store refreshSourcesIfNecessary];
     });
 }
