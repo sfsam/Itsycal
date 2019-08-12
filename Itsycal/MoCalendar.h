@@ -40,6 +40,10 @@ typedef enum : NSInteger {
 // is shown in the calendar.
 @property (nonatomic) MoDate selectedDate;
 
+// The first and last dates displayed by the calendar.
+@property (nonatomic) MoDate firstDate;
+@property (nonatomic) MoDate lastDate;
+
 // Today's date.
 @property (nonatomic) MoDate todayDate;
 

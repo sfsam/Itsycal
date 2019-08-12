@@ -179,6 +179,16 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     }
 }
 
+- (MoDate)firstDate
+{
+    return _dateGrid.cells.firstObject.date;
+}
+
+- (MoDate)lastDate
+{
+    return _dateGrid.cells.lastObject.date;
+}
+
 - (void)setWeekStartDOW:(NSInteger)weekStartDOW
 {
     if (weekStartDOW < 0 || weekStartDOW > 6) {

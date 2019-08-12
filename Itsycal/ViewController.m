@@ -823,23 +823,29 @@
 
 - (MoDate)fetchStartDate
 {
-    return AddDaysToDate(-8, _moCal.monthDate);
+    return _moCal.firstDate;
 }
 
 - (MoDate)fetchEndDate
 {
-    return AddDaysToDate(72, _moCal.monthDate);
+    return AddDaysToDate([self daysToShowInAgenda], _moCal.lastDate);
 }
 
 #pragma mark -
 #pragma mark Agenda
 
-- (void)updateAgenda
+- (NSInteger)daysToShowInAgenda
 {
     NSInteger days = [[NSUserDefaults standardUserDefaults] integerForKey:kShowEventDays];
     days = MIN(MAX(days, 0), 9); // days is in range 0..9
     // days == 8 really means 14; 9 really means 31
     if (days == 8) days = 14; else if (days == 9) days = 31;
+    return days;
+}
+
+- (void)updateAgenda
+{
+    NSInteger days = [self daysToShowInAgenda];
     _agendaVC.events = [_ec datesAndEventsForDate:_moCal.selectedDate days:days];
     [_agendaVC reloadData];
     _bottomMargin.constant = _agendaVC.events.count == 0 ? 25 : 30;
