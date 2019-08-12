@@ -21,9 +21,10 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSMutableDictionary  *_eventsForDate;          // _queueWork
     NSDictionary         *_filteredEventsForDate;  // _queueIsol
     NSMutableIndexSet    *_previouslyFetchedDates; // _queueWork
-    //NSArray            *_sourcesAndCalendars     // main thread
+    NSArray              *_sourcesAndCalendars;    // _queueIsol2
     dispatch_queue_t      _queueWork;
     dispatch_queue_t      _queueIsol;
+    dispatch_queue_t      _queueIsol2;
 }
 
 - (instancetype)initWithCalendar:(NSCalendar *)calendar delegate:(id<EventCenterDelegate>)delegate {
@@ -37,6 +38,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         _previouslyFetchedDates = [NSMutableIndexSet new];
         _queueWork = dispatch_queue_create("com.mowglii.Itsycal.queueWork", DISPATCH_QUEUE_SERIAL);
         _queueIsol = dispatch_queue_create("com.mowglii.Itsycal.queueIsol", DISPATCH_QUEUE_SERIAL);
+        _queueIsol2 = dispatch_queue_create("com.mowglii.Itsycal.queueIsol2", DISPATCH_QUEUE_SERIAL);
         _store = [EKEventStore new];
         [_store requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
             if (granted) {
@@ -90,17 +92,23 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     return [_store removeEvent:event span:span commit:YES error:error];
 }
 
-- (void)updateSelectedCalendars {
+- (void)updateSelectedCalendarsForIdentifier:(NSString *)identifier selected:(BOOL)selected {
     // The user has selected/unselected a calendar in Prefs.
     // Update the kSelectedCalendars array in NSUserDefaults.
-    NSMutableArray *selectedCalendars = [NSMutableArray new];
-    for (id obj in _sourcesAndCalendars) {
-        if ([obj isKindOfClass:[CalendarInfo class]] &&
-            [(CalendarInfo *)obj selected]) {
-            CalendarInfo *info = obj;
-            [selectedCalendars addObject:info.calendar.calendarIdentifier];
+    __block NSMutableArray *selectedCalendars = [NSMutableArray new];
+    dispatch_sync(_queueIsol2, ^{
+        for (id obj in self->_sourcesAndCalendars) {
+            if ([obj isKindOfClass:[CalendarInfo class]]) {
+                CalendarInfo *info = obj;
+                if ([info.calendar.calendarIdentifier isEqualToString:identifier]) {
+                    info.selected = selected;
+                }
+                if (info.selected) {
+                    [selectedCalendars addObject:info.calendar.calendarIdentifier];
+                }
+            }
         }
-    }
+    });
     [[NSUserDefaults standardUserDefaults] setObject:selectedCalendars forKey:kSelectedCalendars];
     
     // Filter events based on new calendar selection.
@@ -110,6 +118,14 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             [self.delegate eventCenterEventsChanged];
         });
     });
+}
+
+- (NSArray *)sourcesAndCalendars {
+    __block NSArray *sourcesAndCalendars;
+    dispatch_sync(_queueIsol2, ^{
+        sourcesAndCalendars = [self->_sourcesAndCalendars copy];
+    });
+    return sourcesAndCalendars;
 }
 
 - (NSDictionary *)filteredEventsForDate {
@@ -136,9 +152,9 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // and refetch everything.
     MoDate startMoDate = [self.delegate fetchStartDate];
     MoDate endMoDate   = [self.delegate fetchEndDate];
-    [self _fetchSourcesAndCalendars];
     dispatch_async(_queueWork, ^{
         @autoreleasepool {
+            [self _fetchSourcesAndCalendars];
             [self _fetchEventsWithStartDate:startMoDate endDate:endMoDate refetch:YES];
         }
     });
@@ -151,7 +167,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     });
 }
 
-#pragma mark - Private (main thread)
+#pragma mark - Private (GCD thread pool)
 
 - (void)_fetchSourcesAndCalendars {
     // Get an array of the user's calendars sorted first by
@@ -181,10 +197,10 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         calInfo.selected = selectedCalendars ? [selectedCalendars containsObject:calendar.calendarIdentifier] : NO;
         [sourcesAndCalendars addObject:calInfo];
     }
-    _sourcesAndCalendars = [NSArray arrayWithArray:sourcesAndCalendars];
+    dispatch_async(_queueIsol2, ^{
+        self->_sourcesAndCalendars = [NSArray arrayWithArray:sourcesAndCalendars];
+    });
 }
-
-#pragma mark - Private (GCD thread pool)
 
 - (void)_fetchEventsWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate refetch:(BOOL)refetch
 {

@@ -24,13 +24,6 @@
 
 @property (nonatomic, readonly) NSString *defaultCalendarIdentifier;
 
-// Sorted array of 2 types: NSStrings and CalendarInfo objects.
-// The NSStrings are the names of calendar sources.
-// The CalendarInfo objects describe the calendars in those sources.
-// Alphabetical by source, then calendar title. Each source is
-// followed by its calendars. Datasource for Prefs tableview.
-@property (nonatomic, readonly) NSArray *sourcesAndCalendars;
-
 // Delegate is responsible for...
 @property (nonatomic, weak) id<EventCenterDelegate> delegate;
 
@@ -44,13 +37,20 @@
 
 - (void)fetchEvents;
 
+// Sorted array of 2 types: NSStrings and CalendarInfo objects.
+// The NSStrings are the names of calendar sources.
+// The CalendarInfo objects describe the calendars in those sources.
+// Alphabetical by source, then calendar title. Each source is
+// followed by its calendars. Datasource for Prefs tableview.
+- (NSArray *)sourcesAndCalendars;
+
 // A dict that maps dates to an array of EventInfo objects.
 // Only contains events for user's selected (i.e. filtered) calendars.
 - (NSDictionary *)filteredEventsForDate;
 
 // When the user selects/unselects calendars in Prefs, we update
 // the list of selected calendars.
-- (void)updateSelectedCalendars;
+- (void)updateSelectedCalendarsForIdentifier:(NSString *)identifier selected:(BOOL)selected;
 
 // Clear cached events and refetch.
 - (void)refetchAll;

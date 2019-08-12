@@ -38,6 +38,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     NSPopUpButton *_firstDayPopup;
     NSTableView *_calendarsTV;
     NSPopUpButton *_agendaDaysPopup;
+    NSArray *_sourcesAndCalendars;
 }
 
 #pragma mark -
@@ -147,6 +148,9 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 - (void)viewWillAppear
 {
     [super viewWillAppear];
+    
+    _sourcesAndCalendars = [self.ec sourcesAndCalendars];
+    
     [_calendarsTV reloadData];
 
     // The API used to check the login item's state (LSSharedFileList) causes
@@ -189,15 +193,19 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 {
     NSInteger row = checkbox.tag;
     BOOL selected = checkbox.state == NSOnState;
-    [self.ec.sourcesAndCalendars[row] setSelected:selected];
-    [self.ec updateSelectedCalendars];
+    CalendarInfo *info = _sourcesAndCalendars[row];
+    NSString *calendarIdentifier = info.calendar.calendarIdentifier;
+    [self.ec updateSelectedCalendarsForIdentifier:calendarIdentifier selected:selected];
+    
+    _sourcesAndCalendars = [self.ec sourcesAndCalendars];
+    [_calendarsTV reloadData];
 }
 
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
     // If access is denied, return 1 row for a message about granting access.
-    return self.ec.calendarAccessGranted ? [self.ec.sourcesAndCalendars count] : 1;
+    return self.ec.calendarAccessGranted ? [_sourcesAndCalendars count] : 1;
 }
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
@@ -229,7 +237,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     // Show a list of sources and calendars with checkboxes.
     
     NSView *v = nil;
-    id obj = self.ec.sourcesAndCalendars[row];
+    id obj = _sourcesAndCalendars[row];
     
     if ([obj isKindOfClass:[NSString class]]) {
         SourceCellView *source = [tableView makeViewWithIdentifier:kSourceCellId owner:self];
