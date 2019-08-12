@@ -20,7 +20,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSCalendar           *_cal;
     NSMutableDictionary  *_eventsForDate;          // _queueWork
     NSDictionary         *_filteredEventsForDate;  // _queueIsol
-    NSMutableIndexSet    *_previouslyFetchedDates; // main thread
+    NSMutableIndexSet    *_previouslyFetchedDates; // _queueWork
     //NSArray            *_sourcesAndCalendars     // main thread
     dispatch_queue_t      _queueWork;
     dispatch_queue_t      _queueIsol;
@@ -121,16 +121,27 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 }
 
 - (void)fetchEvents {
-    [self _fetchEvents:NO];
+    MoDate startMoDate = [self.delegate fetchStartDate];
+    MoDate endMoDate   = [self.delegate fetchEndDate];
+    dispatch_async(_queueWork, ^{
+        @autoreleasepool {
+            [self _fetchEventsWithStartDate:startMoDate endDate:endMoDate refetch:NO];
+        }
+    });
 }
 
 - (void)refetchAll {
     // Either the system told us the event store has changed or
     // we were called by the main controller. Clear the cache
     // and refetch everything.
-    _previouslyFetchedDates = [NSMutableIndexSet new];
+    MoDate startMoDate = [self.delegate fetchStartDate];
+    MoDate endMoDate   = [self.delegate fetchEndDate];
     [self _fetchSourcesAndCalendars];
-    [self _fetchEvents:YES];
+    dispatch_async(_queueWork, ^{
+        @autoreleasepool {
+            [self _fetchEventsWithStartDate:startMoDate endDate:endMoDate refetch:YES];
+        }
+    });
 }
 
 - (void)refresh {
@@ -173,10 +184,14 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     _sourcesAndCalendars = [NSArray arrayWithArray:sourcesAndCalendars];
 }
 
-- (void)_fetchEvents:(BOOL)refetch {
-    MoDate startMoDate = [self.delegate fetchStartDate];
-    MoDate endMoDate   = [self.delegate fetchEndDate];
-    
+#pragma mark - Private (GCD thread pool)
+
+- (void)_fetchEventsWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate refetch:(BOOL)refetch
+{
+    if (refetch) {
+        _previouslyFetchedDates = [NSMutableIndexSet new];
+        _eventsForDate = [NSMutableDictionary new];
+    }
     // Return immediately if we've already fetched for this date range.
     NSRange dateRange = NSMakeRange(startMoDate.julian, endMoDate.julian - startMoDate.julian);
     if ([_previouslyFetchedDates containsIndexesInRange:dateRange]) return;
@@ -196,23 +211,6 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // Update _previouslyFetchedDates for this fetch.
     [_previouslyFetchedDates addIndexesInRange:dateRange];
     
-    // Finally, fetch.
-    dispatch_async(_queueWork, ^{
-        @autoreleasepool {
-            if (refetch) {
-                self->_eventsForDate = [NSMutableDictionary new];
-            }
-            [self _fetchEventsWithStartDate:startMoDate endDate:endMoDate];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.delegate eventCenterEventsChanged];
-            });
-        }
-    });
-}
-
-#pragma mark - Private (GCD thread pool)
-
-- (void)_fetchEventsWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate {
     NSDate *startDate = MakeNSDateWithDate(startMoDate, _cal);
     NSDate *endDate   = MakeNSDateWithDate(endMoDate,   _cal);
     NSPredicate *predicate = [_store predicateForEventsWithStartDate:startDate endDate:endDate calendars:nil];
@@ -287,6 +285,10 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     
     [_eventsForDate addEntriesFromDictionary:eventsForDate];
     [self _filterEvents];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.delegate eventCenterEventsChanged];
+    });
 }
 
 - (void)_filterEvents {
