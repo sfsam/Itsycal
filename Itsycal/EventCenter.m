@@ -112,33 +112,12 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     });
 }
 
-- (NSArray *)eventsForDate:(MoDate)date {
-    if (![_previouslyFetchedDates containsIndex:date.julian]) return nil;
-    NSDate *nsDate = MakeNSDateWithDate(date, _cal);
-    __block NSArray *filteredEventsForNSDate;
-    dispatch_sync(_queueIsol, ^{
-        filteredEventsForNSDate = [self->_filteredEventsForDate[nsDate] copy];
-    });
-    return filteredEventsForNSDate;
-}
-
-- (NSArray *)datesAndEventsForDate:(MoDate)date days:(NSInteger)days {
+- (NSDictionary *)filteredEventsForDate {
     __block NSDictionary *filteredEventsForDate;
     dispatch_sync(_queueIsol, ^{
         filteredEventsForDate = [self->_filteredEventsForDate copy];
     });
-    NSMutableArray *datesAndEvents = [NSMutableArray new];
-    MoDate endDate = AddDaysToDate(days, date);
-    while (CompareDates(date, endDate) < 0) {
-        NSDate *nsDate = MakeNSDateWithDate(date, _cal);
-        NSArray *events = filteredEventsForDate[nsDate];
-        if (events != nil) {
-            [datesAndEvents addObject:nsDate];
-            [datesAndEvents addObjectsFromArray:events];
-        }
-        date = AddDaysToDate(1, date);
-    }
-    return datesAndEvents;
+    return filteredEventsForDate;
 }
 
 - (void)fetchEvents {

@@ -9,11 +9,18 @@
 #import <Cocoa/Cocoa.h>
 #import "AgendaViewController.h"
 #import "MoCalTooltipProvider.h"
+#import "MoDate.h"
 
-@class EventCenter;
+@protocol TooltipViewControllerDelegate;
 
 @interface TooltipViewController : AgendaViewController <MoCalTooltipProvider>
 
-@property (nonatomic, weak) EventCenter *ec;
+@property (nonatomic, weak) id<TooltipViewControllerDelegate> tooltipDelegate;
+
+@end
+
+@protocol TooltipViewControllerDelegate <NSObject>
+
+- (NSArray *)eventsForDate:(MoDate)date;
 
 @end

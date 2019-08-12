@@ -44,15 +44,9 @@
 
 - (void)fetchEvents;
 
-// An array of EventInfo objects for date. The array is
-// sorted with all-day events first, then by startTime.
-// Datasource for calendar tooltips.
-- (NSArray *)eventsForDate:(MoDate)date;
-
-// An array of NSDate and EventInfo objects for events
-// starting at date and continuing for duration.
-// Datasource for agenda.
-- (NSArray *)datesAndEventsForDate:(MoDate)date days:(NSInteger)days;
+// A dict that maps dates to an array of EventInfo objects.
+// Only contains events for user's selected (i.e. filtered) calendars.
+- (NSDictionary *)filteredEventsForDate;
 
 // When the user selects/unselects calendars in Prefs, we update
 // the list of selected calendars.

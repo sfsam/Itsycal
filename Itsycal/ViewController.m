@@ -15,7 +15,6 @@
 #import "PrefsGeneralVC.h"
 #import "PrefsAppearanceVC.h"
 #import "PrefsAboutVC.h"
-#import "TooltipViewController.h"
 #import "MoButton.h"
 #import "MoVFLHelper.h"
 #import "MoUtils.h"
@@ -33,6 +32,7 @@
     NSLayoutConstraint    *_bottomMargin;
     NSDateFormatter       *_iconDateFormatter;
     NSTimeInterval         _inactiveTime;
+    NSDictionary          *_filteredEventsForDate;
     NSTimer   *_timer;
     NSString  *_clockFormat;
     BOOL       _clockUsesSeconds;
@@ -134,7 +134,7 @@
     _ec = [[EventCenter alloc] initWithCalendar:_nsCal delegate:self];
     
     TooltipViewController *tooltipVC = [TooltipViewController new];
-    tooltipVC.ec = _ec;
+    tooltipVC.tooltipDelegate = self;
     _moCal.tooltipVC = tooltipVC;
 
     [self updateTimer];
@@ -809,7 +809,31 @@
 
 - (BOOL)dateHasDot:(MoDate)date
 {
-    return [_ec eventsForDate:date] != nil;
+    return [self eventsForDate:date] != nil;
+}
+
+#pragma mark - Events
+
+- (NSArray *)eventsForDate:(MoDate)date
+{
+    NSDate *nsDate = MakeNSDateWithDate(date, _nsCal);
+    return _filteredEventsForDate[nsDate];
+}
+
+- (NSArray *)datesAndEventsForDate:(MoDate)date days:(NSInteger)days
+{
+    NSMutableArray *datesAndEvents = [NSMutableArray new];
+    MoDate endDate = AddDaysToDate(days, date);
+    while (CompareDates(date, endDate) < 0) {
+        NSDate *nsDate = MakeNSDateWithDate(date, _nsCal);
+        NSArray *events = _filteredEventsForDate[nsDate];
+        if (events != nil) {
+            [datesAndEvents addObject:nsDate];
+            [datesAndEvents addObjectsFromArray:events];
+        }
+        date = AddDaysToDate(1, date);
+    }
+    return datesAndEvents;
 }
 
 #pragma mark -
@@ -817,6 +841,7 @@
 
 - (void)eventCenterEventsChanged
 {
+    _filteredEventsForDate = [_ec filteredEventsForDate];
     [_moCal reloadData];
     [self updateAgenda];
 }
@@ -846,7 +871,7 @@
 - (void)updateAgenda
 {
     NSInteger days = [self daysToShowInAgenda];
-    _agendaVC.events = [_ec datesAndEventsForDate:_moCal.selectedDate days:days];
+    _agendaVC.events = [self datesAndEventsForDate:_moCal.selectedDate days:days];
     [_agendaVC reloadData];
     _bottomMargin.constant = _agendaVC.events.count == 0 ? 25 : 30;
 }
