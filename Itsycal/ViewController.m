@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 mowglii.com. All rights reserved.
 //
 
+#import <os/log.h>
 #import "ViewController.h"
 #import "Itsycal.h"
 #import "ItsycalWindow.h"
@@ -835,6 +836,7 @@
 
 - (void)eventCenterEventsChanged
 {
+    os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
     _filteredEventsForDate = [_ec filteredEventsForDate];
     [_moCal reloadData];
     [self updateAgenda];
