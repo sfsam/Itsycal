@@ -28,12 +28,12 @@
 #define MIN_MODATE_YEAR        (1583)
 #define MAX_MODATE_YEAR        (3333)
 
-//
-// A Gregorian date
-// We use a struct rather than a class because it has
-// copy (value vs reference) semantics and is easier to
-// reason about in use.
-//
+/**
+ * A Gregorian date.
+ * We use a struct rather than a class because it has
+ * copy (value vs reference) semantics and is easier to
+ * reason about in use.
+ */
 typedef struct {
     NSInteger year;   // MIN_MODATE_YEAR...MAX_MODATE_YEAR
     NSInteger month;  // 0...11
@@ -41,108 +41,112 @@ typedef struct {
     NSInteger julian; // Julian Day
 } MoDate;
 
-//
-// Date as NSString
-// date    the date
-// return  an NSString: "yyy-mm-dd (julian)"
-//
+/**
+ * Make an NSString representing a date.
+ * @param   date  The date.
+ * @return  An NSString: "yyy-mm-dd (julian)".
+ */
 NSString *NSStringFromMoDate(MoDate date);
 
-//
-// Make a date
-// year, month day  the components of the date
-// return           a date including julian day
-//
+/**
+ * Make a MoDate given year, month, and day.
+ * @param   year   Year component of date.
+ * @param   month  Month component of date.
+ * @param   day    Day component of date.
+ * @return  The date including the Julian Day.
+ */
 MoDate MakeDate(NSInteger year, NSInteger month, NSInteger day);
 
-//
-// Make a date
-// nsDate    the date as an NSDate
-// calendar  the calendar to use to interpret nsDate
-// return    a date including julian day
-//
+/**
+ * Make a MoDate corresponding to the given NSDate and calendar.
+ * @param   nsDate    The NSDate to be converted.
+ * @param   calendar  The calendar used to interpret nsDate.
+ * @return  A MoDate including the Julian Day.
+ */
 MoDate MakeDateWithNSDate(NSDate *nsDate, NSCalendar *calendar);
 
-//
-// Make an NSDate
-// moDate    the date as a MoDate
-// calendar  the calendar with which to create the resulting NSDate
-// return    an NSDate
-//
+/**
+ * Make an NSDate corresponding to the given MoDate and calendar.
+ * @param   moDate    The MoDate to be converted.
+ * @param   calendar  The calendar with which to create the resulting NSDate.
+ * @return  An NSDate.
+ */
 NSDate *MakeNSDateWithDate(MoDate moDate, NSCalendar *calendar);
 
-//
-// The number of days in a month
-// year, month  the year and month
-// return       the number of days in that month
-//
+/**
+ * The number of days in a month.
+ * @param   year   The year.
+ * @param   month  The month.
+ * @return  The number of days in the given month.
+ */
 NSInteger DaysInMonth(NSInteger year, NSInteger month);
 
-//
-// Is a date valid?
-// date    the date
-// return  YES if date is valid, else NO
-//
+/**
+ * Is a date valid?
+ * @param   date  The date.
+ * @return  YES if date is valid, else NO.
+ */
 BOOL IsValidDate(MoDate date);
 
-//
-// Compare two dates
-// date1    the first date
-// date2    the second date
-// return   the difference in days between date1 and date2
-//          < 0 if date1 is earlier,
-//          > 0 if date1 is later,
-//            0 if the dates are the same
-//
+/**
+ * Compare two dates to see which is earlier.
+ * @param   date1  The first date.
+ * @param   date2  The second date.
+ * @return  The difference in days between date1 and date2.
+ *          The difference is
+ *          < 0 if date1 is earlier;
+ *          > 0 if date1 is later;
+ *            0 if the dates are the same.
+ */
 NSInteger CompareDates(MoDate date1, MoDate date2);
 
-//
-// Get the number of ISO 8601 weeks in a year
-// year    the year
-// return  the number of ISO 8601 weeks in year
-//
+/**
+ * Get the number of ISO 8601 weeks in a year.
+ * @param   year  The year.
+ * @return  The number of ISO 8601 weeks in year.
+ */
 NSInteger WeeksInYear(NSInteger year);
 
-//
-// Get the ISO 8601 week number for a date
-// year    the year of the Gregorian date [1583+]
-// month   the month of the Gregorian date [0..11]
-// day     the day of the Gregorian date [1..31]
-// return  the ISO 8601 week # for year-month-day
-//
+/**
+ * Get the ISO 8601 week number for a date.
+ * @param   year    The year of the Gregorian date [1583+].
+ * @param   month   The month of the Gregorian date [0..11].
+ * @param   day     The day of the Gregorian date [1..31].
+ * @return  The ISO 8601 week number for year-month-day.
+ */
 NSInteger WeekOfYear(NSInteger year, NSInteger month, NSInteger day);
 
-//
-// Convert a Gregorian date to a Julian Day
-// year    the year of the Gregorian date [1583+]
-// month   the month of the Gregorian date [0..11]
-// day     the day of the Gregorian date [1..31]
-// return  the Julian Day for year-month-day
-//
+/**
+ * Make a Julian Day from a Gregorian date.
+ * @param   year   The year of the Gregorian date [1583+].
+ * @param   month  The month of the Gregorian date [0..11].
+ * @param   day    The day of the Gregorian date [1..31].
+ * @return  The Julian Day for year-month-day.
+ */
 NSInteger MakeJulian(NSInteger year, NSInteger month, NSInteger day);
 
-//
-// Convert a Julian Day to a Gregorian date
-// julian  a Julian Day
-// return  the Gregorian date for julian
-//
+/**
+ * Make a Gregorian date from a Julian Day.
+ * @param   julian  A Julian Day.
+ * @return  The Gregorian date corresponding to julian.
+ */
 MoDate MakeGregorian(NSInteger julian);
 
-//
-// Add days to a Gregorian date to make a new date
-// days    the number of days to add
-// date    the date to which to add days
-// return  the date resulting from adding days to the
-//         Gregorian date
-//
+/**
+ * Add days to a Gregorian date to make a new date.
+ * @param   days  The number of days to add.
+ * @param   date  The date to which to add days.
+ * @return  The date resulting from adding days to the
+ *          Gregorian date.
+ */
 MoDate AddDaysToDate(NSInteger days, MoDate date);
 
-//
-// Add months to a month to make a new date
-// months  the number of months to add
-// date    the original year and month (day ignored)
-// return  the month resulting from adding months to the
-//         input month; the day field of the resulting
-//         MoDate struct is 1
-//
+/**
+ * Add months to a month to make a new date.
+ * @param   months  The number of months to add.
+ * @param   date    The original year and month (day ignored).
+ * @return  The month resulting from adding months to the
+ *          input month. The day field of the resulting
+ *          MoDate struct is 1.
+ */
 MoDate AddMonthsToMonth(NSInteger months, MoDate date);
