@@ -30,6 +30,8 @@
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>LSUIElement</key>
 	<true/>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>Itsycal uses AppleEvents to open your calendar app to the selected day. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</string>
 	<key>NSHumanReadableCopyright</key>

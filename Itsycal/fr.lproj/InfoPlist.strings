@@ -1,3 +1,3 @@
-/* No Localized Strings */
+"NSAppleEventsUsageDescription" = "Itsycal utilise AppleEvents pour ouvrir votre application calendrier au jour sélectionné. Vous pouvez modifier ce paramètre dans les Préférences Système › Sécurité et confidentialité › Confidentialité.";
 
 "NSCalendarsUsageDescription" = "Itsycal est plus utile quand il peut afficher les événements de vos calendriers. Vous pouvez modifier ce paramètre dans les Préférences Système › Sécurité et confidentialité › Confidentialité.";
