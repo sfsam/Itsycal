@@ -381,15 +381,6 @@
     _statusItem.button.action = @selector(statusItemClicked:);
     _statusItem.highlightMode = NO; // Deprecated in 10.10, but what is alternative?
 
-    // Use monospaced font in case user sets custom clock format
-    // so the status item doesn't move when the time changes.
-    // We modify the default font with a font descriptor instead
-    // of using +monospacedDigitSystemFontOfSize:weight: because
-    // we get slightly darker looking ':' characters this way.
-    NSFontDescriptor *fontDesc = [_statusItem.button.font fontDescriptor];
-    fontDesc = [fontDesc fontDescriptorByAddingAttributes:@{NSFontFeatureSettingsAttribute: @[@{NSFontFeatureTypeIdentifierKey: @(kNumberSpacingType), NSFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)}]}];
-    _statusItem.button.font = [NSFont fontWithDescriptor:fontDesc size:0];
-
     // Remember item position in menubar. (@pskowronek (Github))
     [_statusItem setAutosaveName:@"ItsycalStatusItem"];
 
@@ -400,6 +391,28 @@
     // Notification for when status item view moves
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidMoveNotification object:_statusItem.button.window];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidResizeNotification object:_statusItem.button.window];
+}
+
+- (void)updateStatusItemFont
+{
+    static NSFontDescriptor *origFontDesc = nil;
+    static NSFontDescriptor *monoFontDesc = nil;
+    // Use monospaced font if user sets custom clock format that
+    // uses seconds so the status item doesn't move distractingly
+    // every second. It still moves each minute if showing time.
+    // We modify the default font with a font descriptor instead
+    // of using +monospacedDigitSystemFontOfSize:weight: because
+    // we get slightly darker looking ':' characters this way.
+    if (_clockUsesSeconds) {
+        if (!monoFontDesc) {
+            origFontDesc = [_statusItem.button.font fontDescriptor];
+            monoFontDesc = [origFontDesc fontDescriptorByAddingAttributes:@{NSFontFeatureSettingsAttribute: @[@{NSFontFeatureTypeIdentifierKey: @(kNumberSpacingType), NSFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)}]}];
+        }
+        _statusItem.button.font = [NSFont fontWithDescriptor:monoFontDesc size:0];
+    }
+    else if (origFontDesc) {
+        _statusItem.button.font = [NSFont fontWithDescriptor:origFontDesc size:0];
+    }
 }
 
 - (void)removeStatusItem
@@ -949,6 +962,7 @@
         _clockFormat = nil;
         _statusItem.button.title = @"";
     }
+    [self updateStatusItemFont];
     [self updateMenubarIcon];
     [self updateTimer];
 }
