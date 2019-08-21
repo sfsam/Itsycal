@@ -120,13 +120,6 @@
     [vfl :@"H:|-m-[_showLocation]-(>=m)-|"];
     [vfl :@"H:|-m-[_bigger]-(>=m)-|"];
 
-    self.view = v;
-}
-
-- (void)viewWillAppear
-{
-    [super viewWillAppear];
-
     // Bindings for icon preferences
     [_useOutlineIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseOutlineIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_showMonth bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
@@ -160,6 +153,12 @@
     // Bindings for size
     [_bigger bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
+    self.view = v;
+}
+
+- (void)viewWillAppear
+{
+    [super viewWillAppear];
     [self updateHideIconState];
 
     // We don't want _dateTimeFormat to be first responder.
