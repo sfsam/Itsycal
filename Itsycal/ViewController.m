@@ -467,6 +467,41 @@
         [_iconDateFormatter setDateFormat:_clockFormat];
         _statusItem.button.title = [_iconDateFormatter stringFromDate:[NSDate new]];
     }
+    [self adjustStatusItemWidthIfNecessary];
+}
+
+- (void)adjustStatusItemWidthIfNecessary
+{
+    // Set a fixed width for _statusItem if it uses a clock format
+    // but doesn't show seconds. This prevents the _statusItem from
+    // slightly shifting in the menubar when time changes due to the
+    // different widths of digits in the proportional font.
+    static NSStatusBarButton *dummyButton = nil;
+    if (_clockFormat && !_clockUsesSeconds) {
+        if (!dummyButton) {
+            NSFontDescriptor *monoFontDesc = [[_statusItem.button.font fontDescriptor] fontDescriptorByAddingAttributes:@{NSFontFeatureSettingsAttribute: @[@{NSFontFeatureTypeIdentifierKey: @(kNumberSpacingType), NSFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)}]}];
+            dummyButton = [NSStatusBarButton new];
+            dummyButton.font = [NSFont fontWithDescriptor:monoFontDesc size:0];
+        }
+        // Same logic as -updateMenubarIcon to set up dummyButton
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:kHideIcon]) {
+            dummyButton.image = nil;
+            dummyButton.imagePosition = NSNoImage;
+        }
+        else {
+            dummyButton.image = _statusItem.button.image;
+            dummyButton.imagePosition = _clockFormat ? NSImageLeft : NSImageOnly;
+        }
+        dummyButton.title = _statusItem.button.title;
+        [dummyButton sizeToFit];
+        _statusItem.length = NSWidth(dummyButton.frame) + 2;
+        os_log(OS_LOG_DEFAULT, "[%@] %@ --> %.0f, %.0f", [self iconText], _statusItem.button.title,
+              _statusItem.button.frame.size.width, _statusItem.button.image.size.width);
+    }
+    else {
+        _statusItem.length = NSVariableStatusItemLength;
+        os_log(OS_LOG_DEFAULT, "VARIABLE LENGTH ITEM");
+    }
 }
 
 - (NSImage *)iconImageForText:(NSString *)text
