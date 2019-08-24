@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		921181C722E0192A00591FDA /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 921181C622E0192A00591FDA /* Colors.xcassets */; };
 		9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */; };
 		921E62CD1E26B3EA007B029F /* PrefsGeneralVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */; };
 		921E62D01E26B9D2007B029F /* PrefsAppearanceVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62CF1E26B9D2007B029F /* PrefsAppearanceVC.m */; };
@@ -65,6 +66,7 @@
 		6F21F6F31F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.strings"; sourceTree = "<group>"; };
 		6F21F6F41F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		6F21F6F51F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		921181C622E0192A00591FDA /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		9215AD4A1E3AECA700317FAE /* MoVFLHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoVFLHelper.h; sourceTree = "<group>"; };
 		9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoVFLHelper.m; sourceTree = "<group>"; };
 		921949F3225D283E00223258 /* Itsycal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Itsycal.entitlements; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 				923E78DB1D385CD80012979B /* Frameworks */,
 				9242A55F1A82A136005AA4B3 /* Supporting Files */,
 				9242A5661A82A136005AA4B3 /* Images.xcassets */,
+				921181C622E0192A00591FDA /* Colors.xcassets */,
 				9242A5681A82A136005AA4B3 /* MainMenu.xib */,
 				922B6B911A856A7D00DEA9CD /* SBCalendar.h */,
 				9242A5611A82A136005AA4B3 /* AppDelegate.h */,
@@ -354,6 +357,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				921181C722E0192A00591FDA /* Colors.xcassets in Resources */,
 				9242A5671A82A136005AA4B3 /* Images.xcassets in Resources */,
 				922B6BC41A87EDBE00DEA9CD /* InfoPlist.strings in Resources */,
 				922B6BBE1A87EDBD00DEA9CD /* Localizable.strings in Resources */,

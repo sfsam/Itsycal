@@ -131,15 +131,8 @@ static CGFloat kToolipWindowWidth = 200;
         // Draw tooltip background and fix tooltip width.
         self.contentView = [MoCalTooltipContentView new];
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:kToolipWindowWidth]];
-        
-        REGISTER_FOR_THEME_CHANGE;
     }
     return self;
-}
-
-- (void)themeChanged:(id)sender
-{
-    [[super contentView] setNeedsDisplay:YES];
 }
 
 @end
@@ -155,10 +148,10 @@ static CGFloat kToolipWindowWidth = 200;
     // A rounded rect with a light gray border.
     NSRect r = NSInsetRect(self.bounds, 1, 1);
     NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:4 yRadius:4];
-    [[[Themer shared] windowBorderColor] setStroke];
+    [Theme.windowBorderColor setStroke];
     [p setLineWidth:2];
     [p stroke];
-    [[[Themer shared] tooltipBackgroundColor] setFill];
+    [Theme.tooltipBackgroundColor setFill];
     [p fill];
 }
 

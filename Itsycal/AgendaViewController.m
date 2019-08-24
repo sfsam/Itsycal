@@ -78,7 +78,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
-    _tv.backgroundColor = [[Themer shared] mainBackgroundColor];
+    _tv.backgroundColor = Theme.mainBackgroundColor;
     _tv.floatsGroupRows = YES;
     _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
@@ -98,12 +98,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[tv]|" options:0 metrics:nil views:@{@"tv": tvContainer}]];
     
     self.view = v;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    REGISTER_FOR_THEME_CHANGE;
 }
 
 - (void)viewWillAppear
@@ -166,13 +160,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [[_tv enclosingScrollView] flashScrollers];
     [self.view setNeedsLayout:YES];
     [_popover close];
-}
-
-- (void)themeChanged:(id)sender
-{
-    [_tv.enclosingScrollView.verticalScroller setNeedsDisplay:YES];
-    self.backgroundColor = [[Themer shared] mainBackgroundColor];
-    [self reloadData];
 }
 
 #pragma mark -
@@ -264,16 +251,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
     
     [_popover setContentSize:popoverVC.size];
+    [_popover setAppearance:NSApp.effectiveAppearance];
     [_popover showRelativeToRect:[_tv rectOfRow:_tv.clickedRow] ofView:_tv preferredEdge:NSRectEdgeMinX];
     
     // Prevent popoverVC's _note from eating key presses (like esc and delete).
     [popoverVC.view.window makeFirstResponder:popoverVC.btnDelete];
-
-    // Hack to color entire popover background, including arrow.
-    // stackoverflow.com/a/40186763/111418
-    NSView *popoverContentviewSuperview = _popover.contentViewController.view.superview;
-    popoverContentviewSuperview.wantsLayer = YES;
-    popoverContentviewSuperview.layer.backgroundColor = [[Themer shared] mainBackgroundColor].CGColor;
 }
 
 #pragma mark -
@@ -306,8 +288,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
         cell.date = obj;
         cell.dayTextField.stringValue = [self dayStringForDate:obj];
         cell.DOWTextField.stringValue = [self DOWStringForDate:obj];
-        cell.dayTextField.textColor = [[Themer shared] agendaDayTextColor];
-        cell.DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
+        cell.dayTextField.textColor = Theme.agendaDayTextColor;
+        cell.DOWTextField.textColor = Theme.agendaDOWTextColor;
         v = cell;
     }
     else {
@@ -321,7 +303,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         if (!info.isStartDate && !info.isAllDay &&
             [self.nsCal isDateInToday:info.event.endDate] &&
             [NSDate.date compare:info.event.endDate] == NSOrderedDescending) {
-            cell.titleTextField.textColor = [[Themer shared] agendaEventDateTextColor];
+            cell.titleTextField.textColor = Theme.agendaEventDateTextColor;
             cell.dim = YES;
         }
         v = cell;
@@ -483,11 +465,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
         }
     }
     cell.titleTextField.stringValue = title;
-    cell.titleTextField.textColor = [[Themer shared] agendaEventTextColor];
+    cell.titleTextField.textColor = Theme.agendaEventTextColor;
     cell.locationTextField.stringValue = location;
-    cell.locationTextField.textColor = [[Themer shared] agendaEventDateTextColor];
+    cell.locationTextField.textColor = Theme.agendaEventDateTextColor;
     cell.durationTextField.stringValue = duration;
-    cell.durationTextField.textColor = [[Themer shared] agendaEventDateTextColor];
+    cell.durationTextField.textColor = Theme.agendaEventDateTextColor;
 }
 
 #pragma mark -
@@ -519,7 +501,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)flag
 {
-    [[[Themer shared] mainBackgroundColor] set];
+    [Theme.mainBackgroundColor set];
     NSRectFill(slotRect);
 }
 
@@ -535,9 +517,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @implementation AgendaRowView
 
 - (void)drawBackgroundInRect:(NSRect)dirtyRect {
-    [super drawBackgroundInRect:dirtyRect];
+    [Theme.mainBackgroundColor set];
+    NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
     if (self.isHovered) {
-        [[[Themer shared] agendaHoverColor] set];
+        [Theme.agendaHoverColor set];
         NSRect rect = NSInsetRect(self.bounds, 2, 1);
         [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:5 yRadius:5] fill];
     }
@@ -569,13 +552,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _dayTextField = [NSTextField labelWithString:@""];
         _dayTextField.translatesAutoresizingMaskIntoConstraints = NO;
         _dayTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
-        _dayTextField.textColor = [[Themer shared] agendaDayTextColor];
+        _dayTextField.textColor = Theme.agendaDayTextColor;
         [_dayTextField setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
         
         _DOWTextField = [NSTextField labelWithString:@""];
         _DOWTextField.translatesAutoresizingMaskIntoConstraints = NO;
         _DOWTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
-        _DOWTextField.textColor = [[Themer shared] agendaDOWTextColor];
+        _DOWTextField.textColor = Theme.agendaDOWTextColor;
 
         [self addSubview:_dayTextField];
         [self addSubview:_DOWTextField];
@@ -603,10 +586,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    [[[Themer shared] mainBackgroundColor] set];
+    [Theme.mainBackgroundColor set];
     NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
     NSRect r = NSMakeRect(4, self.bounds.size.height - 4, self.bounds.size.width - 8, 1);
-    [[[Themer shared] agendaDividerColor] set];
+    [Theme.agendaDividerColor set];
     NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
 }
 
@@ -732,6 +715,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSTextField* (^label)(CGFloat) = ^NSTextField* (CGFloat weight) {
         NSTextField *lbl = [NSTextField wrappingLabelWithString:@""];
         lbl.preferredMaxLayoutWidth = POPOVER_TEXT_WIDTH;
+        lbl.drawsBackground = NO;
+        lbl.textColor = Theme.currentMonthTextColor;
         [lbl setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
         return lbl;
     };
@@ -752,8 +737,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _note.autoresizingMask = NSViewHeightSizable;
         _note.editable = NO;
         _note.selectable = YES;
-        _note.drawsBackground = YES;
-        _note.backgroundColor = [[Themer shared] mainBackgroundColor];
+        _note.drawsBackground = NO;
         _note.textContainer.lineFragmentPadding = 0;
         _note.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
         _note.textContainer.widthTracksTextView = YES;
@@ -903,7 +887,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         else {
             NSMutableAttributedString *notes = [self notesWithHTML:trimmedNotes];
             [notes addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:[[Sizer shared] fontSize]] range:NSMakeRange(0, notes.length)];
-            [notes addAttribute:NSForegroundColorAttributeName value:[[Themer shared] agendaEventTextColor] range:NSMakeRange(0, notes.length)];
+            [notes addAttribute:NSForegroundColorAttributeName value:Theme.agendaEventTextColor range:NSMakeRange(0, notes.length)];
             [_linkDetector enumerateMatchesInString:notes.string options:kNilOptions range:NSMakeRange(0, notes.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
                 [notes addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];
             }];
@@ -929,12 +913,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _duration.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
     _recurrence.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
 
-    _title.textColor = [[Themer shared] agendaEventTextColor];
-    _location.textColor = [[Themer shared] agendaEventTextColor];
-    _duration.textColor = [[Themer shared] agendaEventTextColor];
-    _recurrence.textColor = [[Themer shared] agendaEventTextColor];
+    _title.textColor = Theme.agendaEventTextColor;
+    _location.textColor = Theme.agendaEventTextColor;
+    _duration.textColor = Theme.agendaEventTextColor;
+    _recurrence.textColor = Theme.agendaEventTextColor;
     
-    _note.backgroundColor = [[Themer shared] mainBackgroundColor];
+    _note.backgroundColor = Theme.mainBackgroundColor;
 }
 
 - (NSSize)size

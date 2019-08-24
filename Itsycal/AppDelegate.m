@@ -23,9 +23,6 @@
 
 + (void)initialize
 {
-    // defaultThemePref is 0 (System) for macOS 10.14+, else 1 (Light).
-    NSInteger defaultThemePref = OSVersionIsAtLeast(10, 14, 0) ? 0 : 1;
-
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults registerDefaults:@{
         kPinItsycal:           @(NO),
@@ -36,7 +33,7 @@
         kShowMonthInIcon:      @(NO),
         kShowDayOfWeekInIcon:  @(NO),
         kShowEventDots:        @(YES),
-        kThemePreference:      @(defaultThemePref),
+        kThemePreference:      @0, // System=0, Light=1, Dark=2
         kHideIcon:             @(NO)
     }];
     
@@ -46,8 +43,8 @@
     
     // Set kThemePreference to defaultThemePref in the unlikely case it's invalid.
     NSInteger themePref = [defaults integerForKey:kThemePreference];
-    if (themePref < defaultThemePref || themePref > 2) {
-        [defaults setInteger:defaultThemePref forKey:kThemePreference];
+    if (themePref < 0 || themePref > 2) {
+        [defaults setInteger:0 forKey:kThemePreference];
     }
 }
 
@@ -60,6 +57,10 @@
 #ifndef DEBUG
     [self checkIfRunFromApplicationsFolder];
 #endif
+
+    // Initialize the 'Theme' global variable which can be
+    // used throught the app instead of '[Themer shared]'.
+    [Themer shared];
 
     // 0.11.1 introduced a new way to highlight columns in the calendar.
     [self weekendHighlightFixup];
@@ -84,12 +85,11 @@
     _wc.contentViewController = vc;
     _wc.window.delegate = vc;
     
-    // This call instantiates the Themer shared object and then
-    // establishes the binding to NSUserDefaultsController. On macOS
+    // Establish the binding to NSUserDefaultsController. On macOS
     // 10.14+, it is crucial for this call to be made AFTER the window
-    // is created because Themer instantiation relies on checking a
+    // is created because Theme instantiation relies on checking a
     // property on the window to determine its appearance.
-    [[Themer shared] bind:@"themePreference" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [Theme bind:@"themePreference" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification

@@ -63,7 +63,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     _monthLabel = [NSTextField labelWithString:@""];
     _monthLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _monthLabel.font = [NSFont systemFontOfSize:[[Sizer shared] calendarTitleFontSize] weight:NSFontWeightSemibold];
-    _monthLabel.textColor = [[Themer shared] monthTextColor];
+    _monthLabel.textColor = Theme.monthTextColor;
     
     // Make long labels compress and show ellipsis instead of forcing the window wider.
     // Prevent short label from pulling buttons leftward toward it.
@@ -129,8 +129,6 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     _selectedDate = MakeDate(1583, 0, 1);   // date set in setMonthDate:selectedDate:
     _todayDate    = MakeDate(1986, 10, 12); // so calendar will draw on first display
     [self setMonthDate:_todayDate selectedDate:_todayDate];
-    
-    REGISTER_FOR_THEME_CHANGE;
     
     REGISTER_FOR_SIZE_CHANGE;
 }
@@ -306,8 +304,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         NSString *dow = [NSString stringWithFormat:@"%@", dows[COL_DOW(self.weekStartDOW, col)]];
         [[_dowGrid.cells[col] textField] setStringValue:dow];
         [[_dowGrid.cells[col] textField] setTextColor:[self columnIsMemberOfHighlightedDOWs:col] 
-         ? [[Themer shared] highlightedDOWTextColor]
-         : [[Themer shared] DOWTextColor]];
+         ? Theme.highlightedDOWTextColor
+         : Theme.DOWTextColor];
     }
     
     // Get the first of the month.
@@ -345,7 +343,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
             // If the current column is Monday, use this date to
             // calculate the week number for this row.
             if (col == DOW_COL(self.weekStartDOW, 1)) {
-                [_weekGrid.cells[row] textField].textColor = [[Themer shared] weekTextColor];
+                [_weekGrid.cells[row] textField].textColor = Theme.weekTextColor;
                 [_weekGrid.cells[row] textField].integerValue = WeekOfYear(date.year, date.month, date.day);
             }
             date = AddDaysToDate(1, date);
@@ -393,12 +391,6 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     _highlightPath = nil;
     _highlightColor = nil;
     [self setNeedsDisplay:YES];
-}
-
-- (void)themeChanged:(id)sender
-{
-    _monthLabel.textColor = [[Themer shared] monthTextColor];
-    [self updateCalendar];
 }
 
 - (void)sizeChanged:(id)sender
@@ -778,13 +770,13 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    [[[Themer shared] mainBackgroundColor] set];
+    [Theme.mainBackgroundColor set];
     NSRectFill(self.bounds);
 
     CGFloat radius = [[Sizer shared] cellRadius] + 3;
     NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:radius inset:0 useRects:NO];
     
-    [[[Themer shared] currentMonthOutlineColor] set];
+    [Theme.currentMonthOutlineColor set];
     [outlinePath setLineWidth:2];
     [outlinePath stroke];
     
@@ -792,7 +784,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     if (self.highlightedDOWs) {
         NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
         weekendRect.size.width = sz;
-        [[[Themer shared] highlightedDOWBackgroundColor] set];
+        [Theme.highlightedDOWBackgroundColor set];
         NSInteger numColsToHighlight = 0;
         for (NSInteger col = 0; col <= 7; col++) {
             if (col < 7 && [self columnIsMemberOfHighlightedDOWs:col]) {

@@ -28,8 +28,8 @@
     
     self = [super initWithFrame:frameRect];
     if (self) {
-        _bkg = box([[Themer shared] resizeHandleBackgroundColor]);
-        _handle = box([[Themer shared] resizeHandleForegroundColor]);
+        _bkg = box(Theme.resizeHandleBackgroundColor);
+        _handle = box(Theme.resizeHandleForegroundColor);
         
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_bkg, _handle)];
         [vfl :@"V:|[_bkg]|"];
@@ -39,8 +39,6 @@
         [_handle.heightAnchor constraintEqualToConstant:4].active = YES;
         [_handle.centerXAnchor constraintEqualToAnchor:self.centerXAnchor].active = YES;
         [_handle.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active = YES;
-        
-        REGISTER_FOR_THEME_CHANGE;
     }
     return self;
 }
@@ -48,13 +46,6 @@
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
 {
     return YES;
-}
-
-- (void)themeChanged:(id)sender
-{
-    _bkg.fillColor = [[Themer shared] resizeHandleBackgroundColor];
-    _handle.fillColor = [[Themer shared] resizeHandleForegroundColor];
-
 }
 
 - (void)dim:(BOOL)shouldDim

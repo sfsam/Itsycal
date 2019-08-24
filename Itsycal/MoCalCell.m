@@ -86,10 +86,10 @@
 
 - (void)updateTextColor {
     if (self.isInCurrentMonth) {
-        self.textField.textColor = self.isHighlighted ? [[Themer shared] highlightedDOWTextColor] : [[Themer shared] currentMonthTextColor];
+        self.textField.textColor = self.isHighlighted ? Theme.highlightedDOWTextColor : Theme.currentMonthTextColor;
     }
     else {
-        self.textField.textColor = self.isHighlighted ? [[Themer shared] highlightedDOWTextColorAlpha] : [[Themer shared] noncurrentMonthTextColor];
+        self.textField.textColor = self.isHighlighted ? Theme.highlightedDOWTextColorAlpha : Theme.noncurrentMonthTextColor;
     }
 }
 
@@ -97,21 +97,21 @@
 {
     CGFloat radius = [[Sizer shared] cellRadius];
     if (self.isToday) {
-        [[[Themer shared] todayCellColor] set];
+        [Theme.todayCellColor set];
         NSRect r = NSInsetRect(self.bounds, 3, 3);
         NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius];
         [p setLineWidth:2];
         [p stroke];
     }
     else if (self.isSelected) {
-        [[[Themer shared] selectedCellColor] set];
+        [Theme.selectedCellColor set];
         NSRect r = NSInsetRect(self.bounds, 3, 3);
         NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius];
         [p setLineWidth:2];
         [p stroke];
     }
     else if (self.isHovered) {
-        [[[Themer shared] hoveredCellColor] set];
+        [Theme.hoveredCellColor set];
         NSRect r = NSInsetRect(self.bounds, 3, 3);
         NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius];
         [p setLineWidth:2];

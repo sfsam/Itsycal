@@ -45,8 +45,6 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
         [self setCollectionBehavior:NSWindowCollectionBehaviorMoveToActiveSpace];
         // Fade out when -[NSWindow orderOut:] is called.
         [self setAnimationBehavior:NSWindowAnimationBehaviorUtilityWindow];
-        
-        REGISTER_FOR_THEME_CHANGE;
     }
     return self;
 }
@@ -145,11 +143,6 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
     [self invalidateShadow];
 }
 
-- (void)themeChanged:(id)sender
-{
-    [[super contentView] setNeedsDisplay:YES];
-}
-
 @end
 
 #pragma mark -
@@ -175,7 +168,7 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
     // If dirtyRect is inside the body of the window, we can just fill it.
     NSRect bodyRect = NSInsetRect(rect, 1, kCornerRadius);
     if (NSContainsRect(bodyRect, dirtyRect)) {
-        [[[Themer shared] mainBackgroundColor] setFill];
+        [Theme.mainBackgroundColor setFill];
         NSRectFill(dirtyRect);
         return;
     }
@@ -205,10 +198,10 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
         [arrowPath relativeCurveToPoint:NSMakePoint(kArrowHeight + curveOffset, -kArrowHeight) controlPoint1:NSMakePoint(curveOffset, 0) controlPoint2:NSMakePoint(kArrowHeight, -kArrowHeight)];
         [rectPath appendBezierPath:arrowPath];
     }
-    [[[Themer shared] windowBorderColor] setStroke];
+    [Theme.windowBorderColor setStroke];
     [rectPath setLineWidth:2*kBorderWidth];
     [rectPath stroke];
-    [[[Themer shared] mainBackgroundColor] setFill];
+    [Theme.mainBackgroundColor setFill];
     [rectPath fill];
 }
 

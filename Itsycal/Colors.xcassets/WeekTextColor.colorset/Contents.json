@@ -1,0 +1,32 @@
+{
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  },
+  "colors" : [
+    {
+      "idiom" : "mac",
+      "color" : {
+        "reference" : "systemGrayColor"
+      }
+    },
+    {
+      "idiom" : "mac",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "color" : {
+        "color-space" : "srgb",
+        "components" : {
+          "red" : "0.550",
+          "alpha" : "1.000",
+          "blue" : "0.550",
+          "green" : "0.550"
+        }
+      }
+    }
+  ]
+}
