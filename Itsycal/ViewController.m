@@ -39,6 +39,7 @@
     BOOL       _clockUsesSeconds;
     BOOL       _clockUsesTime;
     NSRect     _screenFrame;
+    NSPopover *_newEventPopover;
 }
 
 - (void)dealloc
@@ -207,6 +208,12 @@
 
 - (void)addCalendarEvent:(id)sender
 {
+    // Close popover if it's already showing
+    if (_newEventPopover.shown) {
+        [_newEventPopover close];
+        return;
+    }
+    
     // Was prefs window open in the past and then hidden when
     // app became inactive? This prevents it from reappearing.
     [self.prefsWC close];
@@ -238,12 +245,20 @@
         return;
     }
 
+    if (!_newEventPopover) {
+        _newEventPopover = [NSPopover new];
+        _newEventPopover.animates = NO;
+    }
     EventViewController *eventVC = [EventViewController new];
     eventVC.ec = _ec;
+    eventVC.enclosingPopover = _newEventPopover;
     eventVC.cal = _nsCal;
     eventVC.title = @"";
     eventVC.calSelectedDate = MakeNSDateWithDate(_moCal.selectedDate, _nsCal);
-    [self presentViewControllerAsModalWindow:eventVC];
+    
+    _newEventPopover.contentViewController = eventVC;
+    _newEventPopover.appearance = NSApp.effectiveAppearance;
+    [_newEventPopover showRelativeToRect:NSZeroRect ofView:_btnAdd preferredEdge:NSRectEdgeMinX];
 }
 
 - (void)showCalendarApp:(id)sender
@@ -347,6 +362,7 @@
 - (void)showAbout:(id)sender
 {
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+    [_newEventPopover close];
     [self.prefsVC showAbout];
     [self.prefsWC showWindow:self];
 }
@@ -354,6 +370,7 @@
 - (void)showPrefs:(id)sender
 {
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+    [_newEventPopover close];
     [self.prefsVC showPrefs];
     [self.prefsWC showWindow:self];
 }
@@ -720,6 +737,7 @@
 - (void)hideItsycalWindow
 {
     [self.itsycalWindow orderOut:self];
+    [_newEventPopover close];
     _inactiveTime = MonotonicClockTime();
 }
 

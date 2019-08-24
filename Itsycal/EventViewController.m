@@ -25,20 +25,17 @@
     
     // TextField maker
     NSTextField* (^txt)(NSString*, BOOL) = ^NSTextField* (NSString *stringValue, BOOL isEditable) {
-        NSTextField *txt = [NSTextField new];
-        txt.translatesAutoresizingMaskIntoConstraints = NO;
-        txt.editable = isEditable;
-        txt.bezeled = isEditable;
-        txt.bezelStyle = NSTextFieldRoundedBezel;
-        txt.drawsBackground = isEditable;
+        NSTextField *txt;
         if (isEditable) {
+            txt = [NSTextField textFieldWithString:@""];
             txt.placeholderString = stringValue;
+            txt.bezelStyle = NSTextFieldRoundedBezel;
         }
         else {
-            txt.stringValue = stringValue;
+            txt = [NSTextField labelWithString:stringValue];
             txt.alignment = NSTextAlignmentRight;
-            txt.textColor = [NSColor secondaryLabelColor];
         }
+        txt.translatesAutoresizingMaskIntoConstraints = NO;
         [v addSubview:txt];
         return txt;
     };
@@ -63,6 +60,14 @@
         pop.target = self;
         [v addSubview:pop];
         return pop;
+    };
+    
+    // Button maker
+    NSButton* (^btn)(NSString*, id, SEL) = ^NSButton* (NSString *title, id target, SEL action) {
+        NSButton *btn = [NSButton buttonWithTitle:title target:target action:action];
+        btn.translatesAutoresizingMaskIntoConstraints = NO;
+        [v addSubview:btn];
+        return btn;
     };
     
     // Title and location text fields
@@ -125,17 +130,12 @@
     _calPopup = popup();
     _calPopup.menu.autoenablesItems = NO;
     
-    // Save button
-    _saveButton = [NSButton new];
-    _saveButton.translatesAutoresizingMaskIntoConstraints = NO;
-    _saveButton.bezelStyle = NSBezelStyleRounded;
-    _saveButton.title = NSLocalizedString(@"Save Event", @"");
+    // Save and Cancel buttons
+    _saveButton = btn(NSLocalizedString(@"Save Event", @""), self, @selector(saveEvent:));
     _saveButton.enabled = NO; // we'll enable when the form is valid.
-    _saveButton.target = self;
-    _saveButton.action = @selector(saveEvent:);
-    [v addSubview:_saveButton];
-
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, _alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _calPopup, _saveButton)];
+    NSButton *cancelButton = btn(NSLocalizedString(@"Cancel", @""), self, @selector(cancelOperation:));
+    
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, _alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _calPopup, cancelButton, _saveButton)];
 
     [vfl :@"V:|-[_title]-[_location]-15-[_allDayCheckbox]"];
     [vfl :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_alertPopup]-20-[_calPopup]" :NSLayoutFormatAlignAllLeading];
@@ -149,8 +149,8 @@
     [vfl :@"H:|-[_repEndLabel]-[_repEndPopup]-[_repEndDate]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[_alertLabel]-[_alertPopup]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:[_calPopup]-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:[_saveButton]-|"];
-    
+    [vfl :@"H:[cancelButton]-[_saveButton]-|" :NSLayoutFormatAlignAllCenterY];
+
     // Require All-day checkbox height to hug the checkbox. Without this,
     // the layout will look funny when the title is multi-line.
     [_allDayCheckbox setContentHuggingPriority:999 forOrientation:NSLayoutConstraintOrientationVertical];
@@ -248,10 +248,10 @@
     [self.view.window makeFirstResponder:_title];
 }
 
-- (void)cancel:(id)sender
+- (void)cancelOperation:(id)sender
 {
-    // User pressed 'esc'.
-    [[self presentingViewController] dismissViewController:self];
+    // User hit 'esc' or pressed Cancel button.
+    [self.enclosingPopover close];
 }
 
 - (void)controlTextDidChange:(NSNotification *)obj
@@ -408,7 +408,7 @@
         [[NSAlert alertWithError:error] runModal];
     }
     else {
-        [[self presentingViewController] dismissViewController:self];
+        [self.enclosingPopover close];
     }
 }
 
