@@ -66,7 +66,7 @@
     NSButton *helpButton = [NSButton new];
     helpButton.title = @"";
     helpButton.translatesAutoresizingMaskIntoConstraints = false;
-    helpButton.bezelStyle = NSHelpButtonBezelStyle;
+    helpButton.bezelStyle = NSBezelStyleHelpButton;
     helpButton.target = self;
     helpButton.action = @selector(openHelpPage:);
     [v addSubview:helpButton];

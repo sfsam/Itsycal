@@ -76,7 +76,7 @@
     _allDayCheckbox.title = @"";
     _allDayCheckbox.target = self;
     _allDayCheckbox.action = @selector(allDayClicked:);
-    [_allDayCheckbox setButtonType:NSSwitchButton];
+    [_allDayCheckbox setButtonType:NSButtonTypeSwitch];
     [v addSubview:_allDayCheckbox];
     
     // Static labels
@@ -128,7 +128,7 @@
     // Save button
     _saveButton = [NSButton new];
     _saveButton.translatesAutoresizingMaskIntoConstraints = NO;
-    _saveButton.bezelStyle = NSRoundedBezelStyle;
+    _saveButton.bezelStyle = NSBezelStyleRounded;
     _saveButton.title = NSLocalizedString(@"Save Event", @"");
     _saveButton.enabled = NO; // we'll enable when the form is valid.
     _saveButton.target = self;
@@ -189,7 +189,7 @@
     // Initial values for form fields.
     _title.stringValue = @"";
     _location.stringValue = @"";
-    _allDayCheckbox.state = NSOffState;
+    _allDayCheckbox.state = NSControlStateValueOff;
     _startDate.datePickerElements = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
     _endDate.datePickerElements   = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
     _startDate.dateValue = initialStart;
@@ -264,7 +264,7 @@
 - (void)allDayClicked:(NSButton *)allDayCheckbox
 {
     // The All-day checkbox toggles the hour/minute controls of the date pickers.
-    if (allDayCheckbox.state == NSOnState) {
+    if (allDayCheckbox.state == NSControlStateValueOn) {
         _startDate.datePickerElements = NSYearMonthDayDatePickerElementFlag;
         _endDate.datePickerElements = NSYearMonthDayDatePickerElementFlag;
     }
@@ -276,7 +276,7 @@
     // The All-day checkbox also toggles the alert popup.
     // Currently, we don't allow the user to set an alert for an All-day event,
     // but a 1-day-ahead alert will be set by the system by default.
-    if (allDayCheckbox.state == NSOnState) {
+    if (allDayCheckbox.state == NSControlStateValueOn) {
         _alertLabel.hidden = YES;
         _alertPopup.hidden = YES;
     }
@@ -330,7 +330,7 @@
     EKEvent *event  = [self.ec newEvent];
     event.title     = [_title.stringValue stringByTrimmingCharactersInSet:whitespaceSet];
     event.location  = [_location.stringValue stringByTrimmingCharactersInSet:whitespaceSet];
-    event.allDay    = _allDayCheckbox.state == NSOnState;
+    event.allDay    = _allDayCheckbox.state == NSControlStateValueOn;
     event.startDate = startDate;
     event.endDate   = endDate;
     event.calendar  = calInfo.calendar;

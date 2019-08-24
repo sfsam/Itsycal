@@ -169,7 +169,7 @@
     [super viewWillAppear];
 
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    _btnPin.state = [defaults boolForKey:kPinItsycal] ? NSOnState : NSOffState;
+    _btnPin.state = [defaults boolForKey:kPinItsycal] ? NSControlStateValueOn : NSControlStateValueOff;
     _moCal.showWeeks = [defaults boolForKey:kShowWeeks];
 
     [self.itsycalWindow makeFirstResponder:_moCal];
@@ -311,7 +311,7 @@
 
 - (void)pin:(id)sender
 {
-    BOOL pin = _btnPin.state == NSOnState;
+    BOOL pin = _btnPin.state == NSControlStateValueOn;
     [[NSUserDefaults standardUserDefaults] setBool:pin forKey:kPinItsycal];
 }
 
@@ -379,7 +379,7 @@
     _statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
     _statusItem.button.target = self;
     _statusItem.button.action = @selector(statusItemClicked:);
-    _statusItem.highlightMode = NO; // Deprecated in 10.10, but what is alternative?
+    [(NSButtonCell *)_statusItem.button.cell setHighlightsBy:NSNoCellMask];
 
     // Remember item position in menubar. (@pskowronek (Github))
     [_statusItem setAutosaveName:@"ItsycalStatusItem"];
@@ -528,7 +528,7 @@
     iconImage = [NSImage imageWithSize:NSMakeSize(width, height) flipped:NO drawingHandler:^BOOL (NSRect rect) {
 
         // Get image's context.
-        CGContextRef const ctx = [[NSGraphicsContext currentContext] graphicsPort];
+        CGContextRef const ctx = [[NSGraphicsContext currentContext] CGContext];
 
         if (useOutlineIcon) {
 
@@ -566,7 +566,7 @@
 
             // Switch to the context for drawing.
             // Drawing done in this context is scaled.
-            NSGraphicsContext *maskGraphicsContext = [NSGraphicsContext graphicsContextWithGraphicsPort:maskContext flipped:NO];
+            NSGraphicsContext *maskGraphicsContext = [NSGraphicsContext graphicsContextWithCGContext:maskContext flipped:NO];
             [NSGraphicsContext saveGraphicsState];
             [NSGraphicsContext setCurrentContext:maskGraphicsContext];
 
@@ -736,7 +736,7 @@
 
 - (void)windowDidResignKey:(NSNotification *)notification
 {
-    if (_btnPin.state == NSOffState) {
+    if (_btnPin.state == NSControlStateValueOff) {
         [self hideItsycalWindow];
     }
 }

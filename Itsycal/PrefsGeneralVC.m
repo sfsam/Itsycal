@@ -168,7 +168,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     // disable this check.
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DoNotCheckLoginItemStatus"] == NO) {
         _login.hidden = NO;
-        _login.state = MOIsLoginItemEnabled() ? NSOnState : NSOffState;
+        _login.state = MOIsLoginItemEnabled() ? NSControlStateValueOn : NSControlStateValueOff;
     }
     else {
         _login.hidden = YES;
@@ -183,7 +183,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 
 - (void)launchAtLogin:(NSButton *)login
 {
-    MOEnableLoginItem(login.state == NSOnState);
+    MOEnableLoginItem(login.state == NSControlStateValueOn);
 }
 
 #pragma mark -
@@ -192,7 +192,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 - (void)calendarClicked:(NSButton *)checkbox
 {
     NSInteger row = checkbox.tag;
-    BOOL selected = checkbox.state == NSOnState;
+    BOOL selected = checkbox.state == NSControlStateValueOn;
     CalendarInfo *info = _sourcesAndCalendars[row];
     NSString *calendarIdentifier = info.calendar.calendarIdentifier;
     [self.ec updateSelectedCalendarsForIdentifier:calendarIdentifier selected:selected];
@@ -251,7 +251,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
         if (!calendar) calendar = [CalendarCellView new];
         calendar.checkbox.target = self;
         calendar.checkbox.action = @selector(calendarClicked:);
-        calendar.checkbox.state = info.selected == NSOnState;
+        calendar.checkbox.state = info.selected == NSControlStateValueOn;
         calendar.checkbox.tag = row;
         calendar.checkbox.attributedTitle = [[NSAttributedString alloc] initWithString:info.calendar.title attributes:@{NSForegroundColorAttributeName: info.calendar.color, NSFontAttributeName: [NSFont boldSystemFontOfSize:12]}];
         v = calendar;
@@ -301,7 +301,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
         self.identifier = kCalendarCellId;
         _checkbox = [NSButton new];
         _checkbox.translatesAutoresizingMaskIntoConstraints = NO;
-        [_checkbox setButtonType:NSSwitchButton];
+        [_checkbox setButtonType:NSButtonTypeSwitch];
         [self addSubview:_checkbox];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[_checkbox]-4-|" options:0 metrics:nil views:@{@"_checkbox": _checkbox}]];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-4-[_checkbox]" options:0 metrics:nil views:@{@"_checkbox": _checkbox}]];

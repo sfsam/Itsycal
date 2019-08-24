@@ -170,7 +170,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)themeChanged:(id)sender
 {
-    [_tv.enclosingScrollView.verticalScroller setNeedsDisplay];
+    [_tv.enclosingScrollView.verticalScroller setNeedsDisplay:YES];
     self.backgroundColor = [[Themer shared] mainBackgroundColor];
     [self reloadData];
 }
