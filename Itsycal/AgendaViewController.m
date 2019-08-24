@@ -616,7 +616,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
 // AgendaEventCell
 // =========================================================================
 
-@implementation AgendaEventCell
+@implementation AgendaEventCell {
+    NSLayoutConstraint *_gridLeadingConstraint;
+}
 
 - (instancetype)init
 {
@@ -643,8 +645,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _grid.rowSpacing = 0;
         [self addSubview:_grid];
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_grid)];
-        [vfl :@"H:|-16-[_grid]-10-|"];
+        [vfl :@"H:[_grid]-10-|"];
         [vfl :@"V:|-3-[_grid]"];
+        
+        CGFloat leadingConstant = [[Sizer shared] agendaEventLeadingMargin];
+        _gridLeadingConstraint = [_grid.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:leadingConstant];
+        _gridLeadingConstraint.active = YES;
         
         REGISTER_FOR_SIZE_CHANGE;
     }
@@ -653,6 +659,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)sizeChanged:(id)sender
 {
+    _gridLeadingConstraint.constant = [[Sizer shared] agendaEventLeadingMargin];
     _titleTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
     _locationTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
     _durationTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
@@ -663,10 +670,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [super setFrame:frame];
     // Setting preferredMaxLayoutWidth allows us to calculate height
     // after word-wrapping.
-    // 26 = 16 + 10 = leading + trailing margins
-    _titleTextField.preferredMaxLayoutWidth = NSWidth(frame) - 26;
-    _locationTextField.preferredMaxLayoutWidth = NSWidth(frame) - 26;
-    _durationTextField.preferredMaxLayoutWidth = NSWidth(frame) - 26;
+    // margins = leading + trailing margins
+    CGFloat margins = _gridLeadingConstraint.constant + 10;
+    _titleTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
+    _locationTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
+    _durationTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
 }
 
 - (CGFloat)height
@@ -688,9 +696,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     CGFloat alpha = self.dim ? 0.5 : 1;
     CGFloat yOffset = [[Sizer shared] fontSize] + 2;
+    CGFloat dotWidth = [[Sizer shared] agendaDotWidth];
     NSColor *dotColor = self.eventInfo.event.calendar.color;
     [[dotColor colorWithAlphaComponent:alpha] set];
-    [[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(6, NSHeight(self.bounds) - yOffset, 6, 6)] fill];
+    [[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(6, NSHeight(self.bounds) - yOffset, dotWidth, dotWidth)] fill];
 }
 
 @end

@@ -27,12 +27,20 @@ NSString * const kSizeDidChangeNotification = @"SizeDidChangeNotification";
     [[NSNotificationCenter defaultCenter] postNotificationName:kSizeDidChangeNotification object:nil];
 }
 
+- (CGFloat)fontSize {
+    return SMALL_OR_BIG(11, 13);
+}
+
+- (CGFloat)calendarTitleFontSize {
+    return SMALL_OR_BIG(14, 16);
+}
+
 - (CGFloat)cellSize {
     return SMALL_OR_BIG(23, 28);
 }
 
 - (CGFloat)cellTextFieldVerticalSpace {
-    return SMALL_OR_BIG(2, 1);
+    return SMALL_OR_BIG(2, 2);
 }
 
 - (CGFloat)cellDotWidth {
@@ -43,12 +51,12 @@ NSString * const kSizeDidChangeNotification = @"SizeDidChangeNotification";
     return SMALL_OR_BIG(3, 5);
 }
 
-- (CGFloat)fontSize {
-    return SMALL_OR_BIG(11, 13);
+- (CGFloat)agendaDotWidth {
+    return SMALL_OR_BIG(6, 7);
 }
 
-- (CGFloat)calendarTitleFontSize {
-    return SMALL_OR_BIG(14, 16);
+- (CGFloat)agendaEventLeadingMargin {
+    return SMALL_OR_BIG(16, 17);
 }
 
 @end
