@@ -13,17 +13,8 @@
 
 @implementation PrefsAppearanceVC
 {
-    NSButton *_useOutlineIcon;
-    NSButton *_showMonth;
-    NSButton *_showDayOfWeek;
     NSTextField *_dateTimeFormat;
     NSButton *_hideIcon;
-    HighlightPicker *_highlight;
-    NSButton *_showEventDots;
-    NSButton *_showWeeks;
-    NSButton *_showLocation;
-    NSPopUpButton *_themePopup;
-    NSButton *_bigger;
 }
 
 #pragma mark -
@@ -43,15 +34,15 @@
     };
 
     // Checkboxes
-    _useOutlineIcon = chkbx(NSLocalizedString(@"Use outline icon", @""));
-    _showMonth = chkbx(NSLocalizedString(@"Show month in icon", @""));
-    _showDayOfWeek = chkbx(NSLocalizedString(@"Show day of week in icon", @""));
-    _showEventDots = chkbx(NSLocalizedString(@"Show event dots", @""));
-    _showWeeks = chkbx(NSLocalizedString(@"Show calendar weeks", @""));
-    _showLocation = chkbx(NSLocalizedString(@"Show event location", @""));
-    _hideIcon = chkbx(NSLocalizedString(@"Hide icon", @""));
-    _bigger = chkbx(NSLocalizedString(@"Use larger text", @""));
+    NSButton *useOutlineIcon = chkbx(NSLocalizedString(@"Use outline icon", @""));
+    NSButton *showMonth = chkbx(NSLocalizedString(@"Show month in icon", @""));
+    NSButton *showDayOfWeek = chkbx(NSLocalizedString(@"Show day of week in icon", @""));
+    NSButton *showEventDots = chkbx(NSLocalizedString(@"Show event dots", @""));
     NSButton *useColoredDots = chkbx(NSLocalizedString(@"Use colored dots", @""));
+    NSButton *showWeeks = chkbx(NSLocalizedString(@"Show calendar weeks", @""));
+    NSButton *showLocation = chkbx(NSLocalizedString(@"Show event location", @""));
+    NSButton *bigger = chkbx(NSLocalizedString(@"Use larger text", @""));
+    _hideIcon = chkbx(NSLocalizedString(@"Hide icon", @""));
 
     // Datetime format text field
     _dateTimeFormat = [NSTextField textFieldWithString:@""];
@@ -73,11 +64,11 @@
     [v addSubview:helpButton];
 
     // Highlight control
-    _highlight = [HighlightPicker new];
-    _highlight.translatesAutoresizingMaskIntoConstraints = NO;
-    _highlight.target = self;
-    _highlight.action = @selector(didChangeHighlight:);
-    [v addSubview:_highlight];
+    HighlightPicker *highlight = [HighlightPicker new];
+    highlight.translatesAutoresizingMaskIntoConstraints = NO;
+    highlight.target = self;
+    highlight.action = @selector(didChangeHighlight:);
+    [v addSubview:highlight];
 
     // Theme label
     NSTextField *themeLabel = [NSTextField labelWithString:NSLocalizedString(@"Theme:", @"")];
@@ -85,69 +76,69 @@
     [v addSubview:themeLabel];
 
     // Theme popup
-    _themePopup = [NSPopUpButton new];
-    _themePopup.translatesAutoresizingMaskIntoConstraints = NO;
-    [_themePopup addItemWithTitle:NSLocalizedString(@"System", @"System theme name")];
-    [_themePopup addItemWithTitle:NSLocalizedString(@"Light", @"Light theme name")];
-    [_themePopup addItemWithTitle:NSLocalizedString(@"Dark", @"Dark theme name")];
+    NSPopUpButton *themePopup = [NSPopUpButton new];
+    themePopup.translatesAutoresizingMaskIntoConstraints = NO;
+    [themePopup addItemWithTitle:NSLocalizedString(@"System", @"System theme name")];
+    [themePopup addItemWithTitle:NSLocalizedString(@"Light", @"Light theme name")];
+    [themePopup addItemWithTitle:NSLocalizedString(@"Dark", @"Dark theme name")];
     // The tags will be used to bind the selected theme
     // preference to NSUserDefaults.
-    [_themePopup itemAtIndex:0].tag = ThemePreferenceSystem;
-    [_themePopup itemAtIndex:1].tag = ThemePreferenceLight;
-    [_themePopup itemAtIndex:2].tag = ThemePreferenceDark;
-    [v addSubview:_themePopup];
+    [themePopup itemAtIndex:0].tag = ThemePreferenceSystem;
+    [themePopup itemAtIndex:1].tag = ThemePreferenceLight;
+    [themePopup itemAtIndex:2].tag = ThemePreferenceDark;
+    [v addSubview:themePopup];
     
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(_bigger, _useOutlineIcon, _showMonth, _showDayOfWeek, _showEventDots, useColoredDots, _showWeeks, _showLocation, _dateTimeFormat, helpButton, _hideIcon, _highlight, themeLabel, _themePopup)];
-    [vfl :@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_themePopup]-m-[_highlight]-m-[_showEventDots]-[useColoredDots]-[_showLocation]-[_showWeeks]-m-[_bigger]-m-|"];
-    [vfl :@"H:|-m-[_useOutlineIcon]-(>=m)-|"];
-    [vfl :@"H:|-m-[_showMonth]-(>=m)-|"];
-    [vfl :@"H:|-m-[_showDayOfWeek]-(>=m)-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(bigger, useOutlineIcon, showMonth, showDayOfWeek, showEventDots, useColoredDots, showWeeks, showLocation, _dateTimeFormat, helpButton, _hideIcon, highlight, themeLabel, themePopup)];
+    [vfl :@"V:|-m-[useOutlineIcon]-[showMonth]-[showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[themePopup]-m-[highlight]-m-[showEventDots]-[useColoredDots]-[showLocation]-[showWeeks]-m-[bigger]-m-|"];
+    [vfl :@"H:|-m-[useOutlineIcon]-(>=m)-|"];
+    [vfl :@"H:|-m-[showMonth]-(>=m)-|"];
+    [vfl :@"H:|-m-[showDayOfWeek]-(>=m)-|"];
     [vfl :@"H:|-m-[_dateTimeFormat]-[helpButton]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[_hideIcon]-(>=m)-|"];
-    [vfl :@"H:|-m-[_highlight]-(>=m)-|"];
-    [vfl :@"H:|-m-[themeLabel]-[_themePopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
-    [vfl :@"H:|-m-[_showEventDots]-(>=m)-|"];
+    [vfl :@"H:|-m-[highlight]-(>=m)-|"];
+    [vfl :@"H:|-m-[themeLabel]-[themePopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
+    [vfl :@"H:|-m-[showEventDots]-(>=m)-|"];
     [vfl :@"H:|-mm-[useColoredDots]-(>=m)-|"];
-    [vfl :@"H:|-m-[_showWeeks]-(>=m)-|"];
-    [vfl :@"H:|-m-[_showLocation]-(>=m)-|"];
-    [vfl :@"H:|-m-[_bigger]-(>=m)-|"];
+    [vfl :@"H:|-m-[showWeeks]-(>=m)-|"];
+    [vfl :@"H:|-m-[showLocation]-(>=m)-|"];
+    [vfl :@"H:|-m-[bigger]-(>=m)-|"];
 
     // Bindings for icon preferences
-    [_useOutlineIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseOutlineIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
-    [_showMonth bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
-    [_showDayOfWeek bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowDayOfWeekInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [useOutlineIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseOutlineIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [showMonth bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [showDayOfWeek bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowDayOfWeekInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_hideIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bind icon prefs enabled state to hide icon's value
-    [_useOutlineIcon bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
-    [_showMonth bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
-    [_showDayOfWeek bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
+    [useOutlineIcon bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
+    [showMonth bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
+    [showDayOfWeek bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
 
     // Binding for datetime format
     [_dateTimeFormat bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kClockFormat] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSMultipleValuesPlaceholderBindingOption: _dateTimeFormat.placeholderString, NSNoSelectionPlaceholderBindingOption: _dateTimeFormat.placeholderString, NSNotApplicablePlaceholderBindingOption: _dateTimeFormat.placeholderString, NSNullPlaceholderBindingOption: _dateTimeFormat.placeholderString}];
 
     // Bindings for showEventDots preference
-    [_showEventDots bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [showEventDots bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bindings for useColoredDots preference
     [useColoredDots bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseColoredDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [useColoredDots bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bindings for showWeeks preference
-    [_showWeeks bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowWeeks] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [showWeeks bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowWeeks] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bindings for showLocation preference
-    [_showLocation bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowLocation] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [showLocation bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowLocation] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
     // Bindings for highlight picker
-    [_highlight bind:@"weekStartDOW" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kWeekStartDOW] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
-    [_highlight bind:@"selectedDOWs" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightedDOWs] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [highlight bind:@"weekStartDOW" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kWeekStartDOW] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [highlight bind:@"selectedDOWs" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightedDOWs] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bindings for theme
-    [_themePopup bind:@"selectedTag" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [themePopup bind:@"selectedTag" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
     // Bindings for size
-    [_bigger bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [bigger bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
     self.view = v;
 }
