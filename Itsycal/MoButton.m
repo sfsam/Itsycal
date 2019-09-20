@@ -35,7 +35,7 @@
     // provide one of their own.
     self.alternateImage = [NSImage imageWithSize:image.size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
         [image drawInRect:dstRect];
-        [[NSColor colorWithRed:0.4 green:0.6 blue:1 alpha:1] set];
+        [NSColor.controlAccentColor set];
         NSRectFillUsingOperation(dstRect, NSCompositingOperationSourceAtop);
         return YES;
     }];
