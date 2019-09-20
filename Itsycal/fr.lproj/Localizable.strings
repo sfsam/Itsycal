@@ -287,6 +287,9 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Tuesday" = "mardi";
 
 /* No comment provided by engineer. */
+"Use colored dots" = "Utiliser des indicateurs colorés";
+
+/* No comment provided by engineer. */
 "Use larger text" = "Utiliser un texte plus grand";
 
 /* No comment provided by engineer. */

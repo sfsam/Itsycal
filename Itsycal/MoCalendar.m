@@ -226,7 +226,13 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 - (void)setShowEventDots:(BOOL)showEventDots
 {
     _showEventDots = showEventDots;
-    [self updateCalendar];
+    [self reloadData];
+}
+
+- (void)setUseColoredDots:(BOOL)useColoredDots
+{
+    _useColoredDots = useColoredDots;
+    [self reloadData];
 }
 
 - (void)setHighlightedDOWs:(DOWMask)highlightedDOWs
@@ -357,7 +363,9 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 - (void)reloadData
 {
     for (MoCalCell *c in _dateGrid.cells) {
-        c.hasDot = self.showEventDots && [self.delegate dateHasDot:c.date];
+        c.dotColors = self.showEventDots
+            ? [self.delegate dotColorsForDate:c.date useColor:self.useColoredDots]
+            : nil;
     }
     [_tooltipWC endTooltip];
 }

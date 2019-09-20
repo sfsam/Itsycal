@@ -57,6 +57,9 @@ typedef enum : NSInteger {
 // Should calendar show dots under days with events?
 @property (nonatomic) BOOL showEventDots;
 
+// Should event dots use calendar colors?
+@property (nonatomic) BOOL useColoredDots;
+
 // DOW colums to highlight
 @property (nonatomic) DOWMask highlightedDOWs;
 
@@ -88,7 +91,12 @@ typedef enum : NSInteger {
 
 - (void)calendarUpdated:(MoCalendar *)cal;
 - (void)calendarSelectionChanged:(MoCalendar *)cal;
-- (BOOL)dateHasDot:(MoDate)date;
+
+// Return an array of up to 3 colors.
+// - Nil means there is no dot.
+// - An empty array means there is a single dot in the default theme color.
+// - Otherwise, there are up to 3 dots with the given colors.
+- (NSArray<NSColor *> *)dotColorsForDate:(MoDate)date useColor:(BOOL)useColor;
 
 @end
 

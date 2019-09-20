@@ -51,6 +51,7 @@
     _showLocation = chkbx(NSLocalizedString(@"Show event location", @""));
     _hideIcon = chkbx(NSLocalizedString(@"Hide icon", @""));
     _bigger = chkbx(NSLocalizedString(@"Use larger text", @""));
+    NSButton *useColoredDots = chkbx(NSLocalizedString(@"Use colored dots", @""));
 
     // Datetime format text field
     _dateTimeFormat = [NSTextField textFieldWithString:@""];
@@ -96,8 +97,8 @@
     [_themePopup itemAtIndex:2].tag = ThemePreferenceDark;
     [v addSubview:_themePopup];
     
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_bigger, _useOutlineIcon, _showMonth, _showDayOfWeek, _showEventDots, _showWeeks, _showLocation, _dateTimeFormat, helpButton, _hideIcon, _highlight, themeLabel, _themePopup)];
-    [vfl :@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_themePopup]-m-[_highlight]-m-[_showEventDots]-[_showLocation]-[_showWeeks]-m-[_bigger]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(_bigger, _useOutlineIcon, _showMonth, _showDayOfWeek, _showEventDots, useColoredDots, _showWeeks, _showLocation, _dateTimeFormat, helpButton, _hideIcon, _highlight, themeLabel, _themePopup)];
+    [vfl :@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_themePopup]-m-[_highlight]-m-[_showEventDots]-[useColoredDots]-[_showLocation]-[_showWeeks]-m-[_bigger]-m-|"];
     [vfl :@"H:|-m-[_useOutlineIcon]-(>=m)-|"];
     [vfl :@"H:|-m-[_showMonth]-(>=m)-|"];
     [vfl :@"H:|-m-[_showDayOfWeek]-(>=m)-|"];
@@ -106,6 +107,7 @@
     [vfl :@"H:|-m-[_highlight]-(>=m)-|"];
     [vfl :@"H:|-m-[themeLabel]-[_themePopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
     [vfl :@"H:|-m-[_showEventDots]-(>=m)-|"];
+    [vfl :@"H:|-mm-[useColoredDots]-(>=m)-|"];
     [vfl :@"H:|-m-[_showWeeks]-(>=m)-|"];
     [vfl :@"H:|-m-[_showLocation]-(>=m)-|"];
     [vfl :@"H:|-m-[_bigger]-(>=m)-|"];
@@ -126,6 +128,10 @@
 
     // Bindings for showEventDots preference
     [_showEventDots bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+
+    // Bindings for useColoredDots preference
+    [useColoredDots bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseColoredDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [useColoredDots bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bindings for showWeeks preference
     [_showWeeks bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowWeeks] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];

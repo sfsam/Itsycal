@@ -147,6 +147,7 @@
 
     [_moCal bind:@"showWeeks" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowWeeks] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_moCal bind:@"showEventDots" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_moCal bind:@"useColoredDots" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseColoredDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_moCal bind:@"highlightedDOWs" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightedDOWs] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_moCal bind:@"weekStartDOW" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kWeekStartDOW] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_agendaVC bind:@"showLocation" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowLocation] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
@@ -868,9 +869,22 @@
     [self updateAgenda];
 }
 
-- (BOOL)dateHasDot:(MoDate)date
+- (NSArray<NSColor *> *)dotColorsForDate:(MoDate)date useColor:(BOOL)useColor
 {
-    return [self eventsForDate:date] != nil;
+    NSArray<EventInfo *> *events = [self eventsForDate:date];
+    if (!events || events.count == 0) return nil;
+    if (!useColor) return @[];
+    NSMutableOrderedSet *colors = [NSMutableOrderedSet new];
+    for (EventInfo *eventInfo in events) {
+        [colors addObject:eventInfo.event.calendar.color];
+        if (colors.count == 3) break;
+    }
+    switch (colors.count) {
+        case 1: return @[colors[0]];
+        case 2: return @[colors[0], colors[1]];
+        case 3: return @[colors[0], colors[1], colors[2]];
+        default: return nil;
+    }
 }
 
 #pragma mark - Events

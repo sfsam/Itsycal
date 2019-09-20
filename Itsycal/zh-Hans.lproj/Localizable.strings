@@ -120,6 +120,9 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "要删除此事件以及将来发生的事件，还是只删除所选的事件？";
 
 /* No comment provided by engineer. */
+"Donate with" = "Donate with";
+
+/* No comment provided by engineer. */
 "End Repeat:" = "结束重复：";
 
 /* No comment provided by engineer. */
@@ -154,6 +157,9 @@ Itsycal is more useful when it can display events from your calendars. You can c
 
 /* No comment provided by engineer. */
 "First day of week:" = "星期开始于：";
+
+/* No comment provided by engineer. */
+"Follow" = "Follow";
 
 /* No comment provided by engineer. */
 "Friday" = "星期五";
@@ -221,6 +227,9 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Options" = "选项";
 
 /* No comment provided by engineer. */
+"or" = "or";
+
+/* No comment provided by engineer. */
 "Pin Itsycal... P" = "固定 Itsycal… P";
 
 /* No comment provided by engineer. */
@@ -276,6 +285,9 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 
 /* No comment provided by engineer. */
 "Tuesday" = "星期二";
+
+/* No comment provided by engineer. */
+"Use colored dots" = "使用彩色圆点";
 
 /* No comment provided by engineer. */
 "Use larger text" = "使用更大的字号";

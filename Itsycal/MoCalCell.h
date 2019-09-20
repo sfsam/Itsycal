@@ -18,6 +18,11 @@
 @property (nonatomic) BOOL isInCurrentMonth;
 @property (nonatomic) BOOL isHovered;
 @property (nonatomic) BOOL isSelected;
-@property (nonatomic) BOOL hasDot;
+
+// An array of up to 3 colors.
+// - Nil means do not draw a dot.
+// - An empty array means draw a single dot in the default theme color.
+// - Otherwise, draw up to 3 dots with the given colors.
+@property (nonatomic) NSArray<NSColor *> *dotColors;
 
 @end

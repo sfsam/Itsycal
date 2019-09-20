@@ -76,11 +76,9 @@
     }
 }
 
-- (void)setHasDot:(BOOL)hasDot
+- (void)setDotColors:(NSArray<NSColor *> *)dotColors
 {
-    if (hasDot != _hasDot) {
-        _hasDot = hasDot;
-    }
+    _dotColors = dotColors;
     [self setNeedsDisplay:YES];
 }
 
@@ -117,14 +115,44 @@
         [p setLineWidth:2];
         [p stroke];
     }
-    if (self.hasDot) {
+    if (self.dotColors) {
         CGFloat sz = [[Sizer shared] cellSize];
         CGFloat dotWidth = [[Sizer shared] cellDotWidth];
-        [self.textField.textColor set];
+        CGFloat dotSpacing = 1.5*dotWidth;
         NSRect r = NSMakeRect(0, 0, dotWidth, dotWidth);
-        r.origin.x = self.bounds.origin.x + sz/2.0 - dotWidth/2.0;
         r.origin.y = self.bounds.origin.y + dotWidth + 2;
-        [[NSBezierPath bezierPathWithOvalInRect:r] fill];
+        if (self.dotColors.count == 0) {
+            [self.textField.textColor set];
+            r.origin.x = self.bounds.origin.x + sz/2.0 - dotWidth/2.0;
+            [[NSBezierPath bezierPathWithOvalInRect:r] fill];
+        }
+        else if (self.dotColors.count == 1) {
+            [self.dotColors[0] set];
+            r.origin.x = self.bounds.origin.x + sz/2.0 - dotWidth/2.0;
+            [[NSBezierPath bezierPathWithOvalInRect:r] fill];
+        }
+        else if (self.dotColors.count == 2) {
+            [self.dotColors[0] set];
+            r.origin.x = self.bounds.origin.x + sz/2.0 - dotSpacing/2 - dotWidth/2.0;
+            [[NSBezierPath bezierPathWithOvalInRect:r] fill];
+            
+            [self.dotColors[1] set];
+            r.origin.x = self.bounds.origin.x + sz/2.0 + dotSpacing/2 - dotWidth/2.0;
+            [[NSBezierPath bezierPathWithOvalInRect:r] fill];
+        }
+        else if (self.dotColors.count == 3) {
+            [self.dotColors[0] set];
+            r.origin.x = self.bounds.origin.x + sz/2.0 - dotSpacing - dotWidth/2.0;
+            [[NSBezierPath bezierPathWithOvalInRect:r] fill];
+            
+            [self.dotColors[1] set];
+            r.origin.x = self.bounds.origin.x + sz/2.0 - dotWidth/2.0;
+            [[NSBezierPath bezierPathWithOvalInRect:r] fill];
+            
+            [self.dotColors[2] set];
+            r.origin.x = self.bounds.origin.x + sz/2.0 + dotSpacing - dotWidth/2.0;
+            [[NSBezierPath bezierPathWithOvalInRect:r] fill];
+        }
     }
 }
 
