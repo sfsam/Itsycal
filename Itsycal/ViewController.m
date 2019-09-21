@@ -789,6 +789,10 @@
 
 - (void)agendaWantsToDeleteEvent:(EKEvent *)event
 {
+    // Was prefs window open in the past and then hidden when
+    // app became inactive? This prevents it from reappearing.
+    [self.prefsWC close];
+    
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
     
     // Make a string showing the event title and duration.
