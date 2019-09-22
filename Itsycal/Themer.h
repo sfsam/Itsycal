@@ -31,7 +31,6 @@ extern Themer *Theme;
 @property (nonatomic, readonly) NSColor *DOWTextColor;
 @property (nonatomic, readonly) NSColor *highlightedDOWBackgroundColor;
 @property (nonatomic, readonly) NSColor *highlightedDOWTextColor;
-@property (nonatomic, readonly) NSColor *highlightedDOWTextColorAlpha;
 @property (nonatomic, readonly) NSColor *hoveredCellColor;
 @property (nonatomic, readonly) NSColor *mainBackgroundColor;
 @property (nonatomic, readonly) NSColor *monthTextColor;

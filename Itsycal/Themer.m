@@ -56,11 +56,11 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)agendaDayTextColor {
-    return [NSColor colorNamed:@"AgendaDayTextColor"];
+    return NSColor.secondaryLabelColor;
 }
 
 - (NSColor *)agendaDividerColor {
-    return [NSColor colorNamed:@"AgendaDividerColor"];
+    return NSColor.separatorColor;
 }
 
 - (NSColor *)agendaDOWTextColor {
@@ -68,7 +68,7 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)agendaEventDateTextColor {
-    return [NSColor colorNamed:@"AgendaEventDateTextColor"];
+    return NSColor.secondaryLabelColor;
 }
 
 - (NSColor *)agendaEventTextColor {
@@ -76,19 +76,19 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)agendaHoverColor {
-    return [NSColor colorNamed:@"AgendaHoverColor"];
+    return [self highlightedDOWBackgroundColor];
 }
 
 - (NSColor *)currentMonthOutlineColor {
-    return [NSColor colorNamed:@"CurrentMonthOutlineColor"];
+    return [NSColor colorWithWhite:0.53 alpha:1];
 }
 
 - (NSColor *)currentMonthTextColor {
-    return [NSColor colorNamed:@"CurrentMonthTextColor"];
+    return NSColor.labelColor;
 }
 
 - (NSColor *)DOWTextColor {
-    return [NSColor colorNamed:@"DOWTextColor"];
+    return NSColor.labelColor;
 }
 
 - (NSColor *)highlightedDOWBackgroundColor {
@@ -96,15 +96,11 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)highlightedDOWTextColor {
-    return [NSColor colorNamed:@"HighlightedDOWTextColor"];
-}
-
-- (NSColor *)highlightedDOWTextColorAlpha {
-    return [NSColor colorNamed:@"HighlightedDOWTextColorAlpha"];
+    return NSColor.secondaryLabelColor;
 }
 
 - (NSColor *)hoveredCellColor {
-    return [NSColor colorNamed:@"HoveredCellColor"];
+    return NSColor.tertiaryLabelColor;
 }
 
 - (NSColor *)mainBackgroundColor {
@@ -112,15 +108,15 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)monthTextColor {
-    return [NSColor colorNamed:@"MonthTextColor"];
+    return NSColor.labelColor;
 }
 
 - (NSColor *)noncurrentMonthTextColor {
-    return [NSColor colorNamed:@"NonCurrentMonthTextColor"];
+    return NSColor.disabledControlTextColor;
 }
 
 - (NSColor *)resizeHandleBackgroundColor {
-    return [NSColor colorNamed:@"ResizeHandleBackgroundColor"];
+    return [self highlightedDOWBackgroundColor];
 }
 
 - (NSColor *)resizeHandleForegroundColor {
@@ -140,7 +136,7 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)weekTextColor {
-    return [NSColor colorNamed:@"WeekTextColor"];
+    return NSColor.secondaryLabelColor;
 }
 
 - (NSColor *)windowBorderColor {

@@ -780,14 +780,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 {
     [Theme.mainBackgroundColor set];
     NSRectFill(self.bounds);
-
+    
     CGFloat radius = [[Sizer shared] cellRadius] + 3;
-    NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:radius inset:0 useRects:NO];
-    
-    [Theme.currentMonthOutlineColor set];
-    [outlinePath setLineWidth:2];
-    [outlinePath stroke];
-    
     CGFloat sz = [[Sizer shared] cellSize];
     if (self.highlightedDOWs) {
         NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
@@ -821,6 +815,12 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         [[_highlightColor colorWithAlphaComponent:0.36] setFill];
         [highlightPath fill];
     }
+
+    NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:radius inset:0 useRects:NO];
+    
+    [Theme.currentMonthOutlineColor set];
+    [outlinePath setLineWidth:2];
+    [outlinePath stroke];
 }
 
 - (NSBezierPath *)bezierPathWithStartCell:(MoCalCell *)startCell endCell:(MoCalCell *)endCell radius:(CGFloat)r inset:(CGFloat)inset useRects:(BOOL)useRects

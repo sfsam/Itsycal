@@ -83,12 +83,7 @@
 }
 
 - (void)updateTextColor {
-    if (self.isInCurrentMonth) {
-        self.textField.textColor = self.isHighlighted ? Theme.highlightedDOWTextColor : Theme.currentMonthTextColor;
-    }
-    else {
-        self.textField.textColor = self.isHighlighted ? Theme.highlightedDOWTextColorAlpha : Theme.noncurrentMonthTextColor;
-    }
+    self.textField.textColor = self.isInCurrentMonth ? Theme.currentMonthTextColor : Theme.noncurrentMonthTextColor;
 }
 
 - (void)drawRect:(NSRect)dirtyRect
