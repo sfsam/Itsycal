@@ -55,24 +55,36 @@ cat > "$XML_PATH" <<EOF
     version="2.0"
     xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"
     xmlns:dc="http://purl.org/dc/elements/1.1/" >
-<channel>
-<title>Itsycal Changelog</title>
-<link>https://s3.amazonaws.com/itsycal/itsycal.xml</link>
-<description>Most recent changes</description>
-<language>en</language>
-<item>
-<title>Version $SHORT_VERSION_STRING</title>
-<sparkle:minimumSystemVersion>10.12</sparkle:minimumSystemVersion>
-<sparkle:releaseNotesLink>https://s3.amazonaws.com/itsycal/changelog.html</sparkle:releaseNotesLink>
-<pubDate>$DATE +0000</pubDate>
-<enclosure
-    url="https://s3.amazonaws.com/itsycal/$ZIP_NAME"
-    sparkle:version="$VERSION"
-    sparkle:shortVersionString="$SHORT_VERSION_STRING"
-    length="$FILESIZE"
-    type="application/octet-stream" />
-</item>
-</channel>
+  <channel>
+    <title>Itsycal Changelog</title>
+    <link>https://s3.amazonaws.com/itsycal/itsycal.xml</link>
+    <description>Most recent changes</description>
+    <language>en</language>
+    <item>
+      <title>Version $SHORT_VERSION_STRING</title>
+      <sparkle:minimumSystemVersion>10.14</sparkle:minimumSystemVersion>
+      <sparkle:releaseNotesLink>https://s3.amazonaws.com/itsycal/changelog.html</sparkle:releaseNotesLink>
+      <pubDate>$DATE +0000</pubDate>
+      <enclosure
+          url="https://s3.amazonaws.com/itsycal/$ZIP_NAME"
+          sparkle:version="$VERSION"
+          sparkle:shortVersionString="$SHORT_VERSION_STRING"
+          length="$FILESIZE"
+          type="application/octet-stream" />
+    </item>
+    <item>
+      <title>Version 0.11.17</title>
+      <sparkle:minimumSystemVersion>10.12</sparkle:minimumSystemVersion>
+      <sparkle:releaseNotesLink>https://s3.amazonaws.com/itsycal/changelog-0.11.x.html</sparkle:releaseNotesLink>
+      <pubDate>Thu Aug 22 23:21:07 GMT 2019 +0000</pubDate>
+      <enclosure
+          url="https://s3.amazonaws.com/itsycal/Itsycal-0.11.17.zip"
+          sparkle:version="1388"
+          sparkle:shortVersionString="0.11.17"
+          length="960022"
+          type="application/octet-stream" />
+    </item>
+  </channel>
 </rss>
 EOF
 
