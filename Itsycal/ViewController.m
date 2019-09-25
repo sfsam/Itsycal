@@ -483,7 +483,17 @@
     }
     if (_clockFormat) {
         [_iconDateFormatter setDateFormat:_clockFormat];
-        _statusItem.button.title = [_iconDateFormatter stringFromDate:[NSDate new]];
+        // After updating the Xcode Deployment Target to macOS 10.14 from
+        // macOS 10.12, the button title renders slightly higher than it should
+        // on Mojave and slightly lower than it should on Catalina.
+        // As a workaround, instead of setting the title with an NSString,
+        // provide an NSAttributedString with a baseline offset.
+        CGFloat scaleFactor = NSScreen.mainScreen.backingScaleFactor ?: 2.0;
+        CGFloat baselineOffset = -1.0 / scaleFactor;
+        if (@available(macOS 10.15, *)) {
+            baselineOffset = 0.5;
+        }
+        _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:[_iconDateFormatter stringFromDate:[NSDate new]] attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
     }
     [self adjustStatusItemWidthIfNecessary];
 }
