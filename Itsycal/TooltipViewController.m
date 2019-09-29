@@ -13,7 +13,6 @@
 
 - (BOOL)toolTipForDate:(MoDate)date
 {
-    self.backgroundColor = Theme.tooltipBackgroundColor;
     self.tv.enableHover = NO;
     self.tv.enclosingScrollView.hasVerticalScroller = NO; // in case user has System Prefs set to always show scroller
     self.events = [self.tooltipDelegate eventsForDate:date];

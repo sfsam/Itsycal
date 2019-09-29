@@ -78,7 +78,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
-    _tv.backgroundColor = Theme.mainBackgroundColor;
+    _tv.backgroundColor = NSColor.clearColor;
     _tv.floatsGroupRows = YES;
     _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
@@ -137,12 +137,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [_tv noteHeightOfRowsWithIndexesChanged:indexSet];
     [NSAnimationContext endGrouping];
     [super updateViewConstraints];
-}
-
-- (void)setBackgroundColor:(NSColor *)backgroundColor
-{
-    _backgroundColor = backgroundColor;
-    _tv.backgroundColor = backgroundColor;
 }
 
 - (void)setShowLocation:(BOOL)showLocation
@@ -517,8 +511,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @implementation AgendaRowView
 
 - (void)drawBackgroundInRect:(NSRect)dirtyRect {
-    [Theme.mainBackgroundColor set];
-    NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
     if (self.isHovered) {
         [Theme.agendaHoverColor set];
         NSRect rect = NSInsetRect(self.bounds, 2, 1);
@@ -586,6 +578,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)drawRect:(NSRect)dirtyRect
 {
+    // Must be opaque so rows can scroll under it.
     [Theme.mainBackgroundColor set];
     NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
     NSRect r = NSMakeRect(4, self.bounds.size.height - 4, self.bounds.size.width - 8, 1);
@@ -928,8 +921,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _location.textColor = Theme.agendaEventTextColor;
     _duration.textColor = Theme.agendaEventTextColor;
     _recurrence.textColor = Theme.agendaEventTextColor;
-    
-    _note.backgroundColor = Theme.mainBackgroundColor;
 }
 
 - (NSSize)size
