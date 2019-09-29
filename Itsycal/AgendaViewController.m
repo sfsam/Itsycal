@@ -746,6 +746,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         
         _btnDelete = [MoButton new];
         _btnDelete.image = [NSImage imageNamed:@"btnDel"];
+        _btnDelete.image.template = YES;
         _btnDelete.focusRingType = NSFocusRingTypeNone;
         _textGrid = [NSGridView gridViewWithViews:@[@[_title],
                                                     @[_location],
