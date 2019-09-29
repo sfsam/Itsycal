@@ -678,11 +678,21 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)drawRect:(NSRect)dirtyRect
 {
     CGFloat alpha = self.dim ? 0.5 : 1;
+    CGFloat x = 6;
     CGFloat yOffset = [[Sizer shared] fontSize] + 2;
-    CGFloat dotWidth = [[Sizer shared] agendaDotWidth];
+    CGFloat dotWidthX = [[Sizer shared] agendaDotWidth];
+    CGFloat dotWidthY = dotWidthX;
+    CGFloat radius = dotWidthX / 2.0;
     NSColor *dotColor = self.eventInfo.event.calendar.color;
+    if (self.eventInfo.isAllDay) {
+        x = 7;
+        yOffset += 3;
+        dotWidthX -= 2;
+        dotWidthY += 6;
+        radius -= 1;
+    }
     [[dotColor colorWithAlphaComponent:alpha] set];
-    [[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(6, NSHeight(self.bounds) - yOffset, dotWidth, dotWidth)] fill];
+    [[NSBezierPath bezierPathWithRoundedRect:NSMakeRect(x, NSHeight(self.bounds) - yOffset, dotWidthX, dotWidthY) xRadius:radius yRadius:radius] fill];
 }
 
 @end
