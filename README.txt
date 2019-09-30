@@ -13,3 +13,12 @@ and delete (but not edit) events.
 For more info, see: http://www.mowglii.com/itsycal
 
 MIT Licensed - see License file
+
+= = = = = = = = =
+
+nebular fork:
+
+- added new icon style "TEXT" that just draws the text without
+  outline or solid background, just like OSX if using Show Date
+  on Date/Time preferences.
+
