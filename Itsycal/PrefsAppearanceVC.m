@@ -41,27 +41,27 @@
         [v addSubview:chkbx];
         return chkbx;
     };
-
-	///////////////////
-	// Icon label
-
-	NSTextField *iconLabel = [NSTextField labelWithString:NSLocalizedString(@"Icon Style:", @"")];
-	iconLabel.translatesAutoresizingMaskIntoConstraints = NO;
-	[v addSubview:iconLabel];
-	
-	// Icon Preference popup (solid / outline / text)
-	_iconPopup = [NSPopUpButton new];
-	_iconPopup.translatesAutoresizingMaskIntoConstraints = NO;
-	
-	[_iconPopup addItemWithTitle:NSLocalizedString(@"Solid", @"Solid Icon Style")];
-	[_iconPopup addItemWithTitle:NSLocalizedString(@"Outline", @"Outline Icon Style")];
-	[_iconPopup addItemWithTitle:NSLocalizedString(@"Text", @"Plain Text Icon Style")];
-	// The tags will be used to bind the selected theme
-	// preference to NSUserDefaults.
-	[_iconPopup itemAtIndex:0].tag = 0; // Inverse
-	[_iconPopup itemAtIndex:1].tag = 1; // Outline
-	[_iconPopup itemAtIndex:2].tag = 2; // Text Only
-	[v addSubview:_iconPopup];
+    
+    ///////////////////
+    // Icon label
+    
+    NSTextField *iconLabel = [NSTextField labelWithString:NSLocalizedString(@"Icon Style:", @"")];
+    iconLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [v addSubview:iconLabel];
+    
+    // Icon Preference popup (solid / outline / text)
+    _iconPopup = [NSPopUpButton new];
+    _iconPopup.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [_iconPopup addItemWithTitle:NSLocalizedString(@"Solid", @"Solid Icon Style")];
+    [_iconPopup addItemWithTitle:NSLocalizedString(@"Outline", @"Outline Icon Style")];
+    [_iconPopup addItemWithTitle:NSLocalizedString(@"Text", @"Plain Text Icon Style")];
+    // The tags will be used to bind the selected theme
+    // preference to NSUserDefaults.
+    [_iconPopup itemAtIndex:0].tag = 0; // Inverse
+    [_iconPopup itemAtIndex:1].tag = 1; // Outline
+    [_iconPopup itemAtIndex:2].tag = 2; // Text Only
+    [v addSubview:_iconPopup];
 
     // Checkboxes
     _showMonth = chkbx(NSLocalizedString(@"Show month in icon", @""));
@@ -125,10 +125,10 @@
         [_themePopup itemAtIndex:1].tag = 2; // Dark
     }
     [v addSubview:_themePopup];
-	
-	
+
+
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_bigger, iconLabel, _iconPopup, _showMonth, _showDayOfWeek, _showEventDots, _showWeeks, _showLocation, _dateTimeFormat, helpButton, _hideIcon, _highlight, themeLabel, _themePopup)];
-	[vfl :@"H:|-m-[iconLabel]-[_iconPopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
+    [vfl :@"H:|-m-[iconLabel]-[_iconPopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
     [vfl :@"V:|-m-[_iconPopup]-m-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_themePopup]-m-[_highlight]-m-[_showEventDots]-[_showLocation]-[_showWeeks]-m-[_bigger]-m-|"];
     [vfl :@"H:|-m-[_showMonth]-(>=m)-|"];
     [vfl :@"H:|-m-[_showDayOfWeek]-(>=m)-|"];
@@ -149,7 +149,7 @@
     [super viewWillAppear];
 
     // Bindings for icon preferences
-	[_iconPopup bind:@"selectedTag" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kIconPreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_iconPopup bind:@"selectedTag" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kIconPreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // [_useOutlineIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseOutlineIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_showMonth bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];

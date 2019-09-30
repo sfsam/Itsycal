@@ -458,23 +458,27 @@
 	NSInteger iconPreference = [[NSUserDefaults standardUserDefaults] integerForKey:kIconPreference];
 	
 	// Does user want outline icon, solid icon or just text?
-	BOOL useOutlineIcon = iconPreference |= 0;
+	BOOL useOutlineIcon = iconPreference != 0;
 	BOOL drawOutline = iconPreference == 1;
 
     // Return cached icon if one is available.
 	NSString *iconName = [text stringByAppendingString:iconPreference == 0 ? @" inverse" : iconPreference==1 ? @" outline" : @" text"];
     NSImage *iconImage = [NSImage imageNamed:iconName];
+
     if (iconImage != nil) {
         return iconImage;
     }
+  
+    CGFloat fontSize = useOutlineIcon ? drawOutline ? 11.5 : 14 : 11.5;
 
     // Measure text width
-    NSFont *font = [NSFont systemFontOfSize:11.5 weight:NSFontWeightBold];
+    NSFont *font = [NSFont systemFontOfSize:fontSize weight:NSFontWeightBold];
     CGRect textRect = [[[NSAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName: font}] boundingRectWithSize:CGSizeMake(999, 999) options:0 context:nil];
 
     // Icon width is at least 23 pts with 3 pt outside margins, 4 pt inside margins.
 	CGFloat width = MAX(3 + 4 + ceilf(NSWidth(textRect)) + 4 + 3 - (iconPreference==2?6:0), 23);
-    CGFloat height = 16;
+    CGFloat height = 16 + (useOutlineIcon && !drawOutline ? 2 : 0);
+    
     iconImage = [NSImage imageWithSize:NSMakeSize(width, height) flipped:NO drawingHandler:^BOOL (NSRect rect) {
 
         // Get image's context.
@@ -482,19 +486,22 @@
 
         if (useOutlineIcon) {
 
+            CGFloat yOffset = 2;
+            
             // Draw outlined icon image.
-			if (drawOutline) {
-          		[[NSColor blackColor] set];
-          		[[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 3.5, 0.5) xRadius:2 yRadius:2] stroke];
-			}
+            if (drawOutline) {
+                yOffset = -1;
+                [[NSColor blackColor] set];
+                [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 3.5, 0.5) xRadius:2 yRadius:2] stroke];
+            }
 
-			// Turning off smoothing looks better (why??).
+            // Turning off smoothing looks better (why??).
             CGContextSetShouldSmoothFonts(ctx, false);
 
             // Draw text.
             NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
             pstyle.alignment = NSTextAlignmentCenter;
-            [text drawInRect:NSOffsetRect(rect, 0, 2) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:13 weight:NSFontWeightSemibold], NSParagraphStyleAttributeName: pstyle, NSForegroundColorAttributeName: [NSColor blackColor]}];
+            [text drawInRect:NSOffsetRect(rect, 0, yOffset) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:fontSize weight:NSFontWeightSemibold], NSParagraphStyleAttributeName: pstyle, NSForegroundColorAttributeName: [NSColor blackColor]}];
         }
         else {
 
