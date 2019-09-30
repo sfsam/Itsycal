@@ -455,14 +455,14 @@
 {
     if (text == nil) text = @"!";
 
-	NSInteger iconPreference = [[NSUserDefaults standardUserDefaults] integerForKey:kIconPreference];
-	
-	// Does user want outline icon, solid icon or just text?
-	BOOL useOutlineIcon = iconPreference != 0;
-	BOOL drawOutline = iconPreference == 1;
+    NSInteger iconPreference = [[NSUserDefaults standardUserDefaults] integerForKey:kIconPreference];
+
+    // Does user want outline icon, solid icon or just text?
+    BOOL useOutlineIcon = iconPreference != 0;
+    BOOL drawOutline = iconPreference == 1;
 
     // Return cached icon if one is available.
-	NSString *iconName = [text stringByAppendingString:iconPreference == 0 ? @" inverse" : iconPreference==1 ? @" outline" : @" text"];
+    NSString *iconName = [text stringByAppendingString:iconPreference == 0 ? @" inverse" : iconPreference==1 ? @" outline" : @" text"];
     NSImage *iconImage = [NSImage imageNamed:iconName];
 
     if (iconImage != nil) {
@@ -476,7 +476,7 @@
     CGRect textRect = [[[NSAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName: font}] boundingRectWithSize:CGSizeMake(999, 999) options:0 context:nil];
 
     // Icon width is at least 23 pts with 3 pt outside margins, 4 pt inside margins.
-	CGFloat width = MAX(3 + 4 + ceilf(NSWidth(textRect)) + 4 + 3 - (iconPreference==2?6:0), 23);
+    CGFloat width = MAX(3 + 4 + ceilf(NSWidth(textRect)) + 4 + 3 - (iconPreference==2?6:0), 23);
     CGFloat height = 16 + (useOutlineIcon && !drawOutline ? 2 : 0);
     
     iconImage = [NSImage imageWithSize:NSMakeSize(width, height) flipped:NO drawingHandler:^BOOL (NSRect rect) {

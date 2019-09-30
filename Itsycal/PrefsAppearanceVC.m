@@ -21,8 +21,8 @@
     NSButton *_showEventDots;
     NSButton *_showWeeks;
     NSButton *_showLocation;
-	NSPopUpButton *_themePopup;
-	NSPopUpButton *_iconPopup;
+    NSPopUpButton *_themePopup;
+    NSPopUpButton *_iconPopup;
     NSButton *_bigger;
 }
 
@@ -41,10 +41,10 @@
         [v addSubview:chkbx];
         return chkbx;
     };
-    
+
     ///////////////////
     // Icon label
-    
+
     NSTextField *iconLabel = [NSTextField labelWithString:NSLocalizedString(@"Icon Style:", @"")];
     iconLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [v addSubview:iconLabel];
