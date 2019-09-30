@@ -15,7 +15,6 @@ NSString * const kShowWeeks = @"ShowWeeks";
 NSString * const kWeekStartDOW = @"WeekStartDOW";
 NSString * const kHighlightedDOWs = @"HighlightedDOWs";
 NSString * const kKeyboardShortcut = @"KeyboardShortcut";
-NSString * const kUseOutlineIcon = @"UseOutlineIcon";
 NSString * const kShowMonthInIcon = @"ShowMonthInIcon";
 NSString * const kShowDayOfWeekInIcon = @"ShowDayOfWeekInIcon";
 NSString * const kAllowOutsideApplicationsFolder = @"AllowOutsideApplicationsFolder";
@@ -23,3 +22,7 @@ NSString * const kClockFormat = @"ClockFormat";
 NSString * const kHideIcon = @"HideIcon";
 NSString * const kShowLocation = @"ShowLocation";
 NSString * const kShowEventDots = @"kShowEventDots";
+
+// NSUserDefaults key
+NSString * const kIconPreference = @"IconPreference";
+

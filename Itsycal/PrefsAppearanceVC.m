@@ -13,7 +13,6 @@
 
 @implementation PrefsAppearanceVC
 {
-    NSButton *_useOutlineIcon;
     NSButton *_showMonth;
     NSButton *_showDayOfWeek;
     NSTextField *_dateTimeFormat;
@@ -22,7 +21,8 @@
     NSButton *_showEventDots;
     NSButton *_showWeeks;
     NSButton *_showLocation;
-    NSPopUpButton *_themePopup;
+	NSPopUpButton *_themePopup;
+	NSPopUpButton *_iconPopup;
     NSButton *_bigger;
 }
 
@@ -42,8 +42,28 @@
         return chkbx;
     };
 
+	///////////////////
+	// Icon label
+
+	NSTextField *iconLabel = [NSTextField labelWithString:NSLocalizedString(@"Icon Style:", @"")];
+	iconLabel.translatesAutoresizingMaskIntoConstraints = NO;
+	[v addSubview:iconLabel];
+	
+	// Icon Preference popup (solid / outline / text)
+	_iconPopup = [NSPopUpButton new];
+	_iconPopup.translatesAutoresizingMaskIntoConstraints = NO;
+	
+	[_iconPopup addItemWithTitle:NSLocalizedString(@"Solid", @"Solid Icon Style")];
+	[_iconPopup addItemWithTitle:NSLocalizedString(@"Outline", @"Outline Icon Style")];
+	[_iconPopup addItemWithTitle:NSLocalizedString(@"Text", @"Plain Text Icon Style")];
+	// The tags will be used to bind the selected theme
+	// preference to NSUserDefaults.
+	[_iconPopup itemAtIndex:0].tag = 0; // Inverse
+	[_iconPopup itemAtIndex:1].tag = 1; // Outline
+	[_iconPopup itemAtIndex:2].tag = 2; // Text Only
+	[v addSubview:_iconPopup];
+
     // Checkboxes
-    _useOutlineIcon = chkbx(NSLocalizedString(@"Use outline icon", @""));
     _showMonth = chkbx(NSLocalizedString(@"Show month in icon", @""));
     _showDayOfWeek = chkbx(NSLocalizedString(@"Show day of week in icon", @""));
     _showEventDots = chkbx(NSLocalizedString(@"Show event dots", @""));
@@ -105,10 +125,11 @@
         [_themePopup itemAtIndex:1].tag = 2; // Dark
     }
     [v addSubview:_themePopup];
-    
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_bigger, _useOutlineIcon, _showMonth, _showDayOfWeek, _showEventDots, _showWeeks, _showLocation, _dateTimeFormat, helpButton, _hideIcon, _highlight, themeLabel, _themePopup)];
-    [vfl :@"V:|-m-[_useOutlineIcon]-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_themePopup]-m-[_highlight]-m-[_showEventDots]-[_showLocation]-[_showWeeks]-m-[_bigger]-m-|"];
-    [vfl :@"H:|-m-[_useOutlineIcon]-(>=m)-|"];
+	
+	
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_bigger, iconLabel, _iconPopup, _showMonth, _showDayOfWeek, _showEventDots, _showWeeks, _showLocation, _dateTimeFormat, helpButton, _hideIcon, _highlight, themeLabel, _themePopup)];
+	[vfl :@"H:|-m-[iconLabel]-[_iconPopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
+    [vfl :@"V:|-m-[_iconPopup]-m-[_showMonth]-[_showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[_themePopup]-m-[_highlight]-m-[_showEventDots]-[_showLocation]-[_showWeeks]-m-[_bigger]-m-|"];
     [vfl :@"H:|-m-[_showMonth]-(>=m)-|"];
     [vfl :@"H:|-m-[_showDayOfWeek]-(>=m)-|"];
     [vfl :@"H:|-m-[_dateTimeFormat]-[helpButton]-m-|" :NSLayoutFormatAlignAllCenterY];
@@ -128,13 +149,15 @@
     [super viewWillAppear];
 
     // Bindings for icon preferences
-    [_useOutlineIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseOutlineIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+	[_iconPopup bind:@"selectedTag" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kIconPreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+
+    // [_useOutlineIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseOutlineIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_showMonth bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_showDayOfWeek bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowDayOfWeekInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_hideIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bind icon prefs enabled state to hide icon's value
-    [_useOutlineIcon bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
+    // [_useOutlineIcon bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
     [_showMonth bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
     [_showDayOfWeek bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
 
@@ -157,7 +180,7 @@
     // Bindings for theme
     [_themePopup bind:@"selectedTag" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
-    // Bindings for size
+	// Bindings for size
     [_bigger bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
     [self updateHideIconState];

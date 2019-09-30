@@ -43,7 +43,7 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowEventDays];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kUseOutlineIcon];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kIconPreference];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMonthInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kClockFormat];
@@ -455,11 +455,14 @@
 {
     if (text == nil) text = @"!";
 
-    // Does user want outline icon or solid icon?
-    BOOL useOutlineIcon = [[NSUserDefaults standardUserDefaults] boolForKey:kUseOutlineIcon];
+	NSInteger iconPreference = [[NSUserDefaults standardUserDefaults] integerForKey:kIconPreference];
+	
+	// Does user want outline icon, solid icon or just text?
+	BOOL useOutlineIcon = iconPreference |= 0;
+	BOOL drawOutline = iconPreference == 1;
 
     // Return cached icon if one is available.
-    NSString *iconName = [text stringByAppendingString:useOutlineIcon ? @" outline" : @" solid"];
+	NSString *iconName = [text stringByAppendingString:iconPreference == 0 ? @" inverse" : iconPreference==1 ? @" outline" : @" text"];
     NSImage *iconImage = [NSImage imageNamed:iconName];
     if (iconImage != nil) {
         return iconImage;
@@ -470,7 +473,7 @@
     CGRect textRect = [[[NSAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName: font}] boundingRectWithSize:CGSizeMake(999, 999) options:0 context:nil];
 
     // Icon width is at least 23 pts with 3 pt outside margins, 4 pt inside margins.
-    CGFloat width = MAX(3 + 4 + ceilf(NSWidth(textRect)) + 4 + 3, 23);
+	CGFloat width = MAX(3 + 4 + ceilf(NSWidth(textRect)) + 4 + 3 - (iconPreference==2?6:0), 23);
     CGFloat height = 16;
     iconImage = [NSImage imageWithSize:NSMakeSize(width, height) flipped:NO drawingHandler:^BOOL (NSRect rect) {
 
@@ -480,17 +483,18 @@
         if (useOutlineIcon) {
 
             // Draw outlined icon image.
+			if (drawOutline) {
+          		[[NSColor blackColor] set];
+          		[[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 3.5, 0.5) xRadius:2 yRadius:2] stroke];
+			}
 
-            [[NSColor blackColor] set];
-            [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 3.5, 0.5) xRadius:2 yRadius:2] stroke];
-
-            // Turning off smoothing looks better (why??).
+			// Turning off smoothing looks better (why??).
             CGContextSetShouldSmoothFonts(ctx, false);
 
             // Draw text.
             NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
             pstyle.alignment = NSTextAlignmentCenter;
-            [text drawInRect:NSOffsetRect(rect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:11.5 weight:NSFontWeightSemibold], NSParagraphStyleAttributeName: pstyle, NSForegroundColorAttributeName: [NSColor blackColor]}];
+            [text drawInRect:NSOffsetRect(rect, 0, 2) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:13 weight:NSFontWeightSemibold], NSParagraphStyleAttributeName: pstyle, NSForegroundColorAttributeName: [NSColor blackColor]}];
         }
         else {
 
@@ -1001,7 +1005,7 @@
     [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(updateMenubarIcon) name:NSWorkspaceDidWakeNotification object:nil];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kHideIcon, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kIconPreference, kShowMonthInIcon, kShowDayOfWeekInIcon, kHideIcon, kClockFormat]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -1014,8 +1018,8 @@
     if ([keyPath isEqualToString:kShowEventDays]) {
         [self updateAgenda];
     }
-    else if ([keyPath isEqualToString:kUseOutlineIcon] ||
-             [keyPath isEqualToString:kShowMonthInIcon] ||
+    else if ([keyPath isEqualToString:kIconPreference] ||
+			 [keyPath isEqualToString:kShowMonthInIcon] ||
              [keyPath isEqualToString:kShowDayOfWeekInIcon] ||
              [keyPath isEqualToString:kHideIcon]) {
         [self updateMenubarIcon];
