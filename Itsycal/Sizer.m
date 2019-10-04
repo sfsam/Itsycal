@@ -56,7 +56,7 @@ NSString * const kSizeDidChangeNotification = @"SizeDidChangeNotification";
 }
 
 - (CGFloat)agendaEventLeadingMargin {
-    return SMALL_OR_BIG(16, 17);
+    return SMALL_OR_BIG(15, 16);
 }
 
 @end
