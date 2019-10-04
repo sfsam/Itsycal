@@ -212,7 +212,16 @@
     // Close popover if it's already showing
     if (_newEventPopover.shown) {
         [_newEventPopover close];
-        return;
+        // If sender is _moCal, we are here because
+        //  the user double-clicked on a date. We want
+        //  to open the popover at that date. If the
+        //  popover is already open, we close it and
+        //  then re-open it at the double-clicked date.
+        // If sender is NOT _moCal, we are here because
+        //  the user clicked the New Event button. This
+        //  is a toggle button, so if the popover is
+        //  already open, we close it and return.
+        if (sender != _moCal) return;
     }
     
     // Was prefs window open in the past and then hidden when
