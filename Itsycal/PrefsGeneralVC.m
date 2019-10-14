@@ -52,7 +52,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     // Convenience function for making labels.
     NSTextField* (^label)(NSString*) = ^NSTextField* (NSString *stringValue) {
         NSTextField *txt = [NSTextField labelWithString:stringValue];
-        txt.translatesAutoresizingMaskIntoConstraints = NO;
         [v addSubview:txt];
         return txt;
     };
@@ -60,7 +59,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     // Convenience function for making checkboxes.
     NSButton* (^chkbx)(NSString *) = ^NSButton* (NSString *title) {
         NSButton *chkbx = [NSButton checkboxWithTitle:title target:self action:nil];
-        chkbx.translatesAutoresizingMaskIntoConstraints = NO;
         [v addSubview:chkbx];
         return chkbx;
     };
@@ -75,7 +73,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 
     // First day of week popup
     _firstDayPopup = [NSPopUpButton new];
-    _firstDayPopup.translatesAutoresizingMaskIntoConstraints = NO;
     [_firstDayPopup addItemsWithTitles:@[NSLocalizedString(@"Sunday", @""),
                                          NSLocalizedString(@"Monday", @""),
                                          NSLocalizedString(@"Tuesday", @""),
@@ -90,7 +87,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     // Shortcut view
     MASShortcutView *shortcutView = [MASShortcutView new];
-    shortcutView.translatesAutoresizingMaskIntoConstraints = NO;
     shortcutView.associatedUserDefaultsKey = kKeyboardShortcut;
     [v addSubview:shortcutView];
     
@@ -105,7 +101,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 
     // Calendars enclosing scrollview
     NSScrollView *tvContainer = [NSScrollView new];
-    tvContainer.translatesAutoresizingMaskIntoConstraints = NO;
     tvContainer.scrollerStyle = NSScrollerStyleLegacy;
     tvContainer.hasVerticalScroller = YES;
     tvContainer.documentView = _calendarsTV;
@@ -116,7 +111,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     // Agenda days popup
     _agendaDaysPopup = [NSPopUpButton new];
-    _agendaDaysPopup.translatesAutoresizingMaskIntoConstraints = NO;
     [_agendaDaysPopup addItemsWithTitles:@[NSLocalizedString(@"No events", @""),
                                      NSLocalizedString(@"1 day", @""),
                                      NSLocalizedString(@"2 days", @""),

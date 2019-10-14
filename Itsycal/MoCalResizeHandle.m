@@ -17,7 +17,6 @@
 {
     NSBox* (^box)(NSColor *) = ^NSBox* (NSColor *color) {
         NSBox *bx = [NSBox new];
-        bx.translatesAutoresizingMaskIntoConstraints = NO;
         bx.boxType = NSBoxCustom;
         bx.borderType = NSNoBorder;
         bx.cornerRadius = 2;

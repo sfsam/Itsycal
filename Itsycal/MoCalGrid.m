@@ -37,9 +37,6 @@
         _hMargin = hMargin;
         _vMargin = vMargin;
         
-        // We will auto layout this view
-        [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-
         // Hug the cells tightly
         [self setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationVertical];
         [self setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];

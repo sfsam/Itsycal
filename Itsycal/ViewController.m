@@ -63,7 +63,6 @@
     
     // MoCalendar
     _moCal = [MoCalendar new];
-    _moCal.translatesAutoresizingMaskIntoConstraints = NO;
     _moCal.delegate = self;
     _moCal.target = self;
     _moCal.doubleAction = @selector(addCalendarEvent:);

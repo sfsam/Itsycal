@@ -14,7 +14,6 @@
 {
     self = [super initWithFrame:frameRect];
     if (self) {
-        self.translatesAutoresizingMaskIntoConstraints = NO;
         self.bordered = NO;
         self.imagePosition = NSImageOnly;
         [self setButtonType:NSButtonTypeMomentaryChange];

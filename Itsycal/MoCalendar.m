@@ -61,7 +61,6 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     _tooltipWC = [MoCalToolTipWC new];
 
     _monthLabel = [NSTextField labelWithString:@""];
-    _monthLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _monthLabel.font = [NSFont systemFontOfSize:[[Sizer shared] calendarTitleFontSize] weight:NSFontWeightSemibold];
     _monthLabel.textColor = Theme.monthTextColor;
     
@@ -98,7 +97,6 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
     // The _resizeHandle is at the bottom of the calendar.
     _resizeHandle = [MoCalResizeHandle new];
-    _resizeHandle.translatesAutoresizingMaskIntoConstraints = NO;
     [_resizeHandle dim:YES];
 
     [self addSubview:_monthLabel];

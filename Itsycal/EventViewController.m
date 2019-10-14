@@ -35,7 +35,6 @@
             txt = [NSTextField labelWithString:stringValue];
             txt.alignment = NSTextAlignmentRight;
         }
-        txt.translatesAutoresizingMaskIntoConstraints = NO;
         [v addSubview:txt];
         return txt;
     };
@@ -43,7 +42,6 @@
     // DatePicker maker
     NSDatePicker* (^picker)(void) = ^NSDatePicker* () {
         NSDatePicker *picker = [NSDatePicker new];
-        picker.translatesAutoresizingMaskIntoConstraints = NO;
         picker.datePickerStyle = NSTextFieldDatePickerStyle;
         picker.bezeled  = NO;
         picker.bordered = NO;
@@ -56,7 +54,6 @@
     // PopUpButton maker
     NSPopUpButton* (^popup)(void) = ^NSPopUpButton* () {
         NSPopUpButton *pop = [NSPopUpButton new];
-        pop.translatesAutoresizingMaskIntoConstraints = NO;
         pop.target = self;
         [v addSubview:pop];
         return pop;
@@ -65,7 +62,6 @@
     // Button maker
     NSButton* (^btn)(NSString*, id, SEL) = ^NSButton* (NSString *title, id target, SEL action) {
         NSButton *btn = [NSButton buttonWithTitle:title target:target action:action];
-        btn.translatesAutoresizingMaskIntoConstraints = NO;
         [v addSubview:btn];
         return btn;
     };
@@ -77,7 +73,6 @@
     
     // Login checkbox
     _allDayCheckbox = [NSButton new];
-    _allDayCheckbox.translatesAutoresizingMaskIntoConstraints = NO;
     _allDayCheckbox.title = @"";
     _allDayCheckbox.target = self;
     _allDayCheckbox.action = @selector(allDayClicked:);

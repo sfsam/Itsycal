@@ -28,7 +28,6 @@
     // Convenience function for making checkboxes.
     NSButton* (^chkbx)(NSString *) = ^NSButton* (NSString *title) {
         NSButton *chkbx = [NSButton checkboxWithTitle:title target:self action:nil];
-        chkbx.translatesAutoresizingMaskIntoConstraints = NO;
         [v addSubview:chkbx];
         return chkbx;
     };
@@ -46,7 +45,6 @@
 
     // Datetime format text field
     _dateTimeFormat = [NSTextField textFieldWithString:@""];
-    _dateTimeFormat.translatesAutoresizingMaskIntoConstraints = false;
     _dateTimeFormat.placeholderString = NSLocalizedString(@"Datetime pattern", @"");
     _dateTimeFormat.refusesFirstResponder = YES;
     _dateTimeFormat.bezelStyle = NSTextFieldRoundedBezel;
@@ -57,7 +55,6 @@
     // Datetime help button
     NSButton *helpButton = [NSButton new];
     helpButton.title = @"";
-    helpButton.translatesAutoresizingMaskIntoConstraints = false;
     helpButton.bezelStyle = NSBezelStyleHelpButton;
     helpButton.target = self;
     helpButton.action = @selector(openHelpPage:);
@@ -65,19 +62,16 @@
 
     // Highlight control
     HighlightPicker *highlight = [HighlightPicker new];
-    highlight.translatesAutoresizingMaskIntoConstraints = NO;
     highlight.target = self;
     highlight.action = @selector(didChangeHighlight:);
     [v addSubview:highlight];
 
     // Theme label
     NSTextField *themeLabel = [NSTextField labelWithString:NSLocalizedString(@"Theme:", @"")];
-    themeLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [v addSubview:themeLabel];
 
     // Theme popup
     NSPopUpButton *themePopup = [NSPopUpButton new];
-    themePopup.translatesAutoresizingMaskIntoConstraints = NO;
     [themePopup addItemWithTitle:NSLocalizedString(@"System", @"System theme name")];
     [themePopup addItemWithTitle:NSLocalizedString(@"Light", @"Light theme name")];
     [themePopup addItemWithTitle:NSLocalizedString(@"Dark", @"Dark theme name")];

@@ -23,7 +23,6 @@
     // Convenience function for making labels.
     MoTextField* (^label)(NSString*, BOOL) = ^MoTextField* (NSString *stringValue, BOOL isLink) {
         MoTextField *txt = [MoTextField labelWithString:stringValue];
-        txt.translatesAutoresizingMaskIntoConstraints = NO;
         if (isLink) {
             txt.font = [NSFont systemFontOfSize:13 weight:NSFontWeightMedium];
             txt.linkEnabled = YES;

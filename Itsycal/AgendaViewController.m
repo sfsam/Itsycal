@@ -64,7 +64,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     // View controller content view
     NSView *v = [NSView new];
-    v.translatesAutoresizingMaskIntoConstraints = NO;
 
     // Calendars table view context menu
     NSMenu *contextMenu = [NSMenu new];

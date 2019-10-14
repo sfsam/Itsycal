@@ -19,6 +19,9 @@
         _superview = superview;
         _metrics = metrics;
         _views = views;
+        for (NSView *view in views.allValues) {
+            view.translatesAutoresizingMaskIntoConstraints = NO;
+        }
     }
     return self;
 }
