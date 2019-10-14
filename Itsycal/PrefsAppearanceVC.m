@@ -53,11 +53,8 @@
     [v addSubview:_dateTimeFormat];
 
     // Datetime help button
-    NSButton *helpButton = [NSButton new];
-    helpButton.title = @"";
+    NSButton *helpButton = [NSButton buttonWithTitle:@"" target:self action:@selector(openHelpPage:)];
     helpButton.bezelStyle = NSBezelStyleHelpButton;
-    helpButton.target = self;
-    helpButton.action = @selector(openHelpPage:);
     [v addSubview:helpButton];
 
     // Highlight control
