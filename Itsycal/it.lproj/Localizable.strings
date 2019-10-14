@@ -77,6 +77,9 @@
 "Automatically check for updates" = "Controlla gli aggiornamenti automaticamente";
 
 /* No comment provided by engineer. */
+"Calendar" = "Calendario";
+
+/* No comment provided by engineer. */
 "Calendar access denied.
 
 Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "L'accesso al calendario negato.
@@ -168,7 +171,7 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 "General" = "Generali";
 
 /* No comment provided by engineer. */
-"Hide icon" = "Nascondi l'icona nella barra dei menu";
+"Hide icon" = "Nascondi l'icona";
 
 /* No comment provided by engineer. */
 "Highlight:" = "Evidenzia:";
@@ -194,6 +197,9 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 
 /* Light theme name */
 "Light" = "Tema chiaro";
+
+/* No comment provided by engineer. */
+"Menu Bar" = "Barra dei Menu";
 
 /* No comment provided by engineer. */
 "Monday" = "Lunedì";
@@ -251,7 +257,7 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "Show calendar weeks" = "Mostra le settimane del calendario";
 
 /* No comment provided by engineer. */
-"Show day of week in icon" = "L'icona nella barra dei menu mostra giorno della settimana";
+"Show day of week in icon" = "L'icona mostra giorno della settimana";
 
 /* No comment provided by engineer. */
 "Show event dots" = "Mostra punti per gli eventi";
@@ -260,7 +266,7 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "Show event location" = "Mostra la posizione dell'evento";
 
 /* No comment provided by engineer. */
-"Show month in icon" = "L'icona nella barra dei menu mostra Mese";
+"Show month in icon" = "L'icona mostra Mese";
 
 /* No comment provided by engineer. */
 "Starts:" = "Inizia:";
@@ -293,7 +299,7 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "Use larger text" = "Usa un carattere più grande";
 
 /* No comment provided by engineer. */
-"Use outline icon" = "Usa l'icona nella barra dei menu contorno";
+"Use outline icon" = "Usa l'icona contorno";
 
 /* No comment provided by engineer. */
 "Wednesday" = "Mercoledì";

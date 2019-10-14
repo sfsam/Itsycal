@@ -77,6 +77,9 @@
 "Automatically check for updates" = "自动检查更新";
 
 /* No comment provided by engineer. */
+"Calendar" = "日历";
+
+/* No comment provided by engineer. */
 "Calendar access denied.
 
 Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "日历访问被拒绝。
@@ -194,6 +197,9 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 
 /* Light theme name */
 "Light" = "浅色";
+
+/* No comment provided by engineer. */
+"Menu Bar" = "菜单栏";
 
 /* No comment provided by engineer. */
 "Monday" = "星期一";

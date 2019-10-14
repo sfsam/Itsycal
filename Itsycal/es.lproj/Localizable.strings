@@ -77,6 +77,9 @@
 "Automatically check for updates" = "Buscar actualizaciones automáticamente";
 
 /* No comment provided by engineer. */
+"Calendar" = "Calendario";
+
+/* No comment provided by engineer. */
 "Calendar access denied.
 
 Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Acceso denegado.
@@ -194,6 +197,9 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 
 /* Light theme name */
 "Light" = "Tema claro";
+
+/* No comment provided by engineer. */
+"Menu Bar" = "Barra de Menús";
 
 /* No comment provided by engineer. */
 "Monday" = "Lunes";

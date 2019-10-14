@@ -31,6 +31,19 @@
         [v addSubview:chkbx];
         return chkbx;
     };
+    
+    NSTextField *menubarLabel = [NSTextField labelWithString:NSLocalizedString(@"Menu Bar", @"")];
+    NSTextField *calendarLabel = [NSTextField labelWithString:NSLocalizedString(@"Calendar", @"")];
+    menubarLabel.font = [NSFont boldSystemFontOfSize:menubarLabel.font.pointSize-1];
+    calendarLabel.font = [NSFont boldSystemFontOfSize:calendarLabel.font.pointSize-1];
+    [v addSubview:menubarLabel];
+    [v addSubview:calendarLabel];
+
+    NSBox *separator0 = [NSBox new];
+    NSBox *separator1 = [NSBox new];
+    separator0.boxType = separator1.boxType = NSBoxSeparator;
+    [v addSubview:separator0];
+    [v addSubview:separator1];
 
     // Checkboxes
     NSButton *useOutlineIcon = chkbx(NSLocalizedString(@"Use outline icon", @""));
@@ -79,8 +92,10 @@
     [themePopup itemAtIndex:2].tag = ThemePreferenceDark;
     [v addSubview:themePopup];
     
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(bigger, useOutlineIcon, showMonth, showDayOfWeek, showEventDots, useColoredDots, showWeeks, showLocation, _dateTimeFormat, helpButton, _hideIcon, highlight, themeLabel, themePopup)];
-    [vfl :@"V:|-m-[useOutlineIcon]-[showMonth]-[showDayOfWeek]-m-[_dateTimeFormat]-[_hideIcon]-m-[themePopup]-m-[highlight]-m-[showEventDots]-[useColoredDots]-[showLocation]-[showWeeks]-m-[bigger]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(menubarLabel, calendarLabel, separator0, separator1, bigger, useOutlineIcon, showMonth, showDayOfWeek, showEventDots, useColoredDots, showWeeks, showLocation, _dateTimeFormat, helpButton, _hideIcon, highlight, themeLabel, themePopup)];
+    [vfl :@"V:|-m-[menubarLabel]-10-[useOutlineIcon]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[themePopup]-m-[highlight]-m-[showEventDots]-[useColoredDots]-[showLocation]-[showWeeks]-[bigger]-m-|"];
+    [vfl :@"H:|-m-[menubarLabel]-[separator0]-m-|" :NSLayoutFormatAlignAllCenterY];
+    [vfl :@"H:|-m-[calendarLabel]-[separator1]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[useOutlineIcon]-(>=m)-|"];
     [vfl :@"H:|-m-[showMonth]-(>=m)-|"];
     [vfl :@"H:|-m-[showDayOfWeek]-(>=m)-|"];

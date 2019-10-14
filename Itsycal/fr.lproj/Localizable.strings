@@ -77,6 +77,9 @@
 "Automatically check for updates" = "Rechercher automatiquement le mises à jour";
 
 /* No comment provided by engineer. */
+"Calendar" = "Calendrier";
+
+/* No comment provided by engineer. */
 "Calendar access denied.
 
 Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "L'accès au calendrier est refusée.
@@ -168,7 +171,7 @@ Itsycal est plus utile quand il peut afficher les événements de vos calendrier
 "General" = "Général";
 
 /* No comment provided by engineer. */
-"Hide icon" = "Masquer l'icône de la barre des menus";
+"Hide icon" = "Masquer l'icône";
 
 /* No comment provided by engineer. */
 "Highlight:" = "Mettre en évidence:";
@@ -194,6 +197,9 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 
 /* Light theme name */
 "Light" = "Thème Clair";
+
+/* No comment provided by engineer. */
+"Menu Bar" = "Barre de Menus";
 
 /* No comment provided by engineer. */
 "Monday" = "lundi";
@@ -251,7 +257,7 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Show calendar weeks" = "Afficher les numéros de semaine";
 
 /* No comment provided by engineer. */
-"Show day of week in icon" = "L'icône de la barre des menus affiche le jour de la semaine";
+"Show day of week in icon" = "L'icône affiche le jour de la semaine";
 
 /* No comment provided by engineer. */
 "Show event dots" = "Afficher les indicateurs d'évènements";
@@ -260,7 +266,7 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Show event location" = "Afficher l'emplacement de l'événement";
 
 /* No comment provided by engineer. */
-"Show month in icon" = "L'icône de la barre des menus affiche le mois";
+"Show month in icon" = "L'icône affiche le mois";
 
 /* No comment provided by engineer. */
 "Starts:" = "Commence:";
@@ -293,7 +299,7 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Use larger text" = "Utiliser un texte plus grand";
 
 /* No comment provided by engineer. */
-"Use outline icon" = "Utiliser l’icône avec contour sur la barre des menus";
+"Use outline icon" = "Utiliser l’icône avec contour";
 
 /* No comment provided by engineer. */
 "Wednesday" = "mercredi";
