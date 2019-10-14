@@ -257,6 +257,7 @@
     if (!_newEventPopover) {
         _newEventPopover = [NSPopover new];
         _newEventPopover.animates = NO;
+        _newEventPopover.delegate = self;
     }
     EventViewController *eventVC = [EventViewController new];
     eventVC.ec = _ec;
@@ -775,6 +776,13 @@
 {
     if (_btnPin.state == NSControlStateValueOff) {
         [self hideItsycalWindow];
+    }
+}
+
+- (void)popoverDidClose:(NSNotification *)notification
+{
+    if (notification.object == _newEventPopover) {
+        _newEventPopover = nil;
     }
 }
 

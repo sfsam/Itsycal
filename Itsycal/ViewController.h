@@ -12,7 +12,7 @@
 #import "AgendaViewController.h"
 #import "TooltipViewController.h"
 
-@interface ViewController : NSViewController <NSWindowDelegate, AgendaDelegate, MoCalendarDelegate, EventCenterDelegate, TooltipViewControllerDelegate>
+@interface ViewController : NSViewController <NSWindowDelegate, AgendaDelegate, MoCalendarDelegate, EventCenterDelegate, TooltipViewControllerDelegate, NSPopoverDelegate>
 
 - (void)keyboardShortcutActivated;
 - (void)removeStatusItem;
