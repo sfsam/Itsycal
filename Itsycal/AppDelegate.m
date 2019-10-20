@@ -23,13 +23,18 @@
 
 + (void)initialize
 {
+    // Get the default firstWeekday for user's locale.
+    // User can change this in preferences.
+    NSCalendar *cal = [NSCalendar autoupdatingCurrentCalendar];
+    NSInteger weekStartDOW = MIN(MAX(cal.firstWeekday - 1, 0), 6);
+    
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults registerDefaults:@{
         kPinItsycal:           @(NO),
         kShowWeeks:            @(NO),
         kHighlightedDOWs:      @0,
         kShowEventDays:        @7,
-        kWeekStartDOW:         @0, // Sun=0, Mon=1,... (MoCalendar.h)
+        kWeekStartDOW:         @(weekStartDOW), // Sun=0, Mon=1,... (MoCalendar.h)
         kShowMonthInIcon:      @(NO),
         kShowDayOfWeekInIcon:  @(NO),
         kShowEventDots:        @(YES),
