@@ -93,7 +93,7 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 "Cancel" = "Annulla";
 
 /* No comment provided by engineer. */
-"Check for Updates..." = "Controlla aggiornamenti…";
+"Check for Updates…" = "Controlla aggiornamenti…";
 
 /* No comment provided by engineer. */
 "Copy" = "Copia";
@@ -102,7 +102,7 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 "Dark" = "Tema scuro";
 
 /* No comment provided by engineer. */
-"Date & Time..." = "Data e Ora...";
+"Date & Time…" = "Data e Ora…";
 
 /* No comment provided by engineer. */
 "Datetime pattern" = "Data e ora modello";
@@ -217,7 +217,7 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "New Event" = "Nuovo evento";
 
 /* No comment provided by engineer. */
-"New Event... ⌘N" = "Nuovo evento… ⌘N";
+"New Event… ⌘N" = "Nuovo evento… ⌘N";
 
 /* No comment provided by engineer. */
 "No events" = "Nessun evento";
@@ -230,7 +230,7 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "On Date" = "In data";
 
 /* No comment provided by engineer. */
-"Open Calendar... ⌘O" = "Apri l'applicazione Calendario… ⌘O";
+"Open Calendar… ⌘O" = "Apri l'applicazione Calendario… ⌘O";
 
 /* No comment provided by engineer. */
 "Options" = "Opzioni";
@@ -239,10 +239,10 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "or" = "o";
 
 /* No comment provided by engineer. */
-"Pin Itsycal... P" = "Mantieni Itsycal visibile… P";
+"Pin Itsycal… P" = "Mantieni Itsycal visibile… P";
 
 /* No comment provided by engineer. */
-"Preferences..." = "Preferenze…";
+"Preferences…" = "Preferenze…";
 
 /* No comment provided by engineer. */
 "Quit Itsycal" = "Esci da Itsycal";

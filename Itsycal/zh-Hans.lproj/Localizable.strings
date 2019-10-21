@@ -93,7 +93,7 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Cancel" = "取消";
 
 /* No comment provided by engineer. */
-"Check for Updates..." = "检查更新…";
+"Check for Updates…" = "检查更新…";
 
 /* No comment provided by engineer. */
 "Copy" = "复制";
@@ -102,7 +102,7 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Dark" = "深色";
 
 /* No comment provided by engineer. */
-"Date & Time..." = "日期与时间...";
+"Date & Time…" = "日期与时间…";
 
 /* No comment provided by engineer. */
 "Datetime pattern" = "日期时间模式";
@@ -217,7 +217,7 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "New Event" = "新事件";
 
 /* No comment provided by engineer. */
-"New Event... ⌘N" = "新事件… ⌘N";
+"New Event… ⌘N" = "新事件… ⌘N";
 
 /* No comment provided by engineer. */
 "No events" = "不显示";
@@ -230,7 +230,7 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "On Date" = "时间到了";
 
 /* No comment provided by engineer. */
-"Open Calendar... ⌘O" = "打开日历… ⌘O";
+"Open Calendar… ⌘O" = "打开日历… ⌘O";
 
 /* No comment provided by engineer. */
 "Options" = "选项";
@@ -239,10 +239,10 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "or" = "or";
 
 /* No comment provided by engineer. */
-"Pin Itsycal... P" = "固定 Itsycal… P";
+"Pin Itsycal… P" = "固定 Itsycal… P";
 
 /* No comment provided by engineer. */
-"Preferences..." = "偏好设置…";
+"Preferences…" = "偏好设置…";
 
 /* No comment provided by engineer. */
 "Quit Itsycal" = "退出 Itsycal";
