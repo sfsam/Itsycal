@@ -329,6 +329,8 @@
     [optMenu insertItemWithTitle:NSLocalizedString(@"Preferences...", @"") action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Date & Time...", @"") action:@selector(openDateAndTimePrefs:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
+    [optMenu insertItemWithTitle:NSLocalizedString(@"Help…", @"") action:@selector(navigateToHelp:) keyEquivalent:@"" atIndex:i++];
+    [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
     NSPoint pt = NSOffsetRect(_btnOpt.frame, -5, -10).origin;
     [optMenu popUpMenuPositioningItem:nil atLocation:pt inView:self.view];
@@ -395,6 +397,12 @@
     // Can this be done without hardcoding a path?
     NSString *path = @"/System/Library/PreferencePanes/DateAndTime.prefPane";
     NSURL *url = [NSURL fileURLWithPath:path];
+    [NSWorkspace.sharedWorkspace openURL:url];
+}
+
+- (void)navigateToHelp:(id)sender
+{
+    NSURL *url = [NSURL URLWithString:@"https://www.mowglii.com/itsycal/help.html"];
     [NSWorkspace.sharedWorkspace openURL:url];
 }
 
