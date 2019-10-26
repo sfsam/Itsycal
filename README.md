@@ -1,8 +1,6 @@
+# Itsycal
 
-I've learned a lot by looking at other people's code so
-maybe someone can learn something from looking at mine.
-
-= = = = = = = =
+[![License][License-Image]][License-Url]
 
 Itsycal is a tiny calendar for your Mac's menu bar.
 
@@ -12,4 +10,5 @@ and delete (but not edit) events.
 
 For more info, see: http://www.mowglii.com/itsycal
 
-MIT Licensed - see License file
+[License-Url]: http://opensource.org/licenses/MIT
+[License-Image]: https://img.shields.io/npm/l/express.svg
