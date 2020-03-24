@@ -192,6 +192,13 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSMutableArray *sourcesAndCalendars = [NSMutableArray new];
     NSString *currentSourceTitle = @"";
     for (EKCalendar *calendar in calendars) {
+        if (!calendar.color) {
+            // Skip calendars where the color is nil.
+            // This normally doesn't happen, but there are some
+            // edge cases where it does.
+            // See: github.com/sfsam/Itsycal/issues/152
+            continue;
+        }
         if (![calendar.source.title isEqualToString:currentSourceTitle]) {
             [sourcesAndCalendars addObject:calendar.source.title];
             currentSourceTitle = calendar.source.title;
@@ -204,6 +211,23 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     dispatch_async(_queueIsol2, ^{
         self->_sourcesAndCalendars = [NSArray arrayWithArray:sourcesAndCalendars];
     });
+}
+
+- (NSArray *)_validCalendars
+{
+    // Valid calendars are calendars in _sourcesAndCalendars.
+    // They have been filtered to remove calendars where the color is nil.
+    // See -_fetchSourcesAndCalendars
+    __block NSMutableArray *calendars = [NSMutableArray new];
+    dispatch_sync(_queueIsol2, ^{
+        for (id obj in self->_sourcesAndCalendars) {
+            if ([obj isKindOfClass:[CalendarInfo class]]) {
+                CalendarInfo *calInfo = obj;
+                [calendars addObject:calInfo.calendar];
+            }
+        }
+    });
+    return calendars;
 }
 
 - (void)_fetchEventsWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate refetch:(BOOL)refetch
@@ -237,7 +261,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     
     NSDate *startDate = MakeNSDateWithDate(startMoDate, _cal);
     NSDate *endDate   = MakeNSDateWithDate(endMoDate,   _cal);
-    NSPredicate *predicate = [_store predicateForEventsWithStartDate:startDate endDate:endDate calendars:nil];
+    NSArray *cals = [self _validCalendars];
+    NSPredicate *predicate = [_store predicateForEventsWithStartDate:startDate endDate:endDate calendars:cals];
     NSArray *events = [_store eventsMatchingPredicate:predicate];
     NSMutableDictionary *eventsForDate = [NSMutableDictionary new];
     
