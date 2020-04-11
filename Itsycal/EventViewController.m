@@ -42,11 +42,12 @@
     // DatePicker maker
     NSDatePicker* (^picker)(void) = ^NSDatePicker* () {
         NSDatePicker *picker = [NSDatePicker new];
-        picker.datePickerStyle = NSTextFieldDatePickerStyle;
+        picker.datePickerStyle = NSDatePickerStyleTextField;
+        picker.locale = NSLocale.currentLocale;
         picker.bezeled  = NO;
         picker.bordered = NO;
         picker.drawsBackground = NO;
-        picker.datePickerElements = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
+        picker.datePickerElements = NSDatePickerElementFlagYearMonthDay | NSDatePickerElementFlagHourMinute;
         [v addSubview:picker];
         return picker;
     };
@@ -93,7 +94,7 @@
     _startDate.action = @selector(startDateChanged:);
     _endDate    = picker();
     _repEndDate = picker();
-    _repEndDate.datePickerElements = NSYearMonthDayDatePickerElementFlag;
+    _repEndDate.datePickerElements = NSDatePickerElementFlagYearMonthDay;
     
     // Popups
     _repPopup = popup();
