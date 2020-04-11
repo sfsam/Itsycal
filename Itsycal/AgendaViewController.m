@@ -703,11 +703,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSGridView  *_textGrid;
     NSGridView  *_grid;
     NSTextField *_title;
-    NSTextField *_location;
     NSTextField *_duration;
     NSTextField *_recurrence;
+    NSTextView *_location;
     NSTextView *_note;
     NSDataDetector *_linkDetector;
+    NSLayoutConstraint *_locHeight;
     NSLayoutConstraint *_noteHeight;
 }
 
@@ -725,9 +726,25 @@ static NSString *kEventCellIdentifier = @"EventCell";
     self = [super init];
     if (self) {
         _title = label(NSFontWeightMedium);
-        _location = label(NSFontWeightRegular);
         _duration = label(NSFontWeightRegular);
         _recurrence = label(NSFontWeightRegular);
+        
+        NSScrollView *locScrollView = [NSScrollView new];
+        locScrollView.frame = NSMakeRect(0, 0, POPOVER_TEXT_WIDTH, 100);
+        locScrollView.autoresizingMask = NSViewHeightSizable;
+        locScrollView.drawsBackground = NO;
+        
+        _location = [NSTextView new];
+        _location.frame = locScrollView.bounds;
+        _location.autoresizingMask = NSViewHeightSizable;
+        _location.editable = NO;
+        _location.selectable = YES;
+        _location.drawsBackground = NO;
+        _location.textContainer.lineFragmentPadding = 0;
+        _location.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
+        _location.textContainer.widthTracksTextView = YES;
+        
+        locScrollView.documentView = _location;
         
         NSScrollView *scrollView = [NSScrollView new];
         scrollView.frame = NSMakeRect(0, 0, POPOVER_TEXT_WIDTH, 100);
@@ -751,7 +768,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _btnDelete.image.template = YES;
         _btnDelete.focusRingType = NSFocusRingTypeNone;
         _textGrid = [NSGridView gridViewWithViews:@[@[_title],
-                                                    @[_location],
+                                                    @[locScrollView],
                                                     @[_duration],
                                                     @[_recurrence],
                                                     @[scrollView]]];
@@ -765,6 +782,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _grid.yPlacement = NSGridCellPlacementCenter;
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
         
+        [locScrollView.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
+        _locHeight = [locScrollView.heightAnchor constraintEqualToConstant:100];
+        _locHeight.active = YES;
+
         [scrollView.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
         _noteHeight = [scrollView.heightAnchor constraintEqualToConstant:100];
         _noteHeight.active = YES;
@@ -792,18 +813,16 @@ static NSString *kEventCellIdentifier = @"EventCell";
         intervalFormatter.dateStyle = NSDateIntervalFormatterMediumStyle;
     }
     NSString *title = @"";
-    NSString *location = @"";
     NSString *duration = @"";
     NSString *recurrence = @"";
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
     
     if (info && info.event) {
         if (info.event.title) title = info.event.title;
-        if (info.event.location) location = info.event.location;
     }
     
     // Hide location row IF there's no location string.
-    [_textGrid rowAtIndex:1].hidden = location.length == 0;
+    [_textGrid rowAtIndex:1].hidden = !info.event.location;
     
     // Hide recurrence row IF there's no recurrence rule.
     [_textGrid rowAtIndex:3].hidden = !info.event.hasRecurrenceRules;
@@ -882,42 +901,36 @@ static NSString *kEventCellIdentifier = @"EventCell";
         }
     }
     
+    // Location
+    if (info.event.location) {
+        NSString *trimmedLoc = [info.event.location stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if ([trimmedLoc isEqualToString:@""]) {
+            [_textGrid rowAtIndex:1].hidden = YES;
+        }
+        else {
+            [self populateTextView:_location withString:trimmedLoc heightConstraint:_locHeight];
+        }
+    }
+
+    // Notes
     if (info.event.hasNotes) {
         NSString *trimmedNotes = [info.event.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if ([trimmedNotes isEqualToString:@""]) {
             [_textGrid rowAtIndex:4].hidden = YES;
         }
         else {
-            NSMutableAttributedString *notes = [self notesWithHTML:trimmedNotes];
-            [notes addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:[[Sizer shared] fontSize]] range:NSMakeRange(0, notes.length)];
-            [notes addAttribute:NSForegroundColorAttributeName value:Theme.agendaEventTextColor range:NSMakeRange(0, notes.length)];
-            [_linkDetector enumerateMatchesInString:notes.string options:kNilOptions range:NSMakeRange(0, notes.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
-                [notes addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];
-            }];
-            _note.textStorage.attributedString = notes;
-            // Force layout and then calculate text height.
-            // stackoverflow.com/a/44969138/111418
-            (void) [_note.layoutManager glyphRangeForTextContainer:_note.textContainer];
-            NSRect textRect = [_note.layoutManager usedRectForTextContainer:_note.textContainer];
-            
-            // Set noteHeight to note text height, but no more than 200.
-            _noteHeight.constant = MIN(textRect.size.height, 200);
-            
-            [_note scrollToBeginningOfDocument:nil];
+            [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight];
         }
     }
     _title.stringValue = title;
-    _location.stringValue = location;
     _duration.stringValue = duration;
     _recurrence.stringValue = recurrence;
     
     _title.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightMedium];
-    _location.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
     _duration.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
     _recurrence.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
 
     _title.textColor = Theme.agendaEventTextColor;
-    _location.textColor = Theme.agendaEventTextColor;
     _duration.textColor = Theme.agendaEventTextColor;
     _recurrence.textColor = Theme.agendaEventTextColor;
 }
@@ -931,10 +944,27 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return NSMakeSize(gridSize.width + 20, gridSize.height + 16);
 }
 
-- (NSMutableAttributedString *)notesWithHTML:(NSString *)html
+- (void)populateTextView:(NSTextView *)textView withString:(NSString *)string heightConstraint:(NSLayoutConstraint *)constraint
 {
-    NSData *htmlData = [html dataUsingEncoding:NSUnicodeStringEncoding];
-    return [[NSMutableAttributedString alloc] initWithHTML:htmlData documentAttributes:nil];
+    string = [string stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"];
+    NSData *htmlData = [string dataUsingEncoding:NSUnicodeStringEncoding];
+    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithHTML:htmlData documentAttributes:nil];
+    
+    [attrString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:[[Sizer shared] fontSize]] range:NSMakeRange(0, attrString.length)];
+    [attrString addAttribute:NSForegroundColorAttributeName value:Theme.agendaEventTextColor range:NSMakeRange(0, attrString.length)];
+    [_linkDetector enumerateMatchesInString:attrString.string options:kNilOptions range:NSMakeRange(0, attrString.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+        [attrString addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];
+    }];
+    textView.textStorage.attributedString = attrString;
+    // Force layout and then calculate text height.
+    // stackoverflow.com/a/44969138/111418
+    (void) [textView.layoutManager glyphRangeForTextContainer:textView.textContainer];
+    NSRect textRect = [textView.layoutManager usedRectForTextContainer:textView.textContainer];
+    
+    // Set constraint to textView text height, but no more than 200.
+    constraint.constant = MIN(textRect.size.height, 200);
+    
+    [textView scrollToBeginningOfDocument:nil];
 }
 
 @end
