@@ -74,7 +74,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv = [MoTableView new];
     _tv.target = self;
     _tv.action = @selector(showPopover:);
-    _tv.doubleAction = @selector(showCalendarApp:);
+    _tv.doubleAction = @selector(showCalendarAppAtEvent:);
     _tv.menu = contextMenu;
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
@@ -101,26 +101,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
     self.view = v;
 }
 
-- (void)showCalendarApp:(id)sender
+- (void)showCalendarAppAtEvent:(id)sender
 {
-    SBCalendarApplication *calendarApp = [SBApplication applicationWithBundleIdentifier:@"com.apple.iCal"];
-    if (calendarApp == nil) {
-        NSString *message = NSLocalizedString(@"The Calendar application could not be found.", @"Alert box message when we fail to launch the Calendar application");
-        NSAlert *alert = [NSAlert new];
-        alert.messageText = message;
-        alert.alertStyle = NSAlertStyleCritical;
-        [alert runModal];
-        return;
-    }
-    
     AgendaEventCell *cell = [_tv viewAtColumn:0 row:_tv.clickedRow makeIfNecessary:NO];
     
-    [calendarApp activate]; // bring to foreground
-    [calendarApp viewCalendarAt:cell.eventInfo.event.startDate];
-    
-//    if (self.delegate && [self.delegate respondsToSelector:@selector(showCalendarApp:)]) {
-//        [self.delegate showCalendarApp:sender];
-//    }
+    if (self.delegate && [self.delegate respondsToSelector:@selector(showCalendarAppAtDate: atDate:)]) {
+        [self.delegate showCalendarAppAtDate:sender atDate:cell.eventInfo.event.startDate];
+    }
 }
 
 - (void)viewWillAppear

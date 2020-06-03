@@ -273,6 +273,12 @@
 
 - (void)showCalendarApp:(id)sender
 {
+    NSDate* showDate = MakeNSDateWithDate(_moCal.selectedDate, _nsCal);
+    [self showCalendarAppAtDate:sender atDate:showDate];
+}
+
+- (void)showCalendarAppAtDate:(id)sender atDate:(NSDate*)date
+{
     // Determine the default calendar app.
     // See: support.busymac.com/help/21535-busycal-url-handler
     
@@ -286,11 +292,11 @@
     
     if ([defaultCalendarAppBundleID isEqualToString:@"com.busymac.busycal2"] ||
         [defaultCalendarAppBundleID isEqualToString:@"com.busymac.busycal3"]) {
-        [self showCalendarAppWithURLScheme:@"busycalevent://date"];
+        [self showCalendarAppWithURLSchemeAtDate:@"busycalevent://date" atDate:date];
         return;
     }
     else if ([defaultCalendarAppBundleID isEqualToString:@"com.flexibits.fantastical2.mac"]) {
-        [self showCalendarAppWithURLScheme:@"x-fantastical2://show/calendar"];
+        [self showCalendarAppWithURLSchemeAtDate:@"x-fantastical2://show/calendar" atDate:date];
         return;
     }
     
@@ -307,14 +313,22 @@
         return;
     }
     [calendarApp activate]; // bring to foreground
-    [calendarApp viewCalendarAt:MakeNSDateWithDate(_moCal.selectedDate, _nsCal)];
+    [calendarApp viewCalendarAt:date];
 }
 
 - (void)showCalendarAppWithURLScheme:(NSString *)urlScheme
 {
+    NSDate* showDate = MakeNSDateWithDate(_moCal.selectedDate, _nsCal);
+    [self showCalendarAppWithURLSchemeAtDate:urlScheme atDate:showDate];
+}
+
+- (void)showCalendarAppWithURLSchemeAtDate:(NSString *)urlScheme atDate:(NSDate*)date
+{
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:date];
+
     // url is of the form: urlScheme/yyyy-MM-dd
     // For example: x-fantastical2://show/calendar/2011-05-22
-    NSString *url = [NSString stringWithFormat:@"%@/%04zd-%02zd-%02zd", urlScheme, _moCal.selectedDate.year, _moCal.selectedDate.month+1, _moCal.selectedDate.day];
+    NSString *url = [NSString stringWithFormat:@"%@/%04zd-%02zd-%02zd", urlScheme, components.year, components.month+1, components.day];
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
 }
 

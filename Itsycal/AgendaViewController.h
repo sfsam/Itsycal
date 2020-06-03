@@ -30,7 +30,7 @@
 
 @optional
 - (void)agendaHoveredOverRow:(NSInteger)row;
-- (void)showCalendarApp:(id)sender;
+- (void)showCalendarAppAtDate:(id)sender atDate:(NSDate*)date;
 - (void)agendaWantsToDeleteEvent:(EKEvent *)event;
 - (CGFloat)agendaMaxPossibleHeight;
 
