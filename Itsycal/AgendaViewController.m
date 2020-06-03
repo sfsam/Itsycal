@@ -13,7 +13,6 @@
 #import "MoVFLHelper.h"
 #import "Themer.h"
 #import "Sizer.h"
-#import "SBCalendar.h"
 
 static NSString *kColumnIdentifier    = @"Column";
 static NSString *kDateCellIdentifier  = @"DateCell";
