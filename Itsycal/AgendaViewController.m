@@ -919,6 +919,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
             [_textGrid rowAtIndex:4].hidden = YES;
         }
         else {
+            if ([trimmedNotes containsString:@"https://teams.microsoft.com"])
+            {
+                trimmedNotes = [trimmedNotes stringByReplacingOccurrencesOfString:@"<" withString:@" "];
+                trimmedNotes = [trimmedNotes stringByReplacingOccurrencesOfString:@">" withString:@" "];
+            }
             [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight];
         }
     }
@@ -949,6 +954,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     string = [string stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"];
     NSData *htmlData = [string dataUsingEncoding:NSUnicodeStringEncoding];
     NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithHTML:htmlData documentAttributes:nil];
+    
     
     [attrString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:[[Sizer shared] fontSize]] range:NSMakeRange(0, attrString.length)];
     [attrString addAttribute:NSForegroundColorAttributeName value:Theme.agendaEventTextColor range:NSMakeRange(0, attrString.length)];
