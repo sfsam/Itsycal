@@ -1,0 +1,51 @@
+
+/* Class = "NSMenuItem"; title = "Itsycal"; ObjectID = "1Xt-HY-uBw"; */
+"1Xt-HY-uBw.title" = "Itsycal";
+
+/* Class = "NSMenuItem"; title = "Quit Itsycal"; ObjectID = "4sb-4s-VLi"; */
+"4sb-4s-VLi.title" = "Выход";
+
+/* Class = "NSMenuItem"; title = "Close"; ObjectID = "7wR-SZ-Nqc"; */
+"7wR-SZ-Nqc.title" = "Закрыть";
+
+/* Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6"; */
+"AYu-sK-qS6.title" = "Main Menu";
+
+/* Class = "NSMenuItem"; title = "Delete"; ObjectID = "Ajc-jh-dSd"; */
+"Ajc-jh-dSd.title" = "Удалить";
+
+/* Class = "NSMenuItem"; title = "Redo"; ObjectID = "E90-5z-y6Z"; */
+"E90-5z-y6Z.title" = "Отменить";
+
+/* Class = "NSMenuItem"; title = "Copy"; ObjectID = "KoB-Sc-Ag6"; */
+"KoB-Sc-Ag6.title" = "Копировать";
+
+/* Class = "NSMenuItem"; title = "Paste and Match Style"; ObjectID = "PMd-w8-qYH"; */
+"PMd-w8-qYH.title" = "Paste and Match Style";
+
+/* Class = "NSMenuItem"; title = "Edit"; ObjectID = "RD9-zb-l4F"; */
+"RD9-zb-l4F.title" = "Изменить";
+
+/* Class = "NSMenuItem"; title = "Paste"; ObjectID = "XV4-be-FKs"; */
+"XV4-be-FKs.title" = "Вставить";
+
+/* Class = "NSMenu"; title = "Edit"; ObjectID = "Xm0-od-eJc"; */
+"Xm0-od-eJc.title" = "Изменить";
+
+/* Class = "NSMenu"; title = "File"; ObjectID = "bib-Uj-vzu"; */
+"bib-Uj-vzu.title" = "Файл";
+
+/* Class = "NSMenuItem"; title = "File"; ObjectID = "dMs-cI-mzQ"; */
+"dMs-cI-mzQ.title" = "Файл";
+
+/* Class = "NSMenu"; title = "Itsycal"; ObjectID = "uQy-DD-JDr"; */
+"uQy-DD-JDr.title" = "Itsycal";
+
+/* Class = "NSMenuItem"; title = "Select All"; ObjectID = "vKD-cH-8sx"; */
+"vKD-cH-8sx.title" = "Выбрать все";
+
+/* Class = "NSMenuItem"; title = "Cut"; ObjectID = "vPX-F4-xWi"; */
+"vPX-F4-xWi.title" = "Вырезать";
+
+/* Class = "NSMenuItem"; title = "Undo"; ObjectID = "zvl-vr-OUg"; */
+"zvl-vr-OUg.title" = "Отменить";

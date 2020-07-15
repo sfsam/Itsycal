@@ -34,13 +34,17 @@
         kShowWeeks:            @(NO),
         kHighlightedDOWs:      @0,
         kShowEventDays:        @7,
+        kShowMonthOutline:     @(YES),
         kWeekStartDOW:         @(weekStartDOW), // Sun=0, Mon=1,... (MoCalendar.h)
         kShowMonthInIcon:      @(NO),
+        kShowYearInIcon:       @(NO),
+        kShowFullYearInIcon:   @(NO),
         kShowDayOfWeekInIcon:  @(NO),
         kShowEventDots:        @(YES),
         kUseColoredDots:       @(YES),
         kThemePreference:      @0, // System=0, Light=1, Dark=2
-        kHideIcon:             @(NO)
+        kHideIcon:             @(NO),
+        kShowAsNumbers:        @(NO)
     }];
     
     // Constrain kShowEventDays to values 0...9 in (unlikely) case it is invalid.

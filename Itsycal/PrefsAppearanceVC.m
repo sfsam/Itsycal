@@ -20,6 +20,11 @@
 #pragma mark -
 #pragma mark View lifecycle
 
+- (IBAction)changeLocale:(id)sender {
+    NSLog(@"My NSPopupButton selected value is: %@", [(NSPopUpButton *) sender titleOfSelectedItem]);
+}
+
+
 - (void)loadView
 {
     // View controller content view
@@ -48,8 +53,12 @@
     // Checkboxes
     NSButton *useOutlineIcon = chkbx(NSLocalizedString(@"Use outline icon", @""));
     NSButton *showMonth = chkbx(NSLocalizedString(@"Show month in icon", @""));
+    NSButton *showYear = chkbx(NSLocalizedString(@"Show year in icon", @""));
+    NSButton *showFullYear = chkbx(NSLocalizedString(@"Show full year in icon", @""));
     NSButton *showDayOfWeek = chkbx(NSLocalizedString(@"Show day of week in icon", @""));
     NSButton *showEventDots = chkbx(NSLocalizedString(@"Show event dots", @""));
+    NSButton *showMonthOutline = chkbx(NSLocalizedString(@"Show month outline", @""));
+    NSButton *showAsNumbers = chkbx(NSLocalizedString(@"Show date as numbers", @""));
     NSButton *useColoredDots = chkbx(NSLocalizedString(@"Use colored dots", @""));
     NSButton *showWeeks = chkbx(NSLocalizedString(@"Show calendar weeks", @""));
     NSButton *showLocation = chkbx(NSLocalizedString(@"Show event location", @""));
@@ -85,25 +94,31 @@
     [themePopup addItemWithTitle:NSLocalizedString(@"System", @"System theme name")];
     [themePopup addItemWithTitle:NSLocalizedString(@"Light", @"Light theme name")];
     [themePopup addItemWithTitle:NSLocalizedString(@"Dark", @"Dark theme name")];
-    // The tags will be used to bind the selected theme
-    // preference to NSUserDefaults.
+    
     [themePopup itemAtIndex:0].tag = ThemePreferenceSystem;
     [themePopup itemAtIndex:1].tag = ThemePreferenceLight;
     [themePopup itemAtIndex:2].tag = ThemePreferenceDark;
+    
+    // The tags will be used to bind the selected theme
+    // preference to NSUserDefaults.
     [v addSubview:themePopup];
     
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(menubarLabel, calendarLabel, separator0, separator1, bigger, useOutlineIcon, showMonth, showDayOfWeek, showEventDots, useColoredDots, showWeeks, showLocation, _dateTimeFormat, helpButton, _hideIcon, highlight, themeLabel, themePopup)];
-    [vfl :@"V:|-m-[menubarLabel]-10-[useOutlineIcon]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[themePopup]-m-[highlight]-m-[showEventDots]-[useColoredDots]-[showLocation]-[showWeeks]-[bigger]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(menubarLabel, calendarLabel, separator0, separator1, bigger, useOutlineIcon, showMonth, showYear, showFullYear, showDayOfWeek, showEventDots, showMonthOutline, showAsNumbers, useColoredDots, showWeeks, showLocation, _dateTimeFormat, helpButton, _hideIcon, highlight, themeLabel, themePopup)];
+    [vfl :@"V:|-m-[menubarLabel]-10-[useOutlineIcon]-[showMonth]-[showYear]-[showFullYear]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[themePopup]-m-[highlight]-m-[showMonthOutline]-[showAsNumbers]-[showEventDots]-[useColoredDots]-[showLocation]-[showWeeks]-[bigger]-m-|"];
     [vfl :@"H:|-m-[menubarLabel]-[separator0]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[calendarLabel]-[separator1]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[useOutlineIcon]-(>=m)-|"];
     [vfl :@"H:|-m-[showMonth]-(>=m)-|"];
+    [vfl :@"H:|-m-[showYear]-(>=m)-|"];
+    [vfl :@"H:|-mm-[showFullYear]-(>=m)-|"];
     [vfl :@"H:|-m-[showDayOfWeek]-(>=m)-|"];
     [vfl :@"H:|-m-[_dateTimeFormat]-[helpButton]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[_hideIcon]-(>=m)-|"];
     [vfl :@"H:|-m-[highlight]-(>=m)-|"];
     [vfl :@"H:|-m-[themeLabel]-[themePopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
     [vfl :@"H:|-m-[showEventDots]-(>=m)-|"];
+    [vfl :@"H:|-m-[showMonthOutline]-(>=m)-|"];
+    [vfl :@"H:|-m-[showAsNumbers]-(>=m)-|"];
     [vfl :@"H:|-mm-[useColoredDots]-(>=m)-|"];
     [vfl :@"H:|-m-[showWeeks]-(>=m)-|"];
     [vfl :@"H:|-m-[showLocation]-(>=m)-|"];
@@ -112,7 +127,13 @@
     // Bindings for icon preferences
     [useOutlineIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseOutlineIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [showMonth bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [showYear bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowYearInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(NO)}];
+    [showFullYear bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowFullYearInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(NO)}];
+    [showFullYear bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowYearInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    
+    
     [showDayOfWeek bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowDayOfWeekInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    
     [_hideIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bind icon prefs enabled state to hide icon's value
@@ -125,6 +146,12 @@
 
     // Bindings for showEventDots preference
     [showEventDots bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    
+    // Bindings for showMonthOutline preference
+       [showMonthOutline bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthOutline] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    
+    // Bindings for showMonthOutline preference
+     [showAsNumbers bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowAsNumbers] options:@{NSContinuouslyUpdatesValueBindingOption: @(NO)}];
 
     // Bindings for useColoredDots preference
     [useColoredDots bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseColoredDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];

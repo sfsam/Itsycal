@@ -17,6 +17,8 @@ NSString * const kHighlightedDOWs = @"HighlightedDOWs";
 NSString * const kKeyboardShortcut = @"KeyboardShortcut";
 NSString * const kUseOutlineIcon = @"UseOutlineIcon";
 NSString * const kShowMonthInIcon = @"ShowMonthInIcon";
+NSString * const kShowYearInIcon = @"ShowYearInIcon";
+NSString * const kShowFullYearInIcon = @"ShowFullYearInIcon";
 NSString * const kShowDayOfWeekInIcon = @"ShowDayOfWeekInIcon";
 NSString * const kAllowOutsideApplicationsFolder = @"AllowOutsideApplicationsFolder";
 NSString * const kClockFormat = @"ClockFormat";
@@ -24,3 +26,6 @@ NSString * const kHideIcon = @"HideIcon";
 NSString * const kShowLocation = @"ShowLocation";
 NSString * const kShowEventDots = @"kShowEventDots";
 NSString * const kUseColoredDots = @"UseColoredDots";
+NSString * const kShowMonthOutline = @"ShowMonthOutline";
+NSString * const kShowAsNumbers = @"ShowAsNumber";
+

@@ -1,0 +1,235 @@
+/* No comment provided by engineer. */
+"1 day" = "на 1 день";
+
+/* No comment provided by engineer. */
+"1 day before" = "За 1 день";
+
+/* No comment provided by engineer. */
+"1 hour before" = "За 1 час";
+
+/* No comment provided by engineer. */
+"2 days" = "на 2 дня";
+
+/* No comment provided by engineer. */
+"2 days before" = "За 2 дня";
+
+/* No comment provided by engineer. */
+"2 hours before" = "За 2 часа";
+
+/* No comment provided by engineer. */
+"3 days" = "на 3 дня";
+
+/* No comment provided by engineer. */
+"4 days" = "на 4 дня";
+
+/* No comment provided by engineer. */
+"5 days" = "на 5 дней";
+
+/* No comment provided by engineer. */
+"5 minutes before" = "За 5 минут";
+
+/* No comment provided by engineer. */
+"6 days" = "на 6 дней";
+
+/* No comment provided by engineer. */
+"7 days" = "на 7 дней";
+
+/* No comment provided by engineer. */
+"10 minutes before" = "За 10 минут";
+
+/* No comment provided by engineer. */
+"15 minutes before" = "За 15 минут";
+
+/* No comment provided by engineer. */
+"30 minutes before" = "За 30 минут";
+
+/* No comment provided by engineer. */
+"Add Location" = "Место";
+
+/* No comment provided by engineer. */
+"Alert:" = "Напоминание:";
+
+/* No comment provided by engineer. */
+"All-day:" = "Весь день:";
+
+/* No comment provided by engineer. */
+"Are you sure you want to delete this event?" = "Вы уверены, что хотите удалить это событие?";
+
+/* No comment provided by engineer. */
+"At time of event" = "В момент события";
+
+/* No comment provided by engineer. */
+"Calendar access denied.
+
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Доступ к календарям запрещён.
+
+Itsycal может отображать события из ваших календарей. Вы можете разрешить ему доступ в меню Системные настройки › Защита и безопасность › Конфиденциальность › Календари";
+
+/* No comment provided by engineer. */
+"Calendar access was denied." = "Доступ к календарям запрещён.";
+
+/* Cancel action button in recording state */
+"Cancel" = "Отменить";
+
+/* No comment provided by engineer. */
+"Check for updates..." = "Проверить наличие обновлений…";
+
+/* Empty shortcut button in normal state */
+"Click to Record Shortcut" = "Нажмите, чтобы задать сочетание клавиш";
+
+/* Tooltip for non-empty shortcut button */
+"Click to record new shortcut" = "Нажмите, чтобы изменить сочетание клавиш";
+
+/* No comment provided by engineer. */
+"Delete All Future Events" = "Удалить все будущие повторения";
+
+/* No comment provided by engineer. */
+"Delete Only This Event" = "Удалить только это событие";
+
+/* No comment provided by engineer. */
+"Delete This Event" = "Удалить это событие";
+
+/* Tooltip for hint button near the non-empty shortcut */
+"Delete shortcut" = "Удалить сочетание клавиш";
+
+/* No comment provided by engineer. */
+"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Хотите удалить это и все последующие повторения этого события или только выбранную запись?";
+
+/* No comment provided by engineer. */
+"End Repeat:" = "Конец:";
+
+/* No comment provided by engineer. */
+"Ends:" = "Конец:";
+
+/* No comment provided by engineer. */
+"Event list shows:" = "Показывать список событий:";
+
+/* No comment provided by engineer. */
+"Every 2 Weeks" = "Каждые 2 недели";
+
+/* No comment provided by engineer. */
+"Every Day" = "Каждый день";
+
+/* No comment provided by engineer. */
+"Every Month" = "Каждый месяц";
+
+/* No comment provided by engineer. */
+"Every Week" = "Каждую неделю";
+
+/* No comment provided by engineer. */
+"Every Year" = "Каждый год";
+
+/* No comment provided by engineer. */
+"First day of week" = "Начало недели";
+
+/* No comment provided by engineer. */
+"Friday" = "Пятница";
+
+/* No comment provided by engineer. */
+"Highlight weekend" = "Выделять выходные";
+
+/* No comment provided by engineer. */
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal ist nützlicher, wenn es Veranstaltungen zu Ihrem Kalender hinzuzufügen. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.";
+
+/* No comment provided by engineer. */
+"Keyboard shortcut" = "Сочетание клавиш";
+
+/* No comment provided by engineer. */
+"Launch at login" = "Запускать на старте системы";
+
+/* No comment provided by engineer. */
+"Monday" = "Понедельник";
+
+/* Repeat ends never */
+"Never" = "Никогда";
+
+/* No comment provided by engineer. */
+"New Event" = "Новое событие";
+
+/* No comment provided by engineer. */
+"New Event... ⌘N" = "Новое событие … ⌘N";
+
+/* No comment provided by engineer. */
+"No events" = "Не показывать";
+
+/* Alert none
+   Repeat none */
+"None" = "Никогда";
+
+/* Alert button when shortcut is already used */
+"OK" = "OK";
+
+/* No comment provided by engineer. */
+"On Date" = "В дату";
+
+/* No comment provided by engineer. */
+"Open Calendar... ⌘O" = "Открыть Календарь … ⌘O";
+
+/* No comment provided by engineer. */
+"Options" = "Параметры";
+
+/* No comment provided by engineer. */
+"Pin Itsycal... P" = "Закрепить Itsycal … P";
+
+/* No comment provided by engineer. */
+"Preferences..." = "Настройки …";
+
+/* No comment provided by engineer. */
+"Quit Itsycal" = "Закрыть Itsycal";
+
+/* No comment provided by engineer. */
+"Repeat:" = "Повторять:";
+
+/* No comment provided by engineer. */
+"Saturday" = "Суббота";
+
+/* No comment provided by engineer. */
+"Save Event" = "Добавить событие";
+
+/* No comment provided by engineer. */
+"Show calendar weeks" = "Показывать номера недель";
+
+/* No comment provided by engineer. */
+"Show month in icon" = "Показывать месяц на иконке приложения";
+
+/* Shortcut glyph name for SPACE key */
+"Space" = "Пробел";
+
+/* No comment provided by engineer. */
+"Starts:" = "Начало:";
+
+/* No comment provided by engineer. */
+"Sunday" = "Воскресенье";
+
+/* Alert box message when we fail to launch the Calendar application */
+"The Calendar application could not be found." = "Приложение Календарь не найдено.";
+
+/* Title for alert when shortcut is already used */
+"The key combination %@ cannot be used" = "Сочетание клавиш %@ не может быть использовано!";
+
+/* Message for alert when shortcut is already used */
+"This shortcut cannot be used because it is already used by the menu item ‘%@’." = "Это сочетание клавиш не может быть использовано, потому что оно уже используется для пункта меню ‘%@’.";
+
+/* No comment provided by engineer. */
+"Thursday" = "Четверг";
+
+/* No comment provided by engineer. */
+"Tuesday" = "Вторник";
+
+/* Non-empty shortcut button in recording state */
+"Type New Shortcut" = "Задайте новое сочетание клавиш";
+
+/* Empty shortcut button in recording state */
+"Type Shortcut" = "Задайте сочетание клавиш";
+
+/* Cancel action button for non-empty shortcut in recording state */
+"Use Old Shortcut" = "Использовать старое сочетание клавиш";
+
+/* No comment provided by engineer. */
+"Wednesday" = "Среда";
+
+/* No comment provided by engineer. */
+"You're deleting an event." = "Вы удаляете событие.";
+
+/* Spanning event ends */
+"ends" = "до";

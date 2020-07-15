@@ -48,6 +48,9 @@
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowEventDays];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kUseOutlineIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMonthInIcon];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowYearInIcon];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowFullYearInIcon];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowAsNumbers];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kClockFormat];
 }
@@ -146,6 +149,8 @@
 
     [_moCal bind:@"showWeeks" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowWeeks] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_moCal bind:@"showEventDots" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_moCal bind:@"showMonthOutline" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthOutline] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [_moCal bind:@"showAsNumbers" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowAsNumbers] options:@{NSContinuouslyUpdatesValueBindingOption: @(NO)}];
     [_moCal bind:@"useColoredDots" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseColoredDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_moCal bind:@"highlightedDOWs" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightedDOWs] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_moCal bind:@"weekStartDOW" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kWeekStartDOW] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
@@ -273,6 +278,12 @@
 
 - (void)showCalendarApp:(id)sender
 {
+    NSDate* showDate = MakeNSDateWithDate(_moCal.selectedDate, _nsCal);
+    [self showCalendarAppAtDate:sender atDate:showDate];
+}
+
+- (void)showCalendarAppAtDate:(id)sender atDate:(NSDate*)date
+{
     // Determine the default calendar app.
     // See: support.busymac.com/help/21535-busycal-url-handler
     
@@ -286,11 +297,11 @@
     
     if ([defaultCalendarAppBundleID isEqualToString:@"com.busymac.busycal2"] ||
         [defaultCalendarAppBundleID isEqualToString:@"com.busymac.busycal3"]) {
-        [self showCalendarAppWithURLScheme:@"busycalevent://date"];
+        [self showCalendarAppWithURLSchemeAtDate:@"busycalevent://date" atDate:date];
         return;
     }
     else if ([defaultCalendarAppBundleID isEqualToString:@"com.flexibits.fantastical2.mac"]) {
-        [self showCalendarAppWithURLScheme:@"x-fantastical2://show/calendar"];
+        [self showCalendarAppWithURLSchemeAtDate:@"x-fantastical2://show/calendar" atDate:date];
         return;
     }
     
@@ -307,14 +318,22 @@
         return;
     }
     [calendarApp activate]; // bring to foreground
-    [calendarApp viewCalendarAt:MakeNSDateWithDate(_moCal.selectedDate, _nsCal)];
+    [calendarApp viewCalendarAt:date];
 }
 
 - (void)showCalendarAppWithURLScheme:(NSString *)urlScheme
 {
+    NSDate* showDate = MakeNSDateWithDate(_moCal.selectedDate, _nsCal);
+    [self showCalendarAppWithURLSchemeAtDate:urlScheme atDate:showDate];
+}
+
+- (void)showCalendarAppWithURLSchemeAtDate:(NSString *)urlScheme atDate:(NSDate*)date
+{
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:date];
+
     // url is of the form: urlScheme/yyyy-MM-dd
     // For example: x-fantastical2://show/calendar/2011-05-22
-    NSString *url = [NSString stringWithFormat:@"%@/%04zd-%02zd-%02zd", urlScheme, _moCal.selectedDate.year, _moCal.selectedDate.month+1, _moCal.selectedDate.day];
+    NSString *url = [NSString stringWithFormat:@"%@/%04zd-%02zd-%02zd", urlScheme, components.year, components.month+1, components.day];
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
 }
 
@@ -470,9 +489,23 @@
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon] || [[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeekInIcon]) {
         NSMutableString *template = @"d".mutableCopy;
+        
         if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon]) {
-            [template appendString:@"MMM"];
+            if([[NSUserDefaults standardUserDefaults] boolForKey:kShowAsNumbers] ) {
+                [template appendString:@"MM"];
+            } else {
+                [template appendString:@"MMM"];
+            }
         }
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowYearInIcon]) {
+            if([[NSUserDefaults standardUserDefaults] boolForKey:kShowFullYearInIcon]) {
+                [template appendString:@"YYYY"];
+            } else {
+                [template appendString:@"YY"];
+            }
+        }
+        
         if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowDayOfWeekInIcon]) {
             [template appendString:@"EEE"];
         }
@@ -510,6 +543,7 @@
         if (@available(macOS 10.15, *)) {
             baselineOffset = 0.5;
         }
+        
         _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:[_iconDateFormatter stringFromDate:[NSDate new]] attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
     }
     [self adjustStatusItemWidthIfNecessary];
@@ -1151,7 +1185,7 @@
     }];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kHideIcon, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowYearInIcon, kShowFullYearInIcon, kShowAsNumbers, kShowDayOfWeekInIcon, kHideIcon, kClockFormat]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -1167,6 +1201,9 @@
     else if ([keyPath isEqualToString:kUseOutlineIcon] ||
              [keyPath isEqualToString:kShowMonthInIcon] ||
              [keyPath isEqualToString:kShowDayOfWeekInIcon] ||
+             [keyPath isEqualToString:kShowYearInIcon] ||
+             [keyPath isEqualToString:kShowFullYearInIcon] ||
+             [keyPath isEqualToString:kShowAsNumbers] ||
              [keyPath isEqualToString:kHideIcon]) {
         [self updateMenubarIcon];
     }

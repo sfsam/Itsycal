@@ -73,6 +73,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv = [MoTableView new];
     _tv.target = self;
     _tv.action = @selector(showPopover:);
+    _tv.doubleAction = @selector(showCalendarAppAtEvent:);
     _tv.menu = contextMenu;
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
@@ -97,6 +98,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[tv]|" options:0 metrics:nil views:@{@"tv": tvContainer}]];
     
     self.view = v;
+}
+
+- (void)showCalendarAppAtEvent:(id)sender
+{
+    AgendaEventCell *cell = [_tv viewAtColumn:0 row:_tv.clickedRow makeIfNecessary:NO];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(showCalendarAppAtDate: atDate:)]) {
+        [self.delegate showCalendarAppAtDate:sender atDate:cell.eventInfo.event.startDate];
+    }
 }
 
 - (void)viewWillAppear
@@ -919,6 +928,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
             [_textGrid rowAtIndex:4].hidden = YES;
         }
         else {
+            if ([trimmedNotes containsString:@"https://teams.microsoft.com"])
+            {
+                trimmedNotes = [trimmedNotes stringByReplacingOccurrencesOfString:@"<" withString:@" "];
+                trimmedNotes = [trimmedNotes stringByReplacingOccurrencesOfString:@">" withString:@" "];
+            }
             [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight];
         }
     }
