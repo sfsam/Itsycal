@@ -9,7 +9,9 @@ NSString * const kSizePreference = @"SizePreference";
 // Notification names
 NSString * const kSizeDidChangeNotification = @"SizeDidChangeNotification";
 
-#define SMALL_OR_BIG(sm, bg) (self.sizePreference == SizePreferenceLarge ? (bg) : (sm))
+#define SML_MED_LRG(sml, med, lrg) \
+            (self.sizePreference == SizePreferenceMedium ? (med) \
+            : (self.sizePreference == SizePreferenceLarge ? (lrg) : (sml)))
 
 @implementation Sizer
 
@@ -28,35 +30,35 @@ NSString * const kSizeDidChangeNotification = @"SizeDidChangeNotification";
 }
 
 - (CGFloat)fontSize {
-    return SMALL_OR_BIG(11, 13);
+    return SML_MED_LRG(FONT_SIZE_SMALL, FONT_SIZE_MEDIUM, FONT_SIZE_LARGE);
 }
 
 - (CGFloat)calendarTitleFontSize {
-    return SMALL_OR_BIG(14, 16);
+    return SML_MED_LRG(14, 16, 18);
 }
 
 - (CGFloat)cellSize {
-    return SMALL_OR_BIG(23, 28);
+    return SML_MED_LRG(23, 28, 32);
 }
 
 - (CGFloat)cellTextFieldVerticalSpace {
-    return SMALL_OR_BIG(2, 2);
+    return SML_MED_LRG(2, 2, 2);
 }
 
 - (CGFloat)cellDotWidth {
-    return SMALL_OR_BIG(3, 4);
+    return SML_MED_LRG(3, 4, 5);
 }
 
 - (CGFloat)cellRadius {
-    return SMALL_OR_BIG(2, 3);
+    return SML_MED_LRG(2, 3, 4);
 }
 
 - (CGFloat)agendaDotWidth {
-    return SMALL_OR_BIG(6, 7);
+    return SML_MED_LRG(6, 7, 8);
 }
 
 - (CGFloat)agendaEventLeadingMargin {
-    return SMALL_OR_BIG(15, 16);
+    return SML_MED_LRG(15, 16, 18);
 }
 
 @end

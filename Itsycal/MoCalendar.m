@@ -401,19 +401,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 - (void)sizeChanged:(id)sender
 {
-    // Perform calendar size changes after grid cells have resized.
-    [self performSelector:@selector(delayedSizeChanges:) withObject:nil afterDelay:0.05];
-}
-
-- (void)delayedSizeChanges:(id)sender {
-    // Font sizes.
     _monthLabel.font = [NSFont systemFontOfSize:[[Sizer shared] calendarTitleFontSize] weight:NSFontWeightSemibold];
-    for (MoCalCell *cell in _dowGrid.cells) {
-        cell.textField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
-    }
-    if (self.showWeeks) {
-        _weeksConstraint.constant = NSWidth(_weekGrid.frame);
-    }
+    _weeksConstraint.constant = self.showWeeks ? [[Sizer shared] cellSize] : 2;
 }
 
 #pragma mark -

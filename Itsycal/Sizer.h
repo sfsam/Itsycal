@@ -9,6 +9,10 @@ extern NSString * const kSizePreference;
 // Notification name
 extern NSString * const kSizeDidChangeNotification;
 
+#define FONT_SIZE_SMALL 11
+#define FONT_SIZE_MEDIUM 13
+#define FONT_SIZE_LARGE 15
+
 // Convenience macro for notification observer for sizeable components
 #define REGISTER_FOR_SIZE_CHANGE [[NSNotificationCenter defaultCenter] \
                                    addObserverForName:kSizeDidChangeNotification \
@@ -17,8 +21,9 @@ extern NSString * const kSizeDidChangeNotification;
                                    [self sizeChanged:nil];}];
 
 typedef enum : NSInteger {
-    SizePreferenceDefault = 0,
-    SizePreferenceLarge = 1
+    SizePreferenceSmall = 0,
+    SizePreferenceMedium = 1,
+    SizePreferenceLarge = 2
 } SizePreference;
 
 @interface Sizer : NSObject

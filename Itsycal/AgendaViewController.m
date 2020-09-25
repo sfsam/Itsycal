@@ -696,7 +696,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 // AgendaPopoverVC
 // =========================================================================
 
-#define POPOVER_TEXT_WIDTH 180
+#define POPOVER_TEXT_WIDTH 220
 
 @implementation AgendaPopoverVC
 {
