@@ -10,8 +10,8 @@ NSString * const kSizePreference = @"SizePreference";
 NSString * const kSizeDidChangeNotification = @"SizeDidChangeNotification";
 
 #define SML_MED_LRG(sml, med, lrg) \
-            (self.sizePreference == SizePreferenceMedium ? (med) \
-            : (self.sizePreference == SizePreferenceLarge ? (lrg) : (sml)))
+            (self.sizePreference == SizePreferenceMedium ? med \
+            : (self.sizePreference == SizePreferenceLarge ? lrg : sml))
 
 @implementation Sizer
 
@@ -59,6 +59,10 @@ NSString * const kSizeDidChangeNotification = @"SizeDidChangeNotification";
 
 - (CGFloat)agendaEventLeadingMargin {
     return SML_MED_LRG(15, 16, 18);
+}
+
+- (NSString *)videoImageName {
+    return SML_MED_LRG(@"video14", @"video16", @"video18");
 }
 
 @end

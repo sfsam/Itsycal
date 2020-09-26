@@ -36,6 +36,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @property (nonatomic) NSTextField *titleTextField;
 @property (nonatomic) NSTextField *locationTextField;
 @property (nonatomic) NSTextField *durationTextField;
+@property (nonatomic) MoButton *btnVideo;
 @property (nonatomic, weak) EventInfo *eventInfo;
 @property (nonatomic) BOOL dim;
 @end
@@ -287,16 +288,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         EventInfo *info = obj;
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
         if (!cell) cell = [AgendaEventCell new];
-        cell.eventInfo = info;
         [self populateEventCell:cell withInfo:info showLocation:self.showLocation];
-        cell.dim = NO;
-        // If event's endDate is today and is past, dim event.
-        if (!info.isStartDate && !info.isAllDay &&
-            [self.nsCal isDateInToday:info.event.endDate] &&
-            [NSDate.date compare:info.event.endDate] == NSOrderedDescending) {
-            cell.titleTextField.textColor = Theme.agendaEventDateTextColor;
-            cell.dim = YES;
-        }
         v = cell;
     }
     return v;
@@ -419,6 +411,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     intervalFormatter.timeZone = nil; // Force tz update on macOS 10.13
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
     
+    cell.eventInfo = info;
+
     if (info && info.event) {
         if (info.event.title) title = info.event.title;
         if (info.event.location) location = info.event.location;
@@ -455,12 +449,40 @@ static NSString *kEventCellIdentifier = @"EventCell";
             }
         }
     }
+
+    // Virtual meeting button.
+    cell.btnVideo.enabled = NO;
+    cell.btnVideo.hidden = info.zoomURL ? NO : YES;
+    cell.btnVideo.actionBlock = nil;
+    cell.btnVideo.contentTintColor = nil;
+
     cell.titleTextField.stringValue = title;
     cell.titleTextField.textColor = Theme.agendaEventTextColor;
     cell.locationTextField.stringValue = location;
     cell.locationTextField.textColor = Theme.agendaEventDateTextColor;
     cell.durationTextField.stringValue = duration;
     cell.durationTextField.textColor = Theme.agendaEventDateTextColor;
+
+    // If event's endDate is today and is past, dim event.
+    cell.dim = NO;
+    if (!info.isStartDate && !info.isAllDay
+        && [self.nsCal isDateInToday:info.event.endDate]
+        && [NSDate.date compare:info.event.endDate] == NSOrderedDescending) {
+        cell.titleTextField.textColor = Theme.agendaEventDateTextColor;
+        cell.dim = YES;
+    }
+    
+    // Enable the zoom button 15 minutes prior to event start until end.
+    NSDate *fifteenMinutesPrior = [self.nsCal dateByAddingUnit:NSCalendarUnitSecond value:-(15 * 60 + 30) toDate:info.event.startDate options:0];
+    if (info.zoomURL && !info.event.isAllDay
+        && [fifteenMinutesPrior compare:NSDate.date] == NSOrderedAscending
+        && [NSDate.date compare:info.event.endDate] == NSOrderedAscending) {
+        cell.btnVideo.enabled = YES;
+        cell.btnVideo.contentTintColor = Theme.todayCellColor;
+        cell.btnVideo.actionBlock = ^{
+            [NSWorkspace.sharedWorkspace openURL:info.zoomURL];
+        };
+    }
 }
 
 #pragma mark -
@@ -470,6 +492,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     // If the user has the window showing, reload the agenda cells.
     // This will redraw the events, dimming if necessary.
+    // This also enables/disables zoom buttons if necessary
+    // depending on whether a virtual meeting is in progress.
     if (self.view.window.isVisible) {
         [_tv reloadData];
     }
@@ -583,6 +607,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 // =========================================================================
 
 @implementation AgendaEventCell {
+    NSGridView *_durationGrid;
     NSLayoutConstraint *_gridLeadingConstraint;
 }
 
@@ -604,12 +629,44 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _locationTextField = label();
         _locationTextField.maximumNumberOfLines = 2;
         _durationTextField = label();
+        
+        _btnVideo = [MoButton new];
+        _btnVideo.bordered = 0;
+        _btnVideo.image = [NSImage imageNamed:[[Sizer shared] videoImageName]];
+        _btnVideo.image.template = YES;
+        
+        /*
+         Outer box = self
+         Middle box = grid
+         Innermost box = durationGrid
+         a = _gridLeadingConstraint
+         +-----------------------------------------+
+         |     |                                   |
+         |     3                                   |
+         |     |                                   |
+         |   +---------------------------------+   |
+         |-a-|[titleTextField]                 |-5-|
+         |   |[locationTextField]              |   |
+         |   |+-------------------------------+|   |
+         |   ||[durationTextField], [btnVideo]||   |
+         |   |+-------------------------------+|   |
+         |   +---------------------------------+   |
+         |     |                                   |
+         |     3                                   |
+         |     |                                   |
+         +-----------------------------------------+
+         */
+        
+        _durationGrid = [NSGridView gridViewWithViews:@[@[_durationTextField, _btnVideo]]];
+        _durationGrid.rowSpacing = 0;
+        
         _grid = [NSGridView gridViewWithViews:@[@[_titleTextField],
                                                 @[_locationTextField],
-                                                @[_durationTextField]]];
+                                                @[_durationGrid]]];
         _grid.translatesAutoresizingMaskIntoConstraints = NO;
         _grid.rowSpacing = 0;
         [self addSubview:_grid];
+        
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_grid)];
         [vfl :@"H:[_grid]-5-|"];
         [vfl :@"V:|-3-[_grid]-3-|"];
@@ -617,6 +674,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
         CGFloat leadingConstant = [[Sizer shared] agendaEventLeadingMargin];
         _gridLeadingConstraint = [_grid.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:leadingConstant];
         _gridLeadingConstraint.active = YES;
+        
+        [_btnVideo.centerYAnchor constraintEqualToAnchor:_durationTextField.centerYAnchor].active = YES;
         
         REGISTER_FOR_SIZE_CHANGE;
     }
@@ -626,6 +685,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)sizeChanged:(id)sender
 {
     _gridLeadingConstraint.constant = [[Sizer shared] agendaEventLeadingMargin];
+    _btnVideo.image = [NSImage imageNamed:[[Sizer shared] videoImageName]];
+    _btnVideo.image.template = YES;
     _titleTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
     _locationTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
     _durationTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];

@@ -37,6 +37,7 @@ typedef enum : NSInteger {
 @property (nonatomic, readonly) CGFloat cellRadius;
 @property (nonatomic, readonly) CGFloat agendaEventLeadingMargin;
 @property (nonatomic, readonly) CGFloat agendaDotWidth;
+@property (nonatomic, readonly) NSString *videoImageName;
 
 + (instancetype)shared;
 
