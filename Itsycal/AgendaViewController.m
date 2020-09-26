@@ -611,7 +611,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _grid.rowSpacing = 0;
         [self addSubview:_grid];
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_grid)];
-        [vfl :@"H:[_grid]-10-|"];
+        [vfl :@"H:[_grid]-5-|"];
         [vfl :@"V:|-3-[_grid]-3-|"];
         
         CGFloat leadingConstant = [[Sizer shared] agendaEventLeadingMargin];
@@ -637,7 +637,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Setting preferredMaxLayoutWidth allows us to calculate height
     // after word-wrapping.
     // margins = leading + trailing margins
-    CGFloat margins = _gridLeadingConstraint.constant + 10;
+    CGFloat margins = _gridLeadingConstraint.constant + 5;
     _titleTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
     _locationTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
     _durationTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
