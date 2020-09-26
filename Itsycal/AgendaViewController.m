@@ -29,7 +29,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @property (nonatomic) NSTextField *dayTextField;
 @property (nonatomic) NSTextField *DOWTextField;
 @property (nonatomic, weak) NSDate *date;
-@property (nonatomic, readonly) CGFloat height;
 @end
 
 @interface AgendaEventCell : NSView
@@ -38,7 +37,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @property (nonatomic) NSTextField *locationTextField;
 @property (nonatomic) NSTextField *durationTextField;
 @property (nonatomic, weak) EventInfo *eventInfo;
-@property (nonatomic, readonly) CGFloat height;
 @property (nonatomic) BOOL dim;
 @end
 
@@ -318,12 +316,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
         dateCell.dayTextField.integerValue = 21;
     });
     
-    CGFloat height = dateCell.height;
+    CGFloat height = dateCell.fittingSize.height;
     id obj = self.events[row];
     if ([obj isKindOfClass:[EventInfo class]]) {
         eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
         [self populateEventCell:eventCell withInfo:obj showLocation:self.showLocation];
-        height = eventCell.height;
+        height = eventCell.fittingSize.height;
     }
     return height;
 }
@@ -568,13 +566,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _DOWTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
 }
 
-- (CGFloat)height
-{
-    // The height of the textfield plus the height of the
-    // top and bottom marigns.
-    return [_dayTextField intrinsicContentSize].height + 7; // 6+1=top+bottom margin
-}
-
 - (void)drawRect:(NSRect)dirtyRect
 {
     // Must be opaque so rows can scroll under it.
@@ -621,7 +612,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [self addSubview:_grid];
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_grid)];
         [vfl :@"H:[_grid]-10-|"];
-        [vfl :@"V:|-3-[_grid]"];
+        [vfl :@"V:|-3-[_grid]-3-|"];
         
         CGFloat leadingConstant = [[Sizer shared] agendaEventLeadingMargin];
         _gridLeadingConstraint = [_grid.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:leadingConstant];
@@ -650,14 +641,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _titleTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
     _locationTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
     _durationTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
-}
-
-- (CGFloat)height
-{
-    // The height of the textfields (which may have word-wrapped)
-    // plus the height of the top and bottom marigns.
-    // top margin + bottom margin = 3 + 3 = 6
-    return _grid.fittingSize.height + 6;
 }
 
 - (void)setDim:(BOOL)dim {
