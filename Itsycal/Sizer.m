@@ -15,11 +15,14 @@ NSString * const kSizeDidChangeNotification = @"SizeDidChangeNotification";
 
 @implementation Sizer
 
+Sizer *SizePref = nil;
+
 + (instancetype)shared {
     static Sizer *shared;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         shared = [[Sizer alloc] init];
+        SizePref = shared;
     });
     return shared;
 }

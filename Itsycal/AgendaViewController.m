@@ -564,13 +564,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self.identifier = kDateCellIdentifier;
         _dayTextField = [NSTextField labelWithString:@""];
         _dayTextField.translatesAutoresizingMaskIntoConstraints = NO;
-        _dayTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
+        _dayTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
         _dayTextField.textColor = Theme.agendaDayTextColor;
         [_dayTextField setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
         
         _DOWTextField = [NSTextField labelWithString:@""];
         _DOWTextField.translatesAutoresizingMaskIntoConstraints = NO;
-        _DOWTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
+        _DOWTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
         _DOWTextField.textColor = Theme.agendaDOWTextColor;
 
         [self addSubview:_dayTextField];
@@ -586,8 +586,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)sizeChanged:(id)sender
 {
-    _dayTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
-    _DOWTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
+    _dayTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
+    _DOWTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -616,7 +616,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Convenience function for making labels.
     NSTextField* (^label)(void) = ^NSTextField* () {
         NSTextField *lbl = [NSTextField labelWithString:@""];
-        lbl.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
+        lbl.font = [NSFont systemFontOfSize:SizePref.fontSize];
         lbl.lineBreakMode = NSLineBreakByWordWrapping;
         lbl.cell.truncatesLastVisibleLine = YES;
         return lbl;
@@ -632,7 +632,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         
         _btnVideo = [MoButton new];
         _btnVideo.bordered = 0;
-        _btnVideo.image = [NSImage imageNamed:[[Sizer shared] videoImageName]];
+        _btnVideo.image = [NSImage imageNamed:SizePref.videoImageName];
         _btnVideo.image.template = YES;
         
         /*
@@ -671,7 +671,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [vfl :@"H:[_grid]-5-|"];
         [vfl :@"V:|-3-[_grid]-3-|"];
         
-        CGFloat leadingConstant = [[Sizer shared] agendaEventLeadingMargin];
+        CGFloat leadingConstant = SizePref.agendaEventLeadingMargin;
         _gridLeadingConstraint = [_grid.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:leadingConstant];
         _gridLeadingConstraint.active = YES;
         
@@ -684,12 +684,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)sizeChanged:(id)sender
 {
-    _gridLeadingConstraint.constant = [[Sizer shared] agendaEventLeadingMargin];
-    _btnVideo.image = [NSImage imageNamed:[[Sizer shared] videoImageName]];
+    _gridLeadingConstraint.constant = SizePref.agendaEventLeadingMargin;
+    _btnVideo.image = [NSImage imageNamed:SizePref.videoImageName];
     _btnVideo.image.template = YES;
-    _titleTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
-    _locationTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
-    _durationTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
+    _titleTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
+    _locationTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
+    _durationTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
 }
 
 - (void)setFrame:(NSRect)frame
@@ -715,8 +715,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     CGFloat alpha = self.dim ? 0.5 : 1;
     CGFloat x = 5;
-    CGFloat yOffset = [[Sizer shared] fontSize] + 2;
-    CGFloat dotWidthX = [[Sizer shared] agendaDotWidth];
+    CGFloat yOffset = SizePref.fontSize + 2;
+    CGFloat dotWidthX = SizePref.agendaDotWidth;
     CGFloat dotWidthY = dotWidthX;
     CGFloat radius = dotWidthX / 2.0;
     NSColor *dotColor = self.eventInfo.event.calendar.color;
@@ -970,9 +970,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _duration.stringValue = duration;
     _recurrence.stringValue = recurrence;
     
-    _title.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightMedium];
-    _duration.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
-    _recurrence.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
+    _title.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightMedium];
+    _duration.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightRegular];
+    _recurrence.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightRegular];
 
     _title.textColor = Theme.agendaEventTextColor;
     _duration.textColor = Theme.agendaEventTextColor;
@@ -994,7 +994,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSData *htmlData = [string dataUsingEncoding:NSUnicodeStringEncoding];
     NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithHTML:htmlData documentAttributes:nil];
     
-    [attrString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:[[Sizer shared] fontSize]] range:NSMakeRange(0, attrString.length)];
+    [attrString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:SizePref.fontSize] range:NSMakeRange(0, attrString.length)];
     [attrString addAttribute:NSForegroundColorAttributeName value:Theme.agendaEventTextColor range:NSMakeRange(0, attrString.length)];
     [_linkDetector enumerateMatchesInString:attrString.string options:kNilOptions range:NSMakeRange(0, attrString.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
         [attrString addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];

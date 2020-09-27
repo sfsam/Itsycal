@@ -28,6 +28,9 @@ typedef enum : NSInteger {
 
 @interface Sizer : NSObject
 
+// Global constant for shared controller instance (like NSApp).
+extern Sizer *SizePref;
+
 @property (nonatomic) SizePreference sizePreference;
 @property (nonatomic, readonly) CGFloat fontSize;
 @property (nonatomic, readonly) CGFloat calendarTitleFontSize;

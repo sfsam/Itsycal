@@ -19,7 +19,7 @@
 {
     self = [super initWithFrame:NSZeroRect];
     if (self) {
-        CGFloat sz = [[Sizer shared] cellSize];
+        CGFloat sz = SizePref.cellSize;
         NSMutableArray *cells = [NSMutableArray new];
         for (NSUInteger row = 0; row < rows; row++) {
             for (NSUInteger col = 0; col < cols; col++) {
@@ -53,12 +53,12 @@
     // Shift existing cells up.
     for (MoCalCell *cell in cells) {
         NSRect frame = cell.frame;
-        frame.origin.y += [[Sizer shared] cellSize];
+        frame.origin.y += SizePref.cellSize;
         cell.frame = frame;
     }
 
     // Add new row of cells.
-    CGFloat sz = [[Sizer shared] cellSize];
+    CGFloat sz = SizePref.cellSize;
     for (NSUInteger col = 0; col < _cols; col++) {
         CGFloat x = sz * col + _hMargin;
         CGFloat y = sz * (_rows + 1) - sz * (_rows + 1) + _vMargin;
@@ -85,7 +85,7 @@
     }
 
     // Shift remaining cells down.
-    CGFloat sz = [[Sizer shared] cellSize];
+    CGFloat sz = SizePref.cellSize;
     for (MoCalCell *cell in cells) {
         NSRect frame = cell.frame;
         frame.origin.y -= sz;
@@ -99,7 +99,7 @@
 
 - (MoCalCell *)cellAtPoint:(NSPoint)point
 {
-    CGFloat sz = [[Sizer shared] cellSize];
+    CGFloat sz = SizePref.cellSize;
     NSInteger col = floorf((point.x - _hMargin) / sz);
     NSInteger row = floorf((point.y - _vMargin) / sz);
     row = _rows - row - 1; // flip row coordinate
@@ -126,7 +126,7 @@
 
 - (NSSize)intrinsicContentSize
 {
-    CGFloat sz = [[Sizer shared] cellSize];
+    CGFloat sz = SizePref.cellSize;
     CGFloat width  = sz  * _cols + 2 * _hMargin;
     CGFloat height = sz * _rows + 2 * _vMargin;
     return NSMakeSize(width, height);
@@ -134,7 +134,7 @@
 
 - (void)sizeChanged:(id)sender
 {
-    CGFloat sz = [[Sizer shared] cellSize];
+    CGFloat sz = SizePref.cellSize;
     for (NSUInteger row = 0; row < _rows; row++) {
         for (NSUInteger col = 0; col < _cols; col++) {
             CGFloat x = sz * col + _hMargin;
