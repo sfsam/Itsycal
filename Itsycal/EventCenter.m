@@ -340,6 +340,10 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                 if (filteredEventsForDate[date] == nil) {
                     filteredEventsForDate[date] = [NSMutableArray new];
                 }
+                // Check if there is a virtual meeting (e.g. Zoom) link.
+                // We limit this check to filtered events in an
+                // attempt to limit how much text processing we do.
+                [self checkForZoomURL:info];
                 [filteredEventsForDate[date] addObject:info];
             }
         }
@@ -350,6 +354,33 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.delegate eventCenterEventsChanged];
     });
+}
+
+- (void)checkForZoomURL:(EventInfo *)info {
+    static NSDataDetector *linkDetector = nil;
+    if (linkDetector == nil) {
+        linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
+    }
+    void (^GetZoomURL)(NSString*) = ^(NSString *text) {
+        [linkDetector enumerateMatchesInString:text options:kNilOptions range:NSMakeRange(0, text.length) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
+            if (   [result.URL.absoluteString containsString:@"zoom.us/j/"]
+                || [result.URL.absoluteString containsString:@"zoommtg://"]
+                || [result.URL.absoluteString containsString:@"meet.google.com/"]
+                || [result.URL.absoluteString containsString:@"hangouts.google.com/"]
+                || [result.URL.absoluteString containsString:@"teams.microsoft.com/l/meetup-join/"]
+                || [result.URL.absoluteString containsString:@"webex.com/"]
+                || [result.URL.absoluteString containsString:@"gotomeeting.com/join"]
+                || [result.URL.absoluteString containsString:@"ringcentral.com/j"]
+                || [result.URL.absoluteString containsString:@"youcanbook.me/zoom/"]) {
+                info.zoomURL = result.URL;
+                *stop = YES;
+            }
+        }];
+    };
+    info.zoomURL = nil;
+    if (info.event.location) GetZoomURL(info.event.location);
+    if (info.zoomURL) return;
+    if (info.event.hasNotes && info.event.notes) GetZoomURL(info.event.notes);
 }
 
 @end

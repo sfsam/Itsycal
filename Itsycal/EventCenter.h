@@ -94,5 +94,5 @@
 @property (nonatomic) BOOL isEndDate;   // event ends, but doesn't start, on this date
 @property (nonatomic) BOOL isAllDay;    // event is all-day, or spans across this date
 @property (nonatomic) BOOL isSingleDay; // a single day all-day event (eg. birthday)
-
+@property (nonatomic) NSURL *zoomURL;   // Zoom, Google Meet, Microsoft Teams, etc. URL
 @end
