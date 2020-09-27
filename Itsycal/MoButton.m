@@ -40,4 +40,23 @@
     }];
 }
 
+- (void)setActionBlock:(void (^)(void))actionBlock
+{
+    if (actionBlock) {
+        _actionBlock = [actionBlock copy];
+        self.target = self;
+        self.action = @selector(doActionBlock:);
+    }
+    else {
+        _actionBlock = nil;
+        self.target = nil;
+        self.action = NULL;
+    }
+}
+
+- (void)doActionBlock:(id)sender
+{
+    self.actionBlock();
+}
+
 @end
