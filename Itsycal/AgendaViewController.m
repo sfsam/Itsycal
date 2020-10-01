@@ -759,7 +759,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (instancetype)init
 {
     // Convenience function for making labels.
-    NSTextField* (^label)(CGFloat) = ^NSTextField* (CGFloat weight) {
+    NSTextField* (^label)(void) = ^NSTextField* {
         NSTextField *lbl = [NSTextField wrappingLabelWithString:@""];
         lbl.preferredMaxLayoutWidth = POPOVER_TEXT_WIDTH;
         lbl.drawsBackground = NO;
@@ -767,11 +767,18 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [lbl setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
         return lbl;
     };
+    NSBox* (^separator)(void) = ^NSBox* {
+        // Need a big width for separator to show up reliably in NSGridView.
+        NSBox *separator = [[NSBox alloc] initWithFrame:NSMakeRect(0, 0, 999, 1)];
+        separator.boxType = NSBoxSeparator;
+        separator.autoresizingMask = NSViewWidthSizable;
+        return separator;
+    };
     self = [super init];
     if (self) {
-        _title = label(NSFontWeightMedium);
-        _duration = label(NSFontWeightRegular);
-        _recurrence = label(NSFontWeightRegular);
+        _title = label();
+        _duration = label();
+        _recurrence = label();
         
         NSScrollView *locScrollView = [NSScrollView new];
         locScrollView.frame = NSMakeRect(0, 0, POPOVER_TEXT_WIDTH, 100);
@@ -813,11 +820,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _btnDelete.focusRingType = NSFocusRingTypeNone;
         _textGrid = [NSGridView gridViewWithViews:@[@[_title],
                                                     @[locScrollView],
+                                                    @[separator()],
                                                     @[_duration],
                                                     @[_recurrence],
+                                                    @[separator()],
                                                     @[scrollView]]];
         _textGrid.rowSpacing = 8;
-        [_textGrid rowAtIndex:4].topPadding = 4;
         [_textGrid columnAtIndex:0].width = _title.preferredMaxLayoutWidth;
         _grid = [NSGridView gridViewWithViews:@[@[_textGrid, _btnDelete]]];
         _grid.translatesAutoresizingMaskIntoConstraints = NO;
@@ -869,10 +877,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [_textGrid rowAtIndex:1].hidden = !info.event.location;
     
     // Hide recurrence row IF there's no recurrence rule.
-    [_textGrid rowAtIndex:3].hidden = !info.event.hasRecurrenceRules;
+    [_textGrid rowAtIndex:4].hidden = !info.event.hasRecurrenceRules;
     
-    // Hide note row IF there's no note.
-    [_textGrid rowAtIndex:4].hidden = !info.event.hasNotes;
+    // Hide note row and separator row above it IF there's no note.
+    [_textGrid rowAtIndex:5].hidden = !info.event.hasNotes;
+    [_textGrid rowAtIndex:6].hidden = !info.event.hasNotes;
     
     // Hide delete button if event doesn't allow modification.
     [_grid columnAtIndex:1].hidden = !info.event.calendar.allowsContentModifications;
@@ -952,7 +961,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
             [_textGrid rowAtIndex:1].hidden = YES;
         }
         else {
-            [self populateTextView:_location withString:trimmedLoc heightConstraint:_locHeight];
+            CGFloat maxHeight = (SizePref.fontSize + 3) * 6.5; // approx. 6.5 lines
+            [self populateTextView:_location withString:trimmedLoc heightConstraint:_locHeight maxHeight:maxHeight];
         }
     }
 
@@ -960,17 +970,19 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (info.event.hasNotes) {
         NSString *trimmedNotes = [info.event.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if ([trimmedNotes isEqualToString:@""]) {
-            [_textGrid rowAtIndex:4].hidden = YES;
+            // Hide note row and separator row above it.
+            [_textGrid rowAtIndex:5].hidden = YES;
+            [_textGrid rowAtIndex:6].hidden = YES;
         }
         else {
-            [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight];
+            [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight maxHeight:999];
         }
     }
     _title.stringValue = title;
     _duration.stringValue = duration;
     _recurrence.stringValue = recurrence;
     
-    _title.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightMedium];
+    _title.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
     _duration.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightRegular];
     _recurrence.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightRegular];
 
@@ -988,7 +1000,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return NSMakeSize(gridSize.width + 20, gridSize.height + 16);
 }
 
-- (void)populateTextView:(NSTextView *)textView withString:(NSString *)string heightConstraint:(NSLayoutConstraint *)constraint
+- (void)populateTextView:(NSTextView *)textView withString:(NSString *)string heightConstraint:(NSLayoutConstraint *)constraint maxHeight:(CGFloat)maxHeight
 {
     string = [string stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"];
     NSData *htmlData = [string dataUsingEncoding:NSUnicodeStringEncoding];
@@ -1006,7 +1018,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSRect textRect = [textView.layoutManager usedRectForTextContainer:textView.textContainer];
     
     // Set constraint to textView text height, but no more than 200.
-    constraint.constant = MIN(textRect.size.height, 200);
+    constraint.constant = MIN(textRect.size.height, maxHeight);
     
     [textView scrollToBeginningOfDocument:nil];
 }
