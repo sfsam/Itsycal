@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4610A7C8252CCD66000E93FB /* LunarCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 4610A7C7252CCD66000E93FB /* LunarCore.m */; };
 		921181C722E0192A00591FDA /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 921181C622E0192A00591FDA /* Colors.xcassets */; };
 		9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */; };
 		921E62CD1E26B3EA007B029F /* PrefsGeneralVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */; };
@@ -63,6 +64,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4610A7C6252CCD66000E93FB /* LunarCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LunarCore.h; sourceTree = "<group>"; };
+		4610A7C7252CCD66000E93FB /* LunarCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LunarCore.m; sourceTree = "<group>"; };
 		6F21F6F31F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.strings"; sourceTree = "<group>"; };
 		6F21F6F41F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		6F21F6F51F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -211,6 +214,8 @@
 				922B6B911A856A7D00DEA9CD /* SBCalendar.h */,
 				9242A5611A82A136005AA4B3 /* AppDelegate.h */,
 				9242A5621A82A136005AA4B3 /* AppDelegate.m */,
+				4610A7C6252CCD66000E93FB /* LunarCore.h */,
+				4610A7C7252CCD66000E93FB /* LunarCore.m */,
 				922D9B241DC7A1C90050AB2F /* MoUtils.h */,
 				922D9B251DC7A1C90050AB2F /* MoUtils.m */,
 				9242A5941A82BE5E005AA4B3 /* Itsycal.h */,
@@ -393,6 +398,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9242A5921A82A40B005AA4B3 /* MoCalGrid.m in Sources */,
+				4610A7C8252CCD66000E93FB /* LunarCore.m in Sources */,
 				92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */,
 				922232CD1A8DF672003BFAD9 /* EventCenter.m in Sources */,
 				926A6D8F1E3EC89100AAA991 /* PrefsVC.m in Sources */,
