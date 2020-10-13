@@ -993,7 +993,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
             [_textGrid rowAtIndex:6].hidden = YES;
         }
         else {
-            [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight maxHeight:999];
+            CGFloat maxHeight = (SizePref.fontSize + 3) * 19.5; // approx. 19.5 lines
+            [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight maxHeight:maxHeight];
         }
     }
     _title.stringValue = title;
