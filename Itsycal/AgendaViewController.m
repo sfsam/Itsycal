@@ -752,6 +752,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSTextView *_location;
     NSTextView *_note;
     NSDataDetector *_linkDetector;
+    NSRegularExpression *_hiddenLinksRegex;
     NSLayoutConstraint *_locHeight;
     NSLayoutConstraint *_noteHeight;
 }
@@ -832,8 +833,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _grid.rowSpacing = 0;
         _grid.columnSpacing = 5;
         _grid.yPlacement = NSGridCellPlacementCenter;
+
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
-        
+        _hiddenLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"<(http(s)?:\\/\\/[^\\s]+)>" options:NSRegularExpressionCaseInsensitive error:NULL];
+
         [locScrollView.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
         _locHeight = [locScrollView.heightAnchor constraintEqualToConstant:100];
         _locHeight.active = YES;
@@ -1021,6 +1024,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)populateTextView:(NSTextView *)textView withString:(NSString *)string heightConstraint:(NSLayoutConstraint *)constraint maxHeight:(CGFloat)maxHeight
 {
+    // Ugly hack to deal with Microsoft's insane habit of putting links
+    // in angle brackets, making them invisible when rendereed as HTML.
+    string = [_hiddenLinksRegex stringByReplacingMatchesInString:string options:kNilOptions range:NSMakeRange(0, string.length) withTemplate:@"&lt;$1&gt;"];
+
     string = [string stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"];
     NSData *htmlData = [string dataUsingEncoding:NSUnicodeStringEncoding];
     NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithHTML:htmlData documentAttributes:nil];
@@ -1036,7 +1043,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     (void) [textView.layoutManager glyphRangeForTextContainer:textView.textContainer];
     NSRect textRect = [textView.layoutManager usedRectForTextContainer:textView.textContainer];
     
-    // Set constraint to textView text height, but no more than 200.
+    // Set constraint to textView text height, but no more than maxHeight.
     constraint.constant = MIN(textRect.size.height, maxHeight);
     
     [textView scrollToBeginningOfDocument:nil];
