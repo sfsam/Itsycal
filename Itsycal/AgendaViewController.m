@@ -42,8 +42,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @end
 
 @interface AgendaPopoverVC : NSViewController
-@property (nonatomic) MoButton *btnDelete;
+@property (nonatomic) NSButton *btnDelete;
 - (void)populateWithEventInfo:(EventInfo *)info;
+- (void)scrollToTopAndFlashScrollers;
 - (NSSize)size;
 @end
 
@@ -242,9 +243,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
         popoverVC.btnDelete.keyEquivalent = [NSString stringWithCharacters:&backspaceKey length:1];
     }
     
-    [_popover setContentSize:popoverVC.size];
     [_popover setAppearance:NSApp.effectiveAppearance];
     [_popover showRelativeToRect:[_tv rectOfRow:_tv.clickedRow] ofView:_tv preferredEdge:NSRectEdgeMinX];
+    [_popover setContentSize:popoverVC.size];
+    [popoverVC scrollToTopAndFlashScrollers];
     
     // Prevent popoverVC's _note from eating key presses (like esc and delete).
     [popoverVC.view.window makeFirstResponder:popoverVC.btnDelete];
@@ -740,17 +742,17 @@ static NSString *kEventCellIdentifier = @"EventCell";
 // AgendaPopoverVC
 // =========================================================================
 
-#define POPOVER_TEXT_WIDTH 220
+#define POPOVER_TEXT_WIDTH 240
 
 @implementation AgendaPopoverVC
 {
-    NSGridView  *_textGrid;
     NSGridView  *_grid;
     NSTextField *_title;
     NSTextField *_duration;
     NSTextField *_recurrence;
     NSTextView *_location;
     NSTextView *_note;
+    NSScrollView *_scrollView;
     NSDataDetector *_linkDetector;
     NSRegularExpression *_hiddenLinksRegex;
     NSLayoutConstraint *_locHeight;
@@ -759,10 +761,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (instancetype)init
 {
-    // Convenience function for making labels.
+    // Convenience functions for making labels and separators.
     NSTextField* (^label)(void) = ^NSTextField* {
         NSTextField *lbl = [NSTextField wrappingLabelWithString:@""];
-        lbl.preferredMaxLayoutWidth = POPOVER_TEXT_WIDTH;
         lbl.drawsBackground = NO;
         lbl.textColor = Theme.currentMonthTextColor;
         [lbl setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
@@ -772,7 +773,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
         // Need a big width for separator to show up reliably in NSGridView.
         NSBox *separator = [[NSBox alloc] initWithFrame:NSMakeRect(0, 0, 999, 1)];
         separator.boxType = NSBoxSeparator;
-        separator.autoresizingMask = NSViewWidthSizable;
         return separator;
     };
     self = [super init];
@@ -781,14 +781,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _duration = label();
         _recurrence = label();
         
-        NSScrollView *locScrollView = [NSScrollView new];
-        locScrollView.frame = NSMakeRect(0, 0, POPOVER_TEXT_WIDTH, 100);
-        locScrollView.autoresizingMask = NSViewHeightSizable;
-        locScrollView.drawsBackground = NO;
-        
         _location = [NSTextView new];
-        _location.frame = locScrollView.bounds;
-        _location.autoresizingMask = NSViewHeightSizable;
         _location.editable = NO;
         _location.selectable = YES;
         _location.drawsBackground = NO;
@@ -796,16 +789,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _location.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
         _location.textContainer.widthTracksTextView = YES;
         
-        locScrollView.documentView = _location;
-        
-        NSScrollView *scrollView = [NSScrollView new];
-        scrollView.frame = NSMakeRect(0, 0, POPOVER_TEXT_WIDTH, 100);
-        scrollView.autoresizingMask = NSViewHeightSizable;
-        scrollView.drawsBackground = NO;
-        
         _note = [NSTextView new];
-        _note.frame = scrollView.bounds;
-        _note.autoresizingMask = NSViewHeightSizable;
         _note.editable = NO;
         _note.selectable = YES;
         _note.drawsBackground = NO;
@@ -813,36 +797,38 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _note.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
         _note.textContainer.widthTracksTextView = YES;
         
-        scrollView.documentView = _note;
-        
-        _btnDelete = [MoButton new];
-        _btnDelete.image = [NSImage imageNamed:@"btnDel"];
-        _btnDelete.image.template = YES;
+        _btnDelete = [NSButton new];
         _btnDelete.focusRingType = NSFocusRingTypeNone;
-        _textGrid = [NSGridView gridViewWithViews:@[@[_title],
-                                                    @[locScrollView],
-                                                    @[separator()],
-                                                    @[_duration],
-                                                    @[_recurrence],
-                                                    @[separator()],
-                                                    @[scrollView]]];
-        _textGrid.rowSpacing = 8;
-        [_textGrid columnAtIndex:0].width = _title.preferredMaxLayoutWidth;
-        _grid = [NSGridView gridViewWithViews:@[@[_textGrid, _btnDelete]]];
+        _btnDelete.bordered = NO;
+        _btnDelete.contentTintColor = NSColor.systemRedColor;
+        
+        _grid = [NSGridView gridViewWithViews:@[@[_title],       // row 0
+                                                @[_location],    // 1
+                                                @[separator()],  // 2
+                                                @[_duration],    // 3
+                                                @[_recurrence],  // 4
+                                                @[separator()],  // 5
+                                                @[_note],        // 6
+                                                @[separator()],  // 7
+                                                @[_btnDelete]]]; // 8
+        _grid.rowSpacing = 8;
         _grid.translatesAutoresizingMaskIntoConstraints = NO;
-        _grid.rowSpacing = 0;
-        _grid.columnSpacing = 5;
-        _grid.yPlacement = NSGridCellPlacementCenter;
+        [_grid cellForView:_btnDelete].xPlacement = NSGridCellPlacementCenter;
+        [_grid columnAtIndex:0].width = POPOVER_TEXT_WIDTH;
+        [_grid columnAtIndex:0].leadingPadding  = 10;
+        [_grid columnAtIndex:0].trailingPadding = 14;
+
+        _scrollView = [NSScrollView new];
+        _scrollView.drawsBackground = NO;
+        _scrollView.hasVerticalScroller = YES;
+        _scrollView.documentView = _grid;
 
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
         _hiddenLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"<(http(s)?:\\/\\/[^\\s]+)>" options:NSRegularExpressionCaseInsensitive error:NULL];
-
-        [locScrollView.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
-        _locHeight = [locScrollView.heightAnchor constraintEqualToConstant:100];
+        
+        _locHeight = [_location.heightAnchor constraintEqualToConstant:100];
         _locHeight.active = YES;
-
-        [scrollView.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
-        _noteHeight = [scrollView.heightAnchor constraintEqualToConstant:100];
+        _noteHeight = [_note.heightAnchor constraintEqualToConstant:100];
         _noteHeight.active = YES;
     }
     return self;
@@ -850,13 +836,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)loadView
 {
-    // Important to set width of view here. Otherwise popover
-    // won't size propertly on first display.
-    NSView *view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, POPOVER_TEXT_WIDTH, 1)];
-    [view addSubview:_grid];
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:view metrics:nil views:NSDictionaryOfVariableBindings(_grid)];
-    [vfl :@"H:|-10-[_grid]-10-|"];
-    [vfl :@"V:|-8-[_grid]-8-|"];
+    NSView *view = [NSView new];
+    [view addSubview:_scrollView];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:view metrics:nil views:NSDictionaryOfVariableBindings(_scrollView)];
+    [vfl :@"H:|[_scrollView]|"];
+    [vfl :@"V:|-8-[_scrollView]-8-|"];
     self.view = view;
 }
 
@@ -878,6 +862,19 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [frameView addSubview:backgroundColorView positioned:NSWindowBelow relativeTo:nil];
 }
 
+- (NSSize)size
+{
+    // See -loadView. Vertial padding top+bottom = 16.
+    return NSMakeSize(_grid.fittingSize.width, _grid.fittingSize.height + 16);
+}
+
+- (void)scrollToTopAndFlashScrollers
+{
+    NSView *docView = _scrollView.documentView;
+    [docView scrollPoint:NSMakePoint(0, NSHeight(docView.bounds))];
+    [_scrollView flashScrollers];
+}
+
 - (void)populateWithEventInfo:(EventInfo *)info
 {
     static NSDateIntervalFormatter *intervalFormatter = nil;
@@ -895,18 +892,19 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
     
     // Hide location row IF there's no location string.
-    [_textGrid rowAtIndex:1].hidden = !info.event.location;
+    [_grid rowAtIndex:1].hidden = !info.event.location;
     
     // Hide recurrence row IF there's no recurrence rule.
-    [_textGrid rowAtIndex:4].hidden = !info.event.hasRecurrenceRules;
+    [_grid rowAtIndex:4].hidden = !info.event.hasRecurrenceRules;
     
     // Hide note row and separator row above it IF there's no note.
-    [_textGrid rowAtIndex:5].hidden = !info.event.hasNotes;
-    [_textGrid rowAtIndex:6].hidden = !info.event.hasNotes;
+    [_grid rowAtIndex:5].hidden = !info.event.hasNotes;
+    [_grid rowAtIndex:6].hidden = !info.event.hasNotes;
     
-    // Hide delete button if event doesn't allow modification.
-    [_grid columnAtIndex:1].hidden = !info.event.calendar.allowsContentModifications;
-    
+    // Hide delete button row and separator row above it IF event doesn't allow modification.
+    [_grid rowAtIndex:7].hidden = !info.event.calendar.allowsContentModifications;
+    [_grid rowAtIndex:8].hidden = !info.event.calendar.allowsContentModifications;
+
     // All-day events don't show time.
     intervalFormatter.timeStyle = info.event.isAllDay
         ? NSDateIntervalFormatterNoStyle
@@ -979,11 +977,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (info.event.location) {
         NSString *trimmedLoc = [info.event.location stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if ([trimmedLoc isEqualToString:@""]) {
-            [_textGrid rowAtIndex:1].hidden = YES;
+            [_grid rowAtIndex:1].hidden = YES;
         }
         else {
-            CGFloat maxHeight = (SizePref.fontSize + 3) * 6.5; // approx. 6.5 lines
-            [self populateTextView:_location withString:trimmedLoc heightConstraint:_locHeight maxHeight:maxHeight];
+            [self populateTextView:_location withString:trimmedLoc heightConstraint:_locHeight];
         }
     }
 
@@ -992,12 +989,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
         NSString *trimmedNotes = [info.event.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if ([trimmedNotes isEqualToString:@""]) {
             // Hide note row and separator row above it.
-            [_textGrid rowAtIndex:5].hidden = YES;
-            [_textGrid rowAtIndex:6].hidden = YES;
+            [_grid rowAtIndex:5].hidden = YES;
+            [_grid rowAtIndex:6].hidden = YES;
         }
         else {
-            CGFloat maxHeight = (SizePref.fontSize + 3) * 19.5; // approx. 19.5 lines
-            [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight maxHeight:maxHeight];
+            [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight];
         }
     }
     _title.stringValue = title;
@@ -1011,18 +1007,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _title.textColor = Theme.agendaEventTextColor;
     _duration.textColor = Theme.agendaEventTextColor;
     _recurrence.textColor = Theme.agendaEventTextColor;
+    
+    _btnDelete.attributedTitle = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"Delete", nil) attributes:@{NSFontAttributeName:[NSFont systemFontOfSize:SizePref.fontSize]}];
 }
 
-- (NSSize)size
-{
-    // The size of the grid plus the size of the margins.
-    // 20 = 10 + 10 = left + right margins
-    // 16 = 8 + 8 = top + bottom margins
-    NSSize gridSize = _grid.fittingSize;
-    return NSMakeSize(gridSize.width + 20, gridSize.height + 16);
-}
-
-- (void)populateTextView:(NSTextView *)textView withString:(NSString *)string heightConstraint:(NSLayoutConstraint *)constraint maxHeight:(CGFloat)maxHeight
+- (void)populateTextView:(NSTextView *)textView withString:(NSString *)string heightConstraint:(NSLayoutConstraint *)constraint
 {
     // Ugly hack to deal with Microsoft's insane habit of putting links
     // in angle brackets, making them invisible when rendereed as HTML.
@@ -1043,10 +1032,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     (void) [textView.layoutManager glyphRangeForTextContainer:textView.textContainer];
     NSRect textRect = [textView.layoutManager usedRectForTextContainer:textView.textContainer];
     
-    // Set constraint to textView text height, but no more than maxHeight.
-    constraint.constant = MIN(textRect.size.height, maxHeight);
-    
-    [textView scrollToBeginningOfDocument:nil];
+    constraint.constant = textRect.size.height;
 }
 
 @end
