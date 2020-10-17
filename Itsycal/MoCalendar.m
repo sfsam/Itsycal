@@ -254,7 +254,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     if (tooltipVC != nil) {
         tooltipVC.view.translatesAutoresizingMaskIntoConstraints = NO;
         [contentView addSubview:tooltipVC.view];
-        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-3-[v]-3-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
+        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(-3)-[v]-(-3)-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
         [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-2-[v]-2-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
     }
 }

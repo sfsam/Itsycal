@@ -243,8 +243,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
         popoverVC.btnDelete.keyEquivalent = [NSString stringWithCharacters:&backspaceKey length:1];
     }
     
+    NSRect positionRect = NSInsetRect([_tv rectOfRow:_tv.clickedRow], 6, 0);
     [_popover setAppearance:NSApp.effectiveAppearance];
-    [_popover showRelativeToRect:[_tv rectOfRow:_tv.clickedRow] ofView:_tv preferredEdge:NSRectEdgeMinX];
+    [_popover showRelativeToRect:positionRect ofView:_tv preferredEdge:NSRectEdgeMinX];
     [_popover setContentSize:popoverVC.size];
     [popoverVC scrollToTopAndFlashScrollers];
     
@@ -536,7 +537,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)drawBackgroundInRect:(NSRect)dirtyRect {
     if (self.isHovered) {
         [Theme.agendaHoverColor set];
-        NSRect rect = NSInsetRect(self.bounds, 2, 1);
+        NSRect rect = NSInsetRect(self.bounds, 8, 1);
         [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:5 yRadius:5] fill];
     }
 }
@@ -578,7 +579,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [self addSubview:_dayTextField];
         [self addSubview:_DOWTextField];
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_dayTextField, _DOWTextField)];
-        [vfl :@"H:|-4-[_DOWTextField]-(>=4)-[_dayTextField]-4-|" :NSLayoutFormatAlignAllLastBaseline];
+        [vfl :@"H:|-10-[_DOWTextField]-(>=4)-[_dayTextField]-10-|" :NSLayoutFormatAlignAllLastBaseline];
         [vfl :@"V:|-6-[_dayTextField]-1-|"];
         
         REGISTER_FOR_SIZE_CHANGE;
@@ -597,7 +598,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Must be opaque so rows can scroll under it.
     [Theme.mainBackgroundColor set];
     NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
-    NSRect r = NSMakeRect(4, self.bounds.size.height - 4, self.bounds.size.width - 8, 1);
+    NSRect r = NSMakeRect(10, self.bounds.size.height - 4, self.bounds.size.width - 20, 1);
     [Theme.agendaDividerColor set];
     NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
 }
@@ -642,21 +643,21 @@ static NSString *kEventCellIdentifier = @"EventCell";
          Middle box = grid
          Innermost box = durationGrid
          a = _gridLeadingConstraint
-         +-----------------------------------------+
-         |     |                                   |
-         |     3                                   |
-         |     |                                   |
-         |   +---------------------------------+   |
-         |-a-|[titleTextField]                 |-5-|
-         |   |[locationTextField]              |   |
-         |   |+-------------------------------+|   |
-         |   ||[durationTextField], [btnVideo]||   |
-         |   |+-------------------------------+|   |
-         |   +---------------------------------+   |
-         |     |                                   |
-         |     3                                   |
-         |     |                                   |
-         +-----------------------------------------+
+         +------------------------------------------+
+         |     |                                    |
+         |     3                                    |
+         |     |                                    |
+         |   +---------------------------------+    |
+         |-a-|[titleTextField]                 |-11-|
+         |   |[locationTextField]              |    |
+         |   |+-------------------------------+|    |
+         |   ||[durationTextField], [btnVideo]||    |
+         |   |+-------------------------------+|    |
+         |   +---------------------------------+    |
+         |     |                                    |
+         |     3                                    |
+         |     |                                    |
+         +------------------------------------------+
          */
         
         _durationGrid = [NSGridView gridViewWithViews:@[@[_durationTextField, _btnVideo]]];
@@ -670,7 +671,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [self addSubview:_grid];
         
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_grid)];
-        [vfl :@"H:[_grid]-5-|"];
+        [vfl :@"H:[_grid]-11-|"];
         [vfl :@"V:|-3-[_grid]-3-|"];
         
         CGFloat leadingConstant = SizePref.agendaEventLeadingMargin;
@@ -716,7 +717,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)drawRect:(NSRect)dirtyRect
 {
     CGFloat alpha = self.dim ? 0.5 : 1;
-    CGFloat x = 5;
+    CGFloat x = 11;
     CGFloat yOffset = SizePref.fontSize + 2;
     CGFloat dotWidthX = SizePref.agendaDotWidth;
     CGFloat dotWidthY = dotWidthX;

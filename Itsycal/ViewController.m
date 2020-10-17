@@ -99,9 +99,9 @@
 
     // Constraints
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_moCal, _btnAdd, _btnCal, _btnOpt, _btnPin, agenda)];
-    [vfl :@"H:|[_moCal]|"];
-    [vfl :@"H:|-4-[agenda]-4-|"];
-    [vfl :@"H:|-6-[_btnAdd]-(>=0)-[_btnPin]-10-[_btnCal]-10-[_btnOpt]-6-|" :NSLayoutFormatAlignAllCenterY];
+    [vfl :@"H:|-2-[_moCal]-2-|"];
+    [vfl :@"H:|[agenda]|"];
+    [vfl :@"H:|-8-[_btnAdd]-(>=0)-[_btnPin]-10-[_btnCal]-10-[_btnOpt]-8-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"V:|[_moCal]-6-[_btnOpt]"];
     [vfl :@"V:[agenda]-(-1)-|"];
     

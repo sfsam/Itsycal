@@ -65,7 +65,7 @@ Sizer *SizePref = nil;
 }
 
 - (CGFloat)agendaEventLeadingMargin {
-    return SML_MED_LRG(15, 16, 18);
+    return SML_MED_LRG(21, 22, 24);
 }
 
 - (NSString *)videoImageName {
