@@ -56,6 +56,10 @@ Sizer *SizePref = nil;
     return SML_MED_LRG(2, 3, 4);
 }
 
+- (CGFloat)tooltipWidth {
+    return SML_MED_LRG(200, 236, 264);
+}
+
 - (CGFloat)agendaDotWidth {
     return SML_MED_LRG(6, 7, 8);
 }

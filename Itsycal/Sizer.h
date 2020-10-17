@@ -38,6 +38,7 @@ extern Sizer *SizePref;
 @property (nonatomic, readonly) CGFloat cellTextFieldVerticalSpace;
 @property (nonatomic, readonly) CGFloat cellDotWidth;
 @property (nonatomic, readonly) CGFloat cellRadius;
+@property (nonatomic, readonly) CGFloat tooltipWidth;
 @property (nonatomic, readonly) CGFloat agendaEventLeadingMargin;
 @property (nonatomic, readonly) CGFloat agendaDotWidth;
 @property (nonatomic, readonly) NSString *videoImageName;
