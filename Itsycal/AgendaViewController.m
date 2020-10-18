@@ -788,7 +788,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _location.drawsBackground = NO;
         _location.textContainer.lineFragmentPadding = 0;
         _location.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
-        _location.textContainer.widthTracksTextView = YES;
         
         _note = [NSTextView new];
         _note.editable = NO;
@@ -796,22 +795,28 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _note.drawsBackground = NO;
         _note.textContainer.lineFragmentPadding = 0;
         _note.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
-        _note.textContainer.widthTracksTextView = YES;
         
         _btnDelete = [NSButton new];
+        _btnDelete.title = @"⌫";
         _btnDelete.focusRingType = NSFocusRingTypeNone;
         _btnDelete.bordered = NO;
-        _btnDelete.contentTintColor = NSColor.systemRedColor;
+        _btnDelete.contentTintColor = NSColor.secondaryLabelColor;
         
-        _grid = [NSGridView gridViewWithViews:@[@[_title],       // row 0
+        NSView *titleHolder = [NSView new];
+        [titleHolder addSubview:_title];
+        [titleHolder addSubview:_btnDelete];
+        MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:titleHolder metrics:nil views:NSDictionaryOfVariableBindings(_title, _btnDelete)];
+        [vfl :@"H:|[_title]-(>=10)-[_btnDelete]|" :NSLayoutFormatAlignAllCenterY];
+        [vfl :@"V:|[_title]|"];
+        [titleHolder.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
+        
+        _grid = [NSGridView gridViewWithViews:@[@[titleHolder],  // row 0
                                                 @[_location],    // 1
                                                 @[separator()],  // 2
                                                 @[_duration],    // 3
                                                 @[_recurrence],  // 4
                                                 @[separator()],  // 5
-                                                @[_note],        // 6
-                                                @[separator()],  // 7
-                                                @[_btnDelete]]]; // 8
+                                                @[_note]]];      // 6
         _grid.rowSpacing = 8;
         _grid.translatesAutoresizingMaskIntoConstraints = NO;
         [_grid cellForView:_btnDelete].xPlacement = NSGridCellPlacementCenter;
@@ -902,9 +907,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [_grid rowAtIndex:5].hidden = !info.event.hasNotes;
     [_grid rowAtIndex:6].hidden = !info.event.hasNotes;
     
-    // Hide delete button row and separator row above it IF event doesn't allow modification.
-    [_grid rowAtIndex:7].hidden = !info.event.calendar.allowsContentModifications;
-    [_grid rowAtIndex:8].hidden = !info.event.calendar.allowsContentModifications;
+    // Hide delete button IF event doesn't allow modification.
+    _btnDelete.hidden = !info.event.calendar.allowsContentModifications;
 
     // All-day events don't show time.
     intervalFormatter.timeStyle = info.event.isAllDay
@@ -1002,14 +1006,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _recurrence.stringValue = recurrence;
     
     _title.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
-    _duration.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightRegular];
-    _recurrence.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightRegular];
+    _duration.font = [NSFont systemFontOfSize:SizePref.fontSize];
+    _recurrence.font = _duration.font;
+    _btnDelete.font  = [NSFont systemFontOfSize:SizePref.fontSize+3];
 
     _title.textColor = Theme.agendaEventTextColor;
     _duration.textColor = Theme.agendaEventTextColor;
     _recurrence.textColor = Theme.agendaEventTextColor;
-    
-    _btnDelete.attributedTitle = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"Delete", nil) attributes:@{NSFontAttributeName:[NSFont systemFontOfSize:SizePref.fontSize]}];
 }
 
 - (void)populateTextView:(NSTextView *)textView withString:(NSString *)string heightConstraint:(NSLayoutConstraint *)constraint
