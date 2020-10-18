@@ -267,9 +267,10 @@
     eventVC.title = @"";
     eventVC.calSelectedDate = MakeNSDateWithDate(_moCal.selectedDate, _nsCal);
     
+    NSRect positionRect = NSOffsetRect(_btnAdd.frame, -2, 0);
     _newEventPopover.contentViewController = eventVC;
     _newEventPopover.appearance = NSApp.effectiveAppearance;
-    [_newEventPopover showRelativeToRect:NSZeroRect ofView:_btnAdd preferredEdge:NSRectEdgeMinX];
+    [_newEventPopover showRelativeToRect:positionRect ofView:self.view preferredEdge:NSRectEdgeMinX];
 }
 
 - (void)showCalendarApp:(id)sender
