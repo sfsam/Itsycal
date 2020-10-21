@@ -512,6 +512,9 @@
         if (@available(macOS 10.15, *)) {
             baselineOffset = 0.5;
         }
+        if (@available(macOS 10.16, *)) {
+            baselineOffset = -1.0 / scaleFactor;
+        }
         _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:[_iconDateFormatter stringFromDate:[NSDate new]] attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
     }
     [self adjustStatusItemWidthIfNecessary];
