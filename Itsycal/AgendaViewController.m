@@ -833,7 +833,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _scrollView.documentView = _grid;
 
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
-        _hiddenLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"<(http(s)?:\\/\\/[^\\s]+)>" options:NSRegularExpressionCaseInsensitive error:NULL];
+        _hiddenLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"<((https?|rdar):\\/\\/[^\\s]+)>" options:NSRegularExpressionCaseInsensitive error:NULL];
         
         _locHeight = [_location.heightAnchor constraintEqualToConstant:100];
         _locHeight.active = YES;
