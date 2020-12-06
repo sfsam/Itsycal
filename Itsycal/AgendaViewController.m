@@ -756,11 +756,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSTextField *_recurrence;
     NSTextView *_location;
     NSTextView *_note;
+    NSTextView *_URL;
     NSScrollView *_scrollView;
     NSDataDetector *_linkDetector;
     NSRegularExpression *_hiddenLinksRegex;
     NSLayoutConstraint *_locHeight;
     NSLayoutConstraint *_noteHeight;
+    NSLayoutConstraint *_URLHeight;
 }
 
 - (instancetype)init
@@ -799,6 +801,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _note.textContainer.lineFragmentPadding = 0;
         _note.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
         
+        _URL = [NSTextView new];
+        _URL.editable = NO;
+        _URL.selectable = YES;
+        _URL.drawsBackground = NO;
+        _URL.textContainer.lineFragmentPadding = 0;
+        _URL.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
+        
         _btnDelete = [NSButton new];
         _btnDelete.title = @"⌫";
         _btnDelete.focusRingType = NSFocusRingTypeNone;
@@ -819,7 +828,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
                                                 @[_duration],    // 3
                                                 @[_recurrence],  // 4
                                                 @[separator()],  // 5
-                                                @[_note]]];      // 6
+                                                @[_note],        // 6
+                                                @[_URL]]];       // 7
         _grid.rowSpacing = 8;
         _grid.translatesAutoresizingMaskIntoConstraints = NO;
         [_grid cellForView:_btnDelete].xPlacement = NSGridCellPlacementCenter;
@@ -839,6 +849,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _locHeight.active = YES;
         _noteHeight = [_note.heightAnchor constraintEqualToConstant:100];
         _noteHeight.active = YES;
+        _URLHeight = [_URL.heightAnchor constraintEqualToConstant:100];
+        _URLHeight.active = YES;
     }
     return self;
 }
@@ -906,10 +918,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Hide recurrence row IF there's no recurrence rule.
     [_grid rowAtIndex:4].hidden = !info.event.hasRecurrenceRules;
     
-    // Hide note row and separator row above it IF there's no note.
-    [_grid rowAtIndex:5].hidden = !info.event.hasNotes;
+    // Hide note row and separator row above it IF there's no note AND no URL.
+    [_grid rowAtIndex:5].hidden = !info.event.hasNotes && !info.event.URL;
     [_grid rowAtIndex:6].hidden = !info.event.hasNotes;
     
+    // Hide URL row and IF there's no URL.
+    [_grid rowAtIndex:7].hidden = !info.event.URL;
+
     // Hide delete button IF event doesn't allow modification.
     _btnDelete.hidden = !info.event.calendar.allowsContentModifications;
 
@@ -996,14 +1011,23 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (info.event.hasNotes) {
         NSString *trimmedNotes = [info.event.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if ([trimmedNotes isEqualToString:@""]) {
-            // Hide note row and separator row above it.
-            [_grid rowAtIndex:5].hidden = YES;
+            // Hide note row and separator row above it, provided no URL.
+            [_grid rowAtIndex:5].hidden = !info.event.URL;
             [_grid rowAtIndex:6].hidden = YES;
         }
         else {
             [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight];
         }
     }
+
+    // URL
+    if (info.event.URL) {
+        // HACK: append a space at end of URL to force correct height calc. Without
+        // this, height is sometimes wrong on first display.
+        NSString *absURL = [NSString stringWithFormat:@"%@ ", info.event.URL.absoluteString];
+        [self populateTextView:_URL withString:absURL heightConstraint:_URLHeight];
+    }
+    
     _title.stringValue = title;
     _duration.stringValue = duration;
     _recurrence.stringValue = recurrence;
