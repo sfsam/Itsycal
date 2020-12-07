@@ -665,6 +665,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         
         _durationGrid = [NSGridView gridViewWithViews:@[@[_durationTextField, _btnVideo]]];
         _durationGrid.rowSpacing = 0;
+        [_durationGrid setContentHuggingPriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
         
         _grid = [NSGridView gridViewWithViews:@[@[_titleTextField],
                                                 @[_locationTextField],
