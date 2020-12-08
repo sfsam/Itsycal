@@ -82,6 +82,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
     _tv.delegate = self;
+    if (@available(macOS 11.0, *)) {
+        _tv.style = NSTableViewStylePlain;
+    }
     [_tv addTableColumn:[[NSTableColumn alloc] initWithIdentifier:kColumnIdentifier]];
     
     // Calendars enclosing scrollview
@@ -662,6 +665,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         
         _durationGrid = [NSGridView gridViewWithViews:@[@[_durationTextField, _btnVideo]]];
         _durationGrid.rowSpacing = 0;
+        [_durationGrid setContentHuggingPriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
         
         _grid = [NSGridView gridViewWithViews:@[@[_titleTextField],
                                                 @[_locationTextField],
