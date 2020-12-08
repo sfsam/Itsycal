@@ -613,7 +613,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 // =========================================================================
 
 @implementation AgendaEventCell {
-    NSGridView *_durationGrid;
     NSLayoutConstraint *_gridLeadingConstraint;
 }
 
@@ -663,13 +662,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
          +------------------------------------------+
          */
         
-        _durationGrid = [NSGridView gridViewWithViews:@[@[_durationTextField, _btnVideo]]];
-        _durationGrid.rowSpacing = 0;
-        [_durationGrid setContentHuggingPriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
+        NSGridView *durationGrid = [NSGridView gridViewWithViews:@[@[_durationTextField, _btnVideo]]];
+        durationGrid.rowSpacing = 0;
+        [durationGrid setContentHuggingPriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
         
         _grid = [NSGridView gridViewWithViews:@[@[_titleTextField],
                                                 @[_locationTextField],
-                                                @[_durationGrid]]];
+                                                @[durationGrid]]];
         _grid.translatesAutoresizingMaskIntoConstraints = NO;
         _grid.rowSpacing = 0;
         [self addSubview:_grid];
