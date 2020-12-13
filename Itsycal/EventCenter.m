@@ -364,16 +364,12 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     }
     NSURL* (^zoomDirectLinkFromURL)(NSURL*) = ^(NSURL *url) {
         if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"zoommtg://"]]) {
-            NSString *format = @"zoommtg://zoom.us/join?confno=%@&pwd=%@";
-            NSString *meetingID = url.lastPathComponent;
-            if ([[[NSNumberFormatter alloc] init] numberFromString: meetingID]) {
-                NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES];
-                for (NSURLQueryItem *item in components.queryItems) {
-                    if ([item.name isEqualToString:@"pwd"]) {
-                        return [NSURL URLWithString: [NSString stringWithFormat:format, meetingID, item.value]];
-                    }
-                }
-            }
+            NSString *link = url.absoluteString;
+            link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"zoommtg://"];
+            link = [link stringByReplacingOccurrencesOfString:@"?" withString:@"&"];
+            link = [link stringByReplacingOccurrencesOfString:@"/j/" withString:@"/join?confno="];
+            NSURL *newURL = [NSURL URLWithString:link];
+            if (newURL) return newURL;
         }
         return url;
     };
