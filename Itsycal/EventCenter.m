@@ -379,8 +379,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     };
     info.zoomURL = nil;
     if (info.event.location) GetZoomURL(info.event.location);
-    if (info.zoomURL) return;
-    if (info.event.hasNotes && info.event.notes) GetZoomURL(info.event.notes);
+    if (!info.zoomURL && info.event.hasNotes && info.event.notes) GetZoomURL(info.event.notes);
+    if (!info.zoomURL && info.event.URL) GetZoomURL(info.event.URL.absoluteString);
 }
 
 @end
