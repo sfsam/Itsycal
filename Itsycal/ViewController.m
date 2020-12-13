@@ -523,6 +523,11 @@
 
 - (void)adjustStatusItemWidthIfNecessary
 {
+    // MacOS 11 does not report the correct frame for _statusItem.button
+    // if its length is adjusted. As a result, _positionItsycalWindow
+    // positions the window *uncentered* below the status item.
+    if (@available(macOS 11.0, *)) { return; }
+    
     // Set a fixed width for _statusItem if it uses a clock format
     // but doesn't show seconds. This prevents the _statusItem from
     // slightly shifting in the menubar when time changes due to the
