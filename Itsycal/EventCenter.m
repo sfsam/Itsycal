@@ -7,6 +7,7 @@
 //
 
 #import <os/log.h>
+#import <AppKit/NSWorkspace.h>
 #import "EventCenter.h"
 
 // NSUserDefaults key for array of selected calendar IDs.
@@ -363,18 +364,29 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     }
     void (^GetZoomURL)(NSString*) = ^(NSString *text) {
         [linkDetector enumerateMatchesInString:text options:kNilOptions range:NSMakeRange(0, text.length) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
-            if (   [result.URL.absoluteString containsString:@"zoom.us/j/"]
-                || [result.URL.absoluteString containsString:@"zoommtg://"]
-                || [result.URL.absoluteString containsString:@"meet.google.com/"]
-                || [result.URL.absoluteString containsString:@"hangouts.google.com/"]
-                || [result.URL.absoluteString containsString:@"teams.microsoft.com/l/meetup-join/"]
-                || [result.URL.absoluteString containsString:@"webex.com/"]
-                || [result.URL.absoluteString containsString:@"gotomeeting.com/join"]
-                || [result.URL.absoluteString containsString:@"ringcentral.com/j"]
-                || [result.URL.absoluteString containsString:@"youcanbook.me/zoom/"]) {
+            NSString *link = result.URL.absoluteString;
+            if ([link containsString:@"zoom.us/j/"]) {
                 info.zoomURL = result.URL;
-                *stop = YES;
+                // Test if user has the Zoom app and, if so, create a Zoom app link.
+                if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"zoommtg://"]]) {
+                    link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"zoommtg://"];
+                    link = [link stringByReplacingOccurrencesOfString:@"?" withString:@"&"];
+                    link = [link stringByReplacingOccurrencesOfString:@"/j/" withString:@"/join?confno="];
+                    NSURL *appLink = [NSURL URLWithString:link];
+                    if (appLink) info.zoomURL = appLink;
+                }
             }
+            else if (   [link containsString:@"zoommtg://"]
+                     || [link containsString:@"meet.google.com/"]
+                     || [link containsString:@"hangouts.google.com/"]
+                     || [link containsString:@"teams.microsoft.com/l/meetup-join/"]
+                     || [link containsString:@"webex.com/"]
+                     || [link containsString:@"gotomeeting.com/join"]
+                     || [link containsString:@"ringcentral.com/j"]
+                     || [link containsString:@"youcanbook.me/zoom/"]) {
+                info.zoomURL = result.URL;
+            }
+            *stop = info.zoomURL != nil;
         }];
     };
     info.zoomURL = nil;
