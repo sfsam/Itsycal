@@ -523,11 +523,6 @@
 
 - (void)adjustStatusItemWidthIfNecessary
 {
-    // MacOS 11 does not report the correct frame for _statusItem.button
-    // if its length is adjusted. As a result, _positionItsycalWindow
-    // positions the window *uncentered* below the status item.
-    if (@available(macOS 11.0, *)) { return; }
-    
     // Set a fixed width for _statusItem if it uses a clock format
     // but doesn't show seconds. This prevents the _statusItem from
     // slightly shifting in the menubar when time changes due to the
@@ -661,6 +656,18 @@
 {
     NSRect statusItemFrame = [_statusItem.button.window convertRectToScreen:_statusItem.button.frame];
 
+    // Hack alert:
+    // MacOS 11 does not report the correct frame for _statusItem.button
+    // if its length is adjusted (see -adjustStatusItemWidthIfNecessary).
+    // As a result, this method positions the window *uncentered* below
+    // the status item. Adjust the frame with a value empirically
+    // determined to make the window appear centered.
+    if (@available(macOS 11.0, *)) {
+        if (_statusItem.length != NSVariableStatusItemLength) {
+            statusItemFrame.size.width += 15;
+        }
+    }
+    
     // Hack alert:
     // Which screen is the status item on? I'd like to just use
     // _statusItem.button.window.screen, but that property is nil
