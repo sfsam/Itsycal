@@ -383,6 +383,11 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                      || [link containsString:@"webex.com/"]
                      || [link containsString:@"gotomeeting.com/join"]
                      || [link containsString:@"ringcentral.com/j"]
+                     || [link containsString:@"bigbluebutton.org/gl"]
+                     || [link containsString:@"://bigbluebutton."]
+                     || [link containsString:@"://bbb."]
+                     || [link containsString:@"indigo.collocall.de"]
+                     || [link containsString:@"public.senfcall.de"]
                      || [link containsString:@"youcanbook.me/zoom/"]) {
                 info.zoomURL = result.URL;
             }
