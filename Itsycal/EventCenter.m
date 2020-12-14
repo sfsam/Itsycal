@@ -362,22 +362,19 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     if (linkDetector == nil) {
         linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
     }
-    NSURL* (^zoomDirectLinkFromURL)(NSURL*) = ^(NSURL *url) {
-        if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"zoommtg://"]]) {
-            NSString *link = url.absoluteString;
-            link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"zoommtg://"];
-            link = [link stringByReplacingOccurrencesOfString:@"?" withString:@"&"];
-            link = [link stringByReplacingOccurrencesOfString:@"/j/" withString:@"/join?confno="];
-            NSURL *newURL = [NSURL URLWithString:link];
-            if (newURL) return newURL;
-        }
-        return url;
-    };
     void (^GetZoomURL)(NSString*) = ^(NSString *text) {
         [linkDetector enumerateMatchesInString:text options:kNilOptions range:NSMakeRange(0, text.length) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
             NSString *link = result.URL.absoluteString;
             if ([link containsString:@"zoom.us/j/"]) {
-                info.zoomURL = zoomDirectLinkFromURL(result.URL);
+                info.zoomURL = result.URL;
+                // Test if user has the Zoom app and, if so, create a Zoom app link.
+                if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"zoommtg://"]]) {
+                    link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"zoommtg://"];
+                    link = [link stringByReplacingOccurrencesOfString:@"?" withString:@"&"];
+                    link = [link stringByReplacingOccurrencesOfString:@"/j/" withString:@"/join?confno="];
+                    NSURL *appLink = [NSURL URLWithString:link];
+                    if (appLink) info.zoomURL = appLink;
+                }
             }
             else if (   [link containsString:@"zoommtg://"]
                      || [link containsString:@"meet.google.com/"]
