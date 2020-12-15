@@ -376,10 +376,18 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                     if (appLink) info.zoomURL = appLink;
                 }
             }
+            else if ([link containsString:@"teams.microsoft.com/l/meetup-join/"]) {
+                info.zoomURL = result.URL;
+                // Test if user has the Teams app and, if so, create a Teams app link.
+                if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"msteams://"]]) {
+                    link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"msteams://"];
+                    NSURL *appLink = [NSURL URLWithString:link];
+                    if (appLink) info.zoomURL = appLink;
+                }
+            }
             else if (   [link containsString:@"zoommtg://"]
                      || [link containsString:@"meet.google.com/"]
                      || [link containsString:@"hangouts.google.com/"]
-                     || [link containsString:@"teams.microsoft.com/l/meetup-join/"]
                      || [link containsString:@"webex.com/"]
                      || [link containsString:@"gotomeeting.com/join"]
                      || [link containsString:@"ringcentral.com/j"]
