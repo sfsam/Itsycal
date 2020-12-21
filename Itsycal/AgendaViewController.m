@@ -82,9 +82,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
     _tv.delegate = self;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 110000
     if (@available(macOS 11.0, *)) {
         _tv.style = NSTableViewStylePlain;
     }
+#endif
     [_tv addTableColumn:[[NSTableColumn alloc] initWithIdentifier:kColumnIdentifier]];
     
     // Calendars enclosing scrollview

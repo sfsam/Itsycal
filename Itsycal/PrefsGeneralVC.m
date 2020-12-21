@@ -97,9 +97,11 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     _calendarsTV.intercellSpacing = NSMakeSize(0, 0);
     _calendarsTV.dataSource = self;
     _calendarsTV.delegate = self;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 110000
     if (@available(macOS 11.0, *)) {
         _calendarsTV.style = NSTableViewStylePlain;
     }
+#endif
     [_calendarsTV addTableColumn:[[NSTableColumn alloc] initWithIdentifier:@"SourcesAndCalendars"]];
 
     // Calendars enclosing scrollview
