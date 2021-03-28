@@ -2,7 +2,9 @@
 I've learned a lot by looking at other people's code so
 maybe someone can learn something from looking at mine.
 
-= = = = = = = =
+---
+
+![Screenshot of itsycal](https://www.mowglii.com/itsycal/itsycalbanner2@2x.png)
 
 Itsycal is a tiny calendar for your Mac's menu bar.
 
