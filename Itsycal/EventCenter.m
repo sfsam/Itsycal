@@ -365,13 +365,17 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     void (^GetZoomURL)(NSString*) = ^(NSString *text) {
         [linkDetector enumerateMatchesInString:text options:kNilOptions range:NSMakeRange(0, text.length) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
             NSString *link = result.URL.absoluteString;
-            if ([link containsString:@"zoom.us/j/"]) {
+            if (   [link containsString:@"zoom.us/j/"]
+                || [link containsString:@"zoom.us/s/"]
+                || [link containsString:@"zoom.us/w/"]) {
                 info.zoomURL = result.URL;
                 // Test if user has the Zoom app and, if so, create a Zoom app link.
                 if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"zoommtg://"]]) {
                     link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"zoommtg://"];
                     link = [link stringByReplacingOccurrencesOfString:@"?" withString:@"&"];
                     link = [link stringByReplacingOccurrencesOfString:@"/j/" withString:@"/join?confno="];
+                    link = [link stringByReplacingOccurrencesOfString:@"/s/" withString:@"/join?confno="];
+                    link = [link stringByReplacingOccurrencesOfString:@"/w/" withString:@"/join?confno="];
                     NSURL *appLink = [NSURL URLWithString:link];
                     if (appLink) info.zoomURL = appLink;
                 }
