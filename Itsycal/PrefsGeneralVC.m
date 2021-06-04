@@ -7,7 +7,7 @@
 #import "Itsycal.h"
 #import "MASShortcut/MASShortcutView.h"
 #import "MASShortcut/MASShortcutView+Bindings.h"
-#import "MoLoginItem/MoLoginItem.h"
+#import "MoLoginItem.h"
 #import "MoVFLHelper.h"
 #import "EventCenter.h"
 #import "Sparkle/SUUpdater.h"
