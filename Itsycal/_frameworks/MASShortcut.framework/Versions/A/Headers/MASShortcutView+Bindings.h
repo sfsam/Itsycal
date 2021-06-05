@@ -17,9 +17,9 @@
 */
 @interface MASShortcutView (Bindings)
 
-@property(copy) NSString *associatedUserDefaultsKey;
+@property(copy, nullable) NSString *associatedUserDefaultsKey;
 
-- (void) setAssociatedUserDefaultsKey: (NSString*) newKey withTransformer: (NSValueTransformer*) transformer;
-- (void) setAssociatedUserDefaultsKey: (NSString*) newKey withTransformerName: (NSString*) transformerName;
+- (void) setAssociatedUserDefaultsKey: (nullable NSString*) newKey withTransformer: (nullable NSValueTransformer*) transformer;
+- (void) setAssociatedUserDefaultsKey: (nullable NSString*) newKey withTransformerName: (nullable NSString*) transformerName;
 
 @end

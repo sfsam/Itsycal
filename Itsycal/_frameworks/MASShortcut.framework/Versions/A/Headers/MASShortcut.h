@@ -16,14 +16,14 @@
  Hardware independent, same as in `NSEvent`. See `Events.h` in the HIToolbox
  framework for a complete list, or Command-click this symbol: `kVK_ANSI_A`.
 */
-@property (nonatomic, readonly) NSUInteger keyCode;
+@property (nonatomic, readonly) NSInteger keyCode;
 
 /**
  Cocoa keyboard modifier flags.
 
  Same as in `NSEvent`: `NSCommandKeyMask`, `NSAlternateKeyMask`, etc.
 */
-@property (nonatomic, readonly) NSUInteger modifierFlags;
+@property (nonatomic, readonly) NSEventModifierFlags modifierFlags;
 
 /**
  Same as `keyCode`, just a different type.
@@ -45,7 +45,7 @@
  to be precise) the `keyCodeString` is `2` on the US keyboard, but `ě` when
  the Czech keyboard layout is active. See the spec for details.
 */
-@property (nonatomic, readonly) NSString *keyCodeString;
+@property (nonatomic, readonly, nullable) NSString *keyCodeString;
 
 /**
  A key-code string used in key equivalent matching.
@@ -61,21 +61,21 @@
  that’s always displayed as `^U`. So the `keyCodeString` returns `Г`
  and `keyCodeStringForKeyEquivalent` returns `U`.
 */
-@property (nonatomic, readonly) NSString *keyCodeStringForKeyEquivalent;
+@property (nonatomic, readonly, nullable) NSString *keyCodeStringForKeyEquivalent;
 
 /**
  A string representing the shortcut modifiers, like the `⌘` in `⌘5`.
 */
-@property (nonatomic, readonly) NSString *modifierFlagsString;
+@property (nonatomic, readonly, nonnull) NSString *modifierFlagsString;
 
-- (instancetype)initWithKeyCode:(NSUInteger)code modifierFlags:(NSUInteger)flags;
-+ (instancetype)shortcutWithKeyCode:(NSUInteger)code modifierFlags:(NSUInteger)flags;
+- (nonnull instancetype)initWithKeyCode:(NSInteger)code modifierFlags:(NSEventModifierFlags)flags;
++ (nonnull instancetype)shortcutWithKeyCode:(NSInteger)code modifierFlags:(NSEventModifierFlags)flags;
 
 /**
  Creates a new shortcut from an `NSEvent` object.
 
  This is just a convenience initializer that reads the key code and modifiers from an `NSEvent`.
 */
-+ (instancetype)shortcutWithEvent:(NSEvent *)anEvent;
++ (nonnull instancetype)shortcutWithEvent:(nonnull NSEvent *)anEvent;
 
 @end
