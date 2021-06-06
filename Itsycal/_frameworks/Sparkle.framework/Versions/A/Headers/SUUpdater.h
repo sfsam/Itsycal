@@ -149,14 +149,14 @@ SU_EXPORT @interface SUUpdater : NSObject
 @property (strong, readonly) NSBundle *sparkleBundle;
 
 /*!
- The user agent used when checking for updates.
+ The user agent used when checking for and downloading updates.
 
  The default implementation can be overrided.
  */
 @property (nonatomic, copy) NSString *userAgentString;
 
 /*!
- The HTTP headers used when checking for updates.
+ The HTTP headers used when checking for and downloading updates.
 
  The keys of this dictionary are HTTP header fields (NSString) and values are corresponding values (NSString)
  */
@@ -189,6 +189,8 @@ SU_EXPORT @interface SUUpdater : NSObject
     For UI-less/daemon apps that aren't usually quit, instead of this function,
     you can use the delegate method
     SUUpdaterDelegate::updater:willInstallUpdateOnQuit:immediateInstallationInvocation:
+    or
+    SUUpdaterDelegate::updater:willInstallUpdateOnQuit:immediateInstallationBlock:
     to immediately start installation when an update was found.
 
     A progress dialog is shown but the user will never be prompted to read the
@@ -200,7 +202,7 @@ SU_EXPORT @interface SUUpdater : NSObject
     You may want to respond to the userDidCancelDownload delegate method in case
     the user clicks the "Cancel" button while the update is downloading.
  */
-- (void)installUpdatesIfAvailable;
+- (void)installUpdatesIfAvailable __attribute__((deprecated("This method is deprecated. Please set SUAutomaticallyUpdate in your Info.plist or use automaticallyDownloadsUpdates property instead.")));
 
 /*!
     Returns the date of last update check.
