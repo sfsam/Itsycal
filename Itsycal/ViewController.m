@@ -560,17 +560,16 @@
     if (text == nil) text = @"!";
 
     // Does user want outline icon or solid icon?
-    BOOL useOutlineIcon = [[NSUserDefaults standardUserDefaults] boolForKey:kUseOutlineIcon];
+    BOOL outline = [NSUserDefaults.standardUserDefaults boolForKey:kUseOutlineIcon];
 
     // Return cached icon if one is available.
-    NSString *iconName = [text stringByAppendingString:useOutlineIcon ? @" outline" : @" solid"];
+    NSString *iconName = [text stringByAppendingString:outline ? @" outline" : @" solid"];
     NSImage *iconImage = [NSImage imageNamed:iconName];
-    if (iconImage != nil) {
-        return iconImage;
-    }
+    if (iconImage != nil) return iconImage;
 
     // Measure text width
-    NSFont *font = [NSFont systemFontOfSize:11.5 weight:NSFontWeightBold];
+    CGFloat fontSize = 11.5;
+    NSFont *font = [NSFont systemFontOfSize:fontSize weight:NSFontWeightBold];
     CGRect textRect = [[[NSAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName: font}] boundingRectWithSize:CGSizeMake(999, 999) options:0 context:nil];
 
     // Icon width is at least 23 pts with 3 pt outside margins, 4 pt inside margins.
@@ -578,72 +577,20 @@
     CGFloat height = 16;
     iconImage = [NSImage imageWithSize:NSMakeSize(width, height) flipped:NO drawingHandler:^BOOL (NSRect rect) {
 
-        // Get image's context.
-        CGContextRef const ctx = [[NSGraphicsContext currentContext] CGContext];
-
-        if (useOutlineIcon) {
-
-            // Draw outlined icon image.
-
-            [[NSColor blackColor] set];
-            [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 3.5, 0.5) xRadius:2 yRadius:2] stroke];
-
-            // Turning off smoothing looks better (why??).
-            CGContextSetShouldSmoothFonts(ctx, false);
-
-            // Draw text.
-            NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
-            pstyle.alignment = NSTextAlignmentCenter;
-            [text drawInRect:NSOffsetRect(rect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:11.5 weight:NSFontWeightSemibold], NSParagraphStyleAttributeName: pstyle, NSForegroundColorAttributeName: [NSColor blackColor]}];
-        }
-        else {
-
-            // Draw solid background icon image.
-            // Based on cocoawithlove.com/2009/09/creating-alpha-masks-from-text-on.html
-
-            // Make scale adjustments.
-            NSRect deviceRect = CGContextConvertRectToDeviceSpace(ctx, rect);
-            CGFloat scale  = NSHeight(deviceRect)/NSHeight(rect);
-            CGFloat width  = scale * NSWidth(rect);
-            CGFloat height = scale * NSHeight(rect);
-            CGFloat outsideMargin = scale * 3;
-            CGFloat radius = scale * 2;
-            CGFloat fontSize = scale > 1 ? 24 : 11.5;
-
-            // Create a grayscale context for the mask
-            CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceGray();
-            CGContextRef maskContext = CGBitmapContextCreate(NULL, width, height, 8, 0, colorspace, 0);
-            CGColorSpaceRelease(colorspace);
-
-            // Switch to the context for drawing.
-            // Drawing done in this context is scaled.
-            NSGraphicsContext *maskGraphicsContext = [NSGraphicsContext graphicsContextWithCGContext:maskContext flipped:NO];
-            [NSGraphicsContext saveGraphicsState];
-            [NSGraphicsContext setCurrentContext:maskGraphicsContext];
-
-            // Draw a white rounded rect background into the mask context
-            [[NSColor whiteColor] setFill];
-            [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(deviceRect, outsideMargin, 0) xRadius:radius yRadius:radius] fill];
-
-            // Draw text.
-            NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
-            pstyle.alignment = NSTextAlignmentCenter;
-            [text drawInRect:NSOffsetRect(deviceRect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:fontSize weight:NSFontWeightBold], NSForegroundColorAttributeName: [NSColor blackColor], NSParagraphStyleAttributeName: pstyle}];
-
-            // Switch back to the image's context.
-            [NSGraphicsContext restoreGraphicsState];
-            CGContextRelease(maskContext);
-
-            // Create an image mask from our mask context.
-            CGImageRef alphaMask = CGBitmapContextCreateImage(maskContext);
-
-            // Fill the image, clipped by the mask.
-            CGContextClipToMask(ctx, rect, alphaMask);
-            [[NSColor blackColor] set];
-            NSRectFill(rect);
-
-            CGImageRelease(alphaMask);
-        }
+        // Draw text.
+        if (outline) CGContextSetShouldSmoothFonts(NSGraphicsContext.currentContext.CGContext, false);
+        NSFontWeight fontWeight = outline ? NSFontWeightSemibold : NSFontWeightBold;
+        NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
+        pstyle.alignment = NSTextAlignmentCenter;
+        [text drawInRect:NSOffsetRect(rect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:fontSize weight:fontWeight], NSParagraphStyleAttributeName: pstyle}];
+        
+        // Draw rounded rect.
+        [NSColor.blackColor set];
+        [NSGraphicsContext saveGraphicsState];
+        [NSGraphicsContext.currentContext setCompositingOperation:NSCompositingOperationXOR];
+        [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 3, 0) xRadius:3 yRadius:3] fill];
+        if (outline) [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 4, 1) xRadius:2 yRadius:2] fill];
+        [NSGraphicsContext restoreGraphicsState];
 
         return YES;
     }];
