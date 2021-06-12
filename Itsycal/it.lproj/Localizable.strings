@@ -5,13 +5,22 @@
 "1 day before" = "1 giorno prima";
 
 /* No comment provided by engineer. */
+"1 day before (9 AM)" = "1 giorno prima (9:00)";
+
+/* No comment provided by engineer. */
 "1 hour before" = "1 ora prima";
+
+/* No comment provided by engineer. */
+"1 week before" = "1 settimana prima";
 
 /* No comment provided by engineer. */
 "2 days" = "2 giorni";
 
 /* No comment provided by engineer. */
 "2 days before" = "2 giorni prima";
+
+/* No comment provided by engineer. */
+"2 days before (9 AM)" = "2 giorni prima (9:00)";
 
 /* No comment provided by engineer. */
 "2 hours before" = "2 ore prima";
@@ -228,6 +237,9 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 
 /* No comment provided by engineer. */
 "On Date" = "In data";
+
+/* No comment provided by engineer. */
+"On day of event (9 AM)" = "Il giorno dell'evento (9:00)";
 
 /* No comment provided by engineer. */
 "Open Calendar… ⌘O" = "Apri l'applicazione Calendario… ⌘O";

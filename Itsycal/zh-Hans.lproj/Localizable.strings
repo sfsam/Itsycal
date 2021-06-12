@@ -5,13 +5,22 @@
 "1 day before" = "1 天前";
 
 /* No comment provided by engineer. */
+"1 day before (9 AM)" = "1 天前（上午9时）";
+
+/* No comment provided by engineer. */
 "1 hour before" = "1 小时前";
+
+/* No comment provided by engineer. */
+"1 week before" = "1 周前";
 
 /* No comment provided by engineer. */
 "2 days" = "2 天";
 
 /* No comment provided by engineer. */
 "2 days before" = "2 天前";
+
+/* No comment provided by engineer. */
+"2 days before (9 AM)" = "2 天前（上午9时）";
 
 /* No comment provided by engineer. */
 "2 hours before" = "2 小时前";
@@ -228,6 +237,9 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 
 /* No comment provided by engineer. */
 "On Date" = "时间到了";
+
+/* No comment provided by engineer. */
+"On day of event (9 AM)" = "日程发生当天（上午9时）";
 
 /* No comment provided by engineer. */
 "Open Calendar… ⌘O" = "打开日历… ⌘O";

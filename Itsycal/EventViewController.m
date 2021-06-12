@@ -11,12 +11,36 @@
 #import "MoVFLHelper.h"
 #import "Themer.h"
 
+// These values map to _alertAllDayStrings and _alertRegularStrings.
+const NSInteger kAlertAllDayNumOffsets  = 5;
+const NSInteger kAlertRegularNumOffsets = 10;
+const NSTimeInterval kAlertAllDayRelativeOffsets[kAlertAllDayNumOffsets] = {
+    MAXFLOAT, // None
+    32400,    // On day of event (9 AM)
+    -54000,   // 1 day before (9 AM)
+    -140400,  // 2 days before (9 AM)
+    -604800   // 1 week before
+};
+const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
+    MAXFLOAT, // None
+    0,        // At time of event
+    -300,     // 5 minutes before
+    -600,     // 10 minutes before
+    -900,     // 15 minutes before
+    -1800,    // 30 minutes before
+    -3600,    // 1 hour before
+    -7200,    // 2 hours before
+    -86400,   // 1 day before
+    -172800   // 2 days before
+};
+
 @implementation EventViewController
 {
-    NSTextField *_title, *_location, *_repEndLabel, *_alertLabel;
+    NSTextField *_title, *_location, *_repEndLabel;
     NSButton *_allDayCheckbox, *_saveButton;
     NSDatePicker *_startDate, *_endDate, *_repEndDate;
     NSPopUpButton *_repPopup, *_repEndPopup, *_alertPopup, *_calPopup;
+    NSArray<NSString *> *_alertAllDayStrings, *_alertRegularStrings;
 }
 
 - (void)loadView
@@ -54,9 +78,11 @@
     };
 
     // PopUpButton maker
-    NSPopUpButton* (^popup)(void) = ^NSPopUpButton* () {
+    NSPopUpButton* (^popup)(SEL) = ^NSPopUpButton* (SEL action) {
         NSPopUpButton *pop = [NSPopUpButton new];
         pop.target = self;
+        pop.action = action;
+        pop.menu.autoenablesItems = NO;
         [v addSubview:pop];
         return pop;
     };
@@ -86,8 +112,8 @@
     NSTextField *startsLabel = txt(NSLocalizedString(@"Starts:", @""), NO);
     NSTextField *endsLabel   = txt(NSLocalizedString(@"Ends:", @""), NO);
     NSTextField *repLabel    = txt(NSLocalizedString(@"Repeat:", @""), NO);
-    _repEndLabel             = txt(NSLocalizedString(@"End Repeat:", @""), NO);
-    _alertLabel              = txt(NSLocalizedString(@"Alert:", @""), NO);
+                _repEndLabel = txt(NSLocalizedString(@"End Repeat:", @""), NO);
+    NSTextField *alertLabel  = txt(NSLocalizedString(@"Alert:", @""), NO);
     
     // Date pickers
     _startDate = picker();
@@ -98,8 +124,7 @@
     _repEndDate.datePickerElements = NSDatePickerElementFlagYearMonthDay;
     
     // Popups
-    _repPopup = popup();
-    _repPopup.action = @selector(repPopupChanged:);
+    _repPopup = popup(@selector(repPopupChanged:));
     [_repPopup addItemsWithTitles:@[NSLocalizedString(@"None", @"Repeat none"),
                                     NSLocalizedString(@"Every Day", @""),
                                     NSLocalizedString(@"Every Week", @""),
@@ -107,32 +132,47 @@
                                     NSLocalizedString(@"Every Month", @""),
                                     NSLocalizedString(@"Every Year", @"")]];
     
-    _repEndPopup = popup();
-    _repEndPopup.action = @selector(repEndPopupChanged:);
+    _repEndPopup = popup(@selector(repEndPopupChanged:));
     [_repEndPopup addItemsWithTitles:@[NSLocalizedString(@"Never", @"Repeat ends never"),
                                        NSLocalizedString(@"On Date", @"")]];
     
-    _alertPopup = popup();
-    [_alertPopup addItemsWithTitles:@[NSLocalizedString(@"None", @"Alert none"),
-                                      NSLocalizedString(@"At time of event", @""),
-                                      NSLocalizedString(@"5 minutes before", @""),
-                                      NSLocalizedString(@"10 minutes before", @""),
-                                      NSLocalizedString(@"15 minutes before", @""),
-                                      NSLocalizedString(@"30 minutes before", @""),
-                                      NSLocalizedString(@"1 hour before", @""),
-                                      NSLocalizedString(@"2 hours before", @""),
-                                      NSLocalizedString(@"1 day before", @""),
-                                      NSLocalizedString(@"2 days before", @"")]];
-    
-    _calPopup = popup();
-    _calPopup.menu.autoenablesItems = NO;
+    _alertPopup = popup(NULL);
+    _alertAllDayStrings = @[
+        NSLocalizedString(@"None", @"Alert none"),
+        NSLocalizedString(@"On day of event (9 AM)", @""),
+        NSLocalizedString(@"1 day before (9 AM)", @""),
+        NSLocalizedString(@"2 days before (9 AM)", @""),
+        NSLocalizedString(@"1 week before", @"")];
+    _alertRegularStrings = @[
+        NSLocalizedString(@"None", @"Alert none"),
+        NSLocalizedString(@"At time of event", @""),
+        NSLocalizedString(@"5 minutes before", @""),
+        NSLocalizedString(@"10 minutes before", @""),
+        NSLocalizedString(@"15 minutes before", @""),
+        NSLocalizedString(@"30 minutes before", @""),
+        NSLocalizedString(@"1 hour before", @""),
+        NSLocalizedString(@"2 hours before", @""),
+        NSLocalizedString(@"1 day before", @""),
+        NSLocalizedString(@"2 days before", @"")];
+    // This is a hack.
+    // Populate the alert with all possible values (there are
+    // different values for regular vs. all-day events) so the
+    // Autolayout engine can calculate the correct maximum
+    // width of the button. The real values will be repopulated
+    // in -viewWillAppear. Without this hack, the view may
+    // change width when the user toggles between regular and
+    // all-day events as the popup gets wider or narrower.
+    [_alertPopup addItemsWithTitles:_alertAllDayStrings];
+    [_alertPopup addItemsWithTitles:_alertRegularStrings];
+
+    _calPopup = popup(@selector(calPopupChanged:));
     
     // Save and Cancel buttons
     _saveButton = btn(NSLocalizedString(@"Save Event", @""), self, @selector(saveEvent:));
     _saveButton.enabled = NO; // we'll enable when the form is valid.
     NSButton *cancelButton = btn(NSLocalizedString(@"Cancel", @""), self, @selector(cancelOperation:));
     
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, _alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _calPopup, cancelButton, _saveButton)];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _calPopup, cancelButton, _saveButton)];
 
     [vfl :@"V:|-[_title]-[_location]-15-[_allDayCheckbox]"];
     [vfl :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_alertPopup]-20-[_calPopup]" :NSLayoutFormatAlignAllLeading];
@@ -144,7 +184,7 @@
     [vfl :@"H:|-[endsLabel]-[_endDate]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[repLabel]-[_repPopup]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[_repEndLabel]-[_repEndPopup]-[_repEndDate]-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-[_alertLabel]-[_alertPopup]-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-[alertLabel]-[_alertPopup]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:[_calPopup]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:[cancelButton]-[_saveButton]-|" :NSLayoutFormatAlignAllCenterY];
 
@@ -241,6 +281,11 @@
             }
         }
     }
+    
+    // Populate alert popup AFTER calendar popup since its
+    // contents depends on which calendar is selected.
+    [self populateAlertPopup];
+
     [self.view.window makeFirstResponder:_title];
 }
 
@@ -287,17 +332,8 @@
         _endDate.datePickerElements = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
     }
     
-    // The All-day checkbox also toggles the alert popup.
-    // Currently, we don't allow the user to set an alert for an All-day event,
-    // but a 1-day-ahead alert will be set by the system by default.
-    if (allDayCheckbox.state == NSControlStateValueOn) {
-        _alertLabel.hidden = YES;
-        _alertPopup.hidden = YES;
-    }
-    else {
-        _alertLabel.hidden = NO;
-        _alertPopup.hidden = NO;
-    }
+    // All-day events have different alert options from regular events.
+    [self populateAlertPopup];
 }
 
 - (void)startDateChanged:(NSDatePicker *)startPicker
@@ -326,6 +362,58 @@
 {
     NSInteger repEndIndex = [_repEndPopup indexOfItem:_repEndPopup.selectedItem];
     _repEndDate.hidden = repEndIndex == 0;
+}
+
+- (void)calPopupChanged:(id)sender
+{
+    // Different calendars have different alert options.
+    [self populateAlertPopup];
+}
+
+- (void)populateAlertPopup
+{
+    [_alertPopup removeAllItems];
+    
+    // Get the selected calendar.
+    NSInteger index = _calPopup.selectedItem.tag;
+    NSArray *sourcesAndCalendars = [self.ec sourcesAndCalendars];
+    CalendarInfo *calInfo = sourcesAndCalendars[index];
+
+    // Make a dummy event for the selected calendar in order to get
+    // the default alert time offset.
+    EKEvent *dummyEvent  = [self.ec newEvent];
+    dummyEvent.calendar  = calInfo.calendar;
+    dummyEvent.allDay    = _allDayCheckbox.state == NSControlStateValueOn;
+
+    // Get the relative offset for the default alert from the dummy event.
+    NSTimeInterval defaultAlertRelativeOffset = -1;
+    for (EKAlarm *alarm in dummyEvent.alarms) {
+        // isDefault is private API. Why???
+        if ([[alarm valueForKey:@"isDefault"] boolValue]) {
+            defaultAlertRelativeOffset = alarm.relativeOffset;
+            break;
+        }
+    }
+
+    NSInteger numOffsets = 0;
+    const NSTimeInterval *offsets = nil;
+    
+    if (_allDayCheckbox.state == NSControlStateValueOn) {
+        [_alertPopup addItemsWithTitles:_alertAllDayStrings];
+        numOffsets = kAlertAllDayNumOffsets;
+        offsets = kAlertAllDayRelativeOffsets;
+    } else {
+        [_alertPopup addItemsWithTitles:_alertRegularStrings];
+        numOffsets = kAlertRegularNumOffsets;
+        offsets = kAlertRegularRelativeOffsets;
+    }
+  
+    for (NSInteger i = 0; i < numOffsets; i++) {
+        if (defaultAlertRelativeOffset == offsets[i]) {
+            [_alertPopup selectItemAtIndex:i];
+            break;
+        }
+    }
 }
 
 - (void)saveEvent:(id)sender
@@ -393,24 +481,24 @@
         event.recurrenceRules = @[recurrence];
     }
     
-    // Alert (aka Alarm).
-    // Only set an alert if the event is NOT an All-day event. The system
-    // will automatically set a 1-day-ahead alert for All-day events.
-    if (event.allDay == NO) {
-        NSInteger alertIndex = [_alertPopup indexOfItem:_alertPopup.selectedItem];
-        if (alertIndex != 0) { // 0 == no alert
-            NSTimeInterval offset = 0;
-            switch (alertIndex) {
-                case 2:  offset =    -300; break; //  5 min before
-                case 3:  offset =    -600; break; // 10 min before
-                case 4:  offset =    -900; break; // 15 min before
-                case 5:  offset =   -1800; break; // 30 min before
-                case 6:  offset =   -3600; break; //  1 hour before
-                case 7:  offset =   -7200; break; //  2 hours before
-                case 8:  offset =  -86400; break; //  1 day before
-                case 9:  offset = -172800; break; //  2 days before
-                default: offset =       0; break; // at time of event
-            }
+    // Remove default alert(s) set on this event. We only add the
+    // alert the user has selected - which may be the default alert
+    // since we tried to set it in -populateAlertPopup. This avoids
+    // having the default alert set twice.
+    for (EKAlarm *alarm in event.alarms) {
+        [event removeAlarm:alarm];
+    }
+    // Set the alert that was selected in the alert popup.
+    NSInteger alertIndex = [_alertPopup indexOfItem:_alertPopup.selectedItem];
+    if (alertIndex > 0) { // 0 == no alert
+        NSTimeInterval offset = MAXFLOAT;
+        if (event.isAllDay && alertIndex < kAlertAllDayNumOffsets) {
+            offset = kAlertAllDayRelativeOffsets[alertIndex];
+        }
+        else if (!event.isAllDay && alertIndex < kAlertRegularNumOffsets) {
+            offset = kAlertRegularRelativeOffsets[alertIndex];
+        }
+        if (offset != MAXFLOAT) {
             [event addAlarm:[EKAlarm alarmWithRelativeOffset:offset]];
         }
     }
