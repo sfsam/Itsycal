@@ -1,324 +1,124 @@
-/* No comment provided by engineer. */
 "1 day" = "1 día";
-
-/* No comment provided by engineer. */
 "1 day before" = "1 día antes";
-
-/* No comment provided by engineer. */
 "1 day before (9 AM)" = "1 día antes (9:00)";
-
-/* No comment provided by engineer. */
 "1 hour before" = "1 hora antes";
-
-/* No comment provided by engineer. */
 "1 week before" = "1 semana antes";
-
-/* No comment provided by engineer. */
 "2 days" = "2 días";
-
-/* No comment provided by engineer. */
 "2 days before" = "2 días antes";
-
-/* No comment provided by engineer. */
 "2 days before (9 AM)" = "2 días antes (9:00)";
-
-/* No comment provided by engineer. */
 "2 hours before" = "2 horas antes";
-
-/* No comment provided by engineer. */
 "3 days" = "3 días";
-
-/* No comment provided by engineer. */
 "4 days" = "4 días";
-
-/* No comment provided by engineer. */
 "5 days" = "5 días";
-
-/* No comment provided by engineer. */
 "5 minutes before" = "5 minutos antes";
-
-/* No comment provided by engineer. */
 "6 days" = "6 días";
-
-/* No comment provided by engineer. */
 "7 days" = "7 días";
-
-/* No comment provided by engineer. */
 "10 minutes before" = "10 minutos antes";
-
-/* No comment provided by engineer. */
 "14 days" = "14 días";
-
-/* No comment provided by engineer. */
 "15 minutes before" = "15 minutos antes";
-
-/* No comment provided by engineer. */
 "30 minutes before" = "30 minutos antes";
-
-/* No comment provided by engineer. */
 "31 days" = "31 días";
-
-/* No comment provided by engineer. */
 "About Itsycal" = "Acerca de Itsycal";
-
 /* About prefs tab label */
 "About" = "Acerca de";
-
-/* No comment provided by engineer. */
 "Add Location" = "Añadir ubicación";
-
-/* No comment provided by engineer. */
 "Alert:" = "Aviso:";
-
-/* No comment provided by engineer. */
 "All-day:" = "Todo el día:";
-
 /* Appearance prefs tab label */
 "Appearance" = "Apariencia";
-
-/* No comment provided by engineer. */
 "Are you sure you want to delete this event?" = "¿Seguro que quieres eliminar este evento?";
-
-/* No comment provided by engineer. */
 "At time of event" = "A la hora del evento";
-
-/* No comment provided by engineer. */
 "Automatically check for updates" = "Buscar actualizaciones automáticamente";
-
-/* No comment provided by engineer. */
 "Calendar" = "Calendario";
-
-/* No comment provided by engineer. */
 "Calendar access denied.
 
 Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Acceso denegado.
 
 Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad";
-
-/* No comment provided by engineer. */
 "Calendar access was denied." = "Acceso denegado.";
-
-/* No comment provided by engineer. */
 "Cancel" = "Cancelar";
-
-/* No comment provided by engineer. */
 "Check for Updates…" = "Buscar actualizaciones…";
-
-/* No comment provided by engineer. */
 "Copy" = "Copiar";
-
 /* Dark theme name */
 "Dark" = "Tema oscuro";
-
-/* No comment provided by engineer. */
 "Date & Time…" = "Fecha y hora…";
-
-/* No comment provided by engineer. */
 "Datetime pattern" = "Patrón de fecha y hora";
-
-/* No comment provided by engineer. */
 "Delete" = "Eliminar";
-
-/* No comment provided by engineer. */
 "Delete All Future Events" = "Eliminar todos los eventos futuros";
-
-/* No comment provided by engineer. */
 "Delete Only This Event" = "Eliminar solo este evento";
-
-/* No comment provided by engineer. */
 "Delete This Event" = "Eliminar";
-
-/* No comment provided by engineer. */
 "Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "¿Desea eliminar este evento y todas sus repeticiones futuras o bien solo la aparición seleccionada?";
-
-/* No comment provided by engineer. */
 "Donate with" = "Donar con";
-
-/* No comment provided by engineer. */
 "End Repeat:" = "Terminar:";
-
-/* No comment provided by engineer. */
 "Ends:" = "Termina:";
-
-/* No comment provided by engineer. */
 "Event list shows:" = "La lista de eventos muestra:";
-
-/* No comment provided by engineer. */
 "Every %zd Days" = "Cada %zd días";
-
-/* No comment provided by engineer. */
 "Every %zd Months" = "Cada %zd meses";
-
-/* No comment provided by engineer. */
 "Every %zd Weeks" = "Cada %zd semanas";
-
-/* No comment provided by engineer. */
 "Every %zd Years" = "Cada %zd años";
-
-/* No comment provided by engineer. */
 "Every Day" = "Todos los días";
-
-/* No comment provided by engineer. */
 "Every Month" = "Todos los meses";
-
-/* No comment provided by engineer. */
 "Every Week" = "Todas las semanas";
-
-/* No comment provided by engineer. */
 "Every Year" = "Todos los años";
-
-/* No comment provided by engineer. */
 "First day of week:" = "Primer día de la semana:";
-
-/* No comment provided by engineer. */
 "Follow" = "Sigue a";
-
-/* No comment provided by engineer. */
 "Friday" = "Viernes";
-
 /* General prefs tab label */
 "General" = "General";
-
-/* No comment provided by engineer. */
 "Help…" = "Ayuda…";
-
-/* No comment provided by engineer. */
 "Hide icon" = "Ocultar icono";
-
-/* No comment provided by engineer. */
 "Highlight:" = "Resaltar:";
-
-/* No comment provided by engineer. */
 "Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal no puede crear un nuevo evento si no hay al menos un calendario con permisos para ser modificado.";
-
-/* No comment provided by engineer. */
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal es más útil cuando usted lo permite para agregar eventos a su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad.";
-
-/* No comment provided by engineer. */
 "Itsycal must be run from the Applications folder in order to work properly.
 
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsycal se debe ejecutar desde la carpeta Aplicaciones con el fin de funcionar correctamente.
 
 Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arrancar.";
-
-/* No comment provided by engineer. */
 "Keyboard shortcut" = "Atajo de teclado";
-
-/* No comment provided by engineer. */
 "Launch at login" = "Abrir automáticamente al iniciar sesión";
-
 /* Light theme name */
 "Light" = "Tema claro";
-
-/* No comment provided by engineer. */
 "Menu Bar" = "Barra de Menús";
-
-/* No comment provided by engineer. */
 "Monday" = "Lunes";
-
-/* No comment provided by engineer. */
 "Move Itsycal to the Applications folder" = "Trasladar Itsycal a la carpeta Aplicaciones";
-
 /* Repeat ends never */
 "Never" = "Nunca";
-
-/* No comment provided by engineer. */
 "New Event" = "Nuevo evento";
-
-/* No comment provided by engineer. */
 "New Event… ⌘N" = "Nuevo evento… ⌘N";
-
-/* No comment provided by engineer. */
 "No events" = "Nada";
-
 /* Alert none
    Repeat none */
 "None" = "Ninguno";
-
-/* No comment provided by engineer. */
 "On Date" = "En la fecha";
-
-/* No comment provided by engineer. */
 "On day of event (9 AM)" = "El día del evento (9:00)";
-
-/* No comment provided by engineer. */
 "Open Calendar… ⌘O" = "Abrir La aplicación del calendario… ⌘O";
-
-/* No comment provided by engineer. */
 "Options" = "Opciones";
-
-/* No comment provided by engineer. */
 "or" = "o";
-
-/* No comment provided by engineer. */
 "Pin Itsycal… P" = "Mantener Itsycal… P";
-
-/* No comment provided by engineer. */
 "Preferences…" = "Preferencias…";
-
-/* No comment provided by engineer. */
 "Quit Itsycal" = "Salir de Itsycal";
-
-/* No comment provided by engineer. */
 "Repeat:" = "Repetir:";
-
-/* No comment provided by engineer. */
 "Saturday" = "Sábado";
-
-/* No comment provided by engineer. */
 "Save Event" = "Salvar Evento";
-
-/* No comment provided by engineer. */
 "Show calendar weeks" = "Mostrar semanas del calendario";
-
-/* No comment provided by engineer. */
 "Show day of week in icon" = "El icono muestra día de la semana";
-
-/* No comment provided by engineer. */
 "Show event dots" = "Mostrar puntos para eventos";
-
-/* No comment provided by engineer. */
 "Show event location" = "Mostrar ubicación del evento";
-
-/* No comment provided by engineer. */
 "Show month in icon" = "El icono muestra mes";
-
-/* No comment provided by engineer. */
 "Starts:" = "Empieza:";
-
-/* No comment provided by engineer. */
 "Sunday" = "Domingo";
-
 /* System theme name */
 "System" = "Sistema";
-
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "La aplicación del calendario no se pudo encontrar.";
-
-/* No comment provided by engineer. */
 "Theme:" = "Tema:";
-
-/* No comment provided by engineer. */
 "There are no modifiable calendars." = "No hay calendarios modificables.";
-
-/* No comment provided by engineer. */
 "Thursday" = "Jueves";
-
-/* No comment provided by engineer. */
 "Tuesday" = "Martes";
-
-/* No comment provided by engineer. */
 "Use colored dots" = "Usar puntos de colores";
-
-/* No comment provided by engineer. */
 "Use outline icon" = "Usar el icono contorno";
-
-/* No comment provided by engineer. */
 "Wednesday" = "Miércoles";
-
-/* No comment provided by engineer. */
 "You're deleting an event." = "Está eliminando un evento.";
-
 /* Spanning event ends */
 "ends" = "finaliza a las";
-
