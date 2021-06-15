@@ -314,6 +314,7 @@
         return;
     }
     [calendarApp activate]; // bring to foreground
+    [calendarApp switchViewTo:SBCalendarCALViewTypeForScriptingDayView];
     [calendarApp viewCalendarAt:date];
 }
 
