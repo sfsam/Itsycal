@@ -65,15 +65,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // View controller content view
     NSView *v = [NSView new];
 
-    // Calendars table view context menu
-    NSMenu *contextMenu = [NSMenu new];
-    contextMenu.delegate = self;
-
     // Calendars table view
     _tv = [MoTableView new];
     _tv.target = self;
     _tv.action = @selector(showPopover:);
-    _tv.menu = contextMenu;
+    _tv.doubleAction = @selector(showCalendarApp:);
+    _tv.menu = [NSMenu new];
+    _tv.menu.delegate = self;
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
@@ -161,7 +159,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 }
 
 #pragma mark -
-#pragma mark Context Menu
+#pragma mark TableView context menu
 
 - (void)menuNeedsUpdate:(NSMenu *)menu
 {
@@ -169,6 +167,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Show a context menu ONLY for non-group rows.
     [menu removeAllItems];
     if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
+    [menu addItemWithTitle:NSLocalizedString(@"Open Calendar", nil) action:@selector(showCalendarApp:) keyEquivalent:@""];
     [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
     EventInfo *info = self.events[_tv.clickedRow];
     if (info.event.calendar.allowsContentModifications) {
@@ -219,7 +218,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 }
 
 #pragma mark -
-#pragma mark Popover
+#pragma mark TableView click actions
 
 - (void)showPopover:(id)sender
 {
@@ -256,6 +255,30 @@ static NSString *kEventCellIdentifier = @"EventCell";
     
     // Prevent popoverVC's _note from eating key presses (like esc and delete).
     [popoverVC.view.window makeFirstResponder:popoverVC.btnDelete];
+}
+
+- (void)showCalendarApp:(id)sender
+{
+    if (_tv.clickedRow == -1 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
+
+    // Work backwards from the clicked row (which is an EventInfo row)
+    // to find the parent NSDate row. We do this instead of just getting
+    // the clicked event's startDate because spanning events might start
+    // on a different date from the one that was clicked.
+    NSDate *clickedDate = nil;
+    NSInteger row = _tv.clickedRow;
+    while (row > 0) {
+        row = row - 1;
+        id obj = self.events[row];
+        if ([obj isKindOfClass:[NSDate class]]) {
+            clickedDate = obj;
+            break;
+        }
+    }
+    if (!clickedDate) return; // should never happen
+    if (self.delegate && [self.delegate respondsToSelector:@selector(agendaShowCalendarAppAtDate:)]) {
+        [self.delegate agendaShowCalendarAppAtDate:clickedDate];
+    }
 }
 
 #pragma mark -

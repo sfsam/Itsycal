@@ -275,6 +275,11 @@
 
 - (void)showCalendarApp:(id)sender
 {
+    [self showCalendarAppAtDate:MakeNSDateWithDate(_moCal.selectedDate, _nsCal)];
+}
+
+- (void)showCalendarAppAtDate:(NSDate *)date
+{
     // Determine the default calendar app.
     // See: support.busymac.com/help/21535-busycal-url-handler
     
@@ -288,11 +293,11 @@
     
     if ([defaultCalendarAppBundleID isEqualToString:@"com.busymac.busycal2"] ||
         [defaultCalendarAppBundleID isEqualToString:@"com.busymac.busycal3"]) {
-        [self showCalendarAppWithURLScheme:@"busycalevent://date"];
+        [self showCalendarAppWithURLScheme:@"busycalevent://date" date:date];
         return;
     }
     else if ([defaultCalendarAppBundleID isEqualToString:@"com.flexibits.fantastical2.mac"]) {
-        [self showCalendarAppWithURLScheme:@"x-fantastical2://show/calendar"];
+        [self showCalendarAppWithURLScheme:@"x-fantastical2://show/calendar" date:date];
         return;
     }
     
@@ -309,14 +314,15 @@
         return;
     }
     [calendarApp activate]; // bring to foreground
-    [calendarApp viewCalendarAt:MakeNSDateWithDate(_moCal.selectedDate, _nsCal)];
+    [calendarApp viewCalendarAt:date];
 }
 
-- (void)showCalendarAppWithURLScheme:(NSString *)urlScheme
+- (void)showCalendarAppWithURLScheme:(NSString *)urlScheme date:(NSDate *)date
 {
     // url is of the form: urlScheme/yyyy-MM-dd
     // For example: x-fantastical2://show/calendar/2011-05-22
-    NSString *url = [NSString stringWithFormat:@"%@/%04zd-%02zd-%02zd", urlScheme, _moCal.selectedDate.year, _moCal.selectedDate.month+1, _moCal.selectedDate.day];
+    NSDateComponents *comp = [_nsCal components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
+    NSString *url = [NSString stringWithFormat:@"%@/%04zd-%02zd-%02zd", urlScheme, comp.year, comp.month, comp.day];
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
 }
 
@@ -849,6 +855,11 @@
     if (result == NO && error != nil) {
         [[NSAlert alertWithError:error] runModal];
     }
+}
+
+- (void)agendaShowCalendarAppAtDate:(NSDate *)date
+{
+    [self showCalendarAppAtDate:date];
 }
 
 - (CGFloat)agendaMaxPossibleHeight
