@@ -85,7 +85,7 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 /* Repeat ends never */
 "Never" = "Mai";
 "New Event" = "Nuovo evento";
-"New Event… ⌘N" = "Nuovo evento… ⌘N";
+"New Event   ⌘N" = "Nuovo evento   ⌘N";
 "No events" = "Nessun evento";
 /* Alert none
    Repeat none */
@@ -93,10 +93,10 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "On Date" = "In data";
 "On day of event (9 AM)" = "Il giorno dell'evento (9:00)";
 "Open Calendar" = "Apri l'applicazione Calendario";
-"Open Calendar… ⌘O" = "Apri l'applicazione Calendario… ⌘O";
+"Open Calendar   ⌘O" = "Apri l'applicazione Calendario   ⌘O";
 "Options" = "Opzioni";
 "or" = "o";
-"Pin Itsycal… P" = "Mantieni Itsycal visibile… P";
+"Pin Itsycal   P" = "Mantieni Itsycal visibile   P";
 "Preferences…" = "Preferenze…";
 "Quit Itsycal" = "Esci da Itsycal";
 "Repeat:" = "Ripetizione:";

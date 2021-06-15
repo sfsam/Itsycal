@@ -85,7 +85,7 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 /* Repeat ends never */
 "Never" = "jamais";
 "New Event" = "Nouvel événement";
-"New Event… ⌘N" = "Nouvel événement… ⌘N";
+"New Event   ⌘N" = "Nouvel événement   ⌘N";
 "No events" = "aucun événement";
 /* Alert none
    Repeat none */
@@ -93,10 +93,10 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "On Date" = "le";
 "On day of event (9 AM)" = "Le jour de l’événement (9:00)";
 "Open Calendar" = "Ouvrir l'application Calendrier";
-"Open Calendar… ⌘O" = "Ouvrir l'application Calendrier… ⌘O";
+"Open Calendar   ⌘O" = "Ouvrir l'application Calendrier   ⌘O";
 "Options" = "Options";
 "or" = "ou";
-"Pin Itsycal… P" = "Maintenir Itsycal visible… P";
+"Pin Itsycal   P" = "Maintenir Itsycal visible   P";
 "Preferences…" = "Préférences…";
 "Quit Itsycal" = "Quitter Itsycal";
 "Repeat:" = "Récurrence:";

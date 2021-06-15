@@ -85,7 +85,7 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 /* Repeat ends never */
 "Never" = "从不";
 "New Event" = "新事件";
-"New Event… ⌘N" = "新事件… ⌘N";
+"New Event   ⌘N" = "新事件   ⌘N";
 "No events" = "不显示";
 /* Alert none
    Repeat none */
@@ -93,10 +93,10 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "On Date" = "时间到了";
 "On day of event (9 AM)" = "日程发生当天（上午9时）";
 "Open Calendar" = "打开日历";
-"Open Calendar… ⌘O" = "打开日历… ⌘O";
+"Open Calendar   ⌘O" = "打开日历   ⌘O";
 "Options" = "选项";
 "or" = "or";
-"Pin Itsycal… P" = "固定 Itsycal… P";
+"Pin Itsycal   P" = "固定 Itsycal   P";
 "Preferences…" = "偏好设置…";
 "Quit Itsycal" = "退出 Itsycal";
 "Repeat:" = "重复：";
