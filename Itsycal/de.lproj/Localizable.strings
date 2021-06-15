@@ -26,7 +26,7 @@
 "All-day:" = "Ganztägig:";
 /* Appearance prefs tab label */
 "Appearance" = "Erscheinungsbild";
-"Are you sure you want to delete this event?" = "Sind Sie sicher, dass Sie dieses Ereignis entfernen möchten ?";
+"Are you sure you want to delete this event?" = "Sind Sie sicher, dass Sie dieses Ereignis entfernen möchten?";
 "At time of event" = "Bei Ereignisstart";
 "Automatically check for updates" = "Automatisch nach Aktualisierung suchen";
 "Calendar" = "Kalender";
@@ -34,7 +34,7 @@
 
 Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Kalenderzugriff verweigert.
 
-Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden können. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.";
+Itsycal ist nützlicher, wenn es Ereignisse aus Ihrem Kalender angezeigt werden können. Sie können diese Einstellung unter Systemeinstellungen › Sicherheit › Privatsphäre anpassen.";
 "Calendar access was denied." = "Kalenderzugriff verweigert.";
 "Cancel" = "Abbrechen";
 "Check for Updates…" = "Nach Updates suchen…";
@@ -47,7 +47,7 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 "Delete All Future Events" = "Alle zukünftigen Ereignisse löschen";
 "Delete Only This Event" = "Nur dieses Ereignis löschen";
 "Delete This Event" = "Löschen";
-"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Möchten Sie dieses und all zukünftigen Vorkommen dieses Ereignisses löschen oder nur das ausgewählte Vorkommen?";
+"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Möchtest du dieses und alle zukünftigen Vorkommen dieses Ereignisses löschen oder nur das ausgewählte Vorkommen?";
 "Donate with" = "Spenden mit";
 "End Repeat:" = "Beenden:";
 "Ends:" = "Bis:";
@@ -69,7 +69,7 @@ Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden k�
 "Hide icon" = "Menüleistensymbol verbergen";
 "Highlight:" = "Hervorheben:";
 "Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal kann kein neues Ereignis erstellen, wenn es mindestens ein Kalender erlaubt ist modifiziert werden.";
-"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal ist nützlicher, wenn es Veranstaltungen zu Ihrem Kalender hinzuzufügen. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.";
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal ist nützlicher, wenn es Veranstaltungen zu Ihrem Kalender hinzuzufügen kann. Sie können diese Einstellung unter Systemeinstellungen › Sicherheit › Privatsphäre anpassen.";
 "Itsycal must be run from the Applications folder in order to work properly.
 
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsycal muss aus dem Programme-Ordner laufen, um ordnungsgemäß zu funktionieren.
