@@ -171,7 +171,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
     EventInfo *info = self.events[_tv.clickedRow];
     if (info.event.calendar.allowsContentModifications) {
-        NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete", nil) action:@selector(btnDeleteClicked:) keyEquivalent:@""];
+        NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
         item.tag = _tv.clickedRow;
     }
 }
@@ -242,7 +242,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (cell.eventInfo.event.calendar.allowsContentModifications) {
         popoverVC.btnDelete.tag = _tv.clickedRow;
         popoverVC.btnDelete.target = self;
-        popoverVC.btnDelete.action = @selector(btnDeleteClicked:);
+        popoverVC.btnDelete.action = @selector(deleteEvent:);
         unichar backspaceKey = NSBackspaceCharacter;
         popoverVC.btnDelete.keyEquivalent = [NSString stringWithCharacters:&backspaceKey length:1];
     }
@@ -378,9 +378,21 @@ static NSString *kEventCellIdentifier = @"EventCell";
 #pragma mark -
 #pragma mark Delete event
 
-- (void)btnDeleteClicked:(id)sender
+- (void)deleteEvent:(id)sender
 {
-    NSInteger row = [(MoButton *)sender tag];
+    NSInteger row = -1;
+    if ([sender isKindOfClass:[NSButton class]]) {
+        NSButton *button = (NSButton *)sender;
+        // The delete button disappears(?!?!) after being clicked (macOS 11).
+        // It's actually still there. You can click it. But it isn't drawn.
+        // This bizarre buggy behavior seems to affect borderless buttons.
+        // So we insanely toggle bordered on/off to make sure the button shows.
+        button.bordered = YES;
+        button.bordered = NO;
+        row = button.tag;
+    } else if ([sender isKindOfClass:[NSMenuItem class]]) {
+        row = [(NSMenuItem *)sender tag];
+    }
     if (row < 0) return;
     if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToDeleteEvent:)]) {
         EventInfo *info = self.events[row];
