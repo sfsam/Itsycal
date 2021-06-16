@@ -42,6 +42,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @end
 
 @interface AgendaPopoverVC : NSViewController
+@property (nonatomic, weak) NSCalendar *nsCal;
 @property (nonatomic) NSButton *btnDelete;
 - (void)populateWithEventInfo:(EventInfo *)info;
 - (void)scrollToTopAndFlashScrollers;
@@ -197,9 +198,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     intervalFormatter.timeStyle = cell.eventInfo.event.isAllDay
         ? NSDateIntervalFormatterNoStyle
         : NSDateIntervalFormatterShortStyle;
-    // For single-day events, end date is same as start date.
-    NSDate *endDate = cell.eventInfo.isSingleDay
-        ? cell.eventInfo.event.startDate
+    // All-day events technically end at the start of the day after
+    // their end date. So display endDate as one less.
+    NSDate *endDate = cell.eventInfo.event.isAllDay
+        ? [self.nsCal dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:cell.eventInfo.event.endDate options:0]
         : cell.eventInfo.event.endDate;
     // Interval formatter just prints single date when from == to.
     NSString *duration = [intervalFormatter stringFromDate:cell.eventInfo.event.startDate toDate:endDate];
@@ -237,6 +239,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (!cell) return; // should never happen
     
     AgendaPopoverVC *popoverVC = (AgendaPopoverVC *)_popover.contentViewController;
+    [popoverVC setNsCal:self.nsCal];
     [popoverVC populateWithEventInfo:cell.eventInfo];
     
     if (cell.eventInfo.event.calendar.allowsContentModifications) {
@@ -969,9 +972,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     intervalFormatter.timeStyle = info.event.isAllDay
         ? NSDateIntervalFormatterNoStyle
         : NSDateIntervalFormatterShortStyle;
-    // For single-day events, end date is same as start date.
-    NSDate *endDate = info.isSingleDay
-        ? info.event.startDate
+    // All-day events technically end at the start of the day after
+    // their end date. So display endDate as one less.
+    NSDate *endDate = info.event.isAllDay
+        ? [self.nsCal dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:info.event.endDate options:0]
         : info.event.endDate;
     // Interval formatter just prints single date when from == to.
     duration = [intervalFormatter stringFromDate:info.event.startDate toDate:endDate];
