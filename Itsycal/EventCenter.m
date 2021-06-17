@@ -295,13 +295,17 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             // Make an EventInfo object...
             EventInfo *info = [EventInfo new];
             info.event       = event;
+            //   isStartDate = (it starts on `date` AND ends not before `nextDate`)
             info.isStartDate = ([_cal isDate:date inSameDayAsDate:event.startDate] &&
-                                [event.endDate compare:nextDate] == NSOrderedDescending);
+                                [event.endDate compare:nextDate] != NSOrderedAscending);
+            //   isEndDate   = (it ends on `date` AND starts before `date`)
             info.isEndDate   = ([_cal isDate:date inSameDayAsDate:event.endDate] &&
                                 [event.startDate compare:date] == NSOrderedAscending);
+            //   isAllDay    = (it's a real all-day event OR
+            //                  (it starts before `date` AND ends not before `nextDate`))
             info.isAllDay    = (event.allDay ||
                                 ([event.startDate compare:date] == NSOrderedAscending &&
-                                 [event.endDate compare:nextDate] == NSOrderedDescending));
+                                 [event.endDate compare:nextDate] != NSOrderedAscending));
             // ...and add it to the array in eventsForDate.
             if (eventsForDate[date] == nil) {
                 eventsForDate[date] = [NSMutableArray new];
