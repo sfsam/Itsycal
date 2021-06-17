@@ -318,10 +318,14 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     
     // eventsForDate is a dict that maps dates to an array of EventInfo objects.
     // Sort those arrays so that AllDay events are first, the sort by startTime.
-    // AllDay events are sorted by calendar title.
+    // All-day events are sorted by calendar title with real all-day events before
+    // spanning all-day events.
     for (NSDate *date in eventsForDate) {
         [eventsForDate[date] sortUsingComparator:^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
-            if (e1.isAllDay && e2.isAllDay) { return [e1.event.calendar.title compare:e2.event.calendar.title];}
+            if (e1.event.isAllDay && e2.event.isAllDay)  { return [e1.event.calendar.title compare:e2.event.calendar.title];}
+            else if (e1.event.isAllDay && !e2.event.isAllDay) { return NSOrderedAscending; }
+            else if (!e1.event.isAllDay && e2.event.isAllDay) { return NSOrderedDescending; }
+            else if (e1.isAllDay && e2.isAllDay) { return [e1.event.calendar.title compare:e2.event.calendar.title];}
             else if (e1.isAllDay) { return NSOrderedAscending;  }
             else if (e2.isAllDay) { return NSOrderedDescending; }
             else { return [e1.event.startDate compare:e2.event.startDate]; }
