@@ -275,10 +275,10 @@
 
 - (void)showCalendarApp:(id)sender
 {
-    [self showCalendarAppAtDate:MakeNSDateWithDate(_moCal.selectedDate, _nsCal)];
+    [self showCalendarAppAtDate:MakeNSDateWithDate(_moCal.selectedDate, _nsCal) dayView:NO];
 }
 
-- (void)showCalendarAppAtDate:(NSDate *)date
+- (void)showCalendarAppAtDate:(NSDate *)date dayView:(BOOL)dayView
 {
     // Determine the default calendar app.
     // See: support.busymac.com/help/21535-busycal-url-handler
@@ -314,7 +314,8 @@
         return;
     }
     [calendarApp activate]; // bring to foreground
-    [calendarApp switchViewTo:SBCalendarCALViewTypeForScriptingDayView];
+    if (dayView) [calendarApp switchViewTo:SBCalendarCALViewTypeForScriptingDayView];
+    else [calendarApp switchViewTo:SBCalendarCALViewTypeForScriptingMonthView];
     [calendarApp viewCalendarAt:date];
 }
 
@@ -860,7 +861,7 @@
 
 - (void)agendaShowCalendarAppAtDate:(NSDate *)date
 {
-    [self showCalendarAppAtDate:date];
+    [self showCalendarAppAtDate:date dayView:YES];
 }
 
 - (CGFloat)agendaMaxPossibleHeight
