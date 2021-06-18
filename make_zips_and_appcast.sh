@@ -72,18 +72,6 @@ cat > "$XML_PATH" <<EOF
           length="$FILESIZE"
           type="application/octet-stream" />
     </item>
-    <item>
-      <title>Version 0.11.17</title>
-      <sparkle:minimumSystemVersion>10.12</sparkle:minimumSystemVersion>
-      <sparkle:releaseNotesLink>https://s3.amazonaws.com/itsycal/changelog-0.11.x.html</sparkle:releaseNotesLink>
-      <pubDate>Thu Aug 22 23:21:07 GMT 2019 +0000</pubDate>
-      <enclosure
-          url="https://s3.amazonaws.com/itsycal/Itsycal-0.11.17.zip"
-          sparkle:version="1388"
-          sparkle:shortVersionString="0.11.17"
-          length="960022"
-          type="application/octet-stream" />
-    </item>
   </channel>
 </rss>
 EOF
