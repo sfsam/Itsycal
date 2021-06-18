@@ -56,14 +56,14 @@ cat > "$XML_PATH" <<EOF
     xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"
     xmlns:dc="http://purl.org/dc/elements/1.1/" >
   <channel>
-    <title>Itsycal Changelog</title>
+    <title>Itsycal Release Notes</title>
     <link>https://s3.amazonaws.com/itsycal/itsycal.xml</link>
     <description>Most recent changes</description>
     <language>en</language>
     <item>
       <title>Version $SHORT_VERSION_STRING</title>
       <sparkle:minimumSystemVersion>10.14</sparkle:minimumSystemVersion>
-      <sparkle:releaseNotesLink>https://s3.amazonaws.com/itsycal/changelog.html</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://s3.amazonaws.com/itsycal/releasenotes.html</sparkle:releaseNotesLink>
       <pubDate>$DATE +0000</pubDate>
       <enclosure
           url="https://s3.amazonaws.com/itsycal/$ZIP_NAME"
