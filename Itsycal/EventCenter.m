@@ -394,6 +394,15 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                     if (appLink) info.zoomURL = appLink;
                 }
             }
+            else if ([link containsString:@"chime.aws/"]) {
+                info.zoomURL = result.URL;
+                // Test if user has the Chime app, and if so, create a Chime app link.
+                if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"chime://"]]) {
+                    link = [link stringByReplacingOccurrencesOfString:@"https://chime.aws/" withString:@"chime://meeting?pin="];
+                    NSURL *appLink = [NSURL URLWithString:link];
+                    if (appLink) info.zoomURL = appLink;
+                }
+            }
             else if (   [link containsString:@"zoommtg://"]
                      || [link containsString:@"meet.google.com/"]
                      || [link containsString:@"hangouts.google.com/"]
