@@ -576,7 +576,7 @@
 				CODE_SIGN_ENTITLEMENTS = Itsycal/Itsycal.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2102;
+				CURRENT_PROJECT_VERSION = 2108;
 				DEVELOPMENT_TEAM = HFT3T55WND;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -585,7 +585,7 @@
 				);
 				INFOPLIST_FILE = Itsycal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MARKETING_VERSION = "0.13.0 b2";
+				MARKETING_VERSION = 0.13.0;
 				OTHER_LDFLAGS = "-Wl,-rpath,@loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mowglii.$(PRODUCT_NAME:rfc1034identifier)App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -600,7 +600,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2102;
+				CURRENT_PROJECT_VERSION = 2108;
 				DEVELOPMENT_TEAM = HFT3T55WND;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -609,7 +609,7 @@
 				);
 				INFOPLIST_FILE = Itsycal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MARKETING_VERSION = "0.13.0 b2";
+				MARKETING_VERSION = 0.13.0;
 				OTHER_LDFLAGS = "-Wl,-rpath,@loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mowglii.$(PRODUCT_NAME:rfc1034identifier)App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
