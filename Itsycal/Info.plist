@@ -49,6 +49,6 @@
 	<key>SUFeedURL</key>
 	<string>https://s3.amazonaws.com/itsycal/itsycal-apple-silicon.xml</string>
 	<key>SUScheduledCheckInterval</key>
-	<real>86400</real>
+	<real>345600</real>
 </dict>
 </plist>
