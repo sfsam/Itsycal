@@ -501,12 +501,15 @@
 
 - (void)updateMenubarIcon
 {
+    NSString *accessibilityTitle = @"Itsycal";
     if ([[NSUserDefaults standardUserDefaults] boolForKey:kHideIcon]) {
         _statusItem.button.image = nil;
         _statusItem.button.imagePosition = NSNoImage;
     }
     else {
-        _statusItem.button.image = [self iconImageForText:[self iconText]];
+        NSString *iconText = [self iconText];
+        accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", iconText];
+        _statusItem.button.image = [self iconImageForText:iconText];
         _statusItem.button.imagePosition = _clockFormat ? NSImageLeft : NSImageOnly;
     }
     if (_clockFormat) {
@@ -524,8 +527,11 @@
         if (@available(macOS 10.16, *)) {
             baselineOffset = -1.0 / scaleFactor;
         }
-        _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:[_iconDateFormatter stringFromDate:[NSDate new]] attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
+        NSString *buttonText = [_iconDateFormatter stringFromDate:[NSDate new]];
+        accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", buttonText];
+        _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
     }
+    _statusItem.button.accessibilityTitle = accessibilityTitle;
     [self adjustStatusItemWidthIfNecessary];
 }
 
