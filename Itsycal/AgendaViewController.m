@@ -757,8 +757,38 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
 }
 
+- (NSImage *)pendingPatternImage
+{
+    static NSImage *patternImage = nil;
+    if (!patternImage) {
+        patternImage = [NSImage imageWithSize:NSMakeSize(8, 8) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+            [Theme.pendingBackgroundColor set];
+            NSBezierPath *p = [NSBezierPath new];
+            [p moveToPoint:NSMakePoint(-2, 2)];
+            [p lineToPoint:NSMakePoint(6, 10)];
+            [p moveToPoint:NSMakePoint(10, 6)];
+            [p lineToPoint:NSMakePoint(2, -2)];
+            [p setLineWidth:3];
+            [p stroke];
+            return YES;
+        }];
+    }
+    return patternImage;
+}
+
 - (void)drawRect:(NSRect)dirtyRect
 {
+    // Draw a pattern background for events that are pending
+    // participation acceptance. Inset and radius match the
+    // hover values in AgendaRowView -drawBackgroundInRect:.
+    BOOL isTentative = [[self.eventInfo.event valueForKey:@"participationStatus"] integerValue] == EKParticipantStatusTentative;
+    BOOL isPending = [[self.eventInfo.event valueForKey:@"participationStatus"] integerValue] == EKParticipantStatusPending;
+    if (self.eventInfo.event.hasAttendees && isPending) {
+        [[NSColor colorWithPatternImage:[self pendingPatternImage]] set];
+        [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(self.bounds, 8, 1) xRadius:5 yRadius:5] fill];
+    }
+    // Draw colored dot. Dot is elongated for all-day events.
+    // Stroke for tentative and pending events, otherwise fill.
     CGFloat alpha = self.dim ? 0.5 : 1;
     CGFloat x = 11;
     CGFloat yOffset = SizePref.fontSize + 2;
@@ -774,7 +804,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
         radius -= 1;
     }
     [[dotColor colorWithAlphaComponent:alpha] set];
-    [[NSBezierPath bezierPathWithRoundedRect:NSMakeRect(x, NSHeight(self.bounds) - yOffset, dotWidthX, dotWidthY) xRadius:radius yRadius:radius] fill];
+    NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:NSMakeRect(x, NSHeight(self.bounds) - yOffset, dotWidthX, dotWidthY) xRadius:radius yRadius:radius];
+    if (self.eventInfo.event.hasAttendees && (isTentative || isPending)) {
+        p.lineWidth = 1.5;
+        [p stroke];
+    } else {
+        [p fill];
+    }
 }
 
 @end

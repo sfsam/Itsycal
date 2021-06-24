@@ -115,6 +115,10 @@ Themer *Theme = nil;
     return NSColor.disabledControlTextColor;
 }
 
+- (NSColor *)pendingBackgroundColor {
+    return [NSColor colorNamed:@"PendingBackgroundColor"];
+}
+
 - (NSColor *)resizeHandleBackgroundColor {
     return [self highlightedDOWBackgroundColor];
 }
