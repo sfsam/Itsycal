@@ -210,11 +210,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
         duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
     }
-    NSString *eventText = [NSString stringWithFormat:@"%@%@%@\n%@\n",
+    NSString *eventText = [NSString stringWithFormat:@"%@\n%@\n%@%@",
                            cell.titleTextField.stringValue,
-                           cell.locationTextField.stringValue.length > 0 ? @"\n" : @"",
+                           duration,
                            cell.locationTextField.stringValue,
-                           duration];
+                           cell.locationTextField.stringValue.length > 0 ? @"\n" : @""];
     [[NSPasteboard generalPasteboard] clearContents];
     [[NSPasteboard generalPasteboard] writeObjects:@[eventText]];
 }
