@@ -250,7 +250,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         popoverVC.btnDelete.keyEquivalent = [NSString stringWithCharacters:&backspaceKey length:1];
     }
     
-    NSRect positionRect = NSInsetRect([_tv rectOfRow:_tv.clickedRow], 6, 0);
+    NSRect positionRect = NSInsetRect([_tv rectOfRow:_tv.clickedRow], 8, 0);
     [_popover setAppearance:NSApp.effectiveAppearance];
     [_popover showRelativeToRect:positionRect ofView:_tv preferredEdge:NSRectEdgeMinX];
     [_popover setContentSize:popoverVC.size];
