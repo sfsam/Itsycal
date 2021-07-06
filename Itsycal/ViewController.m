@@ -30,7 +30,6 @@
     MoButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
     NSWindowController    *_prefsWC;
     AgendaViewController  *_agendaVC;
-    NSLayoutConstraint    *_bottomMargin;
     NSDateFormatter       *_iconDateFormatter;
     NSTimeInterval         _inactiveTime;
     NSDictionary          *_filteredEventsForDate;
@@ -101,15 +100,8 @@
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_moCal, _btnAdd, _btnCal, _btnOpt, _btnPin, agenda)];
     [vfl :@"H:|-2-[_moCal]-2-|"];
     [vfl :@"H:|[agenda]|"];
-    [vfl :@"H:|-8-[_btnAdd]-(>=0)-[_btnPin]-10-[_btnCal]-10-[_btnOpt]-8-|" :NSLayoutFormatAlignAllCenterY];
-    [vfl :@"V:|[_moCal]-6-[_btnOpt]"];
-    [vfl :@"V:[agenda]-(-1)-|"];
-    
-    // Margin between bottom of _moCal and top of agenda. When the agenda
-    // has no items, we reduce this space so that the bottom of the window
-    // is a bit closer to the buttons. This eliminates the chin.
-    _bottomMargin = [NSLayoutConstraint constraintWithItem:agenda attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_moCal attribute:NSLayoutAttributeBottom multiplier:1 constant:30];
-    [v addConstraint:_bottomMargin];
+    [vfl :@"H:|-8-[_btnAdd]-(>=0)-[_btnPin]-6-[_btnCal]-6-[_btnOpt]-8-|" :NSLayoutFormatAlignAllCenterY];
+    [vfl :@"V:|[_moCal]-6-[_btnOpt(22)]-1-[agenda]-(-1)-|"];
     
     self.view = v;
 }
@@ -970,7 +962,6 @@
     NSInteger days = [self daysToShowInAgenda];
     _agendaVC.events = [self datesAndEventsForDate:_moCal.selectedDate days:days];
     [_agendaVC reloadData];
-    _bottomMargin.constant = _agendaVC.events.count == 0 ? 25 : 30;
 }
 
 #pragma mark -
