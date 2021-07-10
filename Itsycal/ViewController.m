@@ -1109,6 +1109,7 @@
     [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [self updateMenubarIcon];
         [self updateTimer];
+        [self updateAgenda]; // 12/24 hr time change in sys prefs
     }];
     
     // System clock notification

@@ -208,7 +208,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // If the locale is English and we are in 12 hour time,
     // remove :00 from the time. Effect is 3:00 PM -> 3 PM.
     if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
-        duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
+        if ([duration containsString:@"AM"] || [duration containsString:@"PM"] ||
+            [duration containsString:@"am"] || [duration containsString:@"pm"]) {
+            duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
+        }
     }
     NSString *eventText = [NSString stringWithFormat:@"%@\n%@\n%@%@",
                            cell.titleTextField.stringValue,
@@ -456,6 +459,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     timeFormatter.timeZone  = [NSTimeZone localTimeZone];
     intervalFormatter.timeZone = nil; // Force tz update on macOS 10.13
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
+    // Needed to pick up 12/24 hr time system preference change:
+    intervalFormatter.locale = [NSLocale currentLocale];
     
     cell.eventInfo = info;
 
@@ -1018,7 +1023,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // If the locale is English and we are in 12 hour time,
     // remove :00 from the time. Effect is 3:00 PM -> 3 PM.
     if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
-        duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
+        if ([duration containsString:@"AM"] || [duration containsString:@"PM"] ||
+            [duration containsString:@"am"] || [duration containsString:@"pm"]) {
+            duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
+        }
     }
     // If the event is not All-day and the start and end dates are
     // different, put them on different lines.
