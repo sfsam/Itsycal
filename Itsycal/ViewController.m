@@ -694,7 +694,10 @@
     // on one and the user clicks the menu item on another,
     // instead of a regular toggle, we want Itsycal to hide
     // from it's old screen and show in the new one.
-    if (self.itsycalWindow.screen != [NSScreen mainScreen]) {
+    // To distinguish screens, we used to use the screen address,
+    // but with macOS Big Sur, that is not reliable. Instead,
+    // we now use the screen's frame.
+    if (!NSEqualRects(self.itsycalWindow.screen.frame, NSScreen.mainScreen.frame)) {
         if ([self.itsycalWindow occlusionState] & NSWindowOcclusionStateVisible) {
             // The slight delay before showing the window in the new
             // position is to allow -windowDidResignKey: to execute
