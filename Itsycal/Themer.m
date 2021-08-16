@@ -80,7 +80,7 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)currentMonthOutlineColor {
-    return [NSColor colorWithWhite:0.53 alpha:1];
+    return [self monthTextColor];
 }
 
 - (NSColor *)currentMonthTextColor {
@@ -112,7 +112,7 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)noncurrentMonthTextColor {
-    return NSColor.disabledControlTextColor;
+    return NSColor.tertiaryLabelColor;
 }
 
 - (NSColor *)pendingBackgroundColor {
