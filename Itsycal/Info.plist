@@ -47,7 +47,7 @@
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://s3.amazonaws.com/itsycal/itsycal-apple-silicon.xml</string>
+	<string>https://s3.amazonaws.com/itsycal/itsycal.xml</string>
 	<key>SUScheduledCheckInterval</key>
 	<real>345600</real>
 </dict>
