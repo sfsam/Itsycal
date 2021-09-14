@@ -113,6 +113,7 @@
     
     _iconDateFormatter = [NSDateFormatter new];
     _iconDateFormatter.formattingContext = NSFormattingContextStandalone;
+    _iconDateFormatter.calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierISO8601];
     _inactiveTime = 0;
 
     // Calendar is 'autoupdating' so it handles timezone changes properly.
