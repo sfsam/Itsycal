@@ -307,7 +307,6 @@
     }
     [calendarApp activate]; // bring to foreground
     if (dayView) [calendarApp switchViewTo:SBCalendarCALViewTypeForScriptingDayView];
-    else [calendarApp switchViewTo:SBCalendarCALViewTypeForScriptingMonthView];
     [calendarApp viewCalendarAt:date];
 }
 
