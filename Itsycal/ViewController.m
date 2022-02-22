@@ -493,7 +493,8 @@
 - (void)updateMenubarIcon
 {
     NSString *accessibilityTitle = @"Itsycal";
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:kHideIcon]) {
+    BOOL hideIcon = [[NSUserDefaults standardUserDefaults] boolForKey:kHideIcon];
+    if (hideIcon) {
         _statusItem.button.image = nil;
         _statusItem.button.imagePosition = NSNoImage;
     }
@@ -520,6 +521,10 @@
         }
         NSString *buttonText = [_iconDateFormatter stringFromDate:[NSDate new]];
         accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", buttonText];
+        if (!hideIcon) {
+            // Prepend a space to _clockFormat text to separate it from icon.
+            buttonText = [@" " stringByAppendingString:buttonText];
+        }
         _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
     }
     _statusItem.button.accessibilityTitle = accessibilityTitle;
@@ -551,6 +556,9 @@
         dummyButton.title = _statusItem.button.title;
         [dummyButton sizeToFit];
         _statusItem.length = NSWidth(dummyButton.frame) + 2;
+        if (@available(macOS 11, *)) {
+            _statusItem.length = NSWidth(dummyButton.frame) - 8;
+        }
         os_log(OS_LOG_DEFAULT, "[%@] %@ --> %.0f, %.0f", [self iconText], _statusItem.button.title,
               _statusItem.button.frame.size.width, _statusItem.button.image.size.width);
     }
@@ -577,8 +585,8 @@
     NSFont *font = [NSFont systemFontOfSize:fontSize weight:NSFontWeightBold];
     CGRect textRect = [[[NSAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName: font}] boundingRectWithSize:CGSizeMake(999, 999) options:0 context:nil];
 
-    // Icon width is at least 23 pts with 3 pt outside margins, 4 pt inside margins.
-    CGFloat width = MAX(3 + 4 + ceilf(NSWidth(textRect)) + 4 + 3, 23);
+    // Icon width is at least 17 pts with 4 pt inside margins.
+    CGFloat width = MAX(4 + ceilf(NSWidth(textRect)) + 4, 17);
     CGFloat height = 16;
     iconImage = [NSImage imageWithSize:NSMakeSize(width, height) flipped:NO drawingHandler:^BOOL (NSRect rect) {
 
@@ -593,8 +601,8 @@
         [NSColor.blackColor set];
         [NSGraphicsContext saveGraphicsState];
         [NSGraphicsContext.currentContext setCompositingOperation:NSCompositingOperationXOR];
-        [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 3, 0) xRadius:3 yRadius:3] fill];
-        if (outline) [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 4, 1) xRadius:2 yRadius:2] fill];
+        [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:3 yRadius:3] fill];
+        if (outline) [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 1, 1) xRadius:2 yRadius:2] fill];
         [NSGraphicsContext restoreGraphicsState];
 
         return YES;
