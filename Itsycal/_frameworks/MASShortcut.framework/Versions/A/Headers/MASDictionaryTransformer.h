@@ -1,3 +1,5 @@
+#import <AppKit/AppKit.h>
+
 extern NSString *const MASDictionaryTransformerName;
 
 /**
@@ -12,7 +14,7 @@ extern NSString *const MASDictionaryTransformerName;
  that converts any `NSCoding` types to `NSData`, but with shortcuts
  it makes sense to use a dictionary instead – the defaults look better
  when inspected with the `defaults` command-line utility and the
- format is compatible with an older sortcut library called Shortcut
+ format is compatible with an older shortcut library called Shortcut
  Recorder.
 */
 @interface MASDictionaryTransformer : NSValueTransformer

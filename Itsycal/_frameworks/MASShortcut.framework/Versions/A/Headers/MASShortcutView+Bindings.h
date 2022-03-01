@@ -1,3 +1,4 @@
+#import <AppKit/AppKit.h>
 #import "MASShortcutView.h"
 
 /**

@@ -1,3 +1,5 @@
+#import <AppKit/AppKit.h>
+
 @class MASShortcut, MASShortcutValidator;
 
 extern NSString * _Nonnull const MASShortcutBinding;

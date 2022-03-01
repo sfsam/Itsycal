@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/Info.plist</key>
 		<data>
-		9JwD5sMS2qqNNDbBYYh3JCM/Ggc=
+		vNGlGhh0yrSEdwgV4ojwaDXkv+o=
 		</data>
 		<key>Resources/de.lproj/Localizable.strings</key>
 		<dict>
@@ -69,33 +69,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			GniMtaBTJ7P6gFAdaY7+vv13rr4=
+			EO/Kn+SjaXmXKiWsg/D3Pb/gSiE=
 			</data>
 			<key>hash2</key>
 			<data>
-			VqIvgmfLgwThuHkFdoYi0DY4dnbn0EHzhB/x3icrVxA=
+			+BFTWflm5lmmBeb+IdGLWa8pLpuwDlp+HGRd8Ez2jEU=
 			</data>
 		</dict>
 		<key>Headers/MASKeyCodes.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			iuOCEy62BeR+1DcW4EQsJnEsJAc=
+			LdxocdRSWgzjoxMTGnPK56KROkc=
 			</data>
 			<key>hash2</key>
 			<data>
-			9OsHMjhfisvFRdMrJIkwl8HwvbQB/vBn1OW/wNAbjtA=
-			</data>
-		</dict>
-		<key>Headers/MASKeyMasks.h</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			DpOXotGEXoLvSTjK2heUCkAa2yo=
-			</data>
-			<key>hash2</key>
-			<data>
-			4g+GNVZa+P5MurD9yHu6H9b6kTh9CeGLRvkqPPRCAVA=
+			juzHOY0qD2YJGeLouhlAJGMStXCBZIpjrpPHPfN7uLs=
 			</data>
 		</dict>
 		<key>Headers/MASShortcut.h</key>
@@ -113,11 +102,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			Re+eue5+HqheaR83xVicbiSkkeQ=
+			cGdlT1IGyCR0Yg6QeNb/454as1w=
 			</data>
 			<key>hash2</key>
 			<data>
-			+4tY6zecRVRZ8BtYMG+0cgpuMu+dJ/esLbayxT0JgNk=
+			qyuB9K8WoVAwkWqYt9lCiil/28j8AOPnxb9bHSkRw4Y=
 			</data>
 		</dict>
 		<key>Headers/MASShortcutMonitor.h</key>
@@ -146,44 +135,44 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			BB22997MJWmaqWdx9KQpR1vm3Pk=
+			AqDznut1QIY5EQLZiG0z9tklTJM=
 			</data>
 			<key>hash2</key>
 			<data>
-			C3BlMjawz4rYck4qmAQQeKTTqLvA9aPqshjz6ChZjVg=
+			thyNU60IbaCdGfF7UMh7NTdBGwmo1ojRXbszUQDQXEg=
 			</data>
 		</dict>
 		<key>Headers/MASShortcutView.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			6HeAM9BqfsBN1cfSqYBq2stV+bs=
+			Q05mPglRtho4VHYQaeKglrwOrh8=
 			</data>
 			<key>hash2</key>
 			<data>
-			7mhjHqT0iScPW5udF+THzIfivEtWgdR9rH/WPvMGdfg=
+			5ShD6gTCMUsbi4ilCH4xgochtt9WucPa9jMx7To9TCo=
 			</data>
 		</dict>
 		<key>Headers/MASShortcutViewButtonCell.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			cM8+dnmQhwZ1YSYLAl/1cAfPfRk=
+			ATzoirIss08vubP1s90hrESbwR4=
 			</data>
 			<key>hash2</key>
 			<data>
-			9ebKgEbToArnCg6luDn0QOaJ8sIbdIQrHf5egdeRH4s=
+			Te5C54uGWdb3l9Y0uFNO9ZlViTsJjZbGfTIw65mEgY0=
 			</data>
 		</dict>
 		<key>Headers/Shortcut.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			/HJudzn4rVzQiZdME2Ro5PwBGrs=
+			KPu2TxPbQ/aw4vntsYQqaSQbNm8=
 			</data>
 			<key>hash2</key>
 			<data>
-			l53r4YtzuwPsdJQ6IS7GossipWd69towQTG5Ty3QJss=
+			8Vdr1akrODvcYGZNCIzxaz2fEBRpDfsY42Aj+uaZl/s=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -201,11 +190,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			9JwD5sMS2qqNNDbBYYh3JCM/Ggc=
+			vNGlGhh0yrSEdwgV4ojwaDXkv+o=
 			</data>
 			<key>hash2</key>
 			<data>
-			IH+tI/Kdy8ROe/g58miw2tO42gRZRKhztt1op2z4dBg=
+			0p5lD3kcvjyFlkaAu5D3UPJkqq1R4BBjkebwUtXnj4Q=
 			</data>
 		</dict>
 		<key>Resources/de.lproj/Localizable.strings</key>
