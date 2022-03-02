@@ -12,9 +12,8 @@
 #import "ViewController.h"
 #import "Themer.h"
 #import "Sizer.h"
-#import "MASShortcut/MASShortcutBinder.h"
-#import "MASShortcut/MASShortcutMonitor.h"
 #import "MoUtils.h"
+#import "MASShortcut/Shortcut.h"
 
 @implementation AppDelegate
 {
@@ -80,6 +79,7 @@
     [self themeFixup];
 
     // Register keyboard shortcut.
+    [[MASShortcutBinder sharedBinder] setBindingOptions:@{NSValueTransformerNameBindingOption: MASDictionaryTransformerName}];
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
          [(ViewController *)self->_wc.contentViewController keyboardShortcutActivated];
      }];
