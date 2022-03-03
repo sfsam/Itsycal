@@ -373,9 +373,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             if (   [link containsString:@"zoom.us/j/"]
                 || [link containsString:@"zoom.us/s/"]
                 || [link containsString:@"zoom.us/w/"]
-                || [link containsString:@"zoomgov.com/j/"]
-                || [link containsString:@"zoomgov.com/s/"]
-                || [link containsString:@"zoomgov.com/w/"]) {
+                || [link containsString:@"zoomgov.com/j/"]) {
                 info.zoomURL = result.URL;
                 // Test if user has the Zoom app and, if so, create a Zoom app link.
                 if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"zoommtg://"]]) {
@@ -407,16 +405,21 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                 }
             }
             else if (   [link containsString:@"zoommtg://"]
+                     || [link containsString:@"msteams://"]
+                     || [link containsString:@"chime://"]
                      || [link containsString:@"meet.google.com/"]
                      || [link containsString:@"hangouts.google.com/"]
                      || [link containsString:@"webex.com/"]
                      || [link containsString:@"gotomeeting.com/join"]
                      || [link containsString:@"ringcentral.com/j"]
                      || [link containsString:@"bigbluebutton.org/gl"]
-                     || [link containsString:@"://bigbluebutton."]
-                     || [link containsString:@"://bbb."]
+                     || [link containsString:@"https://bigbluebutton."]
+                     || [link containsString:@"https://bbb."]
+                     || [link containsString:@"https://meet.jit.si/"]
                      || [link containsString:@"indigo.collocall.de"]
                      || [link containsString:@"public.senfcall.de"]
+                     || [link containsString:@"facetime.apple.com/join"]
+                     || [link containsString:@"workplace.com/meet"]
                      || [link containsString:@"youcanbook.me/zoom/"]) {
                 info.zoomURL = result.URL;
             }
