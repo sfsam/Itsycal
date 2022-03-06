@@ -325,7 +325,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         EventInfo *info = obj;
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
         if (!cell) cell = [AgendaEventCell new];
-        [self populateEventCell:cell withInfo:info showLocation:self.showLocation];
+        [self populateEventCell:cell withInfo:info];
         v = cell;
     }
     return v;
@@ -349,7 +349,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     id obj = self.events[row];
     if ([obj isKindOfClass:[EventInfo class]]) {
         eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
-        [self populateEventCell:eventCell withInfo:obj showLocation:self.showLocation];
+        [self populateEventCell:eventCell withInfo:obj];
         height = eventCell.fittingSize.height;
     }
     return height;
@@ -439,7 +439,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return [dateFormatter stringFromDate:date];
 }
 
-- (void)populateEventCell:(AgendaEventCell *)cell withInfo:(EventInfo *)info showLocation:(BOOL)showLocation
+- (void)populateEventCell:(AgendaEventCell *)cell withInfo:(EventInfo *)info
 {
     static NSDateFormatter *timeFormatter = nil;
     static NSDateIntervalFormatter *intervalFormatter = nil;
@@ -469,8 +469,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
         if (info.event.location) location = info.event.location;
     }
     
-    // Hide location row IF !showLocation OR there's no location string.
-    [cell.grid rowAtIndex:1].hidden = (!showLocation || location.length == 0);
+    // Hide location row IF !self.showLocation OR there's no location string.
+    [cell.grid rowAtIndex:1].hidden = (!self.showLocation || location.length == 0);
     
     // Hide duration row for all day events.
     [cell.grid rowAtIndex:2].hidden = info.isAllDay;
