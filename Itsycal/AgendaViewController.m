@@ -550,6 +550,24 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
 }
 
+#pragma mark -
+#pragma mark Click first active Zoom button
+
+- (BOOL)clickFirstActiveZoomButton
+{
+    for (NSInteger row = 0; row < _tv.numberOfRows; row++) {
+        NSView *view = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
+        if ([view isKindOfClass:[AgendaEventCell class]]) {
+            AgendaEventCell *cell = (AgendaEventCell *)view;
+            if (cell.btnVideo.enabled) {
+                [cell.btnVideo performClick:self];
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
 @end
 
 #pragma mark -

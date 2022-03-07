@@ -195,6 +195,9 @@
     else if (keyChar == 'r' && cmdOptFlag) {
         [_ec refresh];
     }
+    else if (keyChar == 'j' && cmdFlag) {
+        if (![_agendaVC clickFirstActiveZoomButton]) NSBeep();
+    }
     else {
         [super keyDown:theEvent];
     }

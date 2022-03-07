@@ -21,6 +21,7 @@
 
 - (void)reloadData;
 - (void)dimEventsIfNecessary;
+- (BOOL)clickFirstActiveZoomButton;
 
 @end
 
