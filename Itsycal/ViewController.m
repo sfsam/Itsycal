@@ -7,6 +7,7 @@
 //
 
 #import <os/log.h>
+#import <AudioToolbox/AudioToolbox.h>
 #import "ViewController.h"
 #import "Itsycal.h"
 #import "ItsycalWindow.h"
@@ -1047,6 +1048,36 @@
     }
 }
 
+- (float)volumeRelativeToSystemVolumeWithCap:(float)cap
+{
+    // https://stackoverflow.com/a/8953438/111418
+    AudioDeviceID deviceID;
+    UInt32 dataSize = sizeof(deviceID);
+    AudioObjectPropertyAddress propertyAddress;
+    propertyAddress.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
+    propertyAddress.mScope    = kAudioObjectPropertyScopeGlobal;
+    propertyAddress.mElement  = kAudioObjectPropertyElementMaster;
+
+    OSStatus result = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &dataSize, &deviceID);
+
+    if (kAudioHardwareNoError != result) return cap;
+    
+    propertyAddress.mSelector = kAudioDevicePropertyVolumeScalar;
+    propertyAddress.mScope    = kAudioDevicePropertyScopeOutput;
+    propertyAddress.mElement  = 1; // Channel 0  is master, if available
+
+    if (!AudioObjectHasProperty(deviceID, &propertyAddress)) return cap;
+
+    Float32 volume;
+    dataSize = sizeof(volume);
+
+    result = AudioObjectGetPropertyData(deviceID, &propertyAddress, 0, NULL, &dataSize, &volume);
+
+    if (kAudioHardwareNoError != result) return cap;
+    
+    return (volume >= cap) ? cap / volume : 1;
+}
+
 - (void)updateTimer
 {
     // Set up _timer to fire on next minute or second.
@@ -1063,6 +1094,15 @@
     _timer = [[NSTimer alloc] initWithFireDate:fireDate interval:0 target:self selector:@selector(updateTimer) userInfo:nil repeats:NO];
     [NSRunLoop.mainRunLoop addTimer:_timer forMode:NSRunLoopCommonModes];
     
+    // Should we beep-beep on the hour? If so, cap the volume relative to the
+    // system volume so it's not too loud.
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"BeepBeepOnTheHour"] &&
+        (( _clockUsesSeconds && components.minute == 0 && components.second == 1) ||
+         (!_clockUsesSeconds && components.minute == 1))) {
+        NSSound *beepbeep = [NSSound soundNamed:@"beep"];
+        [beepbeep setVolume:[self volumeRelativeToSystemVolumeWithCap:0.12]];
+        [beepbeep play];
+    }
     // Check if past events should be dimmed each minute.
     // Also check if we should show the meeting indicator.
     static NSTimeInterval dimEventsTime = 0;
