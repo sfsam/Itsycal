@@ -53,6 +53,7 @@
     NSButton *useColoredDots = chkbx(NSLocalizedString(@"Use colored dots", @""));
     NSButton *showWeeks = chkbx(NSLocalizedString(@"Show calendar weeks", @""));
     NSButton *showLocation = chkbx(NSLocalizedString(@"Show event location", @""));
+    NSButton *showMonthBorder = chkbx(NSLocalizedString(@"Show month border", @""));
     _hideIcon = chkbx(NSLocalizedString(@"Hide icon", @""));
 
     // Datetime format text field
@@ -108,8 +109,8 @@
     sizeSlider.maxValue = SizePreferenceLarge;  // = 2
     [v addSubview:sizeSlider];
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(menubarLabel, calendarLabel, separator0, separator1, useOutlineIcon, showMonth, showDayOfWeek, showEventDots, useColoredDots, showWeeks, showLocation, _dateTimeFormat, helpButton, _hideIcon, highlight, themeLabel, themePopup, sizeMinLabel, sizeSlider, sizeMaxLabel)];
-    [vfl :@"V:|-m-[menubarLabel]-10-[useOutlineIcon]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[sizeSlider]-15-[themePopup]-m-[highlight]-m-[showEventDots]-[useColoredDots]-[showLocation]-[showWeeks]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(menubarLabel, calendarLabel, separator0, separator1, useOutlineIcon, showMonth, showDayOfWeek, showMonthBorder, showEventDots, useColoredDots, showWeeks, showLocation, _dateTimeFormat, helpButton, _hideIcon, highlight, themeLabel, themePopup, sizeMinLabel, sizeSlider, sizeMaxLabel)];
+    [vfl :@"V:|-m-[menubarLabel]-10-[useOutlineIcon]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[sizeSlider]-15-[themePopup]-m-[highlight]-m-[showMonthBorder]-[showEventDots]-[useColoredDots]-[showLocation]-[showWeeks]-m-|"];
     [vfl :@"H:|-m-[menubarLabel]-[separator0]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[calendarLabel]-[separator1]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[useOutlineIcon]-(>=m)-|"];
@@ -120,6 +121,7 @@
     [vfl :@"H:|-m-[highlight]-(>=m)-|"];
     [vfl :@"H:|-(>=m)-[sizeMinLabel]-[sizeSlider(90)]-[sizeMaxLabel]-(>=m)-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[themeLabel]-[themePopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
+    [vfl :@"H:|-m-[showMonthBorder]-(>=m)-|"];
     [vfl :@"H:|-m-[showEventDots]-(>=m)-|"];
     [vfl :@"H:|-mm-[useColoredDots]-(>=m)-|"];
     [vfl :@"H:|-m-[showWeeks]-(>=m)-|"];
@@ -153,6 +155,9 @@
 
     // Bindings for showLocation preference
     [showLocation bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowLocation] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+  
+    // Bindings for showMonthBorder preference
+    [showMonthBorder bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthBorder] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
     // Bindings for highlight picker
     [highlight bind:@"weekStartDOW" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kWeekStartDOW] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];

@@ -57,6 +57,9 @@ typedef enum : NSInteger {
 // Should calendar show dots under days with events?
 @property (nonatomic) BOOL showEventDots;
 
+// Should calendar show border around each month?
+@property (nonatomic) BOOL showMonthBorder;
+
 // Should event dots use calendar colors?
 @property (nonatomic) BOOL useColoredDots;
 
