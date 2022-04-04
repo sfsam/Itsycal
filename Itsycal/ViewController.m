@@ -1080,8 +1080,19 @@
 
 - (void)updateTimer
 {
-    // Set up _timer to fire on next minute or second.
     NSDateComponents *components = [_nsCal components:NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond fromDate:[NSDate new]];
+
+    // Should we beep-beep on the hour? If so, cap the volume relative to the
+    // system volume so it's not too loud.
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"BeepBeepOnTheHour"]
+        && components.minute == 0
+        && components.second == 0) {
+        NSSound *beepbeep = [NSSound soundNamed:@"beep"];
+        [beepbeep setVolume:[self volumeRelativeToSystemVolumeWithCap:0.12]];
+        [beepbeep play];
+    }
+
+    // Set up _timer to fire on next minute or second.
     if (_clockUsesSeconds) {
         components.second += 1;
     }
@@ -1094,15 +1105,6 @@
     _timer = [[NSTimer alloc] initWithFireDate:fireDate interval:0 target:self selector:@selector(updateTimer) userInfo:nil repeats:NO];
     [NSRunLoop.mainRunLoop addTimer:_timer forMode:NSRunLoopCommonModes];
     
-    // Should we beep-beep on the hour? If so, cap the volume relative to the
-    // system volume so it's not too loud.
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"BeepBeepOnTheHour"] &&
-        (( _clockUsesSeconds && components.minute == 0 && components.second == 1) ||
-         (!_clockUsesSeconds && components.minute == 1))) {
-        NSSound *beepbeep = [NSSound soundNamed:@"beep"];
-        [beepbeep setVolume:[self volumeRelativeToSystemVolumeWithCap:0.12]];
-        [beepbeep play];
-    }
     // Check if past events should be dimmed each minute.
     // Also check if we should show the meeting indicator.
     static NSTimeInterval dimEventsTime = 0;
