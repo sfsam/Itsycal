@@ -7,6 +7,7 @@
 //
 
 #import <os/log.h>
+#import <AudioToolbox/AudioToolbox.h>
 #import "ViewController.h"
 #import "Itsycal.h"
 #import "ItsycalWindow.h"
@@ -30,7 +31,6 @@
     MoButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
     NSWindowController    *_prefsWC;
     AgendaViewController  *_agendaVC;
-    NSLayoutConstraint    *_bottomMargin;
     NSDateFormatter       *_iconDateFormatter;
     NSTimeInterval         _inactiveTime;
     NSDictionary          *_filteredEventsForDate;
@@ -38,6 +38,7 @@
     NSString  *_clockFormat;
     BOOL       _clockUsesSeconds;
     BOOL       _clockUsesTime;
+    BOOL       _shouldShowMeetingIndicator;
     NSRect     _screenFrame;
     NSPopover *_newEventPopover;
 }
@@ -82,10 +83,10 @@
     };
 
     // Add event, Calendar.app, and Options buttons
-    _btnAdd = btn(@"btnAdd", NSLocalizedString(@"New Event… ⌘N", @""), @"n", @selector(addCalendarEvent:));
-    _btnCal = btn(@"btnCal", NSLocalizedString(@"Open Calendar… ⌘O", @""), @"o", @selector(showCalendarApp:));
+    _btnAdd = btn(@"btnAdd", NSLocalizedString(@"New Event   ⌘N", @""), @"n", @selector(addCalendarEvent:));
+    _btnCal = btn(@"btnCal", NSLocalizedString(@"Open Calendar   ⌘O", @""), @"o", @selector(showCalendarApp:));
     _btnOpt = btn(@"btnOpt", NSLocalizedString(@"Options", @""), @"", @selector(showOptionsMenu:));
-    _btnPin = btn(@"btnPin", NSLocalizedString(@"Pin Itsycal… P", @""), @"p", @selector(pin:));
+    _btnPin = btn(@"btnPin", NSLocalizedString(@"Pin Itsycal   P", @""), @"p", @selector(pin:));
     _btnPin.keyEquivalentModifierMask = 0;
     _btnPin.alternateImage = [NSImage imageNamed:@"btnPinAlt"];
     [_btnPin setButtonType:NSButtonTypeToggle];
@@ -99,17 +100,10 @@
 
     // Constraints
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_moCal, _btnAdd, _btnCal, _btnOpt, _btnPin, agenda)];
-    [vfl :@"H:|[_moCal]|"];
-    [vfl :@"H:|-4-[agenda]-4-|"];
-    [vfl :@"H:|-6-[_btnAdd]-(>=0)-[_btnPin]-10-[_btnCal]-10-[_btnOpt]-6-|" :NSLayoutFormatAlignAllCenterY];
-    [vfl :@"V:|[_moCal]-6-[_btnOpt]"];
-    [vfl :@"V:[agenda]-(-1)-|"];
-    
-    // Margin between bottom of _moCal and top of agenda. When the agenda
-    // has no items, we reduce this space so that the bottom of the window
-    // is a bit closer to the buttons. This eliminates the chin.
-    _bottomMargin = [NSLayoutConstraint constraintWithItem:agenda attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_moCal attribute:NSLayoutAttributeBottom multiplier:1 constant:30];
-    [v addConstraint:_bottomMargin];
+    [vfl :@"H:|-2-[_moCal]-2-|"];
+    [vfl :@"H:|[agenda]|"];
+    [vfl :@"H:|-8-[_btnAdd]-(>=0)-[_btnPin]-6-[_btnCal]-6-[_btnOpt]-8-|" :NSLayoutFormatAlignAllCenterY];
+    [vfl :@"V:|[_moCal]-6-[_btnOpt(22)]-1-[agenda]-(-1)-|"];
     
     self.view = v;
 }
@@ -120,6 +114,8 @@
     // depend on previous ones.
     
     _iconDateFormatter = [NSDateFormatter new];
+    _iconDateFormatter.formattingContext = NSFormattingContextStandalone;
+    _iconDateFormatter.calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierISO8601];
     _inactiveTime = 0;
 
     // Calendar is 'autoupdating' so it handles timezone changes properly.
@@ -201,6 +197,9 @@
     else if (keyChar == 'r' && cmdOptFlag) {
         [_ec refresh];
     }
+    else if (keyChar == 'j' && cmdFlag) {
+        if (![_agendaVC clickFirstActiveZoomButton]) NSBeep();
+    }
     else {
         [super keyDown:theEvent];
     }
@@ -268,10 +267,15 @@
     
     _newEventPopover.contentViewController = eventVC;
     _newEventPopover.appearance = NSApp.effectiveAppearance;
-    [_newEventPopover showRelativeToRect:NSZeroRect ofView:_btnAdd preferredEdge:NSRectEdgeMinX];
+    [_newEventPopover showRelativeToRect:_btnAdd.bounds ofView:_btnAdd preferredEdge:NSRectEdgeMinX];
 }
 
 - (void)showCalendarApp:(id)sender
+{
+    [self showCalendarAppAtDate:MakeNSDateWithDate(_moCal.selectedDate, _nsCal) dayView:NO];
+}
+
+- (void)showCalendarAppAtDate:(NSDate *)date dayView:(BOOL)dayView
 {
     // Determine the default calendar app.
     // See: support.busymac.com/help/21535-busycal-url-handler
@@ -286,11 +290,11 @@
     
     if ([defaultCalendarAppBundleID isEqualToString:@"com.busymac.busycal2"] ||
         [defaultCalendarAppBundleID isEqualToString:@"com.busymac.busycal3"]) {
-        [self showCalendarAppWithURLScheme:@"busycalevent://date"];
+        [self showCalendarAppWithURLScheme:@"busycalevent://date" date:date];
         return;
     }
     else if ([defaultCalendarAppBundleID isEqualToString:@"com.flexibits.fantastical2.mac"]) {
-        [self showCalendarAppWithURLScheme:@"x-fantastical2://show/calendar"];
+        [self showCalendarAppWithURLScheme:@"x-fantastical2://show/calendar" date:date];
         return;
     }
     
@@ -307,14 +311,16 @@
         return;
     }
     [calendarApp activate]; // bring to foreground
-    [calendarApp viewCalendarAt:MakeNSDateWithDate(_moCal.selectedDate, _nsCal)];
+    if (dayView) [calendarApp switchViewTo:SBCalendarCALViewTypeForScriptingDayView];
+    [calendarApp viewCalendarAt:date];
 }
 
-- (void)showCalendarAppWithURLScheme:(NSString *)urlScheme
+- (void)showCalendarAppWithURLScheme:(NSString *)urlScheme date:(NSDate *)date
 {
     // url is of the form: urlScheme/yyyy-MM-dd
     // For example: x-fantastical2://show/calendar/2011-05-22
-    NSString *url = [NSString stringWithFormat:@"%@/%04zd-%02zd-%02zd", urlScheme, _moCal.selectedDate.year, _moCal.selectedDate.month+1, _moCal.selectedDate.day];
+    NSDateComponents *comp = [_nsCal components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
+    NSString *url = [NSString stringWithFormat:@"%@/%04zd-%02zd-%02zd", urlScheme, comp.year, comp.month, comp.day];
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
 }
 
@@ -414,6 +420,7 @@
     _statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
     _statusItem.button.target = self;
     _statusItem.button.action = @selector(statusItemClicked:);
+    [_statusItem.button sendActionOn:NSEventMaskLeftMouseDown];
     [(NSButtonCell *)_statusItem.button.cell setHighlightsBy:NSNoCellMask];
 
     // Remember item position in menubar. (@pskowronek (Github))
@@ -490,12 +497,25 @@
 
 - (void)updateMenubarIcon
 {
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:kHideIcon]) {
-        _statusItem.button.image = nil;
-        _statusItem.button.imagePosition = NSNoImage;
+    NSString *accessibilityTitle = @"Itsycal";
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    BOOL hideIcon = [defaults boolForKey:kHideIcon];
+    if (hideIcon) {
+        if ([defaults boolForKey:kShowMeetingIndicator] && _shouldShowMeetingIndicator) {
+            NSImage *meetIndicator = [NSImage imageNamed:@"meetSolid"];
+            meetIndicator.template = YES;
+            _statusItem.button.image = meetIndicator;
+            _statusItem.button.imagePosition = NSImageLeft;
+        }
+        else {
+            _statusItem.button.image = nil;
+            _statusItem.button.imagePosition = NSNoImage;
+        }
     }
     else {
-        _statusItem.button.image = [self iconImageForText:[self iconText]];
+        NSString *iconText = [self iconText];
+        accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", iconText];
+        _statusItem.button.image = [self iconImageForText:iconText];
         _statusItem.button.imagePosition = _clockFormat ? NSImageLeft : NSImageOnly;
     }
     if (_clockFormat) {
@@ -510,8 +530,18 @@
         if (@available(macOS 10.15, *)) {
             baselineOffset = 0.5;
         }
-        _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:[_iconDateFormatter stringFromDate:[NSDate new]] attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
+        if (@available(macOS 10.16, *)) {
+            baselineOffset = -1.0 / scaleFactor;
+        }
+        NSString *buttonText = [_iconDateFormatter stringFromDate:[NSDate new]];
+        accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", buttonText];
+        if (!hideIcon) {
+            // Prepend a space to _clockFormat text to separate it from icon.
+            buttonText = [@" " stringByAppendingString:buttonText];
+        }
+        _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
     }
+    _statusItem.button.accessibilityTitle = accessibilityTitle;
     [self adjustStatusItemWidthIfNecessary];
 }
 
@@ -529,9 +559,16 @@
             dummyButton.font = [NSFont fontWithDescriptor:monoFontDesc size:0];
         }
         // Same logic as -updateMenubarIcon to set up dummyButton
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:kHideIcon]) {
-            dummyButton.image = nil;
-            dummyButton.imagePosition = NSNoImage;
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        if ([defaults boolForKey:kHideIcon]) {
+            if ([defaults boolForKey:kShowMeetingIndicator] && _shouldShowMeetingIndicator) {
+                dummyButton.image = [NSImage imageNamed:@"meetSolid"];
+                dummyButton.imagePosition = NSImageLeft;
+            }
+            else {
+                dummyButton.image = nil;
+                dummyButton.imagePosition = NSNoImage;
+            }
         }
         else {
             dummyButton.image = _statusItem.button.image;
@@ -540,6 +577,9 @@
         dummyButton.title = _statusItem.button.title;
         [dummyButton sizeToFit];
         _statusItem.length = NSWidth(dummyButton.frame) + 2;
+        if (@available(macOS 11, *)) {
+            _statusItem.length = NSWidth(dummyButton.frame) - 8;
+        }
         os_log(OS_LOG_DEFAULT, "[%@] %@ --> %.0f, %.0f", [self iconText], _statusItem.button.title,
               _statusItem.button.frame.size.width, _statusItem.button.image.size.width);
     }
@@ -553,91 +593,52 @@
 {
     if (text == nil) text = @"!";
 
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
     // Does user want outline icon or solid icon?
-    BOOL useOutlineIcon = [[NSUserDefaults standardUserDefaults] boolForKey:kUseOutlineIcon];
+    BOOL outline = [defaults boolForKey:kUseOutlineIcon];
+
+    // Should we show the virtual meeting indicator?
+    BOOL meeting = [defaults boolForKey:kShowMeetingIndicator] && _shouldShowMeetingIndicator;
 
     // Return cached icon if one is available.
-    NSString *iconName = [text stringByAppendingString:useOutlineIcon ? @" outline" : @" solid"];
+    NSString *iconName = [NSString stringWithFormat:@"%@ %@ %@", text, outline ? @"outline" : @"solid", meeting ? @"meeting" : @"nomeeting"];
     NSImage *iconImage = [NSImage imageNamed:iconName];
-    if (iconImage != nil) {
-        return iconImage;
-    }
+    if (iconImage != nil) return iconImage;
 
     // Measure text width
-    NSFont *font = [NSFont systemFontOfSize:11.5 weight:NSFontWeightBold];
+    CGFloat fontSize = 11.5;
+    NSFont *font = [NSFont systemFontOfSize:fontSize weight:NSFontWeightBold];
     CGRect textRect = [[[NSAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName: font}] boundingRectWithSize:CGSizeMake(999, 999) options:0 context:nil];
 
-    // Icon width is at least 23 pts with 3 pt outside margins, 4 pt inside margins.
-    CGFloat width = MAX(3 + 4 + ceilf(NSWidth(textRect)) + 4 + 3, 23);
+    // Icon width is at least 17 pts with 4 pt inside margins.
+    CGFloat meetingWidth = meeting ? 18 : 0;
+    CGFloat width = MAX(4 + meetingWidth + ceilf(NSWidth(textRect)) + 4, 17);
     CGFloat height = 16;
     iconImage = [NSImage imageWithSize:NSMakeSize(width, height) flipped:NO drawingHandler:^BOOL (NSRect rect) {
-
-        // Get image's context.
-        CGContextRef const ctx = [[NSGraphicsContext currentContext] CGContext];
-
-        if (useOutlineIcon) {
-
-            // Draw outlined icon image.
-
-            [[NSColor blackColor] set];
-            [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 3.5, 0.5) xRadius:2 yRadius:2] stroke];
-
-            // Turning off smoothing looks better (why??).
-            CGContextSetShouldSmoothFonts(ctx, false);
-
-            // Draw text.
-            NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
-            pstyle.alignment = NSTextAlignmentCenter;
-            [text drawInRect:NSOffsetRect(rect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:11.5 weight:NSFontWeightSemibold], NSParagraphStyleAttributeName: pstyle, NSForegroundColorAttributeName: [NSColor blackColor]}];
+        
+        CGFloat meetingOffset = meeting ? 9 : 0;
+        
+        // Draw meeting indicator if necessary;
+        if (meeting) {
+            NSString *imageName = outline ? @"meetSolid" : @"meetOutline";
+            [[NSImage imageNamed:imageName] drawAtPoint:NSMakePoint(3, 0) fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1];
         }
-        else {
 
-            // Draw solid background icon image.
-            // Based on cocoawithlove.com/2009/09/creating-alpha-masks-from-text-on.html
-
-            // Make scale adjustments.
-            NSRect deviceRect = CGContextConvertRectToDeviceSpace(ctx, rect);
-            CGFloat scale  = NSHeight(deviceRect)/NSHeight(rect);
-            CGFloat width  = scale * NSWidth(rect);
-            CGFloat height = scale * NSHeight(rect);
-            CGFloat outsideMargin = scale * 3;
-            CGFloat radius = scale * 2;
-            CGFloat fontSize = scale > 1 ? 24 : 11.5;
-
-            // Create a grayscale context for the mask
-            CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceGray();
-            CGContextRef maskContext = CGBitmapContextCreate(NULL, width, height, 8, 0, colorspace, 0);
-            CGColorSpaceRelease(colorspace);
-
-            // Switch to the context for drawing.
-            // Drawing done in this context is scaled.
-            NSGraphicsContext *maskGraphicsContext = [NSGraphicsContext graphicsContextWithCGContext:maskContext flipped:NO];
-            [NSGraphicsContext saveGraphicsState];
-            [NSGraphicsContext setCurrentContext:maskGraphicsContext];
-
-            // Draw a white rounded rect background into the mask context
-            [[NSColor whiteColor] setFill];
-            [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(deviceRect, outsideMargin, 0) xRadius:radius yRadius:radius] fill];
-
-            // Draw text.
-            NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
-            pstyle.alignment = NSTextAlignmentCenter;
-            [text drawInRect:NSOffsetRect(deviceRect, 0, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:fontSize weight:NSFontWeightBold], NSForegroundColorAttributeName: [NSColor blackColor], NSParagraphStyleAttributeName: pstyle}];
-
-            // Switch back to the image's context.
-            [NSGraphicsContext restoreGraphicsState];
-            CGContextRelease(maskContext);
-
-            // Create an image mask from our mask context.
-            CGImageRef alphaMask = CGBitmapContextCreateImage(maskContext);
-
-            // Fill the image, clipped by the mask.
-            CGContextClipToMask(ctx, rect, alphaMask);
-            [[NSColor blackColor] set];
-            NSRectFill(rect);
-
-            CGImageRelease(alphaMask);
-        }
+        // Draw text.
+        if (outline) CGContextSetShouldSmoothFonts(NSGraphicsContext.currentContext.CGContext, false);
+        NSFontWeight fontWeight = outline ? NSFontWeightSemibold : NSFontWeightBold;
+        NSMutableParagraphStyle *pstyle = [NSMutableParagraphStyle new];
+        pstyle.alignment = NSTextAlignmentCenter;
+        [text drawInRect:NSOffsetRect(rect, meetingOffset, -1) withAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:fontSize weight:fontWeight], NSParagraphStyleAttributeName: pstyle}];
+        
+        // Draw rounded rect.
+        [NSColor.blackColor set];
+        [NSGraphicsContext saveGraphicsState];
+        [NSGraphicsContext.currentContext setCompositingOperation:NSCompositingOperationXOR];
+        [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:3 yRadius:3] fill];
+        if (outline) [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 1, 1) xRadius:2 yRadius:2] fill];
+        [NSGraphicsContext restoreGraphicsState];
 
         return YES;
     }];
@@ -650,6 +651,18 @@
 {
     NSRect statusItemFrame = [_statusItem.button.window convertRectToScreen:_statusItem.button.frame];
 
+    // Hack alert:
+    // MacOS 11 does not report the correct frame for _statusItem.button
+    // if its length is adjusted (see -adjustStatusItemWidthIfNecessary).
+    // As a result, this method positions the window *uncentered* below
+    // the status item. Adjust the frame with a value empirically
+    // determined to make the window appear centered.
+    if (@available(macOS 11.0, *)) {
+        if (_statusItem.length != NSVariableStatusItemLength) {
+            statusItemFrame.size.width += 15;
+        }
+    }
+    
     // Hack alert:
     // Which screen is the status item on? I'd like to just use
     // _statusItem.button.window.screen, but that property is nil
@@ -724,7 +737,10 @@
     // on one and the user clicks the menu item on another,
     // instead of a regular toggle, we want Itsycal to hide
     // from it's old screen and show in the new one.
-    if (self.itsycalWindow.screen != [NSScreen mainScreen]) {
+    // To distinguish screens, we used to use the screen address,
+    // but with macOS Big Sur, that is not reliable. Instead,
+    // we now use the screen's frame.
+    if (!NSEqualRects(self.itsycalWindow.screen.frame, NSScreen.mainScreen.frame)) {
         if ([self.itsycalWindow occlusionState] & NSWindowOcclusionStateVisible) {
             // The slight delay before showing the window in the new
             // position is to allow -windowDidResignKey: to execute
@@ -886,6 +902,11 @@
     }
 }
 
+- (void)agendaShowCalendarAppAtDate:(NSDate *)date
+{
+    [self showCalendarAppAtDate:date dayView:YES];
+}
+
 - (CGFloat)agendaMaxPossibleHeight
 {
     return NSHeight(_screenFrame) - NSHeight(_moCal.frame) - 140;
@@ -987,7 +1008,7 @@
     NSInteger days = [self daysToShowInAgenda];
     _agendaVC.events = [self datesAndEventsForDate:_moCal.selectedDate days:days];
     [_agendaVC reloadData];
-    _bottomMargin.constant = _agendaVC.events.count == 0 ? 25 : 30;
+    [self showMeetingIndicatorIfNecessary];
 }
 
 #pragma mark -
@@ -1006,10 +1027,72 @@
     _moCal.selectedDate = today;
 }
 
+- (void)showMeetingIndicatorIfNecessary
+{
+    BOOL show = NO;
+    for (id obj in _agendaVC.events) {
+        if ([obj isKindOfClass:[NSDate class]]) continue;
+        EventInfo *info = obj;
+        // Show meeting indicator 15 minutes prior to event start until end.
+        NSDate *fifteenMinutesPrior = [_nsCal dateByAddingUnit:NSCalendarUnitSecond value:-(15 * 60 + 30) toDate:info.event.startDate options:0];
+        if (info.zoomURL && !info.event.isAllDay
+            && [fifteenMinutesPrior compare:NSDate.date] == NSOrderedAscending
+            && [NSDate.date compare:info.event.endDate] == NSOrderedAscending) {
+            show = YES;
+            break;
+        }
+    }
+    if (_shouldShowMeetingIndicator != show) {
+        _shouldShowMeetingIndicator = show;
+        [self updateMenubarIcon];
+    }
+}
+
+- (float)volumeRelativeToSystemVolumeWithCap:(float)cap
+{
+    // https://stackoverflow.com/a/8953438/111418
+    AudioDeviceID deviceID;
+    UInt32 dataSize = sizeof(deviceID);
+    AudioObjectPropertyAddress propertyAddress;
+    propertyAddress.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
+    propertyAddress.mScope    = kAudioObjectPropertyScopeGlobal;
+    propertyAddress.mElement  = kAudioObjectPropertyElementMaster;
+
+    OSStatus result = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &dataSize, &deviceID);
+
+    if (kAudioHardwareNoError != result) return cap;
+    
+    propertyAddress.mSelector = kAudioDevicePropertyVolumeScalar;
+    propertyAddress.mScope    = kAudioDevicePropertyScopeOutput;
+    propertyAddress.mElement  = 1; // Channel 0  is master, if available
+
+    if (!AudioObjectHasProperty(deviceID, &propertyAddress)) return cap;
+
+    Float32 volume;
+    dataSize = sizeof(volume);
+
+    result = AudioObjectGetPropertyData(deviceID, &propertyAddress, 0, NULL, &dataSize, &volume);
+
+    if (kAudioHardwareNoError != result) return cap;
+    
+    return (volume >= cap) ? cap / volume : 1;
+}
+
 - (void)updateTimer
 {
-    // Set up _timer to fire on next minute or second.
     NSDateComponents *components = [_nsCal components:NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond fromDate:[NSDate new]];
+
+    // Should we beep-beep on the hour? If so, cap the volume relative to the
+    // system volume so it's not too loud.
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"BeepBeepOnTheHour"]
+        && components.minute == 0
+        && components.second == 0) {
+        NSSound *beepbeep = [NSSound soundNamed:@"beep"];
+        [beepbeep setVolume:[self volumeRelativeToSystemVolumeWithCap:0.12]];
+        [beepbeep play];
+    }
+
+    // Set up _timer to fire on next minute or second.
     if (_clockUsesSeconds) {
         components.second += 1;
     }
@@ -1023,12 +1106,14 @@
     [NSRunLoop.mainRunLoop addTimer:_timer forMode:NSRunLoopCommonModes];
     
     // Check if past events should be dimmed each minute.
+    // Also check if we should show the meeting indicator.
     static NSTimeInterval dimEventsTime = 0;
     NSTimeInterval currentTime = MonotonicClockTime();
     NSTimeInterval elapsedTime = currentTime - dimEventsTime;
     if (elapsedTime > 60 || fabs(elapsedTime - 60) < 0.5) {
         [_agendaVC dimEventsIfNecessary];
         dimEventsTime = currentTime;
+        [self showMeetingIndicatorIfNecessary];
     }
     // Reset calendar to today after 10 minutes of inactivity.
     elapsedTime = currentTime - _inactiveTime;
@@ -1135,6 +1220,7 @@
     [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         [self updateMenubarIcon];
         [self updateTimer];
+        [self updateAgenda]; // 12/24 hr time change in sys prefs
     }];
     
     // System clock notification
@@ -1151,7 +1237,7 @@
     }];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kHideIcon, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowMeetingIndicator, kHideIcon, kClockFormat]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -1167,6 +1253,7 @@
     else if ([keyPath isEqualToString:kUseOutlineIcon] ||
              [keyPath isEqualToString:kShowMonthInIcon] ||
              [keyPath isEqualToString:kShowDayOfWeekInIcon] ||
+             [keyPath isEqualToString:kShowMeetingIndicator] ||
              [keyPath isEqualToString:kHideIcon]) {
         [self updateMenubarIcon];
     }

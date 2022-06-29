@@ -61,7 +61,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     _tooltipWC = [MoCalToolTipWC new];
 
     _monthLabel = [NSTextField labelWithString:@""];
-    _monthLabel.font = [NSFont systemFontOfSize:[[Sizer shared] calendarTitleFontSize] weight:NSFontWeightSemibold];
+    _monthLabel.font = [NSFont systemFontOfSize:SizePref.calendarTitleFontSize weight:NSFontWeightSemibold];
     _monthLabel.textColor = Theme.monthTextColor;
     
     // Make long labels compress and show ellipsis instead of forcing the window wider.
@@ -92,7 +92,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     _dowGrid  = [[MoCalGrid alloc] initWithRows:1 columns:7 horizontalMargin:6 verticalMargin:0];
 
     for (MoCalCell *cell in _dowGrid.cells) {
-        cell.textField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
+        cell.textField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
     }
 
     // The _resizeHandle is at the bottom of the calendar.
@@ -106,12 +106,13 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [self addSubview:_resizeHandle];
 
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_monthLabel, _btnPrev, _btnToday, _btnNext, _dowGrid, _weekGrid, _dateGrid, _resizeHandle)];
-    [vfl :@"H:|-8-[_monthLabel]-4-[_btnPrev]" :NSLayoutFormatAlignAllCenterY];
-    [vfl :@"H:[_btnPrev]-2-[_btnToday]-2-[_btnNext]-6-|" :NSLayoutFormatAlignAllBottom];
+    [vfl :@"H:|-8-[_monthLabel]-4-[_btnPrev]"];
+    [vfl :@"H:[_btnPrev][_btnToday][_btnNext]-8-|" :NSLayoutFormatAlignAllTop];
     [vfl :@"H:[_dowGrid]|"];
     [vfl :@"H:[_weekGrid]-(-2)-[_dateGrid]|"];
     [vfl :@"H:|[_resizeHandle]|"];
     [vfl :@"V:|-(-1)-[_monthLabel]-7-[_dowGrid]-(-6)-[_dateGrid]-5-|"];
+    [vfl :@"V:|[_btnPrev]"];
     [vfl :@"V:[_weekGrid]-5-|"];
     [vfl :@"V:[_resizeHandle(8)]|"];
 
@@ -254,7 +255,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     if (tooltipVC != nil) {
         tooltipVC.view.translatesAutoresizingMaskIntoConstraints = NO;
         [contentView addSubview:tooltipVC.view];
-        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-3-[v]-3-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
+        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(-3)-[v]-(-3)-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
         [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-2-[v]-2-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
     }
 }
@@ -380,7 +381,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         }
     }
     if (startCell && endCell) {
-        CGFloat radius = [[Sizer shared] cellRadius];
+        CGFloat radius = SizePref.cellRadius;
         _highlightPath = [self bezierPathWithStartCell:startCell endCell:endCell radius:radius inset:3 useRects:YES];
         _highlightColor = color;
         // Normalize location of _highlightPath. We will tranlsate it
@@ -401,19 +402,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 - (void)sizeChanged:(id)sender
 {
-    // Perform calendar size changes after grid cells have resized.
-    [self performSelector:@selector(delayedSizeChanges:) withObject:nil afterDelay:0.05];
-}
-
-- (void)delayedSizeChanges:(id)sender {
-    // Font sizes.
-    _monthLabel.font = [NSFont systemFontOfSize:[[Sizer shared] calendarTitleFontSize] weight:NSFontWeightSemibold];
-    for (MoCalCell *cell in _dowGrid.cells) {
-        cell.textField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
-    }
-    if (self.showWeeks) {
-        _weeksConstraint.constant = NSWidth(_weekGrid.frame);
-    }
+    _monthLabel.font = [NSFont systemFontOfSize:SizePref.calendarTitleFontSize weight:NSFontWeightSemibold];
+    _weeksConstraint.constant = self.showWeeks ? SizePref.cellSize : 2;
 }
 
 #pragma mark -
@@ -494,7 +484,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    CGFloat sz = [[Sizer shared] cellSize];
+    CGFloat sz = SizePref.cellSize;
     NSPoint initialDragPoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     BOOL isDragging = NSPointInRect(initialDragPoint, _resizeHandle.frame);
 
@@ -779,8 +769,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [Theme.mainBackgroundColor set];
     NSRectFill(self.bounds);
     
-    CGFloat radius = [[Sizer shared] cellRadius] + 3;
-    CGFloat sz = [[Sizer shared] cellSize];
+    CGFloat radius = SizePref.cellRadius + 3;
+    CGFloat sz = SizePref.cellSize;
     if (self.highlightedDOWs) {
         NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
         weekendRect.size.width = sz;
@@ -817,7 +807,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:radius inset:0 useRects:NO];
     
     [Theme.currentMonthOutlineColor set];
-    [outlinePath setLineWidth:2];
+    [outlinePath setLineWidth:1.5];
     [outlinePath stroke];
 }
 

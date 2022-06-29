@@ -7,6 +7,7 @@
 //
 
 #import <os/log.h>
+#import <AppKit/NSWorkspace.h>
 #import "EventCenter.h"
 
 // NSUserDefaults key for array of selected calendar IDs.
@@ -294,16 +295,17 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             // Make an EventInfo object...
             EventInfo *info = [EventInfo new];
             info.event       = event;
+            //   isStartDate = (it starts on `date` AND ends not before `nextDate`)
             info.isStartDate = ([_cal isDate:date inSameDayAsDate:event.startDate] &&
-                                [event.endDate compare:nextDate] == NSOrderedDescending);
+                                [event.endDate compare:nextDate] != NSOrderedAscending);
+            //   isEndDate   = (it ends on `date` AND starts before `date`)
             info.isEndDate   = ([_cal isDate:date inSameDayAsDate:event.endDate] &&
                                 [event.startDate compare:date] == NSOrderedAscending);
+            //   isAllDay    = (it's a real all-day event OR
+            //                  (it starts before `date` AND ends not before `nextDate`))
             info.isAllDay    = (event.allDay ||
                                 ([event.startDate compare:date] == NSOrderedAscending &&
-                                 [event.endDate compare:nextDate] == NSOrderedDescending));
-            info.isSingleDay = (event.isAllDay &&
-                                [event.startDate compare:date] == NSOrderedSame &&
-                                [event.endDate compare:nextDate] == NSOrderedSame);
+                                 [event.endDate compare:nextDate] != NSOrderedAscending));
             // ...and add it to the array in eventsForDate.
             if (eventsForDate[date] == nil) {
                 eventsForDate[date] = [NSMutableArray new];
@@ -316,10 +318,14 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     
     // eventsForDate is a dict that maps dates to an array of EventInfo objects.
     // Sort those arrays so that AllDay events are first, the sort by startTime.
-    // AllDay events are sorted by calendar title.
+    // All-day events are sorted by calendar title with real all-day events before
+    // spanning all-day events.
     for (NSDate *date in eventsForDate) {
         [eventsForDate[date] sortUsingComparator:^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
-            if (e1.isAllDay && e2.isAllDay) { return [e1.event.calendar.title compare:e2.event.calendar.title];}
+            if (e1.event.isAllDay && e2.event.isAllDay)  { return [e1.event.calendar.title compare:e2.event.calendar.title];}
+            else if (e1.event.isAllDay && !e2.event.isAllDay) { return NSOrderedAscending; }
+            else if (!e1.event.isAllDay && e2.event.isAllDay) { return NSOrderedDescending; }
+            else if (e1.isAllDay && e2.isAllDay) { return [e1.event.calendar.title compare:e2.event.calendar.title];}
             else if (e1.isAllDay) { return NSOrderedAscending;  }
             else if (e2.isAllDay) { return NSOrderedDescending; }
             else { return [e1.event.startDate compare:e2.event.startDate]; }
@@ -340,6 +346,10 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                 if (filteredEventsForDate[date] == nil) {
                     filteredEventsForDate[date] = [NSMutableArray new];
                 }
+                // Check if there is a virtual meeting (e.g. Zoom) link.
+                // We limit this check to filtered events in an
+                // attempt to limit how much text processing we do.
+                [self checkForZoomURL:info];
                 [filteredEventsForDate[date] addObject:info];
             }
         }
@@ -350,6 +360,78 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.delegate eventCenterEventsChanged];
     });
+}
+
+- (void)checkForZoomURL:(EventInfo *)info {
+    static NSDataDetector *linkDetector = nil;
+    if (linkDetector == nil) {
+        linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
+    }
+    void (^GetZoomURL)(NSString*) = ^(NSString *text) {
+        [linkDetector enumerateMatchesInString:text options:kNilOptions range:NSMakeRange(0, text.length) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
+            NSString *link = result.URL.absoluteString;
+            if (   [link containsString:@"zoom.us/j/"]
+                || [link containsString:@"zoom.us/s/"]
+                || [link containsString:@"zoom.us/w/"]
+                || [link containsString:@"zoomgov.com/j/"]) {
+                info.zoomURL = result.URL;
+                // Test if user has the Zoom app and, if so, create a Zoom app link.
+                if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"zoommtg://"]]) {
+                    link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"zoommtg://"];
+                    link = [link stringByReplacingOccurrencesOfString:@"?" withString:@"&"];
+                    link = [link stringByReplacingOccurrencesOfString:@"/j/" withString:@"/join?confno="];
+                    link = [link stringByReplacingOccurrencesOfString:@"/s/" withString:@"/join?confno="];
+                    link = [link stringByReplacingOccurrencesOfString:@"/w/" withString:@"/join?confno="];
+                    NSURL *appLink = [NSURL URLWithString:link];
+                    if (appLink) info.zoomURL = appLink;
+                }
+            }
+            else if ([link containsString:@"teams.microsoft.com/l/meetup-join/"]) {
+                info.zoomURL = result.URL;
+                // Test if user has the Teams app and, if so, create a Teams app link.
+                if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"msteams://"]]) {
+                    link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"msteams://"];
+                    NSURL *appLink = [NSURL URLWithString:link];
+                    if (appLink) info.zoomURL = appLink;
+                }
+            }
+            else if ([link containsString:@"chime.aws/"]) {
+                info.zoomURL = result.URL;
+                // Test if user has the Chime app, and if so, create a Chime app link.
+                if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"chime://"]]) {
+                    link = [link stringByReplacingOccurrencesOfString:@"https://chime.aws/" withString:@"chime://meeting?pin="];
+                    NSURL *appLink = [NSURL URLWithString:link];
+                    if (appLink) info.zoomURL = appLink;
+                }
+            }
+            else if (   [link containsString:@"zoommtg://"]
+                     || [link containsString:@"msteams://"]
+                     || [link containsString:@"chime://"]
+                     || [link containsString:@"meet.google.com/"]
+                     || [link containsString:@"hangouts.google.com/"]
+                     || [link containsString:@"webex.com/"]
+                     || [link containsString:@"gotomeeting.com/join"]
+                     || [link containsString:@"ringcentral.com/j"]
+                     || [link containsString:@"bigbluebutton.org/gl"]
+                     || [link containsString:@"https://bigbluebutton."]
+                     || [link containsString:@"https://bbb."]
+                     || [link containsString:@"https://meet.jit.si/"]
+                     || [link containsString:@"indigo.collocall.de"]
+                     || [link containsString:@"public.senfcall.de"]
+                     || [link containsString:@"facetime.apple.com/join"]
+                     || [link containsString:@"workplace.com/meet"]
+                     || [link containsString:@"youcanbook.me/zoom/"]) {
+                info.zoomURL = result.URL;
+            }
+            *stop = info.zoomURL != nil;
+        }];
+    };
+    info.zoomURL = nil;
+    if (info.event.location) GetZoomURL(info.event.location);
+    if (info.zoomURL) return;
+    if (info.event.URL) GetZoomURL(info.event.URL.absoluteString);
+    if (info.zoomURL) return;
+    if (info.event.hasNotes && info.event.notes) GetZoomURL(info.event.notes);
 }
 
 @end

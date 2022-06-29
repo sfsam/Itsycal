@@ -57,7 +57,7 @@
 /**
  Register default shortcuts in user defaults.
 
- This is a convenience frontent to `[NSUserDefaults registerDefaults]`.
+ This is a convenience frontend to `[NSUserDefaults registerDefaults]`.
  The dictionary should contain a map of user defaults’ keys to appropriate
  keyboard shortcuts. The shortcuts will be transformed according to
  `bindingOptions` and registered using `registerDefaults`.

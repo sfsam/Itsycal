@@ -35,6 +35,11 @@
     [super viewDidAppear];
     if (self.view.window.toolbar == nil) {
         self.view.window.toolbar = _toolbar;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 110000
+        if (@available(macOS 11.0, *)) {
+            self.view.window.toolbarStyle = NSWindowToolbarStylePreference;
+        }
+#endif
     }
 }
 

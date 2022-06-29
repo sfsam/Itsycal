@@ -29,7 +29,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @property (nonatomic) NSTextField *dayTextField;
 @property (nonatomic) NSTextField *DOWTextField;
 @property (nonatomic, weak) NSDate *date;
-@property (nonatomic, readonly) CGFloat height;
 @end
 
 @interface AgendaEventCell : NSView
@@ -37,14 +36,16 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @property (nonatomic) NSTextField *titleTextField;
 @property (nonatomic) NSTextField *locationTextField;
 @property (nonatomic) NSTextField *durationTextField;
+@property (nonatomic) MoButton *btnVideo;
 @property (nonatomic, weak) EventInfo *eventInfo;
-@property (nonatomic, readonly) CGFloat height;
 @property (nonatomic) BOOL dim;
 @end
 
 @interface AgendaPopoverVC : NSViewController
-@property (nonatomic) MoButton *btnDelete;
+@property (nonatomic, weak) NSCalendar *nsCal;
+@property (nonatomic) NSButton *btnDelete;
 - (void)populateWithEventInfo:(EventInfo *)info;
+- (void)scrollToTopAndFlashScrollers;
 - (NSSize)size;
 @end
 
@@ -65,15 +66,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // View controller content view
     NSView *v = [NSView new];
 
-    // Calendars table view context menu
-    NSMenu *contextMenu = [NSMenu new];
-    contextMenu.delegate = self;
-
     // Calendars table view
     _tv = [MoTableView new];
     _tv.target = self;
     _tv.action = @selector(showPopover:);
-    _tv.menu = contextMenu;
+    _tv.doubleAction = @selector(showCalendarApp:);
+    _tv.menu = [NSMenu new];
+    _tv.menu.delegate = self;
     _tv.headerView = nil;
     _tv.allowsColumnResizing = NO;
     _tv.intercellSpacing = NSMakeSize(0, 0);
@@ -82,6 +81,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.refusesFirstResponder = YES;
     _tv.dataSource = self;
     _tv.delegate = self;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 110000
+    if (@available(macOS 11.0, *)) {
+        _tv.style = NSTableViewStylePlain;
+    }
+#endif
     [_tv addTableColumn:[[NSTableColumn alloc] initWithIdentifier:kColumnIdentifier]];
     
     // Calendars enclosing scrollview
@@ -156,7 +160,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 }
 
 #pragma mark -
-#pragma mark Context Menu
+#pragma mark TableView context menu
 
 - (void)menuNeedsUpdate:(NSMenu *)menu
 {
@@ -164,10 +168,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Show a context menu ONLY for non-group rows.
     [menu removeAllItems];
     if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
+    [menu addItemWithTitle:NSLocalizedString(@"Open Calendar", nil) action:@selector(showCalendarApp:) keyEquivalent:@""];
     [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
     EventInfo *info = self.events[_tv.clickedRow];
     if (info.event.calendar.allowsContentModifications) {
-        NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete", nil) action:@selector(btnDeleteClicked:) keyEquivalent:@""];
+        NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
         item.tag = _tv.clickedRow;
     }
 }
@@ -193,28 +198,32 @@ static NSString *kEventCellIdentifier = @"EventCell";
     intervalFormatter.timeStyle = cell.eventInfo.event.isAllDay
         ? NSDateIntervalFormatterNoStyle
         : NSDateIntervalFormatterShortStyle;
-    // For single-day events, end date is same as start date.
-    NSDate *endDate = cell.eventInfo.isSingleDay
-        ? cell.eventInfo.event.startDate
+    // All-day events technically end at the start of the day after
+    // their end date. So display endDate as one less.
+    NSDate *endDate = cell.eventInfo.event.isAllDay
+        ? [self.nsCal dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:cell.eventInfo.event.endDate options:0]
         : cell.eventInfo.event.endDate;
     // Interval formatter just prints single date when from == to.
     NSString *duration = [intervalFormatter stringFromDate:cell.eventInfo.event.startDate toDate:endDate];
     // If the locale is English and we are in 12 hour time,
     // remove :00 from the time. Effect is 3:00 PM -> 3 PM.
     if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
-        duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
+        if ([duration containsString:@"AM"] || [duration containsString:@"PM"] ||
+            [duration containsString:@"am"] || [duration containsString:@"pm"]) {
+            duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
+        }
     }
-    NSString *eventText = [NSString stringWithFormat:@"%@%@%@\n%@\n",
+    NSString *eventText = [NSString stringWithFormat:@"%@\n%@\n%@%@",
                            cell.titleTextField.stringValue,
-                           cell.locationTextField.stringValue.length > 0 ? @"\n" : @"",
+                           duration,
                            cell.locationTextField.stringValue,
-                           duration];
+                           cell.locationTextField.stringValue.length > 0 ? @"\n" : @""];
     [[NSPasteboard generalPasteboard] clearContents];
     [[NSPasteboard generalPasteboard] writeObjects:@[eventText]];
 }
 
 #pragma mark -
-#pragma mark Popover
+#pragma mark TableView click actions
 
 - (void)showPopover:(id)sender
 {
@@ -233,22 +242,49 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (!cell) return; // should never happen
     
     AgendaPopoverVC *popoverVC = (AgendaPopoverVC *)_popover.contentViewController;
+    [popoverVC setNsCal:self.nsCal];
     [popoverVC populateWithEventInfo:cell.eventInfo];
     
     if (cell.eventInfo.event.calendar.allowsContentModifications) {
         popoverVC.btnDelete.tag = _tv.clickedRow;
         popoverVC.btnDelete.target = self;
-        popoverVC.btnDelete.action = @selector(btnDeleteClicked:);
+        popoverVC.btnDelete.action = @selector(deleteEvent:);
         unichar backspaceKey = NSBackspaceCharacter;
         popoverVC.btnDelete.keyEquivalent = [NSString stringWithCharacters:&backspaceKey length:1];
     }
     
-    [_popover setContentSize:popoverVC.size];
+    NSRect positionRect = NSInsetRect([_tv rectOfRow:_tv.clickedRow], 8, 0);
     [_popover setAppearance:NSApp.effectiveAppearance];
-    [_popover showRelativeToRect:[_tv rectOfRow:_tv.clickedRow] ofView:_tv preferredEdge:NSRectEdgeMinX];
+    [_popover showRelativeToRect:positionRect ofView:_tv preferredEdge:NSRectEdgeMinX];
+    [_popover setContentSize:popoverVC.size];
+    [popoverVC scrollToTopAndFlashScrollers];
     
     // Prevent popoverVC's _note from eating key presses (like esc and delete).
     [popoverVC.view.window makeFirstResponder:popoverVC.btnDelete];
+}
+
+- (void)showCalendarApp:(id)sender
+{
+    if (_tv.clickedRow == -1 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
+
+    // Work backwards from the clicked row (which is an EventInfo row)
+    // to find the parent NSDate row. We do this instead of just getting
+    // the clicked event's startDate because spanning events might start
+    // on a different date from the one that was clicked.
+    NSDate *clickedDate = nil;
+    NSInteger row = _tv.clickedRow;
+    while (row > 0) {
+        row = row - 1;
+        id obj = self.events[row];
+        if ([obj isKindOfClass:[NSDate class]]) {
+            clickedDate = obj;
+            break;
+        }
+    }
+    if (!clickedDate) return; // should never happen
+    if (self.delegate && [self.delegate respondsToSelector:@selector(agendaShowCalendarAppAtDate:)]) {
+        [self.delegate agendaShowCalendarAppAtDate:clickedDate];
+    }
 }
 
 #pragma mark -
@@ -289,16 +325,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         EventInfo *info = obj;
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
         if (!cell) cell = [AgendaEventCell new];
-        cell.eventInfo = info;
-        [self populateEventCell:cell withInfo:info showLocation:self.showLocation];
-        cell.dim = NO;
-        // If event's endDate is today and is past, dim event.
-        if (!info.isStartDate && !info.isAllDay &&
-            [self.nsCal isDateInToday:info.event.endDate] &&
-            [NSDate.date compare:info.event.endDate] == NSOrderedDescending) {
-            cell.titleTextField.textColor = Theme.agendaEventDateTextColor;
-            cell.dim = YES;
-        }
+        [self populateEventCell:cell withInfo:info];
         v = cell;
     }
     return v;
@@ -318,12 +345,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
         dateCell.dayTextField.integerValue = 21;
     });
     
-    CGFloat height = dateCell.height;
+    CGFloat height = dateCell.fittingSize.height;
     id obj = self.events[row];
     if ([obj isKindOfClass:[EventInfo class]]) {
         eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
-        [self populateEventCell:eventCell withInfo:obj showLocation:self.showLocation];
-        height = eventCell.height;
+        [self populateEventCell:eventCell withInfo:obj];
+        height = eventCell.fittingSize.height;
     }
     return height;
 }
@@ -357,9 +384,21 @@ static NSString *kEventCellIdentifier = @"EventCell";
 #pragma mark -
 #pragma mark Delete event
 
-- (void)btnDeleteClicked:(id)sender
+- (void)deleteEvent:(id)sender
 {
-    NSInteger row = [(MoButton *)sender tag];
+    NSInteger row = -1;
+    if ([sender isKindOfClass:[NSButton class]]) {
+        NSButton *button = (NSButton *)sender;
+        // The delete button disappears(?!?!) after being clicked (macOS 11).
+        // It's actually still there. You can click it. But it isn't drawn.
+        // This bizarre buggy behavior seems to affect borderless buttons.
+        // So we insanely toggle bordered on/off to make sure the button shows.
+        button.bordered = YES;
+        button.bordered = NO;
+        row = button.tag;
+    } else if ([sender isKindOfClass:[NSMenuItem class]]) {
+        row = [(NSMenuItem *)sender tag];
+    }
     if (row < 0) return;
     if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToDeleteEvent:)]) {
         EventInfo *info = self.events[row];
@@ -400,7 +439,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return [dateFormatter stringFromDate:date];
 }
 
-- (void)populateEventCell:(AgendaEventCell *)cell withInfo:(EventInfo *)info showLocation:(BOOL)showLocation
+- (void)populateEventCell:(AgendaEventCell *)cell withInfo:(EventInfo *)info
 {
     static NSDateFormatter *timeFormatter = nil;
     static NSDateIntervalFormatter *intervalFormatter = nil;
@@ -420,14 +459,18 @@ static NSString *kEventCellIdentifier = @"EventCell";
     timeFormatter.timeZone  = [NSTimeZone localTimeZone];
     intervalFormatter.timeZone = nil; // Force tz update on macOS 10.13
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
+    // Needed to pick up 12/24 hr time system preference change:
+    intervalFormatter.locale = [NSLocale currentLocale];
     
+    cell.eventInfo = info;
+
     if (info && info.event) {
         if (info.event.title) title = info.event.title;
         if (info.event.location) location = info.event.location;
     }
     
-    // Hide location row IF !showLocation OR there's no location string.
-    [cell.grid rowAtIndex:1].hidden = (!showLocation || location.length == 0);
+    // Hide location row IF !self.showLocation OR there's no location string.
+    [cell.grid rowAtIndex:1].hidden = (!self.showLocation || location.length == 0);
     
     // Hide duration row for all day events.
     [cell.grid rowAtIndex:2].hidden = info.isAllDay;
@@ -457,12 +500,40 @@ static NSString *kEventCellIdentifier = @"EventCell";
             }
         }
     }
+
+    // Virtual meeting button.
+    cell.btnVideo.enabled = NO;
+    cell.btnVideo.hidden = info.zoomURL ? NO : YES;
+    cell.btnVideo.actionBlock = nil;
+    cell.btnVideo.contentTintColor = nil;
+
     cell.titleTextField.stringValue = title;
     cell.titleTextField.textColor = Theme.agendaEventTextColor;
     cell.locationTextField.stringValue = location;
     cell.locationTextField.textColor = Theme.agendaEventDateTextColor;
     cell.durationTextField.stringValue = duration;
     cell.durationTextField.textColor = Theme.agendaEventDateTextColor;
+
+    // If event's endDate is today and is past, dim event.
+    cell.dim = NO;
+    if (!info.isStartDate && !info.isAllDay
+        && [self.nsCal isDateInToday:info.event.endDate]
+        && [NSDate.date compare:info.event.endDate] == NSOrderedDescending) {
+        cell.titleTextField.textColor = Theme.agendaEventDateTextColor;
+        cell.dim = YES;
+    }
+    
+    // Enable the zoom button 15 minutes prior to event start until end.
+    NSDate *fifteenMinutesPrior = [self.nsCal dateByAddingUnit:NSCalendarUnitSecond value:-(15 * 60 + 30) toDate:info.event.startDate options:0];
+    if (info.zoomURL && !info.event.isAllDay
+        && [fifteenMinutesPrior compare:NSDate.date] == NSOrderedAscending
+        && [NSDate.date compare:info.event.endDate] == NSOrderedAscending) {
+        cell.btnVideo.enabled = YES;
+        cell.btnVideo.contentTintColor = Theme.todayCellColor;
+        cell.btnVideo.actionBlock = ^{
+            [NSWorkspace.sharedWorkspace openURL:info.zoomURL];
+        };
+    }
 }
 
 #pragma mark -
@@ -472,9 +543,29 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     // If the user has the window showing, reload the agenda cells.
     // This will redraw the events, dimming if necessary.
+    // This also enables/disables zoom buttons if necessary
+    // depending on whether a virtual meeting is in progress.
     if (self.view.window.isVisible) {
         [_tv reloadData];
     }
+}
+
+#pragma mark -
+#pragma mark Click first active Zoom button
+
+- (BOOL)clickFirstActiveZoomButton
+{
+    for (NSInteger row = 0; row < _tv.numberOfRows; row++) {
+        NSView *view = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
+        if ([view isKindOfClass:[AgendaEventCell class]]) {
+            AgendaEventCell *cell = (AgendaEventCell *)view;
+            if (cell.btnVideo.enabled) {
+                [cell.btnVideo performClick:self];
+                return YES;
+            }
+        }
+    }
+    return NO;
 }
 
 @end
@@ -512,7 +603,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)drawBackgroundInRect:(NSRect)dirtyRect {
     if (self.isHovered) {
         [Theme.agendaHoverColor set];
-        NSRect rect = NSInsetRect(self.bounds, 2, 1);
+        NSRect rect = NSInsetRect(self.bounds, 8, 1);
         [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:5 yRadius:5] fill];
     }
 }
@@ -542,19 +633,19 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self.identifier = kDateCellIdentifier;
         _dayTextField = [NSTextField labelWithString:@""];
         _dayTextField.translatesAutoresizingMaskIntoConstraints = NO;
-        _dayTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
+        _dayTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
         _dayTextField.textColor = Theme.agendaDayTextColor;
         [_dayTextField setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
         
         _DOWTextField = [NSTextField labelWithString:@""];
         _DOWTextField.translatesAutoresizingMaskIntoConstraints = NO;
-        _DOWTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
+        _DOWTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
         _DOWTextField.textColor = Theme.agendaDOWTextColor;
 
         [self addSubview:_dayTextField];
         [self addSubview:_DOWTextField];
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_dayTextField, _DOWTextField)];
-        [vfl :@"H:|-4-[_DOWTextField]-(>=4)-[_dayTextField]-4-|" :NSLayoutFormatAlignAllLastBaseline];
+        [vfl :@"H:|-10-[_DOWTextField]-(>=4)-[_dayTextField]-10-|" :NSLayoutFormatAlignAllLastBaseline];
         [vfl :@"V:|-6-[_dayTextField]-1-|"];
         
         REGISTER_FOR_SIZE_CHANGE;
@@ -564,15 +655,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)sizeChanged:(id)sender
 {
-    _dayTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
-    _DOWTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightSemibold];
-}
-
-- (CGFloat)height
-{
-    // The height of the textfield plus the height of the
-    // top and bottom marigns.
-    return [_dayTextField intrinsicContentSize].height + 7; // 6+1=top+bottom margin
+    _dayTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
+    _DOWTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -580,7 +664,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Must be opaque so rows can scroll under it.
     [Theme.mainBackgroundColor set];
     NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
-    NSRect r = NSMakeRect(4, self.bounds.size.height - 4, self.bounds.size.width - 8, 1);
+    NSRect r = NSMakeRect(10, self.bounds.size.height - 4, self.bounds.size.width - 20, 1);
     [Theme.agendaDividerColor set];
     NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
 }
@@ -600,7 +684,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Convenience function for making labels.
     NSTextField* (^label)(void) = ^NSTextField* () {
         NSTextField *lbl = [NSTextField labelWithString:@""];
-        lbl.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
+        lbl.font = [NSFont systemFontOfSize:SizePref.fontSize];
         lbl.lineBreakMode = NSLineBreakByWordWrapping;
         lbl.cell.truncatesLastVisibleLine = YES;
         return lbl;
@@ -613,19 +697,54 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _locationTextField = label();
         _locationTextField.maximumNumberOfLines = 2;
         _durationTextField = label();
+        
+        _btnVideo = [MoButton new];
+        _btnVideo.bordered = 0;
+        _btnVideo.image = [NSImage imageNamed:SizePref.videoImageName];
+        _btnVideo.image.template = YES;
+        
+        /*
+         Outer box = self
+         Middle box = grid
+         Innermost box = durationGrid
+         a = _gridLeadingConstraint
+         +------------------------------------------+
+         |     |                                    |
+         |     3                                    |
+         |     |                                    |
+         |   +---------------------------------+    |
+         |-a-|[titleTextField]                 |-11-|
+         |   |[locationTextField]              |    |
+         |   |+-------------------------------+|    |
+         |   ||[durationTextField], [btnVideo]||    |
+         |   |+-------------------------------+|    |
+         |   +---------------------------------+    |
+         |     |                                    |
+         |     3                                    |
+         |     |                                    |
+         +------------------------------------------+
+         */
+        
+        NSGridView *durationGrid = [NSGridView gridViewWithViews:@[@[_durationTextField, _btnVideo]]];
+        durationGrid.rowSpacing = 0;
+        [durationGrid setContentHuggingPriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
+        
         _grid = [NSGridView gridViewWithViews:@[@[_titleTextField],
                                                 @[_locationTextField],
-                                                @[_durationTextField]]];
+                                                @[durationGrid]]];
         _grid.translatesAutoresizingMaskIntoConstraints = NO;
         _grid.rowSpacing = 0;
         [self addSubview:_grid];
-        MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_grid)];
-        [vfl :@"H:[_grid]-10-|"];
-        [vfl :@"V:|-3-[_grid]"];
         
-        CGFloat leadingConstant = [[Sizer shared] agendaEventLeadingMargin];
+        MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_grid)];
+        [vfl :@"H:[_grid]-11-|"];
+        [vfl :@"V:|-3-[_grid]-3-|"];
+        
+        CGFloat leadingConstant = SizePref.agendaEventLeadingMargin;
         _gridLeadingConstraint = [_grid.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:leadingConstant];
         _gridLeadingConstraint.active = YES;
+        
+        [_btnVideo.centerYAnchor constraintEqualToAnchor:_durationTextField.centerYAnchor].active = YES;
         
         REGISTER_FOR_SIZE_CHANGE;
     }
@@ -634,10 +753,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)sizeChanged:(id)sender
 {
-    _gridLeadingConstraint.constant = [[Sizer shared] agendaEventLeadingMargin];
-    _titleTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
-    _locationTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
-    _durationTextField.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize]];
+    _gridLeadingConstraint.constant = SizePref.agendaEventLeadingMargin;
+    _btnVideo.image = [NSImage imageNamed:SizePref.videoImageName];
+    _btnVideo.image.template = YES;
+    _titleTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
+    _locationTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
+    _durationTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
 }
 
 - (void)setFrame:(NSRect)frame
@@ -646,18 +767,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Setting preferredMaxLayoutWidth allows us to calculate height
     // after word-wrapping.
     // margins = leading + trailing margins
-    CGFloat margins = _gridLeadingConstraint.constant + 10;
+    CGFloat margins = _gridLeadingConstraint.constant + 5;
     _titleTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
     _locationTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
     _durationTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
-}
-
-- (CGFloat)height
-{
-    // The height of the textfields (which may have word-wrapped)
-    // plus the height of the top and bottom marigns.
-    // top margin + bottom margin = 3 + 3 = 6
-    return _grid.fittingSize.height + 6;
 }
 
 - (void)setDim:(BOOL)dim {
@@ -667,12 +780,42 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
 }
 
+- (NSImage *)pendingPatternImage
+{
+    static NSImage *patternImage = nil;
+    if (!patternImage) {
+        patternImage = [NSImage imageWithSize:NSMakeSize(8, 8) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+            [Theme.pendingBackgroundColor set];
+            NSBezierPath *p = [NSBezierPath new];
+            [p moveToPoint:NSMakePoint(-2, 2)];
+            [p lineToPoint:NSMakePoint(6, 10)];
+            [p moveToPoint:NSMakePoint(10, 6)];
+            [p lineToPoint:NSMakePoint(2, -2)];
+            [p setLineWidth:3];
+            [p stroke];
+            return YES;
+        }];
+    }
+    return patternImage;
+}
+
 - (void)drawRect:(NSRect)dirtyRect
 {
+    // Draw a pattern background for events that are pending
+    // participation acceptance. Inset and radius match the
+    // hover values in AgendaRowView -drawBackgroundInRect:.
+    BOOL isTentative = [[self.eventInfo.event valueForKey:@"participationStatus"] integerValue] == EKParticipantStatusTentative;
+    BOOL isPending = [[self.eventInfo.event valueForKey:@"participationStatus"] integerValue] == EKParticipantStatusPending;
+    if (self.eventInfo.event.hasAttendees && isPending) {
+        [[NSColor colorWithPatternImage:[self pendingPatternImage]] set];
+        [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(self.bounds, 8, 1) xRadius:5 yRadius:5] fill];
+    }
+    // Draw colored dot. Dot is elongated for all-day events.
+    // Stroke for tentative and pending events, otherwise fill.
     CGFloat alpha = self.dim ? 0.5 : 1;
-    CGFloat x = 5;
-    CGFloat yOffset = [[Sizer shared] fontSize] + 2;
-    CGFloat dotWidthX = [[Sizer shared] agendaDotWidth];
+    CGFloat x = 11;
+    CGFloat yOffset = SizePref.fontSize + 2;
+    CGFloat dotWidthX = SizePref.agendaDotWidth;
     CGFloat dotWidthY = dotWidthX;
     CGFloat radius = dotWidthX / 2.0;
     NSColor *dotColor = self.eventInfo.event.calendar.color;
@@ -684,7 +827,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
         radius -= 1;
     }
     [[dotColor colorWithAlphaComponent:alpha] set];
-    [[NSBezierPath bezierPathWithRoundedRect:NSMakeRect(x, NSHeight(self.bounds) - yOffset, dotWidthX, dotWidthY) xRadius:radius yRadius:radius] fill];
+    NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:NSMakeRect(x, NSHeight(self.bounds) - yOffset, dotWidthX, dotWidthY) xRadius:radius yRadius:radius];
+    if (self.eventInfo.event.hasAttendees && (isTentative || isPending)) {
+        p.lineWidth = 1.5;
+        [p stroke];
+    } else {
+        [p fill];
+    }
 }
 
 @end
@@ -696,113 +845,154 @@ static NSString *kEventCellIdentifier = @"EventCell";
 // AgendaPopoverVC
 // =========================================================================
 
-#define POPOVER_TEXT_WIDTH 180
+#define POPOVER_TEXT_WIDTH 240
 
 @implementation AgendaPopoverVC
 {
-    NSGridView  *_textGrid;
     NSGridView  *_grid;
     NSTextField *_title;
     NSTextField *_duration;
     NSTextField *_recurrence;
     NSTextView *_location;
     NSTextView *_note;
+    NSTextView *_URL;
+    NSScrollView *_scrollView;
     NSDataDetector *_linkDetector;
+    NSRegularExpression *_hiddenLinksRegex;
     NSLayoutConstraint *_locHeight;
     NSLayoutConstraint *_noteHeight;
+    NSLayoutConstraint *_URLHeight;
 }
 
 - (instancetype)init
 {
-    // Convenience function for making labels.
-    NSTextField* (^label)(CGFloat) = ^NSTextField* (CGFloat weight) {
+    // Convenience functions for making labels and separators.
+    NSTextField* (^label)(void) = ^NSTextField* {
         NSTextField *lbl = [NSTextField wrappingLabelWithString:@""];
-        lbl.preferredMaxLayoutWidth = POPOVER_TEXT_WIDTH;
         lbl.drawsBackground = NO;
         lbl.textColor = Theme.currentMonthTextColor;
         [lbl setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
         return lbl;
     };
+    NSBox* (^separator)(void) = ^NSBox* {
+        // Need a big width for separator to show up reliably in NSGridView.
+        NSBox *separator = [[NSBox alloc] initWithFrame:NSMakeRect(0, 0, 999, 1)];
+        separator.boxType = NSBoxSeparator;
+        return separator;
+    };
     self = [super init];
     if (self) {
-        _title = label(NSFontWeightMedium);
-        _duration = label(NSFontWeightRegular);
-        _recurrence = label(NSFontWeightRegular);
-        
-        NSScrollView *locScrollView = [NSScrollView new];
-        locScrollView.frame = NSMakeRect(0, 0, POPOVER_TEXT_WIDTH, 100);
-        locScrollView.autoresizingMask = NSViewHeightSizable;
-        locScrollView.drawsBackground = NO;
+        _title = label();
+        _duration = label();
+        _recurrence = label();
         
         _location = [NSTextView new];
-        _location.frame = locScrollView.bounds;
-        _location.autoresizingMask = NSViewHeightSizable;
         _location.editable = NO;
         _location.selectable = YES;
         _location.drawsBackground = NO;
         _location.textContainer.lineFragmentPadding = 0;
         _location.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
-        _location.textContainer.widthTracksTextView = YES;
-        
-        locScrollView.documentView = _location;
-        
-        NSScrollView *scrollView = [NSScrollView new];
-        scrollView.frame = NSMakeRect(0, 0, POPOVER_TEXT_WIDTH, 100);
-        scrollView.autoresizingMask = NSViewHeightSizable;
-        scrollView.drawsBackground = NO;
         
         _note = [NSTextView new];
-        _note.frame = scrollView.bounds;
-        _note.autoresizingMask = NSViewHeightSizable;
         _note.editable = NO;
         _note.selectable = YES;
         _note.drawsBackground = NO;
         _note.textContainer.lineFragmentPadding = 0;
         _note.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
-        _note.textContainer.widthTracksTextView = YES;
         
-        scrollView.documentView = _note;
+        _URL = [NSTextView new];
+        _URL.editable = NO;
+        _URL.selectable = YES;
+        _URL.drawsBackground = NO;
+        _URL.textContainer.lineFragmentPadding = 0;
+        _URL.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
         
-        _btnDelete = [MoButton new];
-        _btnDelete.image = [NSImage imageNamed:@"btnDel"];
-        _btnDelete.image.template = YES;
+        _btnDelete = [NSButton new];
+        _btnDelete.title = @"⌫";
         _btnDelete.focusRingType = NSFocusRingTypeNone;
-        _textGrid = [NSGridView gridViewWithViews:@[@[_title],
-                                                    @[locScrollView],
-                                                    @[_duration],
-                                                    @[_recurrence],
-                                                    @[scrollView]]];
-        _textGrid.rowSpacing = 8;
-        [_textGrid rowAtIndex:4].topPadding = 4;
-        [_textGrid columnAtIndex:0].width = _title.preferredMaxLayoutWidth;
-        _grid = [NSGridView gridViewWithViews:@[@[_textGrid, _btnDelete]]];
-        _grid.translatesAutoresizingMaskIntoConstraints = NO;
-        _grid.rowSpacing = 0;
-        _grid.columnSpacing = 5;
-        _grid.yPlacement = NSGridCellPlacementCenter;
-        _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
+        _btnDelete.bordered = NO;
+        _btnDelete.contentTintColor = NSColor.secondaryLabelColor;
         
-        [locScrollView.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
-        _locHeight = [locScrollView.heightAnchor constraintEqualToConstant:100];
-        _locHeight.active = YES;
+        NSView *titleHolder = [NSView new];
+        [titleHolder addSubview:_title];
+        [titleHolder addSubview:_btnDelete];
+        MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:titleHolder metrics:nil views:NSDictionaryOfVariableBindings(_title, _btnDelete)];
+        [vfl :@"H:|[_title]-(>=10)-[_btnDelete]|" :NSLayoutFormatAlignAllCenterY];
+        [vfl :@"V:|[_title]|"];
+        [titleHolder.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
+        
+        _grid = [NSGridView gridViewWithViews:@[@[titleHolder],  // row 0
+                                                @[_location],    // 1
+                                                @[separator()],  // 2
+                                                @[_duration],    // 3
+                                                @[_recurrence],  // 4
+                                                @[separator()],  // 5
+                                                @[_note],        // 6
+                                                @[_URL]]];       // 7
+        _grid.rowSpacing = 8;
+        _grid.translatesAutoresizingMaskIntoConstraints = NO;
+        [_grid cellForView:_btnDelete].xPlacement = NSGridCellPlacementCenter;
+        [_grid columnAtIndex:0].width = POPOVER_TEXT_WIDTH;
+        [_grid columnAtIndex:0].leadingPadding  = 10;
+        [_grid columnAtIndex:0].trailingPadding = 14;
 
-        [scrollView.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
-        _noteHeight = [scrollView.heightAnchor constraintEqualToConstant:100];
+        _scrollView = [NSScrollView new];
+        _scrollView.drawsBackground = NO;
+        _scrollView.hasVerticalScroller = YES;
+        _scrollView.documentView = _grid;
+
+        _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
+        _hiddenLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"<((https?|rdar):\\/\\/[^\\s]+)>" options:NSRegularExpressionCaseInsensitive error:NULL];
+        
+        _locHeight = [_location.heightAnchor constraintEqualToConstant:100];
+        _locHeight.active = YES;
+        _noteHeight = [_note.heightAnchor constraintEqualToConstant:100];
         _noteHeight.active = YES;
+        _URLHeight = [_URL.heightAnchor constraintEqualToConstant:100];
+        _URLHeight.active = YES;
     }
     return self;
 }
 
 - (void)loadView
 {
-    // Important to set width of view here. Otherwise popover
-    // won't size propertly on first display.
-    NSView *view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, POPOVER_TEXT_WIDTH, 1)];
-    [view addSubview:_grid];
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:view metrics:nil views:NSDictionaryOfVariableBindings(_grid)];
-    [vfl :@"H:|-10-[_grid]-10-|"];
-    [vfl :@"V:|-8-[_grid]-8-|"];
+    NSView *view = [NSView new];
+    [view addSubview:_scrollView];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:view metrics:nil views:NSDictionaryOfVariableBindings(_scrollView)];
+    [vfl :@"H:|[_scrollView]|"];
+    [vfl :@"V:|-8-[_scrollView]-8-|"];
     self.view = view;
+}
+
+- (void)viewDidAppear
+{
+    // Add a colored subview at the bottom the of popover's
+    // window's frameView's view hierarchy. This should color
+    // the popover including the arrow.
+    NSView *frameView = self.view.window.contentView.superview;
+    if (!frameView) return;
+    if (frameView.subviews.count > 0
+        && [frameView.subviews[0].identifier isEqualToString:@"popoverBackgroundBox"]) return;
+    NSBox *backgroundColorView = [[NSBox alloc] initWithFrame:frameView.bounds];
+    backgroundColorView.identifier = @"popoverBackgroundBox";
+    backgroundColorView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    backgroundColorView.boxType = NSBoxCustom;
+    backgroundColorView.borderType = NSNoBorder;
+    backgroundColorView.fillColor = Theme.mainBackgroundColor;
+    [frameView addSubview:backgroundColorView positioned:NSWindowBelow relativeTo:nil];
+}
+
+- (NSSize)size
+{
+    // See -loadView. Vertial padding top+bottom = 16.
+    return NSMakeSize(_grid.fittingSize.width, _grid.fittingSize.height + 16);
+}
+
+- (void)scrollToTopAndFlashScrollers
+{
+    NSView *docView = _scrollView.documentView;
+    [docView scrollPoint:NSMakePoint(0, NSHeight(docView.bounds))];
+    [_scrollView flashScrollers];
 }
 
 - (void)populateWithEventInfo:(EventInfo *)info
@@ -822,31 +1012,39 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
     
     // Hide location row IF there's no location string.
-    [_textGrid rowAtIndex:1].hidden = !info.event.location;
+    [_grid rowAtIndex:1].hidden = !info.event.location;
     
     // Hide recurrence row IF there's no recurrence rule.
-    [_textGrid rowAtIndex:3].hidden = !info.event.hasRecurrenceRules;
+    [_grid rowAtIndex:4].hidden = !info.event.hasRecurrenceRules;
     
-    // Hide note row IF there's no note.
-    [_textGrid rowAtIndex:4].hidden = !info.event.hasNotes;
+    // Hide note row and separator row above it IF there's no note AND no URL.
+    [_grid rowAtIndex:5].hidden = !info.event.hasNotes && !info.event.URL;
+    [_grid rowAtIndex:6].hidden = !info.event.hasNotes;
     
-    // Hide delete button if event doesn't allow modification.
-    [_grid columnAtIndex:1].hidden = !info.event.calendar.allowsContentModifications;
-    
+    // Hide URL row and IF there's no URL.
+    [_grid rowAtIndex:7].hidden = !info.event.URL;
+
+    // Hide delete button IF event doesn't allow modification.
+    _btnDelete.hidden = !info.event.calendar.allowsContentModifications;
+
     // All-day events don't show time.
     intervalFormatter.timeStyle = info.event.isAllDay
         ? NSDateIntervalFormatterNoStyle
         : NSDateIntervalFormatterShortStyle;
-    // For single-day events, end date is same as start date.
-    NSDate *endDate = info.isSingleDay
-        ? info.event.startDate
+    // All-day events technically end at the start of the day after
+    // their end date. So display endDate as one less.
+    NSDate *endDate = info.event.isAllDay
+        ? [self.nsCal dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:info.event.endDate options:0]
         : info.event.endDate;
     // Interval formatter just prints single date when from == to.
     duration = [intervalFormatter stringFromDate:info.event.startDate toDate:endDate];
     // If the locale is English and we are in 12 hour time,
     // remove :00 from the time. Effect is 3:00 PM -> 3 PM.
     if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
-        duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
+        if ([duration containsString:@"AM"] || [duration containsString:@"PM"] ||
+            [duration containsString:@"am"] || [duration containsString:@"pm"]) {
+            duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
+        }
     }
     // If the event is not All-day and the start and end dates are
     // different, put them on different lines.
@@ -905,7 +1103,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (info.event.location) {
         NSString *trimmedLoc = [info.event.location stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if ([trimmedLoc isEqualToString:@""]) {
-            [_textGrid rowAtIndex:1].hidden = YES;
+            [_grid rowAtIndex:1].hidden = YES;
         }
         else {
             [self populateTextView:_location withString:trimmedLoc heightConstraint:_locHeight];
@@ -916,41 +1114,48 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (info.event.hasNotes) {
         NSString *trimmedNotes = [info.event.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if ([trimmedNotes isEqualToString:@""]) {
-            [_textGrid rowAtIndex:4].hidden = YES;
+            // Hide note row and separator row above it, provided no URL.
+            [_grid rowAtIndex:5].hidden = !info.event.URL;
+            [_grid rowAtIndex:6].hidden = YES;
         }
         else {
             [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight];
         }
     }
+
+    // URL
+    if (info.event.URL) {
+        // HACK: append a space at end of URL to force correct height calc. Without
+        // this, height is sometimes wrong on first display.
+        NSString *absURL = [NSString stringWithFormat:@"%@ ", info.event.URL.absoluteString];
+        [self populateTextView:_URL withString:absURL heightConstraint:_URLHeight];
+    }
+    
     _title.stringValue = title;
     _duration.stringValue = duration;
     _recurrence.stringValue = recurrence;
     
-    _title.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightMedium];
-    _duration.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
-    _recurrence.font = [NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightRegular];
+    _title.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
+    _duration.font = [NSFont systemFontOfSize:SizePref.fontSize];
+    _recurrence.font = _duration.font;
+    _btnDelete.font  = [NSFont systemFontOfSize:SizePref.fontSize+3];
 
     _title.textColor = Theme.agendaEventTextColor;
     _duration.textColor = Theme.agendaEventTextColor;
     _recurrence.textColor = Theme.agendaEventTextColor;
 }
 
-- (NSSize)size
-{
-    // The size of the grid plus the size of the margins.
-    // 20 = 10 + 10 = left + right margins
-    // 16 = 8 + 8 = top + bottom margins
-    NSSize gridSize = _grid.fittingSize;
-    return NSMakeSize(gridSize.width + 20, gridSize.height + 16);
-}
-
 - (void)populateTextView:(NSTextView *)textView withString:(NSString *)string heightConstraint:(NSLayoutConstraint *)constraint
 {
+    // Ugly hack to deal with Microsoft's insane habit of putting links
+    // in angle brackets, making them invisible when rendereed as HTML.
+    string = [_hiddenLinksRegex stringByReplacingMatchesInString:string options:kNilOptions range:NSMakeRange(0, string.length) withTemplate:@"&lt;$1&gt;"];
+
     string = [string stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"];
     NSData *htmlData = [string dataUsingEncoding:NSUnicodeStringEncoding];
     NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithHTML:htmlData documentAttributes:nil];
     
-    [attrString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:[[Sizer shared] fontSize]] range:NSMakeRange(0, attrString.length)];
+    [attrString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:SizePref.fontSize] range:NSMakeRange(0, attrString.length)];
     [attrString addAttribute:NSForegroundColorAttributeName value:Theme.agendaEventTextColor range:NSMakeRange(0, attrString.length)];
     [_linkDetector enumerateMatchesInString:attrString.string options:kNilOptions range:NSMakeRange(0, attrString.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
         [attrString addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];
@@ -961,10 +1166,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     (void) [textView.layoutManager glyphRangeForTextContainer:textView.textContainer];
     NSRect textRect = [textView.layoutManager usedRectForTextContainer:textView.textContainer];
     
-    // Set constraint to textView text height, but no more than 200.
-    constraint.constant = MIN(textRect.size.height, 200);
-    
-    [textView scrollToBeginningOfDocument:nil];
+    constraint.constant = textRect.size.height;
 }
 
 @end

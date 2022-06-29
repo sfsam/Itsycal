@@ -11,5 +11,6 @@
 @interface MoButton : NSButton
 
 @property (nonatomic) NSColor *backgroundColor;
+@property (nonatomic, copy) void (^actionBlock)(void);
 
 @end
