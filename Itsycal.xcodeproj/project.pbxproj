@@ -19,10 +19,6 @@
 		922B6BBE1A87EDBD00DEA9CD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 922B6BC01A87EDBD00DEA9CD /* Localizable.strings */; };
 		922B6BC41A87EDBE00DEA9CD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 922B6BC61A87EDBE00DEA9CD /* InfoPlist.strings */; };
 		922D9B261DC7A1CA0050AB2F /* MoUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 922D9B251DC7A1C90050AB2F /* MoUtils.m */; };
-		923E78E01D385D480012979B /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 923E78DD1D385CF60012979B /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		923E78E11D385D4F0012979B /* MASShortcut.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 923E78DC1D385CF60012979B /* MASShortcut.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		923E78E21D385FD80012979B /* MASShortcut.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 923E78DC1D385CF60012979B /* MASShortcut.framework */; };
-		923E78E31D385FDB0012979B /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 923E78DD1D385CF60012979B /* Sparkle.framework */; };
 		9242A5631A82A136005AA4B3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5621A82A136005AA4B3 /* AppDelegate.m */; };
 		9242A5651A82A136005AA4B3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9242A5641A82A136005AA4B3 /* main.m */; };
 		9242A5671A82A136005AA4B3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9242A5661A82A136005AA4B3 /* Images.xcassets */; };
@@ -46,20 +42,6 @@
 		92B28CCF210BD17500485AE2 /* Sizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 92B28CCE210BD17500485AE2 /* Sizer.m */; };
 		92CDDE7B1A955D7F00D7675C /* AgendaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		9252DF361AFD3557007B079F /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				923E78E01D385D480012979B /* Sparkle.framework in CopyFiles */,
-				923E78E11D385D4F0012979B /* MASShortcut.framework in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		4610A7C6252CCD66000E93FB /* LunarCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LunarCore.h; sourceTree = "<group>"; };
@@ -152,14 +134,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				923E78E21D385FD80012979B /* MASShortcut.framework in Frameworks */,
-				923E78E31D385FDB0012979B /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		46746E87286CBFC80082CA9A /* LunarSupport */ = {
+			isa = PBXGroup;
+			children = (
+				4610A7C6252CCD66000E93FB /* LunarCore.h */,
+				4610A7C7252CCD66000E93FB /* LunarCore.m */,
+			);
+			name = LunarSupport;
+			sourceTree = "<group>";
+		};
 		9228A5A5210509910076BFFC /* Prefs */ = {
 			isa = PBXGroup;
 			children = (
@@ -203,6 +192,7 @@
 		9242A55E1A82A136005AA4B3 /* Itsycal */ = {
 			isa = PBXGroup;
 			children = (
+				46746E87286CBFC80082CA9A /* LunarSupport */,
 				9276915F27E17C74007E7978 /* beep.mp3 */,
 				921949F3225D283E00223258 /* Itsycal.entitlements */,
 				923E78DB1D385CD80012979B /* Frameworks */,
@@ -213,8 +203,6 @@
 				922B6B911A856A7D00DEA9CD /* SBCalendar.h */,
 				9242A5611A82A136005AA4B3 /* AppDelegate.h */,
 				9242A5621A82A136005AA4B3 /* AppDelegate.m */,
-				4610A7C6252CCD66000E93FB /* LunarCore.h */,
-				4610A7C7252CCD66000E93FB /* LunarCore.m */,
 				922D9B241DC7A1C90050AB2F /* MoUtils.h */,
 				922D9B251DC7A1C90050AB2F /* MoUtils.m */,
 				9242A5941A82BE5E005AA4B3 /* Itsycal.h */,
@@ -302,7 +290,6 @@
 				9242A5581A82A136005AA4B3 /* Sources */,
 				9242A5591A82A136005AA4B3 /* Frameworks */,
 				9242A55A1A82A136005AA4B3 /* Resources */,
-				9252DF361AFD3557007B079F /* CopyFiles */,
 				921949F4225D287F00223258 /* ShellScript */,
 			);
 			buildRules = (
@@ -325,8 +312,8 @@
 				TargetAttributes = {
 					9242A55B1A82A136005AA4B3 = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = HFT3T55WND;
-						ProvisioningStyle = Manual;
+						DevelopmentTeam = R24YD8KS22;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.HardenedRuntime = {
 								enabled = 1;
@@ -390,7 +377,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# For notarization we need to deep codesign Sparkle.\n# github.com/sparkle-project/Sparkle/issues/1266#issuecomment-421182578\nLOCATION=\"${BUILT_PRODUCTS_DIR}\"/\"${FRAMEWORKS_FOLDER_PATH}\"\nIDENTITY=\"${CODE_SIGN_IDENTITY}\"\ncodesign --verbose --force --deep -o runtime --sign \"$IDENTITY\" \"$LOCATION/Sparkle.framework/Versions/A/Resources/AutoUpdate.app\"\ncodesign --verbose --force -o runtime --sign \"$IDENTITY\" \"$LOCATION/Sparkle.framework/Versions/A\"\n";
+			shellScript = "
+";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -401,7 +389,6 @@
 			files = (
 				920D6D51266A83AC00498E19 /* MoLoginItem.m in Sources */,
 				9242A5921A82A40B005AA4B3 /* MoCalGrid.m in Sources */,
-				4610A7C8252CCD66000E93FB /* LunarCore.m in Sources */,
 				92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */,
 				922232CD1A8DF672003BFAD9 /* EventCenter.m in Sources */,
 				926A6D8F1E3EC89100AAA991 /* PrefsVC.m in Sources */,
@@ -583,10 +570,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Itsycal/Itsycal.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2203;
-				DEVELOPMENT_TEAM = HFT3T55WND;
+				DEVELOPMENT_TEAM = R24YD8KS22;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -596,8 +584,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MARKETING_VERSION = 0.13.2;
 				OTHER_LDFLAGS = "-Wl,-rpath,@loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mowglii.$(PRODUCT_NAME:rfc1034identifier)App";
+				PRODUCT_BUNDLE_IDENTIFIER = com.test.ItsycalApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -606,11 +595,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Itsycal/Itsycal.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 2203;
-				DEVELOPMENT_TEAM = HFT3T55WND;
+				DEVELOPMENT_TEAM = D27QQH72P5;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -620,8 +610,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MARKETING_VERSION = 0.13.2;
 				OTHER_LDFLAGS = "-Wl,-rpath,@loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mowglii.$(PRODUCT_NAME:rfc1034identifier)App";
+				PRODUCT_BUNDLE_IDENTIFIER = com.test.ItsycalApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};
