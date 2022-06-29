@@ -53,7 +53,6 @@
     NSButton *useColoredDots = chkbx(NSLocalizedString(@"Use colored dots", @""));
     NSButton *showWeeks = chkbx(NSLocalizedString(@"Show calendar weeks", @""));
     NSButton *showLocation = chkbx(NSLocalizedString(@"Show event location", @""));
-    NSButton *bigger = chkbx(NSLocalizedString(@"Use larger text", @""));
     _hideIcon = chkbx(NSLocalizedString(@"Hide icon", @""));
 
     // Datetime format text field
@@ -92,8 +91,25 @@
     [themePopup itemAtIndex:2].tag = ThemePreferenceDark;
     [v addSubview:themePopup];
     
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(menubarLabel, calendarLabel, separator0, separator1, bigger, useOutlineIcon, showMonth, showDayOfWeek, showEventDots, useColoredDots, showWeeks, showLocation, _dateTimeFormat, helpButton, _hideIcon, highlight, themeLabel, themePopup)];
-    [vfl :@"V:|-m-[menubarLabel]-10-[useOutlineIcon]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[themePopup]-m-[highlight]-m-[showEventDots]-[useColoredDots]-[showLocation]-[showWeeks]-[bigger]-m-|"];
+    // Size labels
+    NSTextField *sizeMinLabel = [NSTextField labelWithString:@"Aa"];
+    NSTextField *sizeMaxLabel = [NSTextField labelWithString:@"Aa"];
+    sizeMinLabel.font = [NSFont systemFontOfSize:FONT_SIZE_SMALL];
+    sizeMaxLabel.font = [NSFont systemFontOfSize:FONT_SIZE_LARGE];
+    [v addSubview:sizeMinLabel];
+    [v addSubview:sizeMaxLabel];
+
+    // Text size slider
+    NSSlider *sizeSlider = [NSSlider sliderWithValue:0 minValue:FONT_SIZE_SMALL maxValue:FONT_SIZE_LARGE target:nil action:NULL];
+    sizeSlider.sliderType = NSSliderTypeLinear;
+    sizeSlider.numberOfTickMarks = 3; // SizePreferenceSmall=0, Medium=1, Large=2
+    sizeSlider.allowsTickMarkValuesOnly = YES;
+    sizeSlider.minValue = SizePreferenceSmall;  // = 0
+    sizeSlider.maxValue = SizePreferenceLarge;  // = 2
+    [v addSubview:sizeSlider];
+
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(menubarLabel, calendarLabel, separator0, separator1, useOutlineIcon, showMonth, showDayOfWeek, showEventDots, useColoredDots, showWeeks, showLocation, _dateTimeFormat, helpButton, _hideIcon, highlight, themeLabel, themePopup, sizeMinLabel, sizeSlider, sizeMaxLabel)];
+    [vfl :@"V:|-m-[menubarLabel]-10-[useOutlineIcon]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[sizeSlider]-15-[themePopup]-m-[highlight]-m-[showEventDots]-[useColoredDots]-[showLocation]-[showWeeks]-m-|"];
     [vfl :@"H:|-m-[menubarLabel]-[separator0]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[calendarLabel]-[separator1]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[useOutlineIcon]-(>=m)-|"];
@@ -102,12 +118,14 @@
     [vfl :@"H:|-m-[_dateTimeFormat]-[helpButton]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[_hideIcon]-(>=m)-|"];
     [vfl :@"H:|-m-[highlight]-(>=m)-|"];
+    [vfl :@"H:|-(>=m)-[sizeMinLabel]-[sizeSlider(90)]-[sizeMaxLabel]-(>=m)-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[themeLabel]-[themePopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
     [vfl :@"H:|-m-[showEventDots]-(>=m)-|"];
     [vfl :@"H:|-mm-[useColoredDots]-(>=m)-|"];
     [vfl :@"H:|-m-[showWeeks]-(>=m)-|"];
     [vfl :@"H:|-m-[showLocation]-(>=m)-|"];
-    [vfl :@"H:|-m-[bigger]-(>=m)-|"];
+
+    [v.centerXAnchor constraintEqualToAnchor:sizeSlider.centerXAnchor].active = YES;
 
     // Bindings for icon preferences
     [useOutlineIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseOutlineIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
@@ -144,7 +162,7 @@
     [themePopup bind:@"selectedTag" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
     // Bindings for size
-    [bigger bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [sizeSlider bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     
     self.view = v;
 }

@@ -5,11 +5,10 @@
 
 #import "PrefsGeneralVC.h"
 #import "Itsycal.h"
-#import "MASShortcut/MASShortcutView.h"
-#import "MASShortcut/MASShortcutView+Bindings.h"
-#import "MoLoginItem/MoLoginItem.h"
+#import "MoLoginItem.h"
 #import "MoVFLHelper.h"
 #import "EventCenter.h"
+#import "MASShortcut/Shortcut.h"
 #import "Sparkle/SUUpdater.h"
 
 static NSString * const kSourceCellId = @"SourceCell";
@@ -87,7 +86,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     // Shortcut view
     MASShortcutView *shortcutView = [MASShortcutView new];
-    shortcutView.associatedUserDefaultsKey = kKeyboardShortcut;
+    [shortcutView setAssociatedUserDefaultsKey:kKeyboardShortcut withTransformerName:MASDictionaryTransformerName];
     [v addSubview:shortcutView];
     
     // Calendars table view
@@ -97,6 +96,11 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     _calendarsTV.intercellSpacing = NSMakeSize(0, 0);
     _calendarsTV.dataSource = self;
     _calendarsTV.delegate = self;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 110000
+    if (@available(macOS 11.0, *)) {
+        _calendarsTV.style = NSTableViewStylePlain;
+    }
+#endif
     [_calendarsTV addTableColumn:[[NSTableColumn alloc] initWithIdentifier:@"SourcesAndCalendars"]];
 
     // Calendars enclosing scrollview

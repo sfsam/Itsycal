@@ -29,6 +29,8 @@ typedef NS_ENUM(OSStatus, SUError) {
     SUNoUpdateError = 1001,
     SUAppcastError = 1002,
     SURunningFromDiskImageError = 1003,
+    SURunningTranslocated = 1004,
+    SUWebKitTerminationError = 1005,
 
     // Download phase errors.
     SUTemporaryDirectoryError = 2000,

@@ -17,11 +17,11 @@
 
 - (instancetype)init
 {
-    CGFloat sz = [[Sizer shared] cellSize];
+    CGFloat sz = SizePref.cellSize;
     self = [super initWithFrame:NSMakeRect(0, 0, sz, sz)];
     if (self) {
         _textField = [NSTextField labelWithString:@""];
-        [_textField setFont:[NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightMedium]];
+        [_textField setFont:[NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightMedium]];
         [_textField setTextColor:[NSColor blackColor]];
         [_textField setAlignment:NSTextAlignmentCenter];
         [_textField setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -30,7 +30,7 @@
 
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_textField]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
         
-        _textFieldVerticalSpace = [NSLayoutConstraint constraintWithItem:_textField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:[[Sizer shared] cellTextFieldVerticalSpace]];
+        _textFieldVerticalSpace = [NSLayoutConstraint constraintWithItem:_textField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:SizePref.cellTextFieldVerticalSpace];
         [self addConstraint:_textFieldVerticalSpace];
 
         
@@ -41,8 +41,8 @@
 
 - (void)sizeChanged:(id)sender
 {
-    [_textField setFont:[NSFont systemFontOfSize:[[Sizer shared] fontSize] weight:NSFontWeightMedium]];
-    _textFieldVerticalSpace.constant = [[Sizer shared] cellTextFieldVerticalSpace];
+    [_textField setFont:[NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightMedium]];
+    _textFieldVerticalSpace.constant = SizePref.cellTextFieldVerticalSpace;
 }
 
 - (void)setIsToday:(BOOL)isToday {
@@ -88,7 +88,7 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    CGFloat radius = [[Sizer shared] cellRadius];
+    CGFloat radius = SizePref.cellRadius;
     if (self.isToday) {
         [Theme.todayCellColor set];
         NSRect r = NSInsetRect(self.bounds, 3, 3);
@@ -111,8 +111,8 @@
         [p stroke];
     }
     if (self.dotColors) {
-        CGFloat sz = [[Sizer shared] cellSize];
-        CGFloat dotWidth = [[Sizer shared] cellDotWidth];
+        CGFloat sz = SizePref.cellSize;
+        CGFloat dotWidth = SizePref.cellDotWidth;
         CGFloat dotSpacing = 1.5*dotWidth;
         NSRect r = NSMakeRect(0, 0, dotWidth, dotWidth);
         r.origin.y = self.bounds.origin.y + dotWidth + 2;

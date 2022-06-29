@@ -12,9 +12,8 @@
 #import "ViewController.h"
 #import "Themer.h"
 #import "Sizer.h"
-#import "MASShortcut/MASShortcutBinder.h"
-#import "MASShortcut/MASShortcutMonitor.h"
 #import "MoUtils.h"
+#import "MASShortcut/Shortcut.h"
 
 @implementation AppDelegate
 {
@@ -68,6 +67,10 @@
     // used throught the app instead of '[Themer shared]'.
     [Themer shared];
 
+    // Initialize the 'SizePref' global variable which can be
+    // used throught the app instead of '[Sizer shared]'.
+    [Sizer shared];
+
     // 0.11.1 introduced a new way to highlight columns in the calendar.
     [self weekendHighlightFixup];
     
@@ -75,16 +78,19 @@
     // the system's appearance.
     [self themeFixup];
 
+    // 0.13.2 uses an NSDictionary instead of NSData to store the shortcut.
+    [self shortcutFixup];
+
     // Register keyboard shortcut.
+    [[MASShortcutBinder sharedBinder] setBindingOptions:@{NSValueTransformerNameBindingOption: MASDictionaryTransformerName}];
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
          [(ViewController *)self->_wc.contentViewController keyboardShortcutActivated];
      }];
 
-    // This call instantiates the Sizer shared object and then
-    // establishes the binding to NSUserDefaultsController. This call
+    // Establish the binding to NSUserDefaultsController. This call
     // must be made BEFORE the window is created because sizes are
     // used when initializing views.
-    [[Sizer shared] bind:@"sizePreference" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [SizePref bind:@"sizePreference" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     ViewController *vc = [ViewController new];
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
@@ -178,6 +184,22 @@
 - (void)themeFixup
 {
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"ThemeIndex"];
+}
+
+// 0.13.2 uses an NSDictionary instead of NSData to store the shortcut.
+// Apple deprecated NSKeyedUnarchiveFromDataTransformer so now we use
+// MASDictionaryTransformer instead. This conversion also has the nice
+// effect of making the stored value human-readable.
+- (void)shortcutFixup
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSData *data = [defaults dataForKey:@"KeyboardShortcut"];
+    [defaults removeObjectForKey:@"KeyboardShortcut"];
+    if (!data) return;
+    MASShortcut *shortcut = [NSKeyedUnarchiver unarchivedObjectOfClass:[MASShortcut class] fromData:data error:NULL];
+    if (!shortcut) return;
+    MASDictionaryTransformer *transformer = [MASDictionaryTransformer new];
+    [defaults setObject:[transformer reverseTransformedValue:shortcut] forKey:kKeyboardShortcut];
 }
 
 @end

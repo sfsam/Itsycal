@@ -1,6 +1,5 @@
 #import <Carbon/Carbon.h>
 #import <AppKit/AppKit.h>
-#import "MASKeyMasks.h"
 
 // These glyphs are missed in Carbon.h
 typedef NS_ENUM(unsigned short, kMASShortcutGlyph) {
@@ -22,6 +21,15 @@ typedef NS_ENUM(unsigned short, kMASShortcutGlyph) {
     kMASShortcutGlyphPadClear = 0x2327,
     kMASShortcutGlyphNorthwestArrow = 0x2196,
     kMASShortcutGlyphSoutheastArrow = 0x2198,
+};
+
+// The missing function key definitions for `NS*FunctionKey`s
+typedef NS_ENUM(unsigned short, kMASShortcutFuctionKey) {
+    kMASShortcutEscapeFunctionKey = 0x001B,
+    kMASShortcutDeleteFunctionKey = 0x0008,
+    kMASShortcutSpaceFunctionKey = 0x0020,
+    kMASShortcutReturnFunctionKey = 0x000D,
+    kMASShortcutTabFunctionKey = 0x0009,
 };
 
 NS_INLINE NSString* NSStringFromMASKeyCode(unsigned short ch)
