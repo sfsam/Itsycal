@@ -9,9 +9,6 @@
 #import "MoVFLHelper.h"
 
 @implementation PrefsAboutVC
-{
-    NSTextField *_emojiDonate;
-}
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -42,9 +39,6 @@
     MoTextField *help = label(NSLocalizedString(@"Help", nil), YES);
     help.urlString = @"https://www.mowglii.com/itsycal/help.html";
 
-    MoTextField *donate = label(NSLocalizedString(@"Donate", nil), YES);
-    donate.urlString = @"https://www.mowglii.com/donate";
-
     MoTextField *follow = label(NSLocalizedString(@"Follow", nil), YES);
     follow.urlString = @"https://twitter.com/intent/follow?screen_name=mowgliiapps";
 
@@ -60,18 +54,16 @@
     masshortcut.urlString = @"https://github.com/shpakovski/MASShortcut";
 
     NSTextField *emojiHelp    = label(@"❓", NO);
-    _emojiDonate              = label(@"☺️", NO);
     NSTextField *emojiTwitter = label(@"🐦", NO);
     NSTextField *emojiThanks  = label(@"🙏", NO);
 
     NSTextField *copyright1 = label(@"© 2012—2022", NO);
     MoTextField *copyright2 = label(@"mowglii.com", YES);
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(appName, version, help, emojiHelp, donate, _emojiDonate, follow, emojiTwitter, smile, emojiThanks, sparkle, comma, masshortcut, copyright1, copyright2)];
-    [vfl :@"V:|-m-[appName]-m-[help]-10-[donate]-10-[follow]-10-[sparkle]-m-[smile]-m-[copyright1]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(appName, version, help, emojiHelp, follow, emojiTwitter, smile, emojiThanks, sparkle, comma, masshortcut, copyright1, copyright2)];
+    [vfl :@"V:|-m-[appName]-m-[help]-10-[follow]-10-[sparkle]-m-[smile]-m-[copyright1]-m-|"];
     [vfl :@"H:|-m-[appName]-4-[version]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-m-[emojiHelp]-6-[help]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-m-[_emojiDonate]-6-[donate]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-m-[emojiTwitter]-6-[follow]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-m-[emojiThanks]-6-[sparkle][comma]-4-[masshortcut]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-m-[copyright1]-4-[copyright2]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
@@ -79,20 +71,6 @@
     [smile.centerXAnchor constraintEqualToAnchor:v.centerXAnchor].active = YES;
 
     self.view = v;
-}
-
-- (void)viewWillAppear
-{
-    [super viewWillAppear];
-    static NSInteger index = 0;
-    static NSArray *emojis = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        emojis = @[@"😊", @"😀", @"😜", @"😍",
-                   @"😝", @"🤗", @"😘", @"✌️"];
-    });
-    _emojiDonate.stringValue = emojis[index];
-    index = (index + 1) % emojis.count;
 }
 
 @end
