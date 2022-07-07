@@ -26,3 +26,4 @@ extern NSString * const kHideIcon;
 extern NSString * const kShowLocation;
 extern NSString * const kShowEventDots;
 extern NSString * const kUseColoredDots;
+extern NSString * const kBeepBeepOnTheHour;

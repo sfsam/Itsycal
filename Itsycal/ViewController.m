@@ -1084,7 +1084,7 @@
 
     // Should we beep-beep on the hour? If so, cap the volume relative to the
     // system volume so it's not too loud.
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"BeepBeepOnTheHour"]
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kBeepBeepOnTheHour]
         && components.minute == 0
         && components.second == 0) {
         NSSound *beepbeep = [NSSound soundNamed:@"beep"];
