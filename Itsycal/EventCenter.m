@@ -373,7 +373,11 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             if (   [link containsString:@"zoom.us/j/"]
                 || [link containsString:@"zoom.us/s/"]
                 || [link containsString:@"zoom.us/w/"]
-                || [link containsString:@"zoomgov.com/j/"]) {
+                || [link containsString:@"zoom.us/my/"]
+                || [link containsString:@"zoomgov.com/j/"]
+                || [link containsString:@"zoomgov.com/s/"]
+                || [link containsString:@"zoomgov.com/w/"]
+                || [link containsString:@"zoomgov.com/my/"]) {
                 info.zoomURL = result.URL;
                 // Test if user has the Zoom app and, if so, create a Zoom app link.
                 if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"zoommtg://"]]) {
