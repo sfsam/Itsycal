@@ -9,10 +9,60 @@
 #import "MoCalCell.h"
 #import "Themer.h"
 #import "Sizer.h"
+#import "LunarCore.h"
+
 
 @implementation MoCalCell
 {
     NSLayoutConstraint *_textFieldVerticalSpace;
+    NSLayoutConstraint *_subTextFieldVerticalSpace;
+    Boolean _showSubTitle;
+}
+
+- (instancetype)initWithSubtextSupport:(BOOL)showSubtitle
+{
+    _showSubTitle = showSubtitle;
+    CGFloat sz = SizePref.cellSize;
+    self = [super initWithFrame:NSMakeRect(0, 0, sz, sz)];
+    if (self) {
+        [self setupTextFiled];
+        if(_showSubTitle)[self setupSubtextFiled];
+        REGISTER_FOR_SIZE_CHANGE;
+    }
+
+    return self;
+}
+
+- (void)setupTextFiled
+{
+    _textField = [NSTextField labelWithString:@""];
+    [_textField setFont:[NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightMedium]];
+    [_textField setTextColor:[NSColor blackColor]];
+    [_textField setAlignment:NSTextAlignmentCenter];
+    [_textField setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [self addSubview:_textField];
+    
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_textField]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
+    _textFieldVerticalSpace = [NSLayoutConstraint constraintWithItem:_textField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:SizePref.cellTextFieldVerticalSpace];
+    [self addConstraint:_textFieldVerticalSpace];
+    
+    REGISTER_FOR_SIZE_CHANGE;
+    
+}
+
+- (void)setupSubtextFiled
+{
+    _subTextField = [NSTextField labelWithString:@""];
+    [_subTextField setFont:[NSFont systemFontOfSize:8 weight:NSFontWeightLight]];
+    [_subTextField setTextColor:[NSColor grayColor]];
+    [_subTextField setAlignment:NSTextAlignmentCenter];
+    [_subTextField setTranslatesAutoresizingMaskIntoConstraints:NO];
+
+    [self addSubview:_subTextField];
+
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_subTextField]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_subTextField)]];
+    _subTextFieldVerticalSpace = [NSLayoutConstraint constraintWithItem:_subTextField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_textField attribute:NSLayoutAttributeBottom multiplier:1 constant:2];
+    [self addConstraint:_subTextFieldVerticalSpace];
 }
 
 - (instancetype)init
@@ -20,29 +70,25 @@
     CGFloat sz = SizePref.cellSize;
     self = [super initWithFrame:NSMakeRect(0, 0, sz, sz)];
     if (self) {
-        _textField = [NSTextField labelWithString:@""];
-        [_textField setFont:[NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightMedium]];
-        [_textField setTextColor:[NSColor blackColor]];
-        [_textField setAlignment:NSTextAlignmentCenter];
-        [_textField setTranslatesAutoresizingMaskIntoConstraints:NO];
-
-        [self addSubview:_textField];
-
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_textField]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
-        
-        _textFieldVerticalSpace = [NSLayoutConstraint constraintWithItem:_textField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:SizePref.cellTextFieldVerticalSpace];
-        [self addConstraint:_textFieldVerticalSpace];
-
-        
+        [self setupTextFiled];
         REGISTER_FOR_SIZE_CHANGE;
     }
     return self;
+}
+
+- (void)setDate:(MoDate)date
+{
+    _date = date;
+    NSDictionary *lunarDate = [solarToLunar((int)date.year, (int) date.month, (int)date.day) copy];
+    NSLog(@"setDate %ld, %ld, lunar: %@, %@, %@, %@, %@", date.day, date.month, lunarDate[@"lunarDayName"], lunarDate[@"lunarMonthName"], lunarDate[@"lunarFestival"], lunarDate[@"solarFestival"], lunarDate[@"weekFestival"]);
+    _subTextField.stringValue = lunarDate[@"lunarDayName"];
 }
 
 - (void)sizeChanged:(id)sender
 {
     [_textField setFont:[NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightMedium]];
     _textFieldVerticalSpace.constant = SizePref.cellTextFieldVerticalSpace;
+    _subTextFieldVerticalSpace.constant = SizePref.cellTextFieldVerticalSpace;
 }
 
 - (void)setIsToday:(BOOL)isToday {

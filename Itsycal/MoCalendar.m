@@ -87,7 +87,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     NSInteger numRows = [[NSUserDefaults standardUserDefaults] integerForKey:kMoCalendarNumRows];
     numRows = MIN(MAX(numRows, 6), 10);
     
-    _dateGrid = [[MoCalGrid alloc] initWithRows:numRows columns:7 horizontalMargin:6 verticalMargin:6];
+    _dateGrid = [[MoCalGrid alloc] initWithRows:numRows columns:7 horizontalMargin:6 verticalMargin:6 showSubTitileInCell:YES];
     _weekGrid = [[MoCalGrid alloc] initWithRows:numRows columns:1 horizontalMargin:0 verticalMargin:6];
     _dowGrid  = [[MoCalGrid alloc] initWithRows:1 columns:7 horizontalMargin:6 verticalMargin:0];
 
@@ -174,6 +174,12 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
             c.isToday = CompareDates(c.date, todayDate) == 0;
         }
     }
+}
+
+- (void)setShowLunar:(BOOL)showLunar
+{
+    _showLunar = showLunar;
+    
 }
 
 - (MoDate)firstDate

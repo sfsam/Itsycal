@@ -19,31 +19,52 @@
 {
     self = [super initWithFrame:NSZeroRect];
     if (self) {
-        CGFloat sz = SizePref.cellSize;
-        NSMutableArray *cells = [NSMutableArray new];
-        for (NSUInteger row = 0; row < rows; row++) {
-            for (NSUInteger col = 0; col < cols; col++) {
-                CGFloat x = sz * col + hMargin;
-                CGFloat y = sz * rows - sz * (row + 1) + vMargin;
-                MoCalCell *cell = [MoCalCell new];
-                [cell setFrame:NSMakeRect(x, y, sz, sz)];
-                [self addSubview:cell];
-                [cells addObject:cell];
-            }
-        }
-        _cells = [NSArray arrayWithArray:cells];
-        _rows  = rows;
-        _cols  = cols;
-        _hMargin = hMargin;
-        _vMargin = vMargin;
-        
-        // Hug the cells tightly
-        [self setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationVertical];
-        [self setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
-        
-        REGISTER_FOR_SIZE_CHANGE;
+        [self setupCellsWithRows:rows columns:cols horizontalMargin:hMargin verticalMargin:vMargin showSubTitileInCell:false];
     }
     return self;
+}
+
+- (instancetype)initWithRows:(NSUInteger)rows
+                     columns:(NSUInteger)cols
+            horizontalMargin:(NSUInteger)hMargin
+              verticalMargin:(NSUInteger)vMargin
+         showSubTitileInCell:(BOOL)showSubTitle
+{
+    self = [super initWithFrame:NSZeroRect];
+    if (self) {
+        [self setupCellsWithRows:rows columns:cols horizontalMargin:hMargin verticalMargin:vMargin showSubTitileInCell:showSubTitle];
+    }
+    return self;
+}
+
+- (void)setupCellsWithRows:(NSUInteger)rows
+                   columns:(NSUInteger)cols
+          horizontalMargin:(NSUInteger)hMargin
+            verticalMargin:(NSUInteger)vMargin
+       showSubTitileInCell:(BOOL)showSubtitle
+{
+    CGFloat sz = SizePref.cellSize;
+    NSMutableArray *cells = [NSMutableArray new];
+    for (NSUInteger row = 0; row < rows; row++) {
+        for (NSUInteger col = 0; col < cols; col++) {
+            CGFloat x = sz * col + hMargin;
+            CGFloat y = sz * rows - sz * (row + 1) + vMargin;
+            MoCalCell *cell = [[MoCalCell alloc] initWithSubtextSupport:showSubtitle];
+            [cell setFrame:NSMakeRect(x, y, sz, sz)];
+            [self addSubview:cell];
+            [cells addObject:cell];
+        }
+    }
+    _cells = [NSArray arrayWithArray:cells];
+    _rows  = rows;
+    _cols  = cols;
+    _hMargin = hMargin;
+    _vMargin = vMargin;
+    
+    // Hug the cells tightly
+    [self setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationVertical];
+    [self setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
+    REGISTER_FOR_SIZE_CHANGE;
 }
 
 - (void)addRow

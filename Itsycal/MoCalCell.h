@@ -12,6 +12,7 @@
 @interface MoCalCell : NSView
 
 @property (nonatomic) NSTextField *textField;
+@property (nonatomic) NSTextField *subTextField;
 @property (nonatomic) MoDate date;
 @property (nonatomic) BOOL isToday;
 @property (nonatomic) BOOL isHighlighted;
@@ -24,5 +25,7 @@
 // - An empty array means draw a single dot in the default theme color.
 // - Otherwise, draw up to 3 dots with the given colors.
 @property (nonatomic) NSArray<NSColor *> *dotColors;
+
+-(instancetype)initWithSubtextSupport:(BOOL)showSubtitle;
 
 @end

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		46FE13AA288008E7009928DE /* LunarCore.h in Sources */ = {isa = PBXBuildFile; fileRef = 4610A7C6252CCD66000E93FB /* LunarCore.h */; };
+		46FE13AB288008E7009928DE /* LunarCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 4610A7C7252CCD66000E93FB /* LunarCore.m */; };
 		920D6D51266A83AC00498E19 /* MoLoginItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 920D6D4F266A83AC00498E19 /* MoLoginItem.m */; };
 		921181C722E0192A00591FDA /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 921181C622E0192A00591FDA /* Colors.xcassets */; };
 		9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */; };
@@ -387,6 +389,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46FE13AA288008E7009928DE /* LunarCore.h in Sources */,
+				46FE13AB288008E7009928DE /* LunarCore.m in Sources */,
 				920D6D51266A83AC00498E19 /* MoLoginItem.m in Sources */,
 				9242A5921A82A40B005AA4B3 /* MoCalGrid.m in Sources */,
 				92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */,

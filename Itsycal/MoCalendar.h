@@ -63,6 +63,9 @@ typedef enum : NSInteger {
 // DOW colums to highlight
 @property (nonatomic) DOWMask highlightedDOWs;
 
+// Show Chinese Lunar
+@property (nonatomic) BOOL showLunar;
+
 // An optional view controller for tooltips.
 @property (nonatomic) NSViewController<MoCalTooltipProvider> *tooltipVC;
 
