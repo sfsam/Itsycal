@@ -2,6 +2,8 @@
 // Copyright (c) 2018 mowglii.com
 
 #import "Sizer.h"
+#import "Itsycal.h"
+#import <Cocoa/Cocoa.h>
 
 // NSUserDefaults key
 NSString * const kSizePreference = @"SizePreference";
@@ -13,7 +15,11 @@ NSString * const kSizeDidChangeNotification = @"SizeDidChangeNotification";
             (self.sizePreference == SizePreferenceMedium ? med \
             : (self.sizePreference == SizePreferenceLarge ? lrg : sml))
 
+
 @implementation Sizer
+{
+    BOOL _showLunar;
+}
 
 Sizer *SizePref = nil;
 
@@ -25,6 +31,19 @@ Sizer *SizePref = nil;
         SizePref = shared;
     });
     return shared;
+}
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        [self
+         bind:@"showLunar"
+         toObject:[NSUserDefaultsController sharedUserDefaultsController]
+         withKeyPath:[@"values." stringByAppendingString:kShowLunarDate]
+         options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}
+        ];
+    }
+    return self;
 }
 
 - (void)setSizePreference:(SizePreference)sizePreference {
