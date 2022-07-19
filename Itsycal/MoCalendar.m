@@ -179,7 +179,11 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 - (void)setShowLunar:(BOOL)showLunar
 {
     _showLunar = showLunar;
-    
+    BOOL lunarDataAvaliable = [self.delegate respondsToSelector:@selector(lunarDateStrForDate:)];
+    for (MoCalCell *c in _dateGrid.cells) {
+        c.showSubTitle = showLunar;
+        !lunarDataAvaliable ?: [c.subTextField setStringValue:[self.delegate lunarDateStrForDate:c.date]];
+    }
 }
 
 - (MoDate)firstDate

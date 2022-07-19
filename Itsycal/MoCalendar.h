@@ -101,5 +101,8 @@ typedef enum : NSInteger {
 // - Otherwise, there are up to 3 dots with the given colors.
 - (NSArray<NSColor *> *)dotColorsForDate:(MoDate)date useColor:(BOOL)useColor;
 
+// Returan an string of lunar date;
+- (NSString *)lunarDateStrForDate:(MoDate)date;
+
 @end
 
