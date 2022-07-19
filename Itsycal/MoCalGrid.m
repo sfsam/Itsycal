@@ -49,7 +49,7 @@
         for (NSUInteger col = 0; col < cols; col++) {
             CGFloat x = sz * col + hMargin;
             CGFloat y = sz * rows - sz * (row + 1) + vMargin;
-            MoCalCell *cell = [[MoCalCell alloc] initWithSubtextSupport:showSubtitle];
+            MoCalCell *cell = [[MoCalCell alloc] init];
             [cell setFrame:NSMakeRect(x, y, sz, sz)];
             [self addSubview:cell];
             [cells addObject:cell];

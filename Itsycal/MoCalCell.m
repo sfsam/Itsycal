@@ -9,28 +9,12 @@
 #import "MoCalCell.h"
 #import "Themer.h"
 #import "Sizer.h"
-#import "LunarCore.h"
-
 
 @implementation MoCalCell
 {
     NSLayoutConstraint *_textFieldVerticalSpace;
     NSLayoutConstraint *_subTextFieldVerticalSpace;
-    Boolean _showSubTitle;
-}
-
-- (instancetype)initWithSubtextSupport:(BOOL)showSubtitle
-{
-    _showSubTitle = showSubtitle;
-    CGFloat sz = SizePref.cellSize;
-    self = [super initWithFrame:NSMakeRect(0, 0, sz, sz)];
-    if (self) {
-        [self setupTextFiled];
-        if(_showSubTitle)[self setupSubtextFiled];
-        REGISTER_FOR_SIZE_CHANGE;
-    }
-
-    return self;
+    NSArray <NSLayoutConstraint*> *_subTextFieldHorizontalSpaces;
 }
 
 - (void)setupTextFiled
@@ -52,17 +36,33 @@
 
 - (void)setupSubtextFiled
 {
-    _subTextField = [NSTextField labelWithString:@""];
-    [_subTextField setFont:[NSFont systemFontOfSize:8 weight:NSFontWeightLight]];
-    [_subTextField setTextColor:[NSColor grayColor]];
-    [_subTextField setAlignment:NSTextAlignmentCenter];
-    [_subTextField setTranslatesAutoresizingMaskIntoConstraints:NO];
+    if(!_subTextField) {
+        _subTextField = [NSTextField labelWithString:@""];
+        [_subTextField setFont:[NSFont systemFontOfSize:8 weight:NSFontWeightLight]];
+        [_subTextField setTextColor:[NSColor grayColor]];
+        [_subTextField setAlignment:NSTextAlignmentCenter];
+        [_subTextField setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [self addSubview:_subTextField];
 
-    [self addSubview:_subTextField];
-
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_subTextField]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_subTextField)]];
-    _subTextFieldVerticalSpace = [NSLayoutConstraint constraintWithItem:_subTextField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_textField attribute:NSLayoutAttributeBottom multiplier:1 constant:2];
+        _subTextFieldHorizontalSpaces = [NSLayoutConstraint
+                                         constraintsWithVisualFormat:@"H:|[_subTextField]|"
+                                         options:0
+                                         metrics:nil
+                                         views:NSDictionaryOfVariableBindings(_subTextField)];
+        _subTextFieldVerticalSpace = [NSLayoutConstraint constraintWithItem:_subTextField
+                                                                  attribute:NSLayoutAttributeTop
+                                                                  relatedBy:NSLayoutRelationEqual toItem:_textField
+                                                                  attribute:NSLayoutAttributeBottom multiplier:1
+                                                                   constant:2];
+    }
     [self addConstraint:_subTextFieldVerticalSpace];
+    [self addConstraints:_subTextFieldHorizontalSpaces];
+}
+
+- (void)removeSubTextField
+{
+    [self removeConstraint:_subTextFieldVerticalSpace];
+    [self removeConstraints:_subTextFieldHorizontalSpaces];
 }
 
 - (instancetype)init
@@ -79,9 +79,6 @@
 - (void)setDate:(MoDate)date
 {
     _date = date;
-    NSDictionary *lunarDate = [solarToLunar((int)date.year, (int) date.month, (int)date.day) copy];
-    NSLog(@"setDate %ld, %ld, lunar: %@, %@, %@, %@, %@", date.day, date.month, lunarDate[@"lunarDayName"], lunarDate[@"lunarMonthName"], lunarDate[@"lunarFestival"], lunarDate[@"solarFestival"], lunarDate[@"weekFestival"]);
-    _subTextField.stringValue = lunarDate[@"lunarDayName"];
 }
 
 - (void)sizeChanged:(id)sender
@@ -119,6 +116,16 @@
     if (isHovered != _isHovered) {
         _isHovered = isHovered;
         [self setNeedsDisplay:YES];
+    }
+}
+
+- (void)setShowSubTitle:(BOOL)showSubTitle
+{
+    if(showSubTitle != _showSubTitle) {
+        _showSubTitle = showSubTitle;
+        showSubTitle ? [self setupSubtextFiled] : [self removeSubTextField] ;
+        _subTextField.hidden = !showSubTitle;
+        [self setNeedsLayout:YES];
     }
 }
 
