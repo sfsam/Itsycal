@@ -20,6 +20,7 @@
 #import "MoButton.h"
 #import "MoVFLHelper.h"
 #import "MoUtils.h"
+#import "LunarCore.h"
 #import "Sparkle/SUUpdater.h"
 
 @implementation ViewController
@@ -947,6 +948,13 @@
     }
 }
 
+- (NSString*)lunarDateStrForDate:(MoDate)date
+{
+    NSDictionary *lunarDate = [solarToLunar((int)date.year, (int) date.month, (int)date.day) copy];
+    NSLog(@"setDate %ld, %ld, lunar: %@, %@, %@, %@, %@, %@", date.day, date.month, lunarDate[@"lunarDayName"], lunarDate[@"lunarMonthName"], lunarDate[@"lunarFestival"], lunarDate[@"solarFestival"], lunarDate[@"weekFestival"], lunarDate);
+    return lunarDate[@"lunarDayName"];
+}
+
 #pragma mark - Events
 
 - (NSArray *)eventsForDate:(MoDate)date
@@ -1238,7 +1246,7 @@
     }];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowMeetingIndicator, kHideIcon, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowMeetingIndicator, kHideIcon, kClockFormat, kShowLunarDate]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -1250,6 +1258,10 @@
 {
     if ([keyPath isEqualToString:kShowEventDays]) {
         [self updateAgenda];
+    }
+    if([keyPath isEqualToString:kShowLunarDate]) {
+        NSNumber *showLunar = change[NSKeyValueChangeNewKey];
+        _moCal.showLunar = showLunar.boolValue;
     }
     else if ([keyPath isEqualToString:kUseOutlineIcon] ||
              [keyPath isEqualToString:kShowMonthInIcon] ||
