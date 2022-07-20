@@ -33,11 +33,13 @@ extern Sizer *SizePref;
 
 @property (nonatomic) SizePreference sizePreference;
 @property (nonatomic, readonly) CGFloat fontSize;
+@property (nonatomic, readonly) CGFloat lunarDatefontSize;
 @property (nonatomic, readonly) CGFloat calendarTitleFontSize;
 @property (nonatomic, readonly) CGFloat cellSize;
 @property (nonatomic, readonly) CGFloat cellTextFieldVerticalSpace;
 @property (nonatomic, readonly) CGFloat cellDotWidth;
 @property (nonatomic, readonly) CGFloat cellRadius;
+@property (nonatomic, readonly) CGFloat cellBorderWidth;
 @property (nonatomic, readonly) CGFloat tooltipWidth;
 @property (nonatomic, readonly) CGFloat agendaEventLeadingMargin;
 @property (nonatomic, readonly) CGFloat agendaDotWidth;

@@ -55,12 +55,20 @@ Sizer *SizePref = nil;
     return SML_MED_LRG(FONT_SIZE_SMALL, FONT_SIZE_MEDIUM, FONT_SIZE_LARGE);
 }
 
+- (CGFloat)lunarDatefontSize {
+    return SML_MED_LRG(8, 9, 11);
+}
+
 - (CGFloat)calendarTitleFontSize {
     return SML_MED_LRG(14, 16, 18);
 }
 
 - (CGFloat)cellSize {
     return SML_MED_LRG(23, 28, 32);
+}
+
+- (CGFloat)cellBorderWidth {
+    return SML_MED_LRG(2, 2, 2);
 }
 
 - (CGFloat)cellTextFieldVerticalSpace {

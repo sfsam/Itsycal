@@ -38,7 +38,7 @@
 {
     if(!_subTextField) {
         _subTextField = [NSTextField labelWithString:@""];
-        [_subTextField setFont:[NSFont systemFontOfSize:8 weight:NSFontWeightLight]];
+        [_subTextField setFont:[NSFont systemFontOfSize:SizePref.lunarDatefontSize weight:NSFontWeightLight]];
         [_subTextField setTextColor:[NSColor grayColor]];
         [_subTextField setAlignment:NSTextAlignmentCenter];
         [_subTextField setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -53,7 +53,7 @@
                                                                   attribute:NSLayoutAttributeTop
                                                                   relatedBy:NSLayoutRelationEqual toItem:_textField
                                                                   attribute:NSLayoutAttributeBottom multiplier:1
-                                                                   constant:2];
+                                                                   constant:SizePref.cellTextFieldVerticalSpace];
     }
     [self addConstraint:_subTextFieldVerticalSpace];
     [self addConstraints:_subTextFieldHorizontalSpaces];
@@ -142,25 +142,26 @@
 - (void)drawRect:(NSRect)dirtyRect
 {
     CGFloat radius = SizePref.cellRadius;
+    CGFloat borderWdith = SizePref.cellBorderWidth;
     if (self.isToday) {
         [Theme.todayCellColor set];
         NSRect r = NSInsetRect(self.bounds, 3, 3);
         NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius];
-        [p setLineWidth:2];
+        [p setLineWidth:borderWdith];
         [p stroke];
     }
     else if (self.isSelected) {
         [Theme.selectedCellColor set];
         NSRect r = NSInsetRect(self.bounds, 3, 3);
         NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius];
-        [p setLineWidth:2];
+        [p setLineWidth:borderWdith];
         [p stroke];
     }
     else if (self.isHovered) {
         [Theme.hoveredCellColor set];
         NSRect r = NSInsetRect(self.bounds, 3, 3);
         NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius];
-        [p setLineWidth:2];
+        [p setLineWidth:borderWdith];
         [p stroke];
     }
     if (self.dotColors) {
@@ -168,7 +169,7 @@
         CGFloat dotWidth = SizePref.cellDotWidth;
         CGFloat dotSpacing = 1.5*dotWidth;
         NSRect r = NSMakeRect(0, 0, dotWidth, dotWidth);
-        r.origin.y = self.bounds.origin.y + dotWidth + 2;
+        r.origin.y = self.bounds.origin.y + dotWidth + borderWdith;
         if (self.dotColors.count == 0) {
             [self.textField.textColor set];
             r.origin.x = self.bounds.origin.x + sz/2.0 - dotWidth/2.0;
