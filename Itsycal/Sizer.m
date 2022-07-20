@@ -17,9 +17,6 @@ NSString * const kSizeDidChangeNotification = @"SizeDidChangeNotification";
 
 
 @implementation Sizer
-{
-    BOOL _showLunar;
-}
 
 Sizer *SizePref = nil;
 
@@ -33,21 +30,13 @@ Sizer *SizePref = nil;
     return shared;
 }
 
-- (instancetype)init
-{
-    if (self = [super init]) {
-        [self
-         bind:@"showLunar"
-         toObject:[NSUserDefaultsController sharedUserDefaultsController]
-         withKeyPath:[@"values." stringByAppendingString:kShowLunarDate]
-         options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}
-        ];
-    }
-    return self;
-}
-
 - (void)setSizePreference:(SizePreference)sizePreference {
     _sizePreference = sizePreference;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kSizeDidChangeNotification object:nil];
+}
+
+- (void)setShowLunar:(BOOL)showLunar {
+    _showLunar = showLunar;
     [[NSNotificationCenter defaultCenter] postNotificationName:kSizeDidChangeNotification object:nil];
 }
 

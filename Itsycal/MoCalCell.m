@@ -86,6 +86,8 @@
     [_textField setFont:[NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightMedium]];
     _textFieldVerticalSpace.constant = SizePref.cellTextFieldVerticalSpace;
     _subTextFieldVerticalSpace.constant = SizePref.cellTextFieldVerticalSpace;
+    CGRect originFrame = self.frame;
+    [self setFrame:CGRectMake(originFrame.origin.x, originFrame.origin.y, SizePref.cellSize.width, SizePref.cellSize.height)];
 }
 
 - (void)setIsToday:(BOOL)isToday {

@@ -32,6 +32,7 @@ typedef enum : NSInteger {
 extern Sizer *SizePref;
 
 @property (nonatomic) SizePreference sizePreference;
+@property (nonatomic) BOOL showLunar;
 @property (nonatomic, readonly) CGFloat fontSize;
 @property (nonatomic, readonly) CGFloat lunarDatefontSize;
 @property (nonatomic, readonly) CGFloat calendarTitleFontSize;

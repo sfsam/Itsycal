@@ -92,6 +92,12 @@
     // must be made BEFORE the window is created because sizes are
     // used when initializing views.
     [SizePref bind:@"sizePreference" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [SizePref
+     bind:@"showLunar"
+     toObject:[NSUserDefaultsController sharedUserDefaultsController]
+     withKeyPath:[@"values." stringByAppendingString:kShowLunarDate]
+     options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}
+    ];
 
     ViewController *vc = [ViewController new];
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
