@@ -64,11 +64,11 @@ Sizer *SizePref = nil;
 }
 
 - (CGSize)cellSize {
-    CGFloat width = SML_MED_LRG(23, 28, 32);
     if(!_showLunar) {
+        CGFloat width = SML_MED_LRG(23, 28, 32);
         return  CGSizeMake(width, width);
     } else {
-        return CGSizeMake(width, SML_MED_LRG(34, 40, 45));
+        return CGSizeMake(SML_MED_LRG(28, 35, 37), SML_MED_LRG(37, 41, 46));
     }
 }
 
