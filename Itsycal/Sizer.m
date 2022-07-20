@@ -63,8 +63,13 @@ Sizer *SizePref = nil;
     return SML_MED_LRG(14, 16, 18);
 }
 
-- (CGFloat)cellSize {
-    return SML_MED_LRG(23, 28, 32);
+- (CGSize)cellSize {
+    CGFloat width = SML_MED_LRG(23, 28, 32);
+    if(!_showLunar) {
+        return  CGSizeMake(width, width);
+    } else {
+        return CGSizeMake(width, SML_MED_LRG(34, 40, 45));
+    }
 }
 
 - (CGFloat)cellBorderWidth {

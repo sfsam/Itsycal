@@ -413,7 +413,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 - (void)sizeChanged:(id)sender
 {
     _monthLabel.font = [NSFont systemFontOfSize:SizePref.calendarTitleFontSize weight:NSFontWeightSemibold];
-    _weeksConstraint.constant = self.showWeeks ? SizePref.cellSize : 2;
+    _weeksConstraint.constant = self.showWeeks ? SizePref.cellSize.height : 2;
 }
 
 #pragma mark -
@@ -494,7 +494,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    CGFloat sz = SizePref.cellSize;
+    CGFloat height = SizePref.cellSize.height;
     NSPoint initialDragPoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     BOOL isDragging = NSPointInRect(initialDragPoint, _resizeHandle.frame);
 
@@ -505,10 +505,10 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         }
         else if ([theEvent type] == NSEventTypeLeftMouseDragged) {
             NSPoint location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-            if (location.y >= initialDragPoint.y + sz && _dateGrid.rows > 6) {
+            if (location.y >= initialDragPoint.y + height && _dateGrid.rows > 6) {
                 [self removeRow];
             }
-            else if (location.y <= initialDragPoint.y - sz && _dateGrid.rows < 10) {
+            else if (location.y <= initialDragPoint.y - height && _dateGrid.rows < 10) {
                 [self addRow];
             }
         }
@@ -780,10 +780,10 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     NSRectFill(self.bounds);
     
     CGFloat radius = SizePref.cellRadius + 3;
-    CGFloat sz = SizePref.cellSize;
+    CGSize sz = SizePref.cellSize;
     if (self.highlightedDOWs) {
         NSRect weekendRect = [self convertRect:[_dateGrid cellsRect] fromView:_dateGrid];
-        weekendRect.size.width = sz;
+        weekendRect.size.width = sz.width;
         [Theme.highlightedDOWBackgroundColor set];
         NSInteger numColsToHighlight = 0;
         for (NSInteger col = 0; col <= 7; col++) {
@@ -793,7 +793,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
             else {
                 if (numColsToHighlight) {
                     NSInteger startCol = col - numColsToHighlight;
-                    NSRect rect = NSOffsetRect(weekendRect, startCol * sz, 0);
+                    NSRect rect = NSOffsetRect(weekendRect, startCol * sz.width, 0);
                     rect.size.width *= numColsToHighlight;
                     [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:radius yRadius:radius] fill];
                 }

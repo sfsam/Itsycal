@@ -43,14 +43,14 @@
             verticalMargin:(NSUInteger)vMargin
        showSubTitileInCell:(BOOL)showSubtitle
 {
-    CGFloat sz = SizePref.cellSize;
+    CGSize sz = SizePref.cellSize;
     NSMutableArray *cells = [NSMutableArray new];
     for (NSUInteger row = 0; row < rows; row++) {
         for (NSUInteger col = 0; col < cols; col++) {
-            CGFloat x = sz * col + hMargin;
-            CGFloat y = sz * rows - sz * (row + 1) + vMargin;
+            CGFloat x = sz.width * col + hMargin;
+            CGFloat y = sz.height * rows - sz.height * (row + 1) + vMargin;
             MoCalCell *cell = [[MoCalCell alloc] init];
-            [cell setFrame:NSMakeRect(x, y, sz, sz)];
+            [cell setFrame:NSMakeRect(x, y, sz.width, sz.height)];
             [self addSubview:cell];
             [cells addObject:cell];
         }
@@ -74,17 +74,17 @@
     // Shift existing cells up.
     for (MoCalCell *cell in cells) {
         NSRect frame = cell.frame;
-        frame.origin.y += SizePref.cellSize;
+        frame.origin.y += SizePref.cellSize.height;
         cell.frame = frame;
     }
 
     // Add new row of cells.
-    CGFloat sz = SizePref.cellSize;
+    CGSize sz = SizePref.cellSize;
     for (NSUInteger col = 0; col < _cols; col++) {
-        CGFloat x = sz * col + _hMargin;
-        CGFloat y = sz * (_rows + 1) - sz * (_rows + 1) + _vMargin;
+        CGFloat x = sz.width * col + _hMargin;
+        CGFloat y = sz.height * (_rows + 1) - sz.height * (_rows + 1) + _vMargin;
         MoCalCell *cell = [MoCalCell new];
-        [cell setFrame:NSMakeRect(x, y, sz, sz)];
+        [cell setFrame:NSMakeRect(x, y, sz.width, sz.height)];
         [self addSubview:cell];
         [cells addObject:cell];
     }
@@ -106,10 +106,10 @@
     }
 
     // Shift remaining cells down.
-    CGFloat sz = SizePref.cellSize;
+    CGSize sz = SizePref.cellSize;
     for (MoCalCell *cell in cells) {
         NSRect frame = cell.frame;
-        frame.origin.y -= sz;
+        frame.origin.y -= sz.height;
         cell.frame = frame;
     }
 
@@ -120,9 +120,9 @@
 
 - (MoCalCell *)cellAtPoint:(NSPoint)point
 {
-    CGFloat sz = SizePref.cellSize;
-    NSInteger col = floorf((point.x - _hMargin) / sz);
-    NSInteger row = floorf((point.y - _vMargin) / sz);
+    CGSize sz = SizePref.cellSize;
+    NSInteger col = floorf((point.x - _hMargin) / sz.width);
+    NSInteger row = floorf((point.y - _vMargin) / sz.height);
     row = _rows - row - 1; // flip row coordinate
     if (col < 0 || row < 0 || col >= _cols || row >= _rows) {
         return nil;
@@ -147,21 +147,21 @@
 
 - (NSSize)intrinsicContentSize
 {
-    CGFloat sz = SizePref.cellSize;
-    CGFloat width  = sz  * _cols + 2 * _hMargin;
-    CGFloat height = sz * _rows + 2 * _vMargin;
+    CGSize sz = SizePref.cellSize;
+    CGFloat width  = sz.width  * _cols + 2 * _hMargin;
+    CGFloat height = sz.height * _rows + 2 * _vMargin;
     return NSMakeSize(width, height);
 }
 
 - (void)sizeChanged:(id)sender
 {
-    CGFloat sz = SizePref.cellSize;
+    CGSize sz = SizePref.cellSize;
     for (NSUInteger row = 0; row < _rows; row++) {
         for (NSUInteger col = 0; col < _cols; col++) {
-            CGFloat x = sz * col + _hMargin;
-            CGFloat y = sz * _rows - sz * (row + 1) + _vMargin;
+            CGFloat x = sz.width * col + _hMargin;
+            CGFloat y = sz.height * _rows - sz.height * (row + 1) + _vMargin;
             MoCalCell *cell = _cells[row*_cols + col];
-            [cell setFrame:NSMakeRect(x, y, sz, sz)];
+            [cell setFrame:NSMakeRect(x, y, sz.width, sz.height)];
         }
     }
     [self invalidateIntrinsicContentSize];
