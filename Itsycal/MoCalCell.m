@@ -29,9 +29,6 @@
     [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_textField]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
     _textFieldVerticalSpace = [NSLayoutConstraint constraintWithItem:_textField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:SizePref.cellTextFieldVerticalSpace];
     [self addConstraint:_textFieldVerticalSpace];
-    
-    REGISTER_FOR_SIZE_CHANGE;
-    
 }
 
 - (void)setupSubtextFiled
