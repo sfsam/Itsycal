@@ -950,9 +950,9 @@
 
 - (NSString*)lunarDateStrForDate:(MoDate)date
 {
-    NSDictionary *lunarDate = [solarToLunar((int)date.year, (int) date.month, (int)date.day) copy];
-    NSLog(@"setDate %ld, %ld, lunar: %@, %@, %@, %@, %@, %@", date.day, date.month, lunarDate[@"lunarDayName"], lunarDate[@"lunarMonthName"], lunarDate[@"lunarFestival"], lunarDate[@"solarFestival"], lunarDate[@"weekFestival"], lunarDate);
-    return lunarDate[@"lunarDayName"];
+    LunarDate *lunarDate = [LunarDate dateWithMoDate:date];
+    BOOL isFirstDay = lunarDate.lunarDay == 1;
+    return isFirstDay ? lunarDate.lunarMonthName : lunarDate.lunarDayName;
 }
 
 #pragma mark - Events
