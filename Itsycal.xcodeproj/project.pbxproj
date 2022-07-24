@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		46AC2EE92887D921008526F8 /* LunarDate.m in Sources */ = {isa = PBXBuildFile; fileRef = 46AC2EE82887D921008526F8 /* LunarDate.m */; };
 		46FE13AA288008E7009928DE /* LunarCore.h in Sources */ = {isa = PBXBuildFile; fileRef = 4610A7C6252CCD66000E93FB /* LunarCore.h */; };
 		46FE13AB288008E7009928DE /* LunarCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 4610A7C7252CCD66000E93FB /* LunarCore.m */; };
 		920D6D51266A83AC00498E19 /* MoLoginItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 920D6D4F266A83AC00498E19 /* MoLoginItem.m */; };
@@ -48,6 +49,8 @@
 /* Begin PBXFileReference section */
 		4610A7C6252CCD66000E93FB /* LunarCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LunarCore.h; sourceTree = "<group>"; };
 		4610A7C7252CCD66000E93FB /* LunarCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LunarCore.m; sourceTree = "<group>"; };
+		46AC2EE72887D921008526F8 /* LunarDate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LunarDate.h; sourceTree = "<group>"; };
+		46AC2EE82887D921008526F8 /* LunarDate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LunarDate.m; sourceTree = "<group>"; };
 		6F21F6F31F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.strings"; sourceTree = "<group>"; };
 		6F21F6F41F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		6F21F6F51F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -147,6 +150,8 @@
 			children = (
 				4610A7C6252CCD66000E93FB /* LunarCore.h */,
 				4610A7C7252CCD66000E93FB /* LunarCore.m */,
+				46AC2EE72887D921008526F8 /* LunarDate.h */,
+				46AC2EE82887D921008526F8 /* LunarDate.m */,
 			);
 			name = LunarSupport;
 			sourceTree = "<group>";
@@ -413,6 +418,7 @@
 				9242A5961A82BE5E005AA4B3 /* Itsycal.m in Sources */,
 				9242A5931A82A40B005AA4B3 /* MoCalendar.m in Sources */,
 				9242A5911A82A40B005AA4B3 /* MoCalCell.m in Sources */,
+				46AC2EE92887D921008526F8 /* LunarDate.m in Sources */,
 				9224B0751A8BE75500D63030 /* MoButton.m in Sources */,
 				9242A5841A82A189005AA4B3 /* ViewController.m in Sources */,
 				924C518C1E5F721C0049E3A9 /* MoCalResizeHandle.m in Sources */,
