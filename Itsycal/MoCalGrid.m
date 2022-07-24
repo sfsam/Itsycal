@@ -19,20 +19,7 @@
 {
     self = [super initWithFrame:NSZeroRect];
     if (self) {
-        [self setupCellsWithRows:rows columns:cols horizontalMargin:hMargin verticalMargin:vMargin showSubTitileInCell:false];
-    }
-    return self;
-}
-
-- (instancetype)initWithRows:(NSUInteger)rows
-                     columns:(NSUInteger)cols
-            horizontalMargin:(NSUInteger)hMargin
-              verticalMargin:(NSUInteger)vMargin
-         showSubTitileInCell:(BOOL)showSubTitle
-{
-    self = [super initWithFrame:NSZeroRect];
-    if (self) {
-        [self setupCellsWithRows:rows columns:cols horizontalMargin:hMargin verticalMargin:vMargin showSubTitileInCell:showSubTitle];
+        [self setupCellsWithRows:rows columns:cols horizontalMargin:hMargin verticalMargin:vMargin];
     }
     return self;
 }
@@ -41,7 +28,6 @@
                    columns:(NSUInteger)cols
           horizontalMargin:(NSUInteger)hMargin
             verticalMargin:(NSUInteger)vMargin
-       showSubTitileInCell:(BOOL)showSubtitle
 {
     CGSize sz = SizePref.cellSize;
     NSMutableArray *cells = [NSMutableArray new];

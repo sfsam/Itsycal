@@ -21,12 +21,6 @@
             horizontalMargin:(NSUInteger)hMargin
               verticalMargin:(NSUInteger)vMargin;
 
-- (instancetype)initWithRows:(NSUInteger)rows
-                     columns:(NSUInteger)cols
-            horizontalMargin:(NSUInteger)hMargin
-              verticalMargin:(NSUInteger)vMargin
-         showSubTitileInCell:(BOOL)showSubTitle;
-
 //
 // Add a new row of cells to the bottom of the grid.
 //
