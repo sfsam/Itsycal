@@ -345,6 +345,15 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
             cell.isToday = CompareDates(date, self.todayDate) == 0;
             cell.isHighlighted = [self columnIsMemberOfHighlightedDOWs:col];
             cell.isInCurrentMonth = (date.month == self.monthDate.month);
+            
+            //the showLunar will be binded at ViewController's viewDidLoad
+            //so at the first time, the lunar date will be set in the setShowLunar method
+            //the code below will be executed only if during the peroid of addRow, removeRow etc.
+            cell.showSubTitle = _showLunar;
+            if(_showLunar && [self.delegate respondsToSelector:@selector(lunarDateStrForDate:)]) {
+                [cell.subTextField setStringValue:[self.delegate lunarDateStrForDate:date]];
+            }
+            
             if (date.month == self.monthDate.month) {
                 if (date.day == 1) {
                     _monthStartCell = cell;
