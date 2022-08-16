@@ -530,8 +530,8 @@
         if (@available(macOS 10.15, *)) {
             baselineOffset = 0.5;
         }
-        if (@available(macOS 10.16, *)) {
-            baselineOffset = -1.0 / scaleFactor;
+        if (@available(macOS 11, *)) {
+            baselineOffset = 0;
         }
         if ([defaults objectForKey:kBaselineOffset]) {
             baselineOffset = [defaults floatForKey:kBaselineOffset];
