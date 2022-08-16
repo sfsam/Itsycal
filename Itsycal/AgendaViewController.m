@@ -524,10 +524,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
     
     // Enable the zoom button 15 minutes prior to event start until end.
+    // If the user prefers, button can remain enabled indefinitely.
     NSDate *fifteenMinutesPrior = [self.nsCal dateByAddingUnit:NSCalendarUnitSecond value:-(15 * 60 + 30) toDate:info.event.startDate options:0];
     if (info.zoomURL && !info.event.isAllDay
         && [fifteenMinutesPrior compare:NSDate.date] == NSOrderedAscending
-        && [NSDate.date compare:info.event.endDate] == NSOrderedAscending) {
+        && ([NSDate.date compare:info.event.endDate] == NSOrderedAscending
+            || [NSUserDefaults.standardUserDefaults boolForKey:@"EnableMeetingButtonIndefinitely"])) {
         cell.btnVideo.enabled = YES;
         cell.btnVideo.contentTintColor = Theme.todayCellColor;
         cell.btnVideo.actionBlock = ^{
