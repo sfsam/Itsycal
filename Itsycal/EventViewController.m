@@ -36,7 +36,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
 
 @implementation EventViewController
 {
-    NSTextField *_title, *_location, *_repEndLabel;
+    NSTextField *_title, *_location, *_url, *_repEndLabel;
     NSButton *_allDayCheckbox, *_saveButton;
     NSDatePicker *_startDate, *_endDate, *_repEndDate;
     NSPopUpButton *_repPopup, *_repEndPopup, *_alertPopup, *_calPopup;
@@ -94,11 +94,12 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
         return btn;
     };
     
-    // Title and location text fields
+    // Title, location, and URL text fields
     _title = txt(NSLocalizedString(@"New Event", @""), YES);
     _title.delegate = self;
     _location = txt(NSLocalizedString(@"Add Location", @""), YES);
-    
+    _url = txt(NSLocalizedString(@"Add URL", @""), YES);
+
     // Login checkbox
     _allDayCheckbox = [NSButton new];
     _allDayCheckbox.title = @"";
@@ -172,13 +173,14 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _saveButton.enabled = NO; // we'll enable when the form is valid.
     NSButton *cancelButton = btn(NSLocalizedString(@"Cancel", @""), self, @selector(cancelOperation:));
     
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _calPopup, cancelButton, _saveButton)];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _url, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _calPopup, cancelButton, _saveButton)];
 
-    [vfl :@"V:|-[_title]-[_location]-15-[_allDayCheckbox]"];
+    [vfl :@"V:|-[_title]-[_location]-[_url]-15-[_allDayCheckbox]"];
     [vfl :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_alertPopup]-20-[_calPopup]" :NSLayoutFormatAlignAllLeading];
     [vfl :@"V:[_calPopup]-20-[_saveButton]-|"];
     [vfl :@"H:|-[_title(>=200)]-|"];
     [vfl :@"H:|-[_location]-|"];
+    [vfl :@"H:|-[_url]-|"];
     [vfl :@"H:|-[allDayLabel]-[_allDayCheckbox]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[startsLabel]-[_startDate]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[endsLabel]-[_endDate]-|" :NSLayoutFormatAlignAllBaseline];
@@ -225,6 +227,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     // Initial values for form fields.
     _title.stringValue = @"";
     _location.stringValue = @"";
+    _url.stringValue = @"";
     _allDayCheckbox.state = NSControlStateValueOff;
     _startDate.datePickerElements = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
     _endDate.datePickerElements   = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
@@ -432,6 +435,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     EKEvent *event  = [self.ec newEvent];
     event.title     = [_title.stringValue stringByTrimmingCharactersInSet:whitespaceSet];
     event.location  = [_location.stringValue stringByTrimmingCharactersInSet:whitespaceSet];
+    event.URL       = [NSURL URLWithString:[_url.stringValue stringByTrimmingCharactersInSet:whitespaceSet]];
     event.allDay    = _allDayCheckbox.state == NSControlStateValueOn;
     event.startDate = startDate;
     event.endDate   = endDate;

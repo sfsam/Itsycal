@@ -22,6 +22,7 @@
 /* About prefs tab label */
 "About" = "关于";
 "Add Location" = "添加位置";
+"Add URL" = "添加 URL";
 "Alert:" = "警告：";
 "All-day:" = "全天：";
 /* Appearance prefs tab label */

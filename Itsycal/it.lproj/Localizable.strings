@@ -22,6 +22,7 @@
 /* About prefs tab label */
 "About" = "Informazioni";
 "Add Location" = "Aggiungi posizione";
+"Add URL" = "Aggiungi URL";
 "Alert:" = "Avviso:";
 "All-day:" = "Tutto il giorno:";
 /* Appearance prefs tab label */

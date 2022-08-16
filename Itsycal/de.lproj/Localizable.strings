@@ -22,6 +22,7 @@
 /* About prefs tab label */
 "About" = "Über Itsycal";
 "Add Location" = "Ort hinzufügen";
+"Add URL" = "URL hinzufügen";
 "Alert:" = "Warnhinweis:";
 "All-day:" = "Ganztägig:";
 /* Appearance prefs tab label */

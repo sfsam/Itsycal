@@ -21,7 +21,8 @@
 "About Itsycal" = "Acerca de Itsycal";
 /* About prefs tab label */
 "About" = "Acerca de";
-"Add Location" = "Añadir ubicación";
+"Add Location" = "Agregar ubicación";
+"Add URL" = "Agregar URL";
 "Alert:" = "Aviso:";
 "All-day:" = "Todo el día:";
 /* Appearance prefs tab label */
