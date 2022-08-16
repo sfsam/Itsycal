@@ -533,8 +533,8 @@
         if (@available(macOS 10.16, *)) {
             baselineOffset = -1.0 / scaleFactor;
         }
-        if ([defaults objectForKey:@"BaselineOffset"]) {
-            baselineOffset = [defaults floatForKey:@"BaselineOffset"];
+        if ([defaults objectForKey:kBaselineOffset]) {
+            baselineOffset = [defaults floatForKey:kBaselineOffset];
             baselineOffset = MIN(2.0, MAX(-2.0, baselineOffset));
         }
         NSString *buttonText = [_iconDateFormatter stringFromDate:[NSDate new]];
@@ -1241,7 +1241,7 @@
     }];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowMeetingIndicator, kHideIcon, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -1258,7 +1258,8 @@
              [keyPath isEqualToString:kShowMonthInIcon] ||
              [keyPath isEqualToString:kShowDayOfWeekInIcon] ||
              [keyPath isEqualToString:kShowMeetingIndicator] ||
-             [keyPath isEqualToString:kHideIcon]) {
+             [keyPath isEqualToString:kHideIcon] ||
+             [keyPath isEqualToString:kBaselineOffset]) {
         [self updateMenubarIcon];
     }
     else if ([keyPath isEqualToString:kClockFormat]) {

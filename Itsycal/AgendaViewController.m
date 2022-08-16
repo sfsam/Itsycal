@@ -529,7 +529,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (info.zoomURL && !info.event.isAllDay
         && [fifteenMinutesPrior compare:NSDate.date] == NSOrderedAscending
         && ([NSDate.date compare:info.event.endDate] == NSOrderedAscending
-            || [NSUserDefaults.standardUserDefaults boolForKey:@"EnableMeetingButtonIndefinitely"])) {
+            || [NSUserDefaults.standardUserDefaults boolForKey:kEnableMeetingButtonIndefinitely])) {
         cell.btnVideo.enabled = YES;
         cell.btnVideo.contentTintColor = Theme.todayCellColor;
         cell.btnVideo.actionBlock = ^{
