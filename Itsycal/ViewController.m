@@ -533,6 +533,10 @@
         if (@available(macOS 10.16, *)) {
             baselineOffset = -1.0 / scaleFactor;
         }
+        if ([defaults objectForKey:@"BaselineOffset"]) {
+            baselineOffset = [defaults floatForKey:@"BaselineOffset"];
+            baselineOffset = MIN(2.0, MAX(-2.0, baselineOffset));
+        }
         NSString *buttonText = [_iconDateFormatter stringFromDate:[NSDate new]];
         accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", buttonText];
         if (!hideIcon) {
