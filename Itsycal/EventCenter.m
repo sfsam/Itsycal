@@ -201,8 +201,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             continue;
         }
         if (![calendar.source.title isEqualToString:currentSourceTitle]) {
-            [sourcesAndCalendars addObject:calendar.source.title];
-            currentSourceTitle = calendar.source.title;
+            [sourcesAndCalendars addObject:calendar.title];
+            currentSourceTitle = calendar.title;
         }
         CalendarInfo *calInfo = [CalendarInfo new];
         calInfo.calendar = calendar;
