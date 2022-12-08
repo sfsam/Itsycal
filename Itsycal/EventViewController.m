@@ -93,7 +93,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
         [v addSubview:btn];
         return btn;
     };
-    
+
     // Title, location, and URL text fields
     _title = txt(NSLocalizedString(@"New Event", @""), YES);
     _title.delegate = self;
@@ -377,6 +377,21 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
 {
     [_alertPopup removeAllItems];
     
+    NSInteger numOffsets = 0;
+    const NSTimeInterval *offsets = nil;
+
+    if (_allDayCheckbox.state == NSControlStateValueOn) {
+        [_alertPopup addItemsWithTitles:_alertAllDayStrings];
+        numOffsets = kAlertAllDayNumOffsets;
+        offsets = kAlertAllDayRelativeOffsets;
+    } else {
+        [_alertPopup addItemsWithTitles:_alertRegularStrings];
+        numOffsets = kAlertRegularNumOffsets;
+        offsets = kAlertRegularRelativeOffsets;
+    }
+
+    [_alertPopup selectItemAtIndex:0];
+
     // Get the selected calendar.
     NSInteger index = _calPopup.selectedItem.tag;
     NSArray *sourcesAndCalendars = [self.ec sourcesAndCalendars];
@@ -388,33 +403,13 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     dummyEvent.calendar  = calInfo.calendar;
     dummyEvent.allDay    = _allDayCheckbox.state == NSControlStateValueOn;
 
-    // Get the relative offset for the default alert from the dummy event.
-    NSTimeInterval defaultAlertRelativeOffset = -1;
-    for (EKAlarm *alarm in dummyEvent.alarms) {
-        // isDefault is private API. Why???
-        if ([[alarm valueForKey:@"isDefault"] boolValue]) {
-            defaultAlertRelativeOffset = alarm.relativeOffset;
-            break;
-        }
-    }
-
-    NSInteger numOffsets = 0;
-    const NSTimeInterval *offsets = nil;
-    
-    if (_allDayCheckbox.state == NSControlStateValueOn) {
-        [_alertPopup addItemsWithTitles:_alertAllDayStrings];
-        numOffsets = kAlertAllDayNumOffsets;
-        offsets = kAlertAllDayRelativeOffsets;
-    } else {
-        [_alertPopup addItemsWithTitles:_alertRegularStrings];
-        numOffsets = kAlertRegularNumOffsets;
-        offsets = kAlertRegularRelativeOffsets;
-    }
-  
-    for (NSInteger i = 0; i < numOffsets; i++) {
-        if (defaultAlertRelativeOffset == offsets[i]) {
-            [_alertPopup selectItemAtIndex:i];
-            break;
+    // If the dummy event has an alert, try to set it as the default.
+    if (dummyEvent.alarms.count > 0) {
+        for (NSInteger i = 0; i < numOffsets; i++) {
+            if (dummyEvent.alarms.firstObject.relativeOffset == offsets[i]) {
+                [_alertPopup selectItemAtIndex:i];
+                break;
+            }
         }
     }
 }
