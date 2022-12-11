@@ -1038,6 +1038,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSDate *endDate = info.event.isAllDay
         ? [self.nsCal dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:info.event.endDate options:0]
         : info.event.endDate;
+    if (@available(macOS 13.0, *)) {
+        // macOS 13 changed All-day events' end date from 12 AM of
+        // day after last day of event to 11:59:59 PM of last day.
+        endDate = info.event.endDate;
+    }
     // Interval formatter just prints single date when from == to.
     duration = [intervalFormatter stringFromDate:info.event.startDate toDate:endDate];
     // If the locale is English and we are in 12 hour time,
