@@ -269,7 +269,8 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
                     [_calPopup.menu addItem:[NSMenuItem separatorItem]];
                 }
                 NSMenuItem *sourceItem = [NSMenuItem new];
-                sourceItem.title   = calInfo.calendar.source.title;
+                // MacOS 13 sometimes returns nil for non-iCloud source titles.
+                sourceItem.title   = calInfo.calendar.source.title ?: @"???";
                 sourceItem.enabled = NO;
                 [_calPopup.menu addItem:sourceItem];
                 currentSource = calInfo.calendar.source;

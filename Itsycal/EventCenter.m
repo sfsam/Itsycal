@@ -193,6 +193,10 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSMutableArray *sourcesAndCalendars = [NSMutableArray new];
     NSString *currentSourceTitle = @"";
     for (EKCalendar *calendar in calendars) {
+        NSString *calendarSourceTitle = calendar.source.title;
+        // (!) Should never hit this case, but MacOS 13 sometimes returns
+        // nil for non-iCloud source titles. Use a dummy title instead.
+        if (!calendar.source.title) calendarSourceTitle = @"???";
         if (!calendar.color) {
             // Skip calendars where the color is nil.
             // This normally doesn't happen, but there are some
@@ -200,9 +204,9 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             // See: github.com/sfsam/Itsycal/issues/152
             continue;
         }
-        if (![calendar.source.title isEqualToString:currentSourceTitle]) {
-            [sourcesAndCalendars addObject:calendar.source.title];
-            currentSourceTitle = calendar.source.title;
+        if (![calendarSourceTitle isEqualToString:currentSourceTitle]) {
+            [sourcesAndCalendars addObject:calendarSourceTitle];
+            currentSourceTitle = calendarSourceTitle;
         }
         CalendarInfo *calInfo = [CalendarInfo new];
         calInfo.calendar = calendar;
