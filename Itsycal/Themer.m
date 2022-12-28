@@ -147,4 +147,12 @@ Themer *Theme = nil;
     return [NSColor colorNamed:@"WindowBorderColor"];
 }
 
+- (NSColor *)textInputBackgroundColor {
+    return [NSColor colorNamed:@"TextInputBackgroundColor"];
+}
+
+- (NSColor *)textInputBorderdColor {
+    return [NSColor colorNamed:@"textInputBorderdColor"];
+}
+
 @end

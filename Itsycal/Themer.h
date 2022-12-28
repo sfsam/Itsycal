@@ -43,6 +43,8 @@ extern Themer *Theme;
 @property (nonatomic, readonly) NSColor *tooltipBackgroundColor;
 @property (nonatomic, readonly) NSColor *weekTextColor;
 @property (nonatomic, readonly) NSColor *windowBorderColor;
+@property (nonatomic, readonly) NSColor *textInputBackgroundColor;
+@property (nonatomic, readonly) NSColor *textInputBorderColor;
 
 + (instancetype)shared;
 

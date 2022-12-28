@@ -41,12 +41,15 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     NSDatePicker *_startDate, *_endDate, *_repEndDate;
     NSPopUpButton *_repPopup, *_repEndPopup, *_alertPopup, *_calPopup;
     NSArray<NSString *> *_alertAllDayStrings, *_alertRegularStrings;
+    NSScrollView *_notesScrollView;
+    NSTextView *_notesTextView;
 }
 
 - (void)loadView
 {
-    // View controller content view
-    NSView *v = [NSView new];
+    NSView *contentView = [NSView new];
+    contentView.layer.backgroundColor = [NSColor redColor].CGColor;
+    contentView.translatesAutoresizingMaskIntoConstraints = false;
     
     // TextField maker
     NSTextField* (^txt)(NSString*, BOOL) = ^NSTextField* (NSString *stringValue, BOOL isEditable) {
@@ -60,7 +63,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
             txt = [NSTextField labelWithString:stringValue];
             txt.alignment = NSTextAlignmentRight;
         }
-        [v addSubview:txt];
+        [contentView addSubview:txt];
         return txt;
     };
 
@@ -73,7 +76,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
         picker.bordered = NO;
         picker.drawsBackground = NO;
         picker.datePickerElements = NSDatePickerElementFlagYearMonthDay | NSDatePickerElementFlagHourMinute;
-        [v addSubview:picker];
+        [contentView addSubview:picker];
         return picker;
     };
 
@@ -83,14 +86,14 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
         pop.target = self;
         pop.action = action;
         pop.menu.autoenablesItems = NO;
-        [v addSubview:pop];
+        [contentView addSubview:pop];
         return pop;
     };
     
     // Button maker
     NSButton* (^btn)(NSString*, id, SEL) = ^NSButton* (NSString *title, id target, SEL action) {
         NSButton *btn = [NSButton buttonWithTitle:title target:target action:action];
-        [v addSubview:btn];
+        [contentView addSubview:btn];
         return btn;
     };
     
@@ -99,6 +102,18 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _title.delegate = self;
     _location = txt(NSLocalizedString(@"Add Location", @""), YES);
     _url = txt(NSLocalizedString(@"Add URL", @""), YES);
+    _notesScrollView = NSTextView.scrollableTextView;
+    _notesScrollView.translatesAutoresizingMaskIntoConstraints = false;
+    _notesScrollView.hasVerticalScroller = NO;
+    _notesScrollView.verticalScrollElasticity = NSScrollElasticityNone;
+    _notesScrollView.contentView.wantsLayer = YES;
+    _notesScrollView.contentView.layer.borderWidth = 0.5;
+    _notesScrollView.contentView.layer.cornerRadius = 5.0;
+    _notesScrollView.contentView.layer.borderColor = Theme.windowBorderColor.CGColor;
+
+    _notesTextView = (NSTextView *)_notesScrollView.documentView;
+    _notesTextView.textContainerInset = CGSizeMake(5, 5);
+    _notesTextView.backgroundColor = Theme.textInputBackgroundColor;
 
     // Login checkbox
     _allDayCheckbox = [NSButton new];
@@ -106,7 +121,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _allDayCheckbox.target = self;
     _allDayCheckbox.action = @selector(allDayClicked:);
     [_allDayCheckbox setButtonType:NSButtonTypeSwitch];
-    [v addSubview:_allDayCheckbox];
+    [contentView addSubview:_allDayCheckbox];
     
     // Static labels
     NSTextField *allDayLabel = txt(NSLocalizedString(@"All-day:", @""), NO);
@@ -115,6 +130,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     NSTextField *repLabel    = txt(NSLocalizedString(@"Repeat:", @""), NO);
                 _repEndLabel = txt(NSLocalizedString(@"End Repeat:", @""), NO);
     NSTextField *alertLabel  = txt(NSLocalizedString(@"Alert:", @""), NO);
+    NSTextField *notesLabel = txt(NSLocalizedString(@"Notes:", @""), NO);
     
     // Date pickers
     _startDate = picker();
@@ -166,6 +182,9 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [_alertPopup addItemsWithTitles:_alertAllDayStrings];
     [_alertPopup addItemsWithTitles:_alertRegularStrings];
 
+    // Notes
+    [contentView addSubview:_notesScrollView];
+    
     _calPopup = popup(@selector(calPopupChanged:));
     
     // Save and Cancel buttons
@@ -173,22 +192,28 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _saveButton.enabled = NO; // we'll enable when the form is valid.
     NSButton *cancelButton = btn(NSLocalizedString(@"Cancel", @""), self, @selector(cancelOperation:));
     
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _url, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _calPopup, cancelButton, _saveButton)];
+    MoVFLHelper *vflHelper = [
+        [MoVFLHelper alloc]
+        initWithSuperview:contentView
+        metrics:nil
+        views:NSDictionaryOfVariableBindings(_title, _location, _url, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, notesLabel, _notesScrollView, _calPopup, cancelButton, _saveButton)
+    ];
 
-    [vfl :@"V:|-[_title]-[_location]-[_url]-15-[_allDayCheckbox]"];
-    [vfl :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_alertPopup]-20-[_calPopup]" :NSLayoutFormatAlignAllLeading];
-    [vfl :@"V:[_calPopup]-20-[_saveButton]-|"];
-    [vfl :@"H:|-[_title(>=200)]-|"];
-    [vfl :@"H:|-[_location]-|"];
-    [vfl :@"H:|-[_url]-|"];
-    [vfl :@"H:|-[allDayLabel]-[_allDayCheckbox]-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-[startsLabel]-[_startDate]-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-[endsLabel]-[_endDate]-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-[repLabel]-[_repPopup]-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-[_repEndLabel]-[_repEndPopup]-[_repEndDate]-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-[alertLabel]-[_alertPopup]-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:[_calPopup]-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:[cancelButton]-[_saveButton]-|" :NSLayoutFormatAlignAllCenterY];
+    [vflHelper :@"V:|-[_title]-[_location]-[_url]-15-[_allDayCheckbox]"];
+    [vflHelper :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-20-[_notesScrollView(50)]-20-[_alertPopup]-20-[_calPopup]" :NSLayoutFormatAlignAllLeading];
+    [vflHelper :@"V:[_calPopup]-20-[_saveButton]-|"];
+    [vflHelper :@"H:|-[_title(>=200)]-|"];
+    [vflHelper :@"H:|-[_location]-|"];
+    [vflHelper :@"H:|-[_url]-|"];
+    [vflHelper :@"H:|-[allDayLabel]-[_allDayCheckbox]-|" :NSLayoutFormatAlignAllBaseline];
+    [vflHelper :@"H:|-[startsLabel]-[_startDate]-|" :NSLayoutFormatAlignAllBaseline];
+    [vflHelper :@"H:|-[endsLabel]-[_endDate]-|" :NSLayoutFormatAlignAllBaseline];
+    [vflHelper :@"H:|-[repLabel]-[_repPopup]-|" :NSLayoutFormatAlignAllBaseline];
+    [vflHelper :@"H:|-[_repEndLabel]-[_repEndPopup]-[_repEndDate]-|" :NSLayoutFormatAlignAllBaseline];
+    [vflHelper :@"H:|-[alertLabel]-[_alertPopup]-|" :NSLayoutFormatAlignAllBaseline];
+    [vflHelper :@"H:|-[notesLabel]-[_notesScrollView]-|" :NSLayoutFormatAlignAllTop];
+    [vflHelper :@"H:[_calPopup]-|" :NSLayoutFormatAlignAllBaseline];
+    [vflHelper :@"H:[cancelButton]-[_saveButton]-|" :NSLayoutFormatAlignAllCenterY];
 
     // Require All-day checkbox height to hug the checkbox. Without this,
     // the layout will look funny when the title is multi-line.
@@ -200,7 +225,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [_startDate setContentHuggingPriority:1 forOrientation:NSLayoutConstraintOrientationHorizontal];
     [_endDate   setContentHuggingPriority:1 forOrientation:NSLayoutConstraintOrientationHorizontal];
     
-    self.view = v;
+    self.view = contentView;
 }
 
 - (void)viewWillAppear
@@ -208,7 +233,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [super viewWillAppear];
 
     self.view.window.defaultButtonCell = _saveButton.cell;
-    
+
     // If self.calSelectedDate is today, the initialStart is set to
     // the next whole hour. Otherwise, 8am of self.calselectedDate.
     // InitialEnd is one hour after initialStart.
@@ -223,7 +248,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
         initialStart = [self.cal dateBySettingHour:8 minute:0 second:0 ofDate:self.calSelectedDate options:0];
     }
     initialEnd = [self.cal dateByAddingUnit:NSCalendarUnitHour value:1 toDate:initialStart options:0];
-    
+
     // Initial values for form fields.
     _title.stringValue = @"";
     _location.stringValue = @"";
@@ -243,7 +268,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [_repEndPopup selectItemAtIndex:0];  // 'Never' selected
     [_alertPopup selectItemAtIndex:0];   // 'None' selected
     _saveButton.enabled  = NO;
-    
+
     // Function to make colored dots for calendar popup.
     NSImage* (^coloredDot)(NSColor *) = ^NSImage* (NSColor *color) {
         return [NSImage imageWithSize:NSMakeSize(8, 8) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
@@ -252,7 +277,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
             return YES;
         }];
     };
-    
+
     // Populate calendar popup.
     NSString *defaultCalendarIdentifier = [self.ec defaultCalendarIdentifier];
     NSArray *sourcesAndCalendars = [self.ec sourcesAndCalendars];
@@ -284,11 +309,10 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
             }
         }
     }
-    
+
     // Populate alert popup AFTER calendar popup since its
     // contents depends on which calendar is selected.
     [self populateAlertPopup];
-
     [self.view.window makeFirstResponder:_title];
 }
 
@@ -435,6 +459,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     EKEvent *event  = [self.ec newEvent];
     event.title     = [_title.stringValue stringByTrimmingCharactersInSet:whitespaceSet];
     event.location  = [_location.stringValue stringByTrimmingCharactersInSet:whitespaceSet];
+    event.notes     = [_notesTextView.string stringByTrimmingCharactersInSet:whitespaceSet];
     event.URL       = [NSURL URLWithString:[_url.stringValue stringByTrimmingCharactersInSet:whitespaceSet]];
     event.allDay    = _allDayCheckbox.state == NSControlStateValueOn;
     event.startDate = startDate;
