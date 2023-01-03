@@ -23,13 +23,13 @@
 "About" = "À propos";
 "Add Location" = "Ajouter un lieu";
 "Add URL" = "Ajouter un lien";
-"Alert:" = "Alerte:";
-"All-day:" = "Jour entier:";
+"Alert:" = "Alerte :";
+"All-day:" = "Jour entier :";
 /* Appearance prefs tab label */
 "Appearance" = "Apparence";
 "Are you sure you want to delete this event?" = "Êtes-vous sûr de vouloir supprimer cet événement ?";
 "At time of event" = "au moment de l'événement";
-"Automatically check for updates" = "Rechercher automatiquement le mises à jour";
+"Automatically check for updates" = "Rechercher automatiquement les mises à jour";
 "Beep beep on the hour" = "Sonner toutes les heures";
 "Calendar" = "Calendrier";
 "Calendar access denied.
@@ -49,11 +49,11 @@ Itsycal est plus utile quand il peut afficher les événements de vos calendrier
 "Delete All Future Events" = "Supprimer tous les événements futurs";
 "Delete Only This Event" = "Seulement cette occurrence";
 "Delete This Event" = "Supprimer";
-"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Souhaitez-vous supprimer cet événement ainsi que toutes ses occurrences futures ou uniquement celle sélectionnée?";
+"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Souhaitez-vous supprimer cet événement ainsi que toutes ses occurrences futures ou uniquement celle sélectionnée ?";
 "Donate" = "Faire un don";
-"End Repeat:" = "Fin de la récurrence:";
-"Ends:" = "Se termine:";
-"Event list shows:" = "La liste des événements affiche:";
+"End Repeat:" = "Fin de la récurrence :";
+"Ends:" = "Se termine :";
+"Event list shows:" = "La liste des événements affiche :";
 "Every %zd Days" = "tous les %zd jours";
 "Every %zd Months" = "tous les %zd mois";
 "Every %zd Weeks" = "toutes les %zd semaines";
@@ -62,7 +62,7 @@ Itsycal est plus utile quand il peut afficher les événements de vos calendrier
 "Every Month" = "tous les mois";
 "Every Week" = "toutes les semaines";
 "Every Year" = "tous les ans";
-"First day of week:" = "Premier jour de la semaine:";
+"First day of week:" = "Premier jour de la semaine :";
 "Follow" = "Suivez";
 "Friday" = "vendredi";
 /* General prefs tab label */
@@ -70,7 +70,7 @@ Itsycal est plus utile quand il peut afficher les événements de vos calendrier
 "Help" = "Aide";
 "Help…" = "Aide…";
 "Hide icon" = "Masquer l'icône";
-"Highlight:" = "Mettre en évidence:";
+"Highlight:" = "Mettre en évidence :";
 "Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal ne peut pas créer de nouvel événement si vous ne possédez pas au moins un calendrier avec la permission de modification.";
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal est plus utile lorsque vous lui permettent d'ajouter des événements à vos calendriers. Vous pouvez modifier ce paramètre dans les Préférences Système › Sécurité et confidentialité › Confidentialité.";
 "Itsycal must be run from the Applications folder in order to work properly.
@@ -110,13 +110,13 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Show event dots" = "Afficher les indicateurs d'évènements";
 "Show event location" = "Afficher l'emplacement de l'événement";
 "Show month in icon" = "L'icône affiche le mois";
-"Starts:" = "Commence:";
+"Starts:" = "Commence :";
 "Sunday" = "dimanche";
 /* System theme name */
 "System" = "Système";
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "L'application Calendrier est introuvable.";
-"Theme:" = "Thème:";
+"Theme:" = "Thème :";
 "There are no modifiable calendars." = "Aucun calendrier n’est modifiable.";
 "Thursday" = "jeudi";
 "Tuesday" = "mardi";
