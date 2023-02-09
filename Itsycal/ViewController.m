@@ -485,6 +485,9 @@
         }
         [_iconDateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:template options:0 locale:[NSLocale currentLocale]]];
         iconText = [_iconDateFormatter stringFromDate:[NSDate new]];
+    } else if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowDaysUntilNewYear]) {
+        NSInteger daysLeft = [self getDaysUntilNewYear];
+        iconText = [NSString stringWithFormat:@"%lu", daysLeft];
     } else {
         iconText = [NSString stringWithFormat:@"%zd", _moCal.todayDate.day];
     }
@@ -493,6 +496,22 @@
         iconText = @"!!";
     }
     return iconText;
+}
+
+- (NSInteger)getDaysUntilNewYear
+{
+    NSDate *today = [NSDate date];
+    NSCalendar *gregorian = [[NSCalendar alloc]initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *components = [gregorian components:NSCalendarUnitYear fromDate:today];
+
+    [components setDay:31];
+    [components setMonth:12];
+    NSDate *newYearsEve = [gregorian dateFromComponents:components];
+
+    NSDateComponents *daysLeftComponents = [gregorian components:NSCalendarUnitDay fromDate:today toDate:newYearsEve options:0];
+    NSInteger daysLeft = [daysLeftComponents day] + 1;
+
+    return daysLeft;
 }
 
 - (void)updateMenubarIcon

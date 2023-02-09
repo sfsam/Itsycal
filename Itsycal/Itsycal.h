@@ -18,6 +18,7 @@ extern NSString * const kHighlightedDOWs;
 extern NSString * const kKeyboardShortcut;
 extern NSString * const kUseOutlineIcon;
 extern NSString * const kShowMonthInIcon;
+extern NSString * const kShowDaysUntilNewYear;
 extern NSString * const kShowDayOfWeekInIcon;
 extern NSString * const kShowMeetingIndicator;
 extern NSString * const kAllowOutsideApplicationsFolder;
