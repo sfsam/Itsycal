@@ -105,6 +105,7 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Repeat:" = "Récurrence:";
 "Saturday" = "samedi";
 "Save Event" = "Enregistrer l'événement";
+"Settings…" = "Réglages…";
 "Show calendar weeks" = "Afficher les numéros de semaine";
 "Show day of week in icon" = "L'icône affiche le jour de la semaine";
 "Show event dots" = "Afficher les indicateurs d'évènements";
