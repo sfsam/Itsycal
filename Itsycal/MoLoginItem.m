@@ -9,7 +9,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-BOOL MOIsLoginItemEnabled()
+BOOL MOIsLoginItemEnabled(void)
 {
     BOOL isEnabled = NO;
     NSString *appPath = [[NSBundle mainBundle] bundlePath];
