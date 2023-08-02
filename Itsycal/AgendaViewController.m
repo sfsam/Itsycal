@@ -855,12 +855,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSTextField *_title;
     NSTextField *_duration;
     NSTextField *_recurrence;
+    NSTextView *_attendees;
     NSTextView *_location;
     NSTextView *_note;
     NSTextView *_URL;
     NSScrollView *_scrollView;
     NSDataDetector *_linkDetector;
     NSRegularExpression *_hiddenLinksRegex;
+    NSLayoutConstraint *_attendeesHeight;
     NSLayoutConstraint *_locHeight;
     NSLayoutConstraint *_noteHeight;
     NSLayoutConstraint *_URLHeight;
@@ -887,6 +889,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _title = label();
         _duration = label();
         _recurrence = label();
+                
+        _attendees = [NSTextView new];
+        _attendees.editable = NO;
+        _attendees.selectable = YES;
+        _attendees.drawsBackground = NO;
+        _attendees.textContainer.lineFragmentPadding = 0;
+        _attendees.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
         
         _location = [NSTextView new];
         _location.editable = NO;
@@ -929,8 +938,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
                                                 @[_duration],    // 3
                                                 @[_recurrence],  // 4
                                                 @[separator()],  // 5
-                                                @[_note],        // 6
-                                                @[_URL]]];       // 7
+                                                @[_attendees], // 6
+                                                @[separator()], // 7
+                                                @[_note],        // 8
+                                                @[_URL]]];       // 9
         _grid.rowSpacing = 8;
         _grid.translatesAutoresizingMaskIntoConstraints = NO;
         [_grid cellForView:_btnDelete].xPlacement = NSGridCellPlacementCenter;
@@ -946,6 +957,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
         _hiddenLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"<((https?|rdar):\\/\\/[^\\s]+)>" options:NSRegularExpressionCaseInsensitive error:NULL];
         
+        _attendeesHeight = [_attendees.heightAnchor constraintEqualToConstant:100];
+        _attendeesHeight.active = YES;
         _locHeight = [_location.heightAnchor constraintEqualToConstant:100];
         _locHeight.active = YES;
         _noteHeight = [_note.heightAnchor constraintEqualToConstant:100];
@@ -1019,12 +1032,16 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Hide recurrence row IF there's no recurrence rule.
     [_grid rowAtIndex:4].hidden = !info.event.hasRecurrenceRules;
     
+    // Hide attendees and separator row above IF does not have attendees
+    [_grid rowAtIndex:6].hidden = !info.event.hasAttendees;
+    [_grid rowAtIndex:5].hidden = !info.event.hasAttendees;
+    
     // Hide note row and separator row above it IF there's no note AND no URL.
-    [_grid rowAtIndex:5].hidden = !info.event.hasNotes && !info.event.URL;
-    [_grid rowAtIndex:6].hidden = !info.event.hasNotes;
+    [_grid rowAtIndex:8].hidden = !info.event.hasNotes && !info.event.URL;
+    [_grid rowAtIndex:7].hidden = !info.event.hasNotes;
     
     // Hide URL row and IF there's no URL.
-    [_grid rowAtIndex:7].hidden = !info.event.URL;
+    [_grid rowAtIndex:9].hidden = !info.event.URL;
 
     // Hide delete button IF event doesn't allow modification.
     _btnDelete.hidden = !info.event.calendar.allowsContentModifications;
@@ -1104,6 +1121,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
                 recurrence = [recurrence stringByAppendingString:endRecurrence];
             }
         }
+    }
+    
+    // Attendees
+    if (info.event.hasAttendees) {
+        [self populateTextView:_attendees
+                    withString:([[info.event.attendees valueForKey:@"name"] componentsJoinedByString:@"\n"])
+                    heightConstraint:_attendeesHeight];
     }
     
     // Location
