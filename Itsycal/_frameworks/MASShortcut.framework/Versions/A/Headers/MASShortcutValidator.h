@@ -20,6 +20,17 @@
 */
 @property(assign) BOOL allowAnyShortcutWithOptionModifier;
 
+/**
+ Set to `YES` if you want to accept shortcuts that override the Services menu
+ item.
+
+ `NO` by default. Set to `YES` to allow shortcuts to override key equivalents of
+ Services menu items. This can prevent users from being confused when they can't
+ find the conflicting menu item since menu items in the Services menu are not
+ always visible.
+*/
+@property(assign) BOOL allowOverridingServicesShortcut;
+
 + (instancetype) sharedValidator;
 
 - (BOOL) isShortcutValid: (MASShortcut*) shortcut;

@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/Info.plist</key>
 		<data>
-		vNGlGhh0yrSEdwgV4ojwaDXkv+o=
+		Zif4HTJMMUJlpggDg7J3FUVZ6Uc=
 		</data>
 		<key>Resources/de.lproj/Localizable.strings</key>
 		<dict>
@@ -67,10 +67,6 @@
 	<dict>
 		<key>Headers/MASDictionaryTransformer.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			EO/Kn+SjaXmXKiWsg/D3Pb/gSiE=
-			</data>
 			<key>hash2</key>
 			<data>
 			+BFTWflm5lmmBeb+IdGLWa8pLpuwDlp+HGRd8Ez2jEU=
@@ -78,21 +74,13 @@
 		</dict>
 		<key>Headers/MASKeyCodes.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			LdxocdRSWgzjoxMTGnPK56KROkc=
-			</data>
 			<key>hash2</key>
 			<data>
-			juzHOY0qD2YJGeLouhlAJGMStXCBZIpjrpPHPfN7uLs=
+			fvrmsjiqKS5fx/0fDeYpBBqSqVQDQT1Jl0xXba1//K8=
 			</data>
 		</dict>
 		<key>Headers/MASShortcut.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			UCtCsy4jdQZM+neYhvq8D5Yv7ac=
-			</data>
 			<key>hash2</key>
 			<data>
 			ugYYqVG1MaOvmQhenLflE+NG2VpK8vqX1TwV+UTP4LM=
@@ -100,10 +88,6 @@
 		</dict>
 		<key>Headers/MASShortcutBinder.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			cGdlT1IGyCR0Yg6QeNb/454as1w=
-			</data>
 			<key>hash2</key>
 			<data>
 			qyuB9K8WoVAwkWqYt9lCiil/28j8AOPnxb9bHSkRw4Y=
@@ -111,10 +95,6 @@
 		</dict>
 		<key>Headers/MASShortcutMonitor.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			nmRLrJTnyWvwo2DrWegAVdD9dlU=
-			</data>
 			<key>hash2</key>
 			<data>
 			pibXU2ggiR7qFqYhvkYC9wUw4Ia55VzsJWrZmYw5kJc=
@@ -122,21 +102,13 @@
 		</dict>
 		<key>Headers/MASShortcutValidator.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			ZEy2BexsPw6IKuaPvZ9/ZTzyQBA=
-			</data>
 			<key>hash2</key>
 			<data>
-			gMd0ceEXkPdFKzw60rPw5K+h5UF4rA4Ow7YXkXhalpo=
+			1ClBNukl81bIJ1cclVhm3yNTCUz/mkLfgE5VsTLvFP4=
 			</data>
 		</dict>
 		<key>Headers/MASShortcutView+Bindings.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			AqDznut1QIY5EQLZiG0z9tklTJM=
-			</data>
 			<key>hash2</key>
 			<data>
 			thyNU60IbaCdGfF7UMh7NTdBGwmo1ojRXbszUQDQXEg=
@@ -144,10 +116,6 @@
 		</dict>
 		<key>Headers/MASShortcutView.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Q05mPglRtho4VHYQaeKglrwOrh8=
-			</data>
 			<key>hash2</key>
 			<data>
 			5ShD6gTCMUsbi4ilCH4xgochtt9WucPa9jMx7To9TCo=
@@ -155,10 +123,6 @@
 		</dict>
 		<key>Headers/MASShortcutViewButtonCell.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			ATzoirIss08vubP1s90hrESbwR4=
-			</data>
 			<key>hash2</key>
 			<data>
 			Te5C54uGWdb3l9Y0uFNO9ZlViTsJjZbGfTIw65mEgY0=
@@ -166,10 +130,6 @@
 		</dict>
 		<key>Headers/Shortcut.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			KPu2TxPbQ/aw4vntsYQqaSQbNm8=
-			</data>
 			<key>hash2</key>
 			<data>
 			8Vdr1akrODvcYGZNCIzxaz2fEBRpDfsY42Aj+uaZl/s=
@@ -177,10 +137,6 @@
 		</dict>
 		<key>Modules/module.modulemap</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			gc9wYBn8UUCdALhwb6Na7/QdruA=
-			</data>
 			<key>hash2</key>
 			<data>
 			ERgdfGm/DZpVYzQQRdfobZk6cu+J2JjgqcS2anUnYnw=
@@ -188,21 +144,13 @@
 		</dict>
 		<key>Resources/Info.plist</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			vNGlGhh0yrSEdwgV4ojwaDXkv+o=
-			</data>
 			<key>hash2</key>
 			<data>
-			0p5lD3kcvjyFlkaAu5D3UPJkqq1R4BBjkebwUtXnj4Q=
+			ZOkcO6rGV0LIQ5bZkSh/DXASjSCgRBhSIKGW4My55BQ=
 			</data>
 		</dict>
 		<key>Resources/de.lproj/Localizable.strings</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			SNsz+vqwmYdaZ8HKI0DxjtGH7Mw=
-			</data>
 			<key>hash2</key>
 			<data>
 			5iSLle70QlsVhZMJIewfG/q5hTC6Y9mvvqd73PO9b78=
@@ -212,10 +160,6 @@
 		</dict>
 		<key>Resources/en.lproj/Localizable.strings</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			S8IPk1kwEFVvW9zUNkOJhQ8ZJyA=
-			</data>
 			<key>hash2</key>
 			<data>
 			3e+S6mJncU5PbPHleXU+AfZ1sZPWkylAOx4wu3mvjJk=
@@ -225,10 +169,6 @@
 		</dict>
 		<key>Resources/es.lproj/Localizable.strings</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			ijxnW48XnV1f0g5e1qAQepnpgGM=
-			</data>
 			<key>hash2</key>
 			<data>
 			uOUO0pIHsjbAzyziD5PA/THWL6kyFghFsEsqoBc16EY=
@@ -238,10 +178,6 @@
 		</dict>
 		<key>Resources/fr.lproj/Localizable.strings</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			OYQnqnZuPXjL9cdWBCBtgn0ODTI=
-			</data>
 			<key>hash2</key>
 			<data>
 			LD3OGgjUox6wVTVqeLhAyo3xgWHRKw9AluXchSeVRCA=
@@ -251,10 +187,6 @@
 		</dict>
 		<key>Resources/it.lproj/Localizable.strings</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			QO61WRxWGp8xTPmWLNyTBfdKRG0=
-			</data>
 			<key>hash2</key>
 			<data>
 			BIkWDif9xd1UEyr0XMBTvoPFo5X/vqIEd8sAB3WckVk=
@@ -264,10 +196,6 @@
 		</dict>
 		<key>Resources/zh-Hans.lproj/Localizable.strings</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			b3ibvX1Hjp6udP/bR3S4VFw/ii8=
-			</data>
 			<key>hash2</key>
 			<data>
 			te2/n3UXmjkzAKMzZBjIL5KEZOo9gkIiAz92cKzN2Zk=
