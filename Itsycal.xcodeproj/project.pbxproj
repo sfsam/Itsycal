@@ -316,7 +316,8 @@
 		9242A5541A82A136005AA4B3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1410;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
 				ORGANIZATIONNAME = mowglii.com;
 				TargetAttributes = {
 					9242A55B1A82A136005AA4B3 = {
