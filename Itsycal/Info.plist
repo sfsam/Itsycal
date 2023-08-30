@@ -36,6 +36,8 @@
 	<string>Itsycal uses AppleEvents to open your calendar app to the selected day. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Itsycal is more useful when it can display events from your calendars. You can change this setting in System Settings › Privacy &amp; Security › Calendars</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2012 − 2023 mowglii.com</string>
 	<key>NSMainNibFile</key>
