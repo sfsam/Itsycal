@@ -74,7 +74,11 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 #pragma mark - Public (main thread)
 
 - (BOOL)calendarAccessGranted {
-    return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusAuthorized;
+    if (@available(macOS 14.0, *)) {
+        return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusFullAccess;
+    } else {
+        return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusAuthorized;
+    }
 }
 
 - (NSString *)defaultCalendarIdentifier {
