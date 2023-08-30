@@ -30,6 +30,23 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 }
 
 - (instancetype)initWithCalendar:(NSCalendar *)calendar delegate:(id<EventCenterDelegate>)delegate {
+    
+    EKEventStoreRequestAccessCompletionHandler requestCompletionHandler = ^(BOOL granted, NSError *error) {
+        if (granted) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self->_store reset];
+                [self refetchAll];
+            });
+        }
+        else {
+            // Fail silently. The alternative is to kick out to the
+            // delegate so it can display an informative alert. But
+            // that would happen every time the user launches Itsycal
+            // (including when the system launches it at startup) and
+            // seeing the same modal alert would get old fast.
+        }
+    };
+    
     self = [super init];
     if (self) {
         _cal = calendar;
@@ -42,21 +59,11 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         _queueIsol = dispatch_queue_create("com.mowglii.Itsycal.queueIsol", DISPATCH_QUEUE_SERIAL);
         _queueIsol2 = dispatch_queue_create("com.mowglii.Itsycal.queueIsol2", DISPATCH_QUEUE_SERIAL);
         _store = [EKEventStore new];
-        [_store requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
-            if (granted) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self->_store reset];
-                    [self refetchAll];
-                });
-            }
-            else {
-                // Fail silently. The alternative is to kick out to the
-                // delegate so it can display an informative alert. But
-                // that would happen every time the user launches Itsycal
-                // (including when the system launches it at startup) and
-                // seeing the same modal alert would get old fast.
-            }
-        }];
+        if (@available(macOS 14.0, *)) {
+            [_store requestFullAccessToEventsWithCompletion:requestCompletionHandler];
+        } else {
+            [_store requestAccessToEntityType:EKEntityTypeEvent completion:requestCompletionHandler];
+        }
 
         // Refetch everything when the event store has changed.
         __weak __typeof(self) weakSelf = self;
