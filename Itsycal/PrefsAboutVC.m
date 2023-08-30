@@ -53,7 +53,7 @@
     MoTextField *masshortcut = label(@"MASShortcut", YES);
     masshortcut.urlString = @"https://github.com/shpakovski/MASShortcut";
 
-    NSTextField *emojiHelp    = label(@"❓", NO);
+    NSTextField *emojiHelp    = label(@"🛟", NO);
     NSTextField *emojiTwitter = label(@"🐦", NO);
     NSTextField *emojiThanks  = label(@"🙏", NO);
 
