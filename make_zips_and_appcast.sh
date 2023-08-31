@@ -1,11 +1,15 @@
 #!/bin/sh
 
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+NC="\033[0m" # No Color
+
 # If Itsycal.app is not found on the Desktop, quit.
 APP_PATH="$HOME/Desktop/Itsycal.app"
 if [ ! -d "$APP_PATH" ]
 then
     echo "\n"
-    echo "  + \033[0;31mNOT FOUND:\033[0m $APP_PATH"
+    echo "  + ${RED}NOT FOUND:${NC} $APP_PATH"
     echo "  + Export notarized Itsycal.app to Desktop."
     echo "  + See BUILD.md for instructions."
     echo "\n"
@@ -34,19 +38,29 @@ echo ""
 ( set -x; codesign -dvv $APP_PATH )
 
 echo ""
-echo "Making zips and appcast for \033[0;32m$SHORT_VERSION_STRING ($VERSION)\033[0m..."
+echo "Making zips and appcast for ${GREEN}$SHORT_VERSION_STRING ($VERSION)${NC}..."
 
 # Make output dir (if necessary) and clear its contents.
 rm -frd "$DEST_DIR"
 mkdir -p "$DEST_DIR"
 
 # Compress Itsycal.app and make a copy without version suffix.
-ditto -c -k --rsrc --keepParent "$APP_PATH" "$ZIP_PATH1"
+ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_PATH1"
 cp "$ZIP_PATH1" "$ZIP_PATH2"
 
-# Get the date and zip file size for the Sparkle XML.
+# Get EdDSA signature (with private key in Keychain) and file size.
+EDDSA_AND_FILESIZE=$(../Sparkle-1.27.1/bin/sign_update "$ZIP_PATH1")
+
+# On error, sign_update returns a message starting with "ERROR".
+if [[ $EDDSA_AND_FILESIZE == ERROR* ]]
+then
+    echo
+    echo "${RED}${EDDSA_AND_FILESIZE}${NC}"
+    echo
+    exit 1
+fi
+
 DATE=$(TZ=GMT date)
-FILESIZE=$(stat -f "%z" "$ZIP_PATH1")
 
 # Make the Sparkle appcast XML file.
 cat > "$XML_PATH" <<EOF
@@ -67,9 +81,9 @@ cat > "$XML_PATH" <<EOF
       <pubDate>$DATE +0000</pubDate>
       <enclosure
           url="https://s3.amazonaws.com/itsycal/$ZIP_NAME"
+          $EDDSA_AND_FILESIZE
           sparkle:version="$VERSION"
           sparkle:shortVersionString="$SHORT_VERSION_STRING"
-          length="$FILESIZE"
           type="application/octet-stream" />
     </item>
   </channel>

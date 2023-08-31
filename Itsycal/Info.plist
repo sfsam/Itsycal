@@ -52,5 +52,7 @@
 	<string>https://s3.amazonaws.com/itsycal/itsycal.xml</string>
 	<key>SUScheduledCheckInterval</key>
 	<real>345600</real>
+	<key>SUPublicEDKey</key>
+	<string>TxKIjUS10OYKgZaAQlRvDjFNEc28hG82wtRWlcNUYSc=</string>
 </dict>
 </plist>
