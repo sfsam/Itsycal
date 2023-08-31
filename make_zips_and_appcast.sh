@@ -5,11 +5,11 @@ RED="\033[0;31m"
 NC="\033[0m" # No Color
 
 # If Itsycal.app is not found on the Desktop, quit.
-APP_PATH="$HOME/Desktop/Itsycal.app"
-if [ ! -d "$APP_PATH" ]
+APP_PATH="${HOME}/Desktop/Itsycal.app"
+if [ ! -d "${APP_PATH}" ]
 then
     echo "\n"
-    echo "  + ${RED}NOT FOUND:${NC} $APP_PATH"
+    echo "  + ${RED}NOT FOUND:${NC} ${APP_PATH}"
     echo "  + Export notarized Itsycal.app to Desktop."
     echo "  + See BUILD.md for instructions."
     echo "\n"
@@ -17,42 +17,42 @@ then
 fi
 
 # Get the bundle version from the plist.
-PLIST_FILE="$APP_PATH/Contents/Info.plist"
-VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" $PLIST_FILE)
-SHORT_VERSION_STRING=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" $PLIST_FILE)
+PLIST_FILE="${APP_PATH}/Contents/Info.plist"
+VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" ${PLIST_FILE})
+SHORT_VERSION_STRING=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" ${PLIST_FILE})
 
 # Set up file names and paths.
-ZIP_NAME="Itsycal-$SHORT_VERSION_STRING.zip"
+ZIP_NAME="Itsycal-${SHORT_VERSION_STRING}.zip"
 ZIP_NAME=${ZIP_NAME// /-}
-DEST_DIR="$HOME/Desktop/Itsycal-$SHORT_VERSION_STRING"
-XML_PATH="$DEST_DIR/itsycal.xml"
-ZIP_PATH1="$DEST_DIR/$ZIP_NAME"
-ZIP_PATH2="$DEST_DIR/Itsycal.zip"
+DEST_DIR="${HOME}/Desktop/Itsycal-${SHORT_VERSION_STRING}"
+XML_PATH="${DEST_DIR}/itsycal.xml"
+ZIP_PATH1="${DEST_DIR}/${ZIP_NAME}"
+ZIP_PATH2="${DEST_DIR}/Itsycal.zip"
 
 # Run some diagnostics so we can see all is ok."
 echo ""
-( set -x; spctl -vvv --assess --type exec $APP_PATH )
+( set -x; spctl -vvv --assess --type exec ${APP_PATH} )
 echo ""
-( set -x; codesign -vvv --deep --strict $APP_PATH )
+( set -x; codesign -vvv --deep --strict ${APP_PATH} )
 echo ""
-( set -x; codesign -dvv $APP_PATH )
+( set -x; codesign -dvv ${APP_PATH} )
 
 echo ""
-echo "Making zips and appcast for ${GREEN}$SHORT_VERSION_STRING ($VERSION)${NC}..."
+echo "Making zips and appcast for ${GREEN}${SHORT_VERSION_STRING} (${VERSION})${NC}..."
 
 # Make output dir (if necessary) and clear its contents.
-rm -frd "$DEST_DIR"
-mkdir -p "$DEST_DIR"
+rm -frd "${DEST_DIR}"
+mkdir -p "${DEST_DIR}"
 
 # Compress Itsycal.app and make a copy without version suffix.
-ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_PATH1"
-cp "$ZIP_PATH1" "$ZIP_PATH2"
+ditto -c -k --sequesterRsrc --keepParent "${APP_PATH}" "${ZIP_PATH1}"
+cp "${ZIP_PATH1}" "${ZIP_PATH2}"
 
 # Get EdDSA signature (with private key in Keychain) and file size.
-EDDSA_AND_FILESIZE=$(../Sparkle-1.27.1/bin/sign_update "$ZIP_PATH1")
+EDDSA_AND_FILESIZE=$(../Sparkle-1.27.1/bin/sign_update "${ZIP_PATH1}")
 
 # On error, sign_update returns a message starting with "ERROR".
-if [[ $EDDSA_AND_FILESIZE == ERROR* ]]
+if [[ ${EDDSA_AND_FILESIZE} == ERROR* ]]
 then
     echo
     echo "${RED}${EDDSA_AND_FILESIZE}${NC}"
@@ -63,7 +63,7 @@ fi
 DATE=$(TZ=GMT date)
 
 # Make the Sparkle appcast XML file.
-cat > "$XML_PATH" <<EOF
+cat > "${XML_PATH}" <<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <rss
     version="2.0"
@@ -75,15 +75,15 @@ cat > "$XML_PATH" <<EOF
     <description>Most recent changes</description>
     <language>en</language>
     <item>
-      <title>Version $SHORT_VERSION_STRING</title>
+      <title>Version ${SHORT_VERSION_STRING}</title>
       <sparkle:minimumSystemVersion>10.14</sparkle:minimumSystemVersion>
       <sparkle:releaseNotesLink>https://itsycal.s3.amazonaws.com/releasenotes.html</sparkle:releaseNotesLink>
-      <pubDate>$DATE +0000</pubDate>
+      <pubDate>${DATE} +0000</pubDate>
       <enclosure
-          url="https://s3.amazonaws.com/itsycal/$ZIP_NAME"
-          $EDDSA_AND_FILESIZE
-          sparkle:version="$VERSION"
-          sparkle:shortVersionString="$SHORT_VERSION_STRING"
+          url="https://s3.amazonaws.com/itsycal/${ZIP_NAME}"
+          ${EDDSA_AND_FILESIZE}
+          sparkle:version="${VERSION}"
+          sparkle:shortVersionString="${SHORT_VERSION_STRING}"
           type="application/octet-stream" />
     </item>
   </channel>
@@ -93,5 +93,5 @@ EOF
 echo "Done!"
 echo ""
 
-open -R "$DEST_DIR/itsycal.xml"
+open -R "${DEST_DIR}/itsycal.xml"
 
