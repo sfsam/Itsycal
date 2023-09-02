@@ -93,6 +93,7 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 /* Alert none
    Repeat none */
 "None" = "无";
+"Notes:" = "笔记:";
 "On Date" = "时间到了";
 "On day of event (9 AM)" = "日程发生当天（上午9时）";
 "Open Calendar" = "打开日历";

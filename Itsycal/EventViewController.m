@@ -11,6 +11,24 @@
 #import "MoVFLHelper.h"
 #import "Themer.h"
 
+// Empty NSTextView gets focus but no cursor is visible
+// https://stackoverflow.com/a/77020301/111418
+@interface HackyTextView : NSTextView
+@end
+@implementation HackyTextView
+- (BOOL)becomeFirstResponder
+{
+    BOOL result = [super becomeFirstResponder];
+    if (result) {
+        if (!self.string.length) {
+            self.string = @" ";
+            self.string = @"";
+        }
+    }
+    return result;
+}
+@end
+
 // These values map to _alertAllDayStrings and _alertRegularStrings.
 const NSInteger kAlertAllDayNumOffsets  = 5;
 const NSInteger kAlertRegularNumOffsets = 10;
@@ -41,6 +59,8 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     NSDatePicker *_startDate, *_endDate, *_repEndDate;
     NSPopUpButton *_repPopup, *_repEndPopup, *_alertPopup, *_calPopup;
     NSArray<NSString *> *_alertAllDayStrings, *_alertRegularStrings;
+    HackyTextView *_notes;
+    NSScrollView *_notesScrollView;
 }
 
 - (void)loadView
@@ -99,8 +119,8 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _title.delegate = self;
     _location = txt(NSLocalizedString(@"Add Location", @""), YES);
     _url = txt(NSLocalizedString(@"Add URL", @""), YES);
-
-    // Login checkbox
+    
+    // All-day checkbox
     _allDayCheckbox = [NSButton new];
     _allDayCheckbox.title = @"";
     _allDayCheckbox.target = self;
@@ -115,6 +135,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     NSTextField *repLabel    = txt(NSLocalizedString(@"Repeat:", @""), NO);
                 _repEndLabel = txt(NSLocalizedString(@"End Repeat:", @""), NO);
     NSTextField *alertLabel  = txt(NSLocalizedString(@"Alert:", @""), NO);
+    NSTextField *notesLabel  = txt(NSLocalizedString(@"Notes:", @""), NO);
     
     // Date pickers
     _startDate = picker();
@@ -166,6 +187,30 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [_alertPopup addItemsWithTitles:_alertAllDayStrings];
     [_alertPopup addItemsWithTitles:_alertRegularStrings];
 
+    // Notes (NSTextView embedded in NSScrollView)
+    _notesScrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 100, 44)];
+    _notesScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+    _notesScrollView.focusRingType = NSFocusRingTypeExterior;
+    _notesScrollView.borderType = NSBezelBorder;
+    _notesScrollView.hasVerticalScroller = YES;
+    [v addSubview:_notesScrollView];
+
+    NSSize noteContentSize = _notesScrollView.contentSize;
+    _notes = [[HackyTextView alloc] initWithFrame:NSMakeRect(0, 0, noteContentSize.width, noteContentSize.height)];
+    _notes.delegate = self;
+    _notes.font = _title.font;
+    _notes.richText = NO;
+    _notes.focusRingType = NSFocusRingTypeExterior;
+    _notes.minSize = NSMakeSize(0, noteContentSize.height);
+    _notes.maxSize = NSMakeSize(FLT_MAX, FLT_MAX);
+    _notes.verticallyResizable = YES;
+    _notes.horizontallyResizable = NO;
+    _notes.autoresizingMask = NSViewWidthSizable;
+    _notes.textContainer.widthTracksTextView = YES;
+    [_notes.textContainer setContainerSize:NSMakeSize(noteContentSize.width, FLT_MAX)];
+
+    _notesScrollView.documentView = _notes;
+
     _calPopup = popup(@selector(calPopupChanged:));
     
     // Save and Cancel buttons
@@ -173,10 +218,10 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _saveButton.enabled = NO; // we'll enable when the form is valid.
     NSButton *cancelButton = btn(NSLocalizedString(@"Cancel", @""), self, @selector(cancelOperation:));
     
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _url, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _calPopup, cancelButton, _saveButton)];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _url, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, notesLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _notesScrollView, _calPopup, cancelButton, _saveButton)];
 
     [vfl :@"V:|-[_title]-[_location]-[_url]-15-[_allDayCheckbox]"];
-    [vfl :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_alertPopup]-20-[_calPopup]" :NSLayoutFormatAlignAllLeading];
+    [vfl :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_alertPopup]-20-[_notesScrollView(50)]-[_calPopup]" :NSLayoutFormatAlignAllLeading];
     [vfl :@"V:[_calPopup]-20-[_saveButton]-|"];
     [vfl :@"H:|-[_title(>=200)]-|"];
     [vfl :@"H:|-[_location]-|"];
@@ -187,6 +232,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [vfl :@"H:|-[repLabel]-[_repPopup]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[_repEndLabel]-[_repEndPopup]-[_repEndDate]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[alertLabel]-[_alertPopup]-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-[notesLabel]-[_notesScrollView(>=200)]-|" :NSLayoutFormatAlignAllTop];
     [vfl :@"H:[_calPopup]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:[cancelButton]-[_saveButton]-|" :NSLayoutFormatAlignAllCenterY];
 
@@ -228,6 +274,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _title.stringValue = @"";
     _location.stringValue = @"";
     _url.stringValue = @"";
+    _notes.string = @"";
     _allDayCheckbox.state = NSControlStateValueOff;
     _startDate.datePickerElements = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
     _endDate.datePickerElements   = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
@@ -436,6 +483,10 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     event.startDate = startDate;
     event.endDate   = endDate;
     event.calendar  = calInfo.calendar;
+    NSString *notes = [_notes.string stringByTrimmingCharactersInSet:whitespaceSet];
+    if (![notes isEqualToString:@""]) {
+        event.notes = notes;
+    }
     // !Important! timeZone MUST be nil if it is an allDay event.
     // If you set timeZone after setting allDay, the start and end dates
     // will be wrong and it won't be an allDay event anymore.
@@ -512,6 +563,26 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     else {
         [self.enclosingPopover close];
     }
+}
+
+#pragma mark -
+#pragma mark NSTextViewDelegate
+
+- (BOOL)textView:(NSTextView *)aTextView doCommandBySelector:(SEL)aSelector
+{
+    // _notes textview handles Tab/Backtab like other controls
+    // by navigating to next/previous control.
+    // https://stackoverflow.com/a/2485987/111418
+    if (aTextView != _notes) return NO;
+    if (aSelector == @selector(insertTab:)) {
+        [_notes.window makeFirstResponder:_calPopup];
+        return YES;
+    }
+    else if (aSelector == @selector(insertBacktab:)) {
+        [_notes.window makeFirstResponder:_alertPopup];
+        return YES;
+    }
+    return NO;
 }
 
 @end

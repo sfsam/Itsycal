@@ -93,6 +93,7 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 /* Alert none
    Repeat none */
 "None" = "aucune";
+"Notes:" = "Notes:";
 "On Date" = "le";
 "On day of event (9 AM)" = "Le jour de l’événement (9:00)";
 "Open Calendar" = "Ouvrir l'application Calendrier";

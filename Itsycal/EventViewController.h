@@ -10,7 +10,7 @@
 
 @class EventCenter;
 
-@interface EventViewController : NSViewController <NSTextFieldDelegate>
+@interface EventViewController : NSViewController <NSTextFieldDelegate, NSTextViewDelegate>
 
 @property (nonatomic, weak) EventCenter *ec;
 @property (nonatomic, weak) NSPopover *enclosingPopover;
