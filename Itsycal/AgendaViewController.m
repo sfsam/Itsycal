@@ -861,6 +861,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSScrollView *_scrollView;
     NSDataDetector *_linkDetector;
     NSRegularExpression *_hiddenLinksRegex;
+    NSRegularExpression *_messageLinksRegex;
     NSLayoutConstraint *_locHeight;
     NSLayoutConstraint *_noteHeight;
     NSLayoutConstraint *_URLHeight;
@@ -945,6 +946,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
         _hiddenLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"<((https?|rdar):\\/\\/[^\\s]+)>" options:NSRegularExpressionCaseInsensitive error:NULL];
+        _messageLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"message:%3\\S+" options:NSRegularExpressionCaseInsensitive error:NULL];
         
         _locHeight = [_location.heightAnchor constraintEqualToConstant:100];
         _locHeight.active = YES;
@@ -1154,6 +1156,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)populateTextView:(NSTextView *)textView withString:(NSString *)string heightConstraint:(NSLayoutConstraint *)constraint
 {
+    // We will detect mail message URLs with _messageLinksRegex. These URLs
+    // link directly to specific messages. They may contain fragments that look
+    // like standard URLs that are picked up by _linkDetector. In order to avoid
+    // conflicts, we keep an array of NSRanges for matched message URLs. When
+    // we go to match standard URLs, we will only match those whose NSRanges
+    // don't intersect (overlap) with message URLs.
+    NSMutableArray *messageLinkRanges = [NSMutableArray new];
+    
     // Ugly hack to deal with Microsoft's insane habit of putting links
     // in angle brackets, making them invisible when rendereed as HTML.
     string = [_hiddenLinksRegex stringByReplacingMatchesInString:string options:kNilOptions range:NSMakeRange(0, string.length) withTemplate:@"&lt;$1&gt;"];
@@ -1164,8 +1174,25 @@ static NSString *kEventCellIdentifier = @"EventCell";
     
     [attrString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:SizePref.fontSize] range:NSMakeRange(0, attrString.length)];
     [attrString addAttribute:NSForegroundColorAttributeName value:Theme.agendaEventTextColor range:NSMakeRange(0, attrString.length)];
+    [_messageLinksRegex enumerateMatchesInString:attrString.string options:kNilOptions range:NSMakeRange(0, attrString.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+        NSString *link = [string substringWithRange:result.range];
+        [attrString addAttribute:NSLinkAttributeName value:link range:result.range];
+        [messageLinkRanges addObject:[NSValue valueWithRange:result.range]];
+    }];
     [_linkDetector enumerateMatchesInString:attrString.string options:kNilOptions range:NSMakeRange(0, attrString.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
-        [attrString addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];
+        // Make sure result.range doesn't intersect (overlap) with the
+        // range of a message URL matched by _messageLinksRegex.
+        BOOL resultOverlapsAMessageLink = NO;
+        for (NSValue *val in messageLinkRanges) {
+            NSRange intersection = NSIntersectionRange(val.rangeValue, result.range);
+            if (intersection.length != 0) {
+                resultOverlapsAMessageLink = YES;
+                break;
+            }
+        }
+        if (!resultOverlapsAMessageLink) {
+            [attrString addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];
+        }
     }];
     textView.textStorage.attributedString = attrString;
     // Force layout and then calculate text height.
