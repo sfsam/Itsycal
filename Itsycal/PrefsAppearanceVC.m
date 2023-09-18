@@ -10,6 +10,7 @@
 #import "Themer.h"
 #import "Sizer.h"
 #import "MoUtils.h"
+#import "IconIsConfigurableTransformer.h"
 
 @implementation PrefsAppearanceVC
 {
@@ -44,9 +45,18 @@
     separator0.boxType = separator1.boxType = NSBoxSeparator;
     [v addSubview:separator0];
     [v addSubview:separator1];
+    
+    // Icon picker segmented control
+    NSSegmentedControl *iconPicker = [NSSegmentedControl segmentedControlWithImages:@[
+        [NSImage imageNamed:@"menubaricon0"],
+        [NSImage imageNamed:@"menubaricon1"],
+        [NSImage imageNamed:@"menubaricon2"],
+        [NSImage imageNamed:@"menubaricon3"]
+    ] trackingMode:NSSegmentSwitchTrackingSelectOne target:nil action:nil];
+    [iconPicker setSelectedSegment:0]; // will be set by binding below.
+    [v addSubview:iconPicker];
 
     // Checkboxes
-    NSButton *useOutlineIcon = chkbx(NSLocalizedString(@"Use outline icon", @""));
     NSButton *showMonth = chkbx(NSLocalizedString(@"Show month in icon", @""));
     NSButton *showDayOfWeek = chkbx(NSLocalizedString(@"Show day of week in icon", @""));
     NSButton *showEventDots = chkbx(NSLocalizedString(@"Show event dots", @""));
@@ -108,11 +118,11 @@
     sizeSlider.maxValue = SizePreferenceLarge;  // = 2
     [v addSubview:sizeSlider];
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(menubarLabel, calendarLabel, separator0, separator1, useOutlineIcon, showMonth, showDayOfWeek, showEventDots, useColoredDots, showWeeks, showLocation, _dateTimeFormat, helpButton, _hideIcon, highlight, themeLabel, themePopup, sizeMinLabel, sizeSlider, sizeMaxLabel)];
-    [vfl :@"V:|-m-[menubarLabel]-10-[useOutlineIcon]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[sizeSlider]-15-[themePopup]-m-[highlight]-m-[showEventDots]-[useColoredDots]-[showLocation]-[showWeeks]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(iconPicker, menubarLabel, calendarLabel, separator0, separator1, showMonth, showDayOfWeek, showEventDots, useColoredDots, showWeeks, showLocation, _dateTimeFormat, helpButton, _hideIcon, highlight, themeLabel, themePopup, sizeMinLabel, sizeSlider, sizeMaxLabel)];
+    [vfl :@"V:|-m-[menubarLabel]-10-[iconPicker]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[sizeSlider]-15-[themePopup]-m-[highlight]-m-[showEventDots]-[useColoredDots]-[showLocation]-[showWeeks]-m-|"];
     [vfl :@"H:|-m-[menubarLabel]-[separator0]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[calendarLabel]-[separator1]-m-|" :NSLayoutFormatAlignAllCenterY];
-    [vfl :@"H:|-m-[useOutlineIcon]-(>=m)-|"];
+    [vfl :@"H:|-m-[iconPicker]-m-|"];
     [vfl :@"H:|-m-[showMonth]-(>=m)-|"];
     [vfl :@"H:|-m-[showDayOfWeek]-(>=m)-|"];
     [vfl :@"H:|-m-[_dateTimeFormat]-[helpButton]-m-|" :NSLayoutFormatAlignAllCenterY];
@@ -128,15 +138,20 @@
     [v.centerXAnchor constraintEqualToAnchor:sizeSlider.centerXAnchor].active = YES;
 
     // Bindings for icon preferences
-    [useOutlineIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kUseOutlineIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+    [iconPicker bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kMenuBarIconType] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSNoSelectionPlaceholderBindingOption: @0}];
     [showMonth bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowMonthInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [showDayOfWeek bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowDayOfWeekInIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [_hideIcon bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
-    // Bind icon prefs enabled state to hide icon's value
-    [useOutlineIcon bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
+    // Bind icon prefs enabled state to kHideIcon's value
+    [iconPicker bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
     [showMonth bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
     [showDayOfWeek bind:@"enabled" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHideIcon] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
+
+    // Bind icon prefs enabled state to kMenuBarIconType's value
+    IconIsConfigurableTransformer *iconIsConfigurableTransformer = [IconIsConfigurableTransformer new];
+    [showMonth bind:@"enabled2" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kMenuBarIconType] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerBindingOption: iconIsConfigurableTransformer}];
+    [showDayOfWeek bind:@"enabled2" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kMenuBarIconType] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerBindingOption: iconIsConfigurableTransformer}];
 
     // Binding for datetime format
     [_dateTimeFormat bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kClockFormat] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSMultipleValuesPlaceholderBindingOption: _dateTimeFormat.placeholderString, NSNoSelectionPlaceholderBindingOption: _dateTimeFormat.placeholderString, NSNotApplicablePlaceholderBindingOption: _dateTimeFormat.placeholderString, NSNullPlaceholderBindingOption: _dateTimeFormat.placeholderString}];

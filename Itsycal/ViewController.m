@@ -47,7 +47,7 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowEventDays];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kUseOutlineIcon];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kMenuBarIconType];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMonthInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kClockFormat];
@@ -603,8 +603,16 @@
 
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
+    NSInteger menuBarIconType = [defaults integerForKey:kMenuBarIconType];
+    if (menuBarIconType == 2) {
+        return [NSImage imageNamed:@"menubaricon2"];
+    }
+    if (menuBarIconType == 3) {
+        return [NSImage imageNamed:@"menubaricon3"];
+    }
+
     // Does user want outline icon or solid icon?
-    BOOL outline = [defaults boolForKey:kUseOutlineIcon];
+    BOOL outline = menuBarIconType == 1;
 
     // Should we show the virtual meeting indicator?
     BOOL meeting = [defaults boolForKey:kShowMeetingIndicator] && _shouldShowMeetingIndicator;
@@ -1251,7 +1259,7 @@
     }];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kUseOutlineIcon, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -1264,7 +1272,7 @@
     if ([keyPath isEqualToString:kShowEventDays]) {
         [self updateAgenda];
     }
-    else if ([keyPath isEqualToString:kUseOutlineIcon] ||
+    else if ([keyPath isEqualToString:kMenuBarIconType] ||
              [keyPath isEqualToString:kShowMonthInIcon] ||
              [keyPath isEqualToString:kShowDayOfWeekInIcon] ||
              [keyPath isEqualToString:kShowMeetingIndicator] ||

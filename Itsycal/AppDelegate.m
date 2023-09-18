@@ -81,6 +81,9 @@
     // 0.13.2 uses an NSDictionary instead of NSData to store the shortcut.
     [self shortcutFixup];
 
+    // 0.14.1 introduces more menu bar icon types
+    [self menuBarIconTypeFixup];
+
     // Register keyboard shortcut.
     [[MASShortcutBinder sharedBinder] setBindingOptions:@{NSValueTransformerNameBindingOption: MASDictionaryTransformerName}];
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
@@ -200,6 +203,23 @@
     if (!shortcut) return;
     MASDictionaryTransformer *transformer = [MASDictionaryTransformer new];
     [defaults setObject:[transformer reverseTransformedValue:shortcut] forKey:kKeyboardShortcut];
+}
+
+// 0.14.1 introduces a couple new menu bar icon types
+// represented by kMenuBarIconType:
+//   0 == solid round rect (default)
+//   1 == outlined round rect (formerly kUseOutlineIcon == YES)
+//   2 == generic calendar icon (new)
+//   3 == Itsycal icon (new)
+// As a result, kUseOutlineIcon is no longer used.
+- (void)menuBarIconTypeFixup
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    BOOL useOutlineIcon = [defaults boolForKey:@"UseOutlineIcon"];
+    [defaults removeObjectForKey:@"UseOutlineIcon"];
+    if (useOutlineIcon) {
+        [defaults setInteger:1 forKey:kMenuBarIconType];
+    }
 }
 
 @end
