@@ -17,6 +17,7 @@ NSString * const kHighlightedDOWs = @"HighlightedDOWs";
 NSString * const kKeyboardShortcut = @"GlobalShortcut";
 NSString * const kUseOutlineIcon = @"UseOutlineIcon";
 NSString * const kShowMonthInIcon = @"ShowMonthInIcon";
+NSString * const kShowDaysUntilNewYear = @"ShowDaysUntilNewYear";
 NSString * const kShowDayOfWeekInIcon = @"ShowDayOfWeekInIcon";
 NSString * const kShowMeetingIndicator = @"ShowMeetingIndicator";
 NSString * const kAllowOutsideApplicationsFolder = @"AllowOutsideApplicationsFolder";
