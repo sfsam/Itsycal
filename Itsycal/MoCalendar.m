@@ -228,6 +228,12 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [self reloadData];
 }
 
+- (void)setShowMonthBorder:(BOOL)showMonthBorder
+{
+  _showMonthBorder = showMonthBorder;
+  [self reloadData];
+}
+
 - (void)setUseColoredDots:(BOOL)useColoredDots
 {
     _useColoredDots = useColoredDots;
@@ -806,7 +812,11 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
     NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:radius inset:0 useRects:NO];
     
-    [Theme.currentMonthOutlineColor set];
+    if (_showMonthBorder) {
+      [Theme.currentMonthOutlineColor set];
+    } else {
+      [NSColor.clearColor set];
+    }
     [outlinePath setLineWidth:1.5];
     [outlinePath stroke];
 }

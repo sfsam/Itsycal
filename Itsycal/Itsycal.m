@@ -23,6 +23,7 @@ NSString * const kAllowOutsideApplicationsFolder = @"AllowOutsideApplicationsFol
 NSString * const kClockFormat = @"ClockFormat";
 NSString * const kHideIcon = @"HideIcon";
 NSString * const kShowLocation = @"ShowLocation";
+NSString * const kShowMonthBorder = @"kShowMonthBorder";
 NSString * const kShowEventDots = @"kShowEventDots";
 NSString * const kUseColoredDots = @"UseColoredDots";
 NSString * const kBeepBeepOnTheHour = @"BeepBeepOnTheHour";

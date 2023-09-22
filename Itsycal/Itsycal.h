@@ -24,6 +24,7 @@ extern NSString * const kAllowOutsideApplicationsFolder;
 extern NSString * const kClockFormat;
 extern NSString * const kHideIcon;
 extern NSString * const kShowLocation;
+extern NSString * const kShowMonthBorder;
 extern NSString * const kShowEventDots;
 extern NSString * const kUseColoredDots;
 extern NSString * const kBeepBeepOnTheHour;
