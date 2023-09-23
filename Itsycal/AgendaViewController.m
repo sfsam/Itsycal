@@ -465,7 +465,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     cell.eventInfo = info;
 
     if (info && info.event) {
-        if (info.event.title) title = info.event.title;
+        if (info.event.title) {
+            // If title has newlines or stretches of whitespace, compress
+            // them into a single space.
+            title = [[info.event.title componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] componentsJoinedByString:@" "];
+        }
         if (info.event.location) location = info.event.location;
     }
     
