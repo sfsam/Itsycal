@@ -276,8 +276,8 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _url.stringValue = @"";
     _notes.string = @"";
     _allDayCheckbox.state = NSControlStateValueOff;
-    _startDate.datePickerElements = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
-    _endDate.datePickerElements   = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
+    _startDate.datePickerElements = NSDatePickerElementFlagYearMonthDay | NSDatePickerElementFlagHourMinute;
+    _endDate.datePickerElements   = NSDatePickerElementFlagYearMonthDay | NSDatePickerElementFlagHourMinute;
     _startDate.dateValue = initialStart;
     _endDate.minDate     = initialStart; // !! Must set minDate before dateValue !!
     _endDate.dateValue   = initialEnd;
@@ -353,7 +353,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     backgroundColorView.identifier = @"popoverBackgroundBox";
     backgroundColorView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     backgroundColorView.boxType = NSBoxCustom;
-    backgroundColorView.borderType = NSNoBorder;
+    backgroundColorView.borderWidth = 0;
     backgroundColorView.fillColor = Theme.mainBackgroundColor;
     [frameView addSubview:backgroundColorView positioned:NSWindowBelow relativeTo:nil];
 }
@@ -375,12 +375,12 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
 {
     // The All-day checkbox toggles the hour/minute controls of the date pickers.
     if (allDayCheckbox.state == NSControlStateValueOn) {
-        _startDate.datePickerElements = NSYearMonthDayDatePickerElementFlag;
-        _endDate.datePickerElements = NSYearMonthDayDatePickerElementFlag;
+        _startDate.datePickerElements = NSDatePickerElementFlagYearMonthDay;
+        _endDate.datePickerElements = NSDatePickerElementFlagYearMonthDay;
     }
     else {
-        _startDate.datePickerElements = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
-        _endDate.datePickerElements = NSYearMonthDayDatePickerElementFlag | NSHourMinuteDatePickerElementFlag;
+        _startDate.datePickerElements = NSDatePickerElementFlagYearMonthDay | NSDatePickerElementFlagHourMinute;
+        _endDate.datePickerElements = NSDatePickerElementFlagYearMonthDay | NSDatePickerElementFlagHourMinute;
     }
     
     // All-day events have different alert options from regular events.

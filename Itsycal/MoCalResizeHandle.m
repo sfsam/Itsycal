@@ -18,8 +18,8 @@
     NSBox* (^box)(NSColor *) = ^NSBox* (NSColor *color) {
         NSBox *bx = [NSBox new];
         bx.boxType = NSBoxCustom;
-        bx.borderType = NSNoBorder;
-        bx.cornerRadius = 2;
+        bx.borderWidth = 0;
+        bx.cornerRadius = 3;
         bx.fillColor = color;
         [self addSubview:bx];
         return bx;

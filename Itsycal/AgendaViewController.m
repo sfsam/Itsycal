@@ -984,7 +984,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     backgroundColorView.identifier = @"popoverBackgroundBox";
     backgroundColorView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     backgroundColorView.boxType = NSBoxCustom;
-    backgroundColorView.borderType = NSNoBorder;
+    backgroundColorView.borderWidth = 0;
     backgroundColorView.fillColor = Theme.mainBackgroundColor;
     [frameView addSubview:backgroundColorView positioned:NSWindowBelow relativeTo:nil];
 }
