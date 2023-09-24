@@ -860,6 +860,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSTextField *_duration;
     NSTextField *_recurrence;
     NSTextView *_location;
+    NSTextView *_attendees;
     NSTextView *_note;
     NSTextView *_URL;
     NSScrollView *_scrollView;
@@ -867,13 +868,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSRegularExpression *_hiddenLinksRegex;
     NSRegularExpression *_messageLinksRegex;
     NSLayoutConstraint *_locHeight;
+    NSLayoutConstraint *_attendeesHeight;
     NSLayoutConstraint *_noteHeight;
     NSLayoutConstraint *_URLHeight;
 }
 
 - (instancetype)init
 {
-    // Convenience functions for making labels and separators.
+    // Convenience functions.
     NSTextField* (^label)(void) = ^NSTextField* {
         NSTextField *lbl = [NSTextField wrappingLabelWithString:@""];
         lbl.drawsBackground = NO;
@@ -887,32 +889,25 @@ static NSString *kEventCellIdentifier = @"EventCell";
         separator.boxType = NSBoxSeparator;
         return separator;
     };
+    NSTextView* (^textview)(void) = ^NSTextView* {
+        NSTextView *txtview = [NSTextView new];
+        txtview.editable = NO;
+        txtview.selectable = YES;
+        txtview.drawsBackground = NO;
+        txtview.textContainer.lineFragmentPadding = 0;
+        txtview.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
+        return txtview;
+    };
     self = [super init];
     if (self) {
         _title = label();
         _duration = label();
         _recurrence = label();
         
-        _location = [NSTextView new];
-        _location.editable = NO;
-        _location.selectable = YES;
-        _location.drawsBackground = NO;
-        _location.textContainer.lineFragmentPadding = 0;
-        _location.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
-        
-        _note = [NSTextView new];
-        _note.editable = NO;
-        _note.selectable = YES;
-        _note.drawsBackground = NO;
-        _note.textContainer.lineFragmentPadding = 0;
-        _note.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
-        
-        _URL = [NSTextView new];
-        _URL.editable = NO;
-        _URL.selectable = YES;
-        _URL.drawsBackground = NO;
-        _URL.textContainer.lineFragmentPadding = 0;
-        _URL.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
+        _location = textview();
+        _attendees = textview();
+        _note = textview();
+        _URL = textview();
         
         _btnDelete = [NSButton new];
         _btnDelete.title = @"⌫";
@@ -934,8 +929,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
                                                 @[_duration],    // 3
                                                 @[_recurrence],  // 4
                                                 @[separator()],  // 5
-                                                @[_note],        // 6
-                                                @[_URL]]];       // 7
+                                                @[_attendees],   // 6
+                                                @[separator()],  // 7
+                                                @[_note],        // 8
+                                                @[_URL]]];       // 9
         _grid.rowSpacing = 8;
         _grid.translatesAutoresizingMaskIntoConstraints = NO;
         [_grid cellForView:_btnDelete].xPlacement = NSGridCellPlacementCenter;
@@ -954,6 +951,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
         
         _locHeight = [_location.heightAnchor constraintEqualToConstant:100];
         _locHeight.active = YES;
+        _attendeesHeight = [_attendees.heightAnchor constraintEqualToConstant:100];
+        _attendeesHeight.active = YES;
         _noteHeight = [_note.heightAnchor constraintEqualToConstant:100];
         _noteHeight.active = YES;
         _URLHeight = [_URL.heightAnchor constraintEqualToConstant:100];
@@ -1025,12 +1024,16 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Hide recurrence row IF there's no recurrence rule.
     [_grid rowAtIndex:4].hidden = !info.event.hasRecurrenceRules;
     
+    // Hide attendees row and separator above it IF there are no attendees.
+    [_grid rowAtIndex:5].hidden = !info.event.hasAttendees;
+    [_grid rowAtIndex:6].hidden = !info.event.hasAttendees;
+
     // Hide note row and separator row above it IF there's no note AND no URL.
-    [_grid rowAtIndex:5].hidden = !info.event.hasNotes && !info.event.URL;
-    [_grid rowAtIndex:6].hidden = !info.event.hasNotes;
+    [_grid rowAtIndex:7].hidden = !info.event.hasNotes && !info.event.URL;
+    [_grid rowAtIndex:8].hidden = !info.event.hasNotes;
     
-    // Hide URL row and IF there's no URL.
-    [_grid rowAtIndex:7].hidden = !info.event.URL;
+    // Hide URL row IF there's no URL.
+    [_grid rowAtIndex:9].hidden = !info.event.URL;
 
     // Hide delete button IF event doesn't allow modification.
     _btnDelete.hidden = !info.event.calendar.allowsContentModifications;
@@ -1122,14 +1125,43 @@ static NSString *kEventCellIdentifier = @"EventCell";
             [self populateTextView:_location withString:trimmedLoc heightConstraint:_locHeight];
         }
     }
+    
+    // Attendees
+    if (info.event.hasAttendees) {
+        NSMutableAttributedString *attendeesAttrStr = [NSMutableAttributedString new];
+        NSArray *sortedAttendees = [info.event.attendees sortedArrayUsingComparator:^NSComparisonResult(EKParticipant * p1, EKParticipant *p2) {
+            if (p1.participantStatus == EKParticipantStatusAccepted) return NSOrderedAscending;
+            if (p1.participantStatus == EKParticipantStatusDeclined &&
+                p2.participantStatus == EKParticipantStatusAccepted) return NSOrderedDescending;
+            return NSOrderedDescending;
+        }];
+        for (NSInteger i = 0; i < sortedAttendees.count; i++) {
+            EKParticipant *participant = sortedAttendees[i];
+            NSString *terminal = (i < sortedAttendees.count - 1) ? @"\n" : @"";
+            NSString *organizer = [participant.name isEqualToString:info.event.organizer.name] ? @" 􀋅" : @"";
+            NSString *status = @"􀁜";
+            NSColor *fontColor = Theme.agendaEventDateTextColor;
+            if (participant.participantStatus == EKParticipantStatusAccepted) {
+                status = @"􀁢";
+                fontColor = Theme.agendaEventTextColor;
+            }
+            if (participant.participantStatus == EKParticipantStatusDeclined) {
+                status = @"􀀲";
+                fontColor = Theme.agendaEventTextColor;
+            }
+            [attendeesAttrStr appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ %@%@%@", status, participant.name, organizer, terminal] attributes:@{NSFontAttributeName: [NSFont systemFontOfSize:SizePref.fontSize], NSForegroundColorAttributeName: fontColor}]];
+        }
+        _attendees.textStorage.attributedString = attendeesAttrStr;
+        [self setHeightConstraint:_attendeesHeight forTextView:_attendees];
+    }
 
     // Notes
     if (info.event.hasNotes) {
         NSString *trimmedNotes = [info.event.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if ([trimmedNotes isEqualToString:@""]) {
             // Hide note row and separator row above it, provided no URL.
-            [_grid rowAtIndex:5].hidden = !info.event.URL;
-            [_grid rowAtIndex:6].hidden = YES;
+            [_grid rowAtIndex:7].hidden = !info.event.URL;
+            [_grid rowAtIndex:8].hidden = YES;
         }
         else {
             [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight];
@@ -1199,11 +1231,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
         }
     }];
     textView.textStorage.attributedString = attrString;
+    [self setHeightConstraint:constraint forTextView:textView];
+}
+
+- (void)setHeightConstraint:(NSLayoutConstraint *)constraint forTextView:(NSTextView *)textView
+{
     // Force layout and then calculate text height.
     // stackoverflow.com/a/44969138/111418
     (void) [textView.layoutManager glyphRangeForTextContainer:textView.textContainer];
     NSRect textRect = [textView.layoutManager usedRectForTextContainer:textView.textContainer];
-    
     constraint.constant = textRect.size.height;
 }
 
