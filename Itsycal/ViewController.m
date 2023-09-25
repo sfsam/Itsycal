@@ -588,12 +588,12 @@
         if (@available(macOS 11, *)) {
             _statusItem.length = NSWidth(dummyButton.frame) - 8;
         }
-        os_log(OS_LOG_DEFAULT, "[%@] %@ --> %.0f, %.0f", [self iconText], _statusItem.button.title,
-              _statusItem.button.frame.size.width, _statusItem.button.image.size.width);
+        //os_log(OS_LOG_DEFAULT, "[%@] %@ --> %.0f, %.0f", [self iconText], _statusItem.button.title,
+        //      _statusItem.button.frame.size.width, _statusItem.button.image.size.width);
     }
     else {
         _statusItem.length = NSVariableStatusItemLength;
-        os_log(OS_LOG_DEFAULT, "VARIABLE LENGTH ITEM");
+        //os_log(OS_LOG_DEFAULT, "VARIABLE LENGTH ITEM");
     }
 }
 
@@ -991,7 +991,7 @@
 
 - (void)eventCenterEventsChanged
 {
-    os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
+    //os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
     _filteredEventsForDate = [_ec filteredEventsForDate];
     [_moCal reloadData];
     [self updateAgenda];

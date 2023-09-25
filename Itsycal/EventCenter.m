@@ -106,7 +106,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 }
 
 - (void)updateSelectedCalendarsForIdentifier:(NSString *)identifier selected:(BOOL)selected {
-    os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
+    //os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
     // The user has selected/unselected a calendar in Prefs.
     // Update the kSelectedCalendars array in NSUserDefaults.
     __block NSMutableArray *selectedCalendars = [NSMutableArray new];
@@ -132,7 +132,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 }
 
 - (NSArray *)sourcesAndCalendars {
-    os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
+    //os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
     __block NSArray *sourcesAndCalendars;
     dispatch_sync(_queueIsol2, ^{
         sourcesAndCalendars = [self->_sourcesAndCalendars copy];
@@ -141,7 +141,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 }
 
 - (NSDictionary *)filteredEventsForDate {
-    os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
+    //os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
     __block NSDictionary *filteredEventsForDate;
     dispatch_sync(_queueIsol, ^{
         filteredEventsForDate = [self->_filteredEventsForDate copy];
@@ -150,7 +150,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 }
 
 - (void)fetchEvents {
-    os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
+    //os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
     MoDate startMoDate = [self.delegate fetchStartDate];
     MoDate endMoDate   = [self.delegate fetchEndDate];
     dispatch_async(_queueWork, ^{
@@ -161,7 +161,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 }
 
 - (void)refetchAll {
-    os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
+    //os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
     // Either the system told us the event store has changed or
     // we were called by the main controller. Clear the cache
     // and refetch everything.
@@ -185,7 +185,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 #pragma mark - Private (GCD thread pool)
 
 - (void)_fetchSourcesAndCalendars {
-    os_log(OS_LOG_DEFAULT, " %s", __FUNCTION__);
+    //os_log(OS_LOG_DEFAULT, " %s", __FUNCTION__);
     // Get an array of the user's calendars sorted first by
     // source title and then by calendar title.
     NSArray *calendars = [[_store calendarsForEntityType:EKEntityTypeEvent] sortedArrayUsingComparator:^NSComparisonResult(EKCalendar *cal1, EKCalendar *cal2) {
@@ -248,7 +248,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 
 - (void)_fetchEventsWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate refetch:(BOOL)refetch
 {
-    os_log(OS_LOG_DEFAULT, " %s", __FUNCTION__);
+    //os_log(OS_LOG_DEFAULT, " %s", __FUNCTION__);
     if (refetch) {
         _previouslyFetchedDates = [NSMutableIndexSet new];
         _eventsForDate = [NSMutableDictionary new];
@@ -256,7 +256,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // Return immediately if we've already fetched for this date range.
     NSRange dateRange = NSMakeRange(startMoDate.julian, endMoDate.julian - startMoDate.julian);
     if ([_previouslyFetchedDates containsIndexesInRange:dateRange])  {
-        os_log(OS_LOG_DEFAULT, "SKIPPING: %@ - %@", NSStringFromMoDate(startMoDate), NSStringFromMoDate(endMoDate));
+        //os_log(OS_LOG_DEFAULT, "SKIPPING: %@ - %@", NSStringFromMoDate(startMoDate), NSStringFromMoDate(endMoDate));
         return;
     }
     
@@ -352,7 +352,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 }
 
 - (void)_filterEvents {
-    os_log(OS_LOG_DEFAULT, " %s", __FUNCTION__);
+    //os_log(OS_LOG_DEFAULT, " %s", __FUNCTION__);
     NSMutableDictionary *filteredEventsForDate = [NSMutableDictionary new];
     NSArray *selectedCalendars = [[NSUserDefaults standardUserDefaults] arrayForKey:kSelectedCalendars];
     for (NSDate *date in _eventsForDate) {
