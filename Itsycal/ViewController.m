@@ -1046,9 +1046,8 @@
 - (void)showMeetingIndicatorIfNecessary
 {
     BOOL show = NO;
-    for (id obj in _agendaVC.events) {
-        if ([obj isKindOfClass:[NSDate class]]) continue;
-        EventInfo *info = obj;
+    NSArray *todayEvents = [self eventsForDate:[self todayDate]];
+    for (EventInfo *info in todayEvents) {
         // Show meeting indicator 15 minutes prior to event start until end.
         NSDate *fifteenMinutesPrior = [_nsCal dateByAddingUnit:NSCalendarUnitSecond value:-(15 * 60 + 30) toDate:info.event.startDate options:0];
         if (info.zoomURL && !info.event.isAllDay
