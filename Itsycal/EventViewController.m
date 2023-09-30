@@ -11,13 +11,18 @@
 #import "MoVFLHelper.h"
 #import "Themer.h"
 
-// Empty NSTextView gets focus but no cursor is visible
-// https://stackoverflow.com/a/77020301/111418
 @interface HackyTextView : NSTextView
+// The placeholderAttributedString property in NSTextView
+// isn't exposed publicly.
+// https://stackoverflow.com/a/47223845/111418
+@property NSAttributedString *placeholderAttributedString;
 @end
+
 @implementation HackyTextView
 - (BOOL)becomeFirstResponder
 {
+    // Empty NSTextView gets focus but no cursor is visible
+    // https://stackoverflow.com/a/77020301/111418
     BOOL result = [super becomeFirstResponder];
     if (result) {
         if (!self.string.length) {
@@ -74,7 +79,9 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
         if (isEditable) {
             txt = [NSTextField textFieldWithString:@""];
             txt.placeholderString = stringValue;
-            txt.bezelStyle = NSTextFieldRoundedBezel;
+            txt.bezeled = NO;
+            txt.focusRingType = NSFocusRingTypeNone;
+            txt.drawsBackground = NO;
         }
         else {
             txt = [NSTextField labelWithString:stringValue];
@@ -117,6 +124,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     // Title, location, and URL text fields
     _title = txt(NSLocalizedString(@"New Event", @""), YES);
     _title.delegate = self;
+    _title.font = [NSFont systemFontOfSize:16 weight:NSFontWeightMedium];
     _location = txt(NSLocalizedString(@"Add Location", @""), YES);
     _url = txt(NSLocalizedString(@"Add URL", @""), YES);
     
@@ -135,7 +143,6 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     NSTextField *repLabel    = txt(NSLocalizedString(@"Repeat:", @""), NO);
                 _repEndLabel = txt(NSLocalizedString(@"End Repeat:", @""), NO);
     NSTextField *alertLabel  = txt(NSLocalizedString(@"Alert:", @""), NO);
-    NSTextField *notesLabel  = txt(NSLocalizedString(@"Notes:", @""), NO);
     
     // Date pickers
     _startDate = picker();
@@ -192,13 +199,17 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _notesScrollView.translatesAutoresizingMaskIntoConstraints = NO;
     _notesScrollView.focusRingType = NSFocusRingTypeExterior;
     _notesScrollView.borderType = NSBezelBorder;
+    _notesScrollView.drawsBackground = NO;
     _notesScrollView.hasVerticalScroller = YES;
     [v addSubview:_notesScrollView];
 
     NSSize noteContentSize = _notesScrollView.contentSize;
     _notes = [[HackyTextView alloc] initWithFrame:NSMakeRect(0, 0, noteContentSize.width, noteContentSize.height)];
     _notes.delegate = self;
-    _notes.font = _title.font;
+    _notes.font = _location.font; // _title.font is too big
+    _notes.placeholderAttributedString = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"Add Notes", @"") attributes:@{NSFontAttributeName: _notes.font, NSForegroundColorAttributeName: NSColor.disabledControlTextColor}];
+    _notes.allowsUndo = YES;
+    _notes.drawsBackground = NO;
     _notes.richText = NO;
     _notes.focusRingType = NSFocusRingTypeExterior;
     _notes.minSize = NSMakeSize(0, noteContentSize.height);
@@ -218,22 +229,23 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _saveButton.enabled = NO; // we'll enable when the form is valid.
     NSButton *cancelButton = btn(NSLocalizedString(@"Cancel", @""), self, @selector(cancelOperation:));
     
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _url, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, notesLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _notesScrollView, _calPopup, cancelButton, _saveButton)];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _notesScrollView, _url, _calPopup, cancelButton, _saveButton)];
 
-    [vfl :@"V:|-[_title]-[_location]-[_url]-15-[_allDayCheckbox]"];
-    [vfl :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-20-[_alertPopup]-20-[_notesScrollView(50)]-[_calPopup]" :NSLayoutFormatAlignAllLeading];
+    [vfl :@"V:|-[_title]-[_location]-15-[_allDayCheckbox]"];
+    [vfl :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-[_alertPopup]" :NSLayoutFormatAlignAllLeading];
+    [vfl :@"V:[_alertPopup]-20-[_notesScrollView(50)]-10-[_url]-15-[_calPopup]"];
     [vfl :@"V:[_calPopup]-20-[_saveButton]-|"];
     [vfl :@"H:|-[_title(>=200)]-|"];
     [vfl :@"H:|-[_location]-|"];
-    [vfl :@"H:|-[_url]-|"];
     [vfl :@"H:|-[allDayLabel]-[_allDayCheckbox]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[startsLabel]-[_startDate]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[endsLabel]-[_endDate]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[repLabel]-[_repPopup]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[_repEndLabel]-[_repEndPopup]-[_repEndDate]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[alertLabel]-[_alertPopup]-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-[notesLabel]-[_notesScrollView(>=200)]-|" :NSLayoutFormatAlignAllTop];
-    [vfl :@"H:[_calPopup]-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-[_notesScrollView(>=200)]-|"];
+    [vfl :@"H:|-[_url]-|"];
+    [vfl :@"H:|-[_calPopup]-|"];
     [vfl :@"H:[cancelButton]-[_saveButton]-|" :NSLayoutFormatAlignAllCenterY];
 
     // Require All-day checkbox height to hug the checkbox. Without this,
@@ -575,7 +587,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     // https://stackoverflow.com/a/2485987/111418
     if (aTextView != _notes) return NO;
     if (aSelector == @selector(insertTab:)) {
-        [_notes.window makeFirstResponder:_calPopup];
+        [_notes.window makeFirstResponder:_url];
         return YES;
     }
     else if (aSelector == @selector(insertBacktab:)) {
