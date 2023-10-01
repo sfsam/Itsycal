@@ -1109,6 +1109,12 @@
         components.second = 0;
     }
     NSDate *fireDate = [_nsCal dateFromComponents:components];
+    // Set new fireDate a quarter second late in the hope that it
+    // avoids the edge case when we fall back at the end of Daylight
+    // Savings time. Some users reported either the seconds timer
+    // getting stuck in a loop and pinning CPU at 100% or the minute
+    // timer not firing until the fallback hour has ended.
+    fireDate = [fireDate dateByAddingTimeInterval:0.25];
     [_timer invalidate];
     _timer = [[NSTimer alloc] initWithFireDate:fireDate interval:0 target:self selector:@selector(updateTimer) userInfo:nil repeats:NO];
     [NSRunLoop.mainRunLoop addTimer:_timer forMode:NSRunLoopCommonModes];
