@@ -227,19 +227,27 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _notesScrollView.documentView = _notes;
 
     _calPopup = popup(@selector(calPopupChanged:));
+    _calPopup.imagePosition = NSImageOnly;
+    
+    // This is a hack.
+    // Populate _calPopup with a dummy item so the Autolayout
+    // engine can calculate its correct width. The real values
+    // will be repopulated in -viewWillAppear.
+    NSMenuItem *calItem = [NSMenuItem new];
+    calItem.image = [NSImage imageWithSize:NSMakeSize(8, 8) flipped:NO drawingHandler:^BOOL(NSRect dstRect) { return YES; }];
+    [_calPopup.menu addItem:calItem];
     
     // Save and Cancel buttons
     _saveButton = btn(NSLocalizedString(@"Save Event", @""), self, @selector(saveEvent:));
     _saveButton.enabled = NO; // we'll enable when the form is valid.
     NSButton *cancelButton = btn(NSLocalizedString(@"Cancel", @""), self, @selector(cancelOperation:));
     
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _notesScrollView, _url, _calPopup, cancelButton, _saveButton)];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _calPopup, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _notesScrollView, _url, cancelButton, _saveButton)];
 
     [vfl :@"V:|-[_title]-[_location]-15-[_allDayCheckbox]"];
     [vfl :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-[_alertPopup]" :NSLayoutFormatAlignAllLeading];
-    [vfl :@"V:[_alertPopup]-20-[_notesScrollView]-10-[_url]-15-[_calPopup]"];
-    [vfl :@"V:[_calPopup]-20-[_saveButton]-|"];
-    [vfl :@"H:|-[_title(>=200)]-|"];
+    [vfl :@"V:[_alertPopup]-20-[_notesScrollView]-10-[_url]-15-[_saveButton]-|"];
+    [vfl :@"H:|-[_title]-[_calPopup]-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-[_location]-|"];
     [vfl :@"H:|-[allDayLabel]-[_allDayCheckbox]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[startsLabel]-[_startDate]-|" :NSLayoutFormatAlignAllBaseline];
@@ -249,7 +257,6 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [vfl :@"H:|-[alertLabel]-[_alertPopup]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[_notesScrollView(>=200)]-|"];
     [vfl :@"H:|-[_url]-|"];
-    [vfl :@"H:|-[_calPopup]-|"];
     [vfl :@"H:[cancelButton]-[_saveButton]-|" :NSLayoutFormatAlignAllCenterY];
     
     // Get height of one line in _notes
@@ -318,7 +325,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     // Function to make colored dots for calendar popup.
     NSImage* (^coloredDot)(NSColor *) = ^NSImage* (NSColor *color) {
         return [NSImage imageWithSize:NSMakeSize(8, 8) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
-            [[color blendedColorWithFraction:0.3 ofColor:[NSColor whiteColor]] set];
+            [color set];
             [[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(0, 0, 8, 8)] fill];
             return YES;
         }];
