@@ -66,6 +66,8 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     NSArray<NSString *> *_alertAllDayStrings, *_alertRegularStrings;
     HackyTextView *_notes;
     NSScrollView *_notesScrollView;
+    NSLayoutConstraint *_notesScrollViewHeightConstraint;
+    CGFloat _notesHeightOfOneLine;
 }
 
 - (void)loadView
@@ -125,7 +127,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _title = txt(NSLocalizedString(@"New Event", @""), YES);
     _title.delegate = self;
     _title.font = [NSFont systemFontOfSize:16 weight:NSFontWeightMedium];
-    _location = txt(NSLocalizedString(@"Add Location", @""), YES);
+    _location = txt(NSLocalizedString(@"Add Location or Video Call", @""), YES);
     _url = txt(NSLocalizedString(@"Add URL", @""), YES);
     
     // All-day checkbox
@@ -198,7 +200,8 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _notesScrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 100, 44)];
     _notesScrollView.translatesAutoresizingMaskIntoConstraints = NO;
     _notesScrollView.focusRingType = NSFocusRingTypeExterior;
-    _notesScrollView.borderType = NSBezelBorder;
+    _notesScrollView.borderType = NSNoBorder;
+    _notesScrollView.verticalScrollElasticity = NSScrollElasticityNone;
     _notesScrollView.drawsBackground = NO;
     _notesScrollView.hasVerticalScroller = YES;
     [v addSubview:_notesScrollView];
@@ -211,13 +214,14 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _notes.allowsUndo = YES;
     _notes.drawsBackground = NO;
     _notes.richText = NO;
-    _notes.focusRingType = NSFocusRingTypeExterior;
+    _notes.focusRingType = NSFocusRingTypeNone;
     _notes.minSize = NSMakeSize(0, noteContentSize.height);
     _notes.maxSize = NSMakeSize(FLT_MAX, FLT_MAX);
     _notes.verticallyResizable = YES;
     _notes.horizontallyResizable = NO;
     _notes.autoresizingMask = NSViewWidthSizable;
     _notes.textContainer.widthTracksTextView = YES;
+    [_notes.textContainer setLineFragmentPadding:0];
     [_notes.textContainer setContainerSize:NSMakeSize(noteContentSize.width, FLT_MAX)];
 
     _notesScrollView.documentView = _notes;
@@ -233,7 +237,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
 
     [vfl :@"V:|-[_title]-[_location]-15-[_allDayCheckbox]"];
     [vfl :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-[_alertPopup]" :NSLayoutFormatAlignAllLeading];
-    [vfl :@"V:[_alertPopup]-20-[_notesScrollView(50)]-10-[_url]-15-[_calPopup]"];
+    [vfl :@"V:[_alertPopup]-20-[_notesScrollView]-10-[_url]-15-[_calPopup]"];
     [vfl :@"V:[_calPopup]-20-[_saveButton]-|"];
     [vfl :@"H:|-[_title(>=200)]-|"];
     [vfl :@"H:|-[_location]-|"];
@@ -247,6 +251,14 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [vfl :@"H:|-[_url]-|"];
     [vfl :@"H:|-[_calPopup]-|"];
     [vfl :@"H:[cancelButton]-[_saveButton]-|" :NSLayoutFormatAlignAllCenterY];
+    
+    // Get height of one line in _notes
+    [_notes.layoutManager ensureLayoutForTextContainer:_notes.textContainer];
+    _notesHeightOfOneLine = [_notes.layoutManager usedRectForTextContainer:_notes.textContainer].size.height;
+
+    // Set height of _notesScrollView to height of single line
+    _notesScrollViewHeightConstraint = [_notesScrollView.heightAnchor constraintEqualToConstant:_notesHeightOfOneLine];
+    _notesScrollViewHeightConstraint.active = YES;
 
     // Require All-day checkbox height to hug the checkbox. Without this,
     // the layout will look funny when the title is multi-line.
@@ -595,6 +607,40 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
         return YES;
     }
     return NO;
+}
+
+- (void)textDidChange:(NSNotification *)notification
+{
+    if (notification.object != _notes) return;
+
+    // _notesScrollView will grow to at most this many lines
+    // after which it will scroll.
+    NSInteger maxVisibleLines = 16;
+
+    // Get height of text in _notes
+    [_notes.layoutManager ensureLayoutForTextContainer:_notes.textContainer];
+    CGFloat height = [_notes.layoutManager usedRectForTextContainer:_notes.textContainer].size.height;
+    
+    // Grow _notesScrollView to at most maxVisibleLines * _notesHeightOfOneLine
+    height = MIN(height, maxVisibleLines * _notesHeightOfOneLine);
+    _notesScrollViewHeightConstraint.constant = height;
+    
+    // Get number of lines in _notes
+    // https://macosx-dev.omnigroup.narkive.com/RH9lsO7P/number-of-lines-in-nstextview#post2
+    NSInteger numberOfLines, idx, numberOfGlyphs = [_notes.layoutManager numberOfGlyphs];
+    NSRange lineRange;
+    for (numberOfLines = 0, idx = 0; idx < numberOfGlyphs; numberOfLines++) {
+        (void)[_notes.layoutManager lineFragmentRectForGlyphAtIndex:idx effectiveRange:&lineRange];
+        idx = NSMaxRange(lineRange);
+    }
+    
+    // Disable elasticity if all lines are visible
+    if (numberOfLines <= maxVisibleLines) {
+        _notesScrollView.verticalScrollElasticity = NSScrollElasticityNone;
+    }
+    else {
+        _notesScrollView.verticalScrollElasticity = NSScrollElasticityAutomatic;
+    }
 }
 
 @end

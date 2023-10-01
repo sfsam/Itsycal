@@ -21,7 +21,8 @@
 "About Itsycal" = "关于 Itsycal";
 /* About prefs tab label */
 "About" = "关于";
-"Add Location" = "添加位置";
+"Add Location or Video Call" = "添加位置或视频通话";
+"Add Notes" = "添加注释";
 "Add URL" = "添加 URL";
 "Alert:" = "警告：";
 "All-day:" = "全天：";
@@ -93,7 +94,6 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 /* Alert none
    Repeat none */
 "None" = "无";
-"Notes:" = "笔记:";
 "On Date" = "时间到了";
 "On day of event (9 AM)" = "日程发生当天（上午9时）";
 "Open Calendar" = "打开日历";

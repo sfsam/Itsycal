@@ -21,7 +21,8 @@
 "About Itsycal" = "À propos de Itsycal";
 /* About prefs tab label */
 "About" = "À propos";
-"Add Location" = "Ajouter un lieu";
+"Add Location or Video Call" = "Ajouter un lieu ou un appel vidéo";
+"Add Notes" = "Ajouter des notes";
 "Add URL" = "Ajouter un lien";
 "Alert:" = "Alerte :";
 "All-day:" = "Jour entier :";
@@ -93,7 +94,6 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 /* Alert none
    Repeat none */
 "None" = "aucune";
-"Notes:" = "Notes:";
 "On Date" = "le";
 "On day of event (9 AM)" = "Le jour de l’événement (9:00)";
 "Open Calendar" = "Ouvrir l'application Calendrier";

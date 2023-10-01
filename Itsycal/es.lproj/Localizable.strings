@@ -21,7 +21,8 @@
 "About Itsycal" = "Acerca de Itsycal";
 /* About prefs tab label */
 "About" = "Acerca de";
-"Add Location" = "Agregar ubicación";
+"Add Location or Video Call" = "Agregar ubicación o llamada de video";
+"Add Notes" = "Agregar notas";
 "Add URL" = "Agregar URL";
 "Alert:" = "Aviso:";
 "All-day:" = "Todo el día:";
@@ -93,7 +94,6 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 /* Alert none
    Repeat none */
 "None" = "Ninguno";
-"Notes:" = "Notas:";
 "On Date" = "En la fecha";
 "On day of event (9 AM)" = "El día del evento (9:00)";
 "Open Calendar" = "Abrir La aplicación del calendario";
