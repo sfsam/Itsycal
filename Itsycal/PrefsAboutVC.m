@@ -42,6 +42,9 @@
     MoTextField *follow = label(NSLocalizedString(@"Follow", nil), YES);
     follow.urlString = @"https://twitter.com/intent/follow?screen_name=mowgliiapps";
 
+    MoTextField *donate = label(NSLocalizedString(@"Donate", nil), YES);
+    donate.urlString = @"https://mowglii.com/donate/";
+
     NSTextField *smile = label(@"(๑˃̵ᴗ˂̵)و", NO);
     smile.font = [NSFont systemFontOfSize:16 weight:NSFontWeightLight];
 
@@ -55,16 +58,18 @@
 
     NSTextField *emojiHelp    = label(@"🛟", NO);
     NSTextField *emojiTwitter = label(@"🐦", NO);
+    NSTextField *emojiDonate  = label(@"♥️", NO);
     NSTextField *emojiThanks  = label(@"🙏", NO);
 
     NSTextField *copyright1 = label(@"© 2012—2023", NO);
     MoTextField *copyright2 = label(@"mowglii.com", YES);
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(appName, version, help, emojiHelp, follow, emojiTwitter, smile, emojiThanks, sparkle, comma, masshortcut, copyright1, copyright2)];
-    [vfl :@"V:|-m-[appName]-m-[help]-10-[follow]-10-[sparkle]-m-[smile]-m-[copyright1]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(appName, version, help, emojiHelp, follow, emojiTwitter, donate, emojiDonate, smile, emojiThanks, sparkle, comma, masshortcut, copyright1, copyright2)];
+    [vfl :@"V:|-m-[appName]-m-[help]-10-[follow]-10-[donate]-10-[sparkle]-m-[smile]-m-[copyright1]-m-|"];
     [vfl :@"H:|-m-[appName]-4-[version]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-m-[emojiHelp]-6-[help]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-m-[emojiTwitter]-6-[follow]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-m-[emojiDonate]-6-[donate]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-m-[emojiThanks]-6-[sparkle][comma]-4-[masshortcut]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-m-[copyright1]-4-[copyright2]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
     
