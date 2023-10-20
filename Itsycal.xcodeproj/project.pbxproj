@@ -43,6 +43,7 @@
 		926A6D8F1E3EC89100AAA991 /* PrefsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 926A6D8E1E3EC89100AAA991 /* PrefsVC.m */; };
 		9276916027E17C74007E7978 /* beep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9276915F27E17C74007E7978 /* beep.mp3 */; };
 		9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9278CADA1A990462004B6BB9 /* MoTableView.m */; };
+		9291F8AF2AE22B0000E80F14 /* Mow.otf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9291F8AD2AE22AED00E80F14 /* Mow.otf */; };
 		929223EB1E2D6E0900F1A119 /* HighlightPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 929223EA1E2D6E0800F1A119 /* HighlightPicker.m */; };
 		92B28CCF210BD17500485AE2 /* Sizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 92B28CCE210BD17500485AE2 /* Sizer.m */; };
 		92CDDE7B1A955D7F00D7675C /* AgendaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */; };
@@ -57,6 +58,16 @@
 			files = (
 				923E78E01D385D480012979B /* Sparkle.framework in CopyFiles */,
 				923E78E11D385D4F0012979B /* MASShortcut.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9291F8AB2AE2126B00E80F14 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Fonts;
+			dstSubfolderSpec = 7;
+			files = (
+				9291F8AF2AE22B0000E80F14 /* Mow.otf in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -140,6 +151,7 @@
 		9276915F27E17C74007E7978 /* beep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = beep.mp3; sourceTree = "<group>"; };
 		9278CAD91A990462004B6BB9 /* MoTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoTableView.h; sourceTree = "<group>"; };
 		9278CADA1A990462004B6BB9 /* MoTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoTableView.m; sourceTree = "<group>"; };
+		9291F8AD2AE22AED00E80F14 /* Mow.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Mow.otf; path = _fonts/Mow.otf; sourceTree = "<group>"; };
 		929223E91E2D6E0800F1A119 /* HighlightPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightPicker.h; sourceTree = "<group>"; };
 		929223EA1E2D6E0800F1A119 /* HighlightPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightPicker.m; sourceTree = "<group>"; };
 		92B28CCD210BD17500485AE2 /* Sizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sizer.h; sourceTree = "<group>"; };
@@ -206,6 +218,7 @@
 		9242A55E1A82A136005AA4B3 /* Itsycal */ = {
 			isa = PBXGroup;
 			children = (
+				9291F8AD2AE22AED00E80F14 /* Mow.otf */,
 				9276915F27E17C74007E7978 /* beep.mp3 */,
 				921949F3225D283E00223258 /* Itsycal.entitlements */,
 				923E78DB1D385CD80012979B /* Frameworks */,
@@ -304,6 +317,7 @@
 				9242A5591A82A136005AA4B3 /* Frameworks */,
 				9242A55A1A82A136005AA4B3 /* Resources */,
 				9252DF361AFD3557007B079F /* CopyFiles */,
+				9291F8AB2AE2126B00E80F14 /* CopyFiles */,
 				921949F4225D287F00223258 /* ShellScript */,
 			);
 			buildRules = (

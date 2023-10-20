@@ -851,7 +851,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 // AgendaPopoverVC
 // =========================================================================
 
-#define POPOVER_TEXT_WIDTH 240
+#define POPOVER_TEXT_WIDTH 300
 
 @implementation AgendaPopoverVC
 {
@@ -1129,27 +1129,34 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Attendees
     if (info.event.hasAttendees) {
         NSMutableAttributedString *attendeesAttrStr = [NSMutableAttributedString new];
+        // Sort attendees with organizer first, then accepted, pending, declined.
         NSArray *sortedAttendees = [info.event.attendees sortedArrayUsingComparator:^NSComparisonResult(EKParticipant * p1, EKParticipant *p2) {
+            if ([p1.name isEqualToString:info.event.organizer.name]) return NSOrderedAscending;
+            if ([p2.name isEqualToString:info.event.organizer.name]) return NSOrderedDescending;
             if (p1.participantStatus == EKParticipantStatusAccepted) return NSOrderedAscending;
-            if (p1.participantStatus == EKParticipantStatusDeclined &&
-                p2.participantStatus == EKParticipantStatusAccepted) return NSOrderedDescending;
+            if (p2.participantStatus == EKParticipantStatusAccepted) return NSOrderedDescending;
+            if (p1.participantStatus == EKParticipantStatusPending) return NSOrderedAscending;
+            if (p2.participantStatus == EKParticipantStatusPending) return NSOrderedDescending;
             return NSOrderedDescending;
         }];
         for (NSInteger i = 0; i < sortedAttendees.count; i++) {
             EKParticipant *participant = sortedAttendees[i];
             NSString *terminal = (i < sortedAttendees.count - 1) ? @"\n" : @"";
-            NSString *organizer = [participant.name isEqualToString:info.event.organizer.name] ? @" 􀋅" : @"";
-            NSString *status = @"􀁜";
+            NSString *organizer = [participant.name isEqualToString:info.event.organizer.name] ? @" ◀︎" : @"";
+            NSString *status = @"􀁜"; // questionmark.circle (Requires SF fonts to see)
             NSColor *fontColor = Theme.agendaEventDateTextColor;
             if (participant.participantStatus == EKParticipantStatusAccepted) {
-                status = @"􀁢";
+                status = @"􀁢"; // checkmark.circle (Requires SF fonts to see)
                 fontColor = Theme.agendaEventTextColor;
             }
             if (participant.participantStatus == EKParticipantStatusDeclined) {
-                status = @"􀀲";
+                status = @"􀁐"; // x.circle (Requires SF fonts to see)
                 fontColor = Theme.agendaEventTextColor;
             }
-            [attendeesAttrStr appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ %@%@%@", status, participant.name, organizer, terminal] attributes:@{NSFontAttributeName: [NSFont systemFontOfSize:SizePref.fontSize], NSForegroundColorAttributeName: fontColor}]];
+            // Status symbols are in the embedded font Mow.otf
+            [attendeesAttrStr appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ ", status] attributes:@{NSFontAttributeName: [NSFont fontWithName:@"Mow" size:SizePref.fontSize], NSForegroundColorAttributeName: fontColor}]];
+            // Rest of string uses system font.
+            [attendeesAttrStr appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@%@", participant.name, organizer, terminal] attributes:@{NSFontAttributeName: [NSFont systemFontOfSize:SizePref.fontSize], NSForegroundColorAttributeName: fontColor}]];
         }
         _attendees.textStorage.attributedString = attendeesAttrStr;
         [self setHeightConstraint:_attendeesHeight forTextView:_attendees];
