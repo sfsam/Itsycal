@@ -851,7 +851,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 // AgendaPopoverVC
 // =========================================================================
 
-#define POPOVER_TEXT_WIDTH 300
+#define POPOVER_TEXT_WIDTH 280
 
 @implementation AgendaPopoverVC
 {
@@ -860,15 +860,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSTextField *_duration;
     NSTextField *_recurrence;
     NSTextView *_location;
-    NSTextView *_attendees;
     NSTextView *_note;
     NSTextView *_URL;
+    NSStackView *_attendees;
     NSScrollView *_scrollView;
     NSDataDetector *_linkDetector;
     NSRegularExpression *_hiddenLinksRegex;
     NSRegularExpression *_messageLinksRegex;
     NSLayoutConstraint *_locHeight;
-    NSLayoutConstraint *_attendeesHeight;
     NSLayoutConstraint *_noteHeight;
     NSLayoutConstraint *_URLHeight;
 }
@@ -905,7 +904,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _recurrence = label();
         
         _location = textview();
-        _attendees = textview();
         _note = textview();
         _URL = textview();
         
@@ -922,6 +920,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [vfl :@"H:|[_title]-(>=10)-[_btnDelete]|" :NSLayoutFormatAlignAllCenterY];
         [vfl :@"V:|[_title]|"];
         [titleHolder.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
+        
+        _attendees = [NSStackView new];
+        _attendees.orientation = NSUserInterfaceLayoutOrientationVertical;
+        _attendees.alignment = NSLayoutAttributeLeft;
+        _attendees.spacing = 4;
+        _attendees.detachesHiddenViews = NO;
+        [_attendees setClippingResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationVertical];
         
         _grid = [NSGridView gridViewWithViews:@[@[titleHolder],  // row 0
                                                 @[_location],    // 1
@@ -951,8 +956,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
         
         _locHeight = [_location.heightAnchor constraintEqualToConstant:100];
         _locHeight.active = YES;
-        _attendeesHeight = [_attendees.heightAnchor constraintEqualToConstant:100];
-        _attendeesHeight.active = YES;
         _noteHeight = [_note.heightAnchor constraintEqualToConstant:100];
         _noteHeight.active = YES;
         _URLHeight = [_URL.heightAnchor constraintEqualToConstant:100];
@@ -1128,38 +1131,79 @@ static NSString *kEventCellIdentifier = @"EventCell";
     
     // Attendees
     if (info.event.hasAttendees) {
-        NSMutableAttributedString *attendeesAttrStr = [NSMutableAttributedString new];
-        // Sort attendees with organizer first, then accepted, pending, declined.
-        NSArray *sortedAttendees = [info.event.attendees sortedArrayUsingComparator:^NSComparisonResult(EKParticipant * p1, EKParticipant *p2) {
-            if ([p1.name isEqualToString:info.event.organizer.name]) return NSOrderedAscending;
-            if ([p2.name isEqualToString:info.event.organizer.name]) return NSOrderedDescending;
+        
+        // Block returns YES if participant is the event's organizer.
+        BOOL (^ParticipantIsOrganizer)(EKParticipant*, EKParticipant*) = ^BOOL(EKParticipant *participant, EKParticipant *organizer) {
+            // https://stackoverflow.com/a/17222036/111418
+            return [participant.URL.resourceSpecifier isEqualToString:organizer.URL.resourceSpecifier];
+        };
+        
+        // Sometimes info.event.organizer isn't in info.event.attendees.
+        // Make an array of participants that definitely has the organizer.
+        NSMutableArray<EKParticipant *> *participants = [NSMutableArray new];
+        if (info.event.organizer) {
+            [participants addObject:info.event.organizer];
+        }
+        for (EKParticipant *p in info.event.attendees) {
+            // Don't double-add the organizer.
+            if (!ParticipantIsOrganizer(p, info.event.organizer)) {
+                [participants addObject:p];
+            }
+        }
+        // Sort participants with organizer first, then accepted, pending, declined.
+        NSArray<EKParticipant *> *sortedParticipants = [participants sortedArrayUsingComparator:^NSComparisonResult(EKParticipant * p1, EKParticipant *p2) {
+            if (ParticipantIsOrganizer(p1, info.event.organizer)) return NSOrderedAscending;
+            if (ParticipantIsOrganizer(p2, info.event.organizer)) return NSOrderedDescending;
             if (p1.participantStatus == EKParticipantStatusAccepted) return NSOrderedAscending;
             if (p2.participantStatus == EKParticipantStatusAccepted) return NSOrderedDescending;
             if (p1.participantStatus == EKParticipantStatusPending) return NSOrderedAscending;
             if (p2.participantStatus == EKParticipantStatusPending) return NSOrderedDescending;
             return NSOrderedDescending;
         }];
-        for (NSInteger i = 0; i < sortedAttendees.count; i++) {
-            EKParticipant *participant = sortedAttendees[i];
-            NSString *terminal = (i < sortedAttendees.count - 1) ? @"\n" : @"";
-            NSString *organizer = [participant.name isEqualToString:info.event.organizer.name] ? @" ◀︎" : @"";
-            NSString *status = @"􀁜"; // questionmark.circle (Requires SF fonts to see)
-            NSColor *fontColor = Theme.agendaEventDateTextColor;
+        NSMutableArray<NSStackView *> *attendeesArray = [NSMutableArray new];
+        for (EKParticipant *participant in sortedParticipants) {
+            NSString *orgIcon = ParticipantIsOrganizer(participant, info.event.organizer) ? @"•" : @"";
+            NSString *statusIcon = @"􀁜"; // questionmark.circle (Requires SF fonts to see)
+            NSColor *textColor = Theme.agendaEventDateTextColor;
             if (participant.participantStatus == EKParticipantStatusAccepted) {
-                status = @"􀁢"; // checkmark.circle (Requires SF fonts to see)
-                fontColor = Theme.agendaEventTextColor;
+                statusIcon = @"􀁢"; // checkmark.circle (Requires SF fonts to see)
+                textColor = Theme.agendaEventTextColor;
             }
             if (participant.participantStatus == EKParticipantStatusDeclined) {
-                status = @"􀁐"; // x.circle (Requires SF fonts to see)
-                fontColor = Theme.agendaEventTextColor;
+                statusIcon = @"􀁐"; // x.circle (Requires SF fonts to see)
+                textColor = Theme.agendaEventTextColor;
             }
-            // Status symbols are in the embedded font Mow.otf
-            [attendeesAttrStr appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@ ", status] attributes:@{NSFontAttributeName: [NSFont fontWithName:@"Mow" size:SizePref.fontSize], NSForegroundColorAttributeName: fontColor}]];
-            // Rest of string uses system font.
-            [attendeesAttrStr appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@%@", participant.name, organizer, terminal] attributes:@{NSFontAttributeName: [NSFont systemFontOfSize:SizePref.fontSize], NSForegroundColorAttributeName: fontColor}]];
+
+            // Status icons are in the embedded font Mow.otf, CANNOT compress.
+            NSTextField *statusLabel = [NSTextField labelWithString:statusIcon];
+            statusLabel.textColor = textColor;
+            statusLabel.font = [NSFont fontWithName:@"Mow" size:SizePref.fontSize];
+            [statusLabel setContentCompressionResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
+
+            // Participant uses system font, CAN compress.
+            NSTextField *participantLabel = [NSTextField labelWithString:participant.name];
+            participantLabel.selectable = YES;
+            participantLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+            participantLabel.textColor = textColor;
+            participantLabel.font = [NSFont systemFontOfSize:SizePref.fontSize];
+            [participantLabel setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
+
+            // Organizer icon uses system font, CANNOT compress.
+            NSTextField *organizerLabel = [NSTextField labelWithString:orgIcon];
+            organizerLabel.textColor = textColor;
+            organizerLabel.font = [NSFont systemFontOfSize:SizePref.fontSize];
+            [organizerLabel setContentCompressionResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
+
+            // Horizontally stack status icon, participant, organizer indicator.
+            NSStackView *attendee = [NSStackView stackViewWithViews:@[statusLabel, participantLabel, organizerLabel]];
+            attendee.alignment = NSLayoutAttributeBaseline;
+            attendee.detachesHiddenViews = NO;
+            [attendee setHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
+            [attendee setClippingResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
+            [attendeesArray addObject:attendee];
         }
-        _attendees.textStorage.attributedString = attendeesAttrStr;
-        [self setHeightConstraint:_attendeesHeight forTextView:_attendees];
+        // Vertically stack attendees.
+        [_attendees setViews:attendeesArray inGravity:NSStackViewGravityBottom];
     }
 
     // Notes
