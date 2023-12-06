@@ -404,9 +404,15 @@
 
 - (void)openDateAndTimePrefs:(id)sender
 {
-    // Can this be done without hardcoding a path?
-    NSString *path = @"/System/Library/PreferencePanes/DateAndTime.prefPane";
-    NSURL *url = [NSURL fileURLWithPath:path];
+    NSURL *url = nil;
+    
+    if (NSAppKitVersionNumber >= NSAppKitVersionNumber10_13) {
+        url = [NSURL URLWithString:@"x-apple.systempreferences:com.apple.Date-Time-Settings.extension"];
+    } else {
+        NSString *path = @"/System/Library/PreferencePanes/DateAndTime.prefPane";
+        url = [NSURL fileURLWithPath:path];
+    }
+    
     [NSWorkspace.sharedWorkspace openURL:url];
 }
 
