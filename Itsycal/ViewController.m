@@ -839,6 +839,20 @@
     [self statusItemClicked:self];
 }
 
+- (void)dateURLReceived:(NSDate *)showDate
+{
+    // We received a URL asking us to show a specific date.
+    MoDate selectedDate = MakeDateWithNSDate(showDate, _nsCal);
+    _moCal.selectedDate = selectedDate;
+    
+    // Only "click" the status item if the itsycal window isn't already visible.
+    // Otherwise, it would just close.
+    if (!([self.itsycalWindow occlusionState] & NSWindowOcclusionStateVisible)) {
+        [self statusItemClicked:self];
+    }
+
+}
+
 #pragma mark -
 #pragma mark AgendaDelegate
 

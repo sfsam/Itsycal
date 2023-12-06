@@ -24,6 +24,19 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>com.mowglii.ItsycalApp</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>itsycal</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationCategoryType</key>
@@ -34,10 +47,10 @@
 	<true/>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>Itsycal uses AppleEvents to open your calendar app to the selected day. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Itsycal is more useful when it can display events from your calendars. You can change this setting in System Settings › Privacy &amp; Security › Calendars</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2012 − 2023 mowglii.com</string>
 	<key>NSMainNibFile</key>
@@ -50,9 +63,9 @@
 	<true/>
 	<key>SUFeedURL</key>
 	<string>https://s3.amazonaws.com/itsycal/itsycal.xml</string>
-	<key>SUScheduledCheckInterval</key>
-	<real>345600</real>
 	<key>SUPublicEDKey</key>
 	<string>TxKIjUS10OYKgZaAQlRvDjFNEc28hG82wtRWlcNUYSc=</string>
+	<key>SUScheduledCheckInterval</key>
+	<real>345600</real>
 </dict>
 </plist>
