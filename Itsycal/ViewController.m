@@ -406,7 +406,7 @@
 {
     NSURL *url = nil;
     
-    if (NSAppKitVersionNumber >= NSAppKitVersionNumber10_13) {
+    if (@available(macOS 13, *)) {
         url = [NSURL URLWithString:@"x-apple.systempreferences:com.apple.Date-Time-Settings.extension"];
     } else {
         NSString *path = @"/System/Library/PreferencePanes/DateAndTime.prefPane";
