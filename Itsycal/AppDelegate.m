@@ -118,15 +118,14 @@
     if (urls.count >= 1) {
         NSURL *url = urls[0];
         if ([url.host isEqualToString:@"date"] && url.pathComponents.count == 2) {
-            NSISO8601DateFormatter *format = [NSISO8601DateFormatter new];
-            format.formatOptions = NSISO8601DateFormatWithFullDate | NSISO8601DateFormatWithDashSeparatorInDate;
+            NSDateFormatter *format = [NSDateFormatter new];
+            format.dateFormat = @"yyyy-MM-dd";
             NSDate *date = [format dateFromString:url.pathComponents[1]];
             
             if (date) {
                 [(ViewController *)_wc.contentViewController dateURLReceived:date];
             } else if ([url.pathComponents[1] isEqualToString:@"now"]) {
-                date = [NSDate new];
-                [(ViewController *)_wc.contentViewController dateURLReceived:date];
+                [(ViewController *)_wc.contentViewController dateURLReceived:[NSDate new]];
             }
         }
     }
