@@ -116,16 +116,21 @@
 - (void)application:(NSApplication *)application openURLs:(NSArray<NSURL *> *)urls
 {
     if (urls.count >= 1) {
+        // We can only handle showing one date at a time, so we pick the first one
         NSURL *url = urls[0];
         if ([url.host isEqualToString:@"date"] && url.pathComponents.count == 2) {
-            NSDateFormatter *format = [NSDateFormatter new];
-            format.dateFormat = @"yyyy-MM-dd";
-            NSDate *date = [format dateFromString:url.pathComponents[1]];
+            NSString *dateString = url.pathComponents[1];
             
-            if (date) {
-                [(ViewController *)_wc.contentViewController dateURLReceived:date];
-            } else if ([url.pathComponents[1] isEqualToString:@"now"]) {
+            if ([dateString isEqualToString:@"now"]) {
                 [(ViewController *)_wc.contentViewController dateURLReceived:[NSDate new]];
+            } else {
+                NSDateFormatter *format = [NSDateFormatter new];
+                format.dateFormat = @"yyyy-MM-dd";
+                NSDate *date = [format dateFromString:dateString];
+                
+                if (date) {
+                    [(ViewController *)_wc.contentViewController dateURLReceived:date];
+                }
             }
         }
     }
