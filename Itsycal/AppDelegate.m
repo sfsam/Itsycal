@@ -113,6 +113,29 @@
     [[MASShortcutMonitor sharedMonitor] unregisterAllShortcuts];
 }
 
+- (void)application:(NSApplication *)application openURLs:(NSArray<NSURL *> *)urls
+{
+    if (urls.count >= 1) {
+        // We can only handle showing one date at a time, so we pick the first one
+        NSURL *url = urls[0];
+        if ([url.host isEqualToString:@"date"] && url.pathComponents.count == 2) {
+            NSString *dateString = url.pathComponents[1];
+            
+            if ([dateString isEqualToString:@"now"]) {
+                [(ViewController *)_wc.contentViewController dateURLReceived:[NSDate new]];
+            } else {
+                NSDateFormatter *format = [NSDateFormatter new];
+                format.dateFormat = @"yyyy-MM-dd";
+                NSDate *date = [format dateFromString:dateString];
+                
+                if (date) {
+                    [(ViewController *)_wc.contentViewController dateURLReceived:date];
+                }
+            }
+        }
+    }
+}
+
 #pragma mark -
 #pragma mark Applications folder check
 
