@@ -407,6 +407,7 @@
     // Can this be done without hardcoding a path?
     NSString *path = @"/System/Library/PreferencePanes/DateAndTime.prefPane";
     NSURL *url = [NSURL fileURLWithPath:path];
+    [NSWorkspace.sharedWorkspace openURL:url];
 }
 
 - (void)navigateToHelp:(id)sender
