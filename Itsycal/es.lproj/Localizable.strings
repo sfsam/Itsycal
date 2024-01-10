@@ -68,6 +68,8 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
 "Friday" = "Viernes";
 /* General prefs tab label */
 "General" = "General";
+"Go to Date…" = "Ir a la fecha…";
+"Go to date" = "Ir a la fecha";
 "Help" = "Ayuda";
 "Help…" = "Ayuda…";
 "Hide icon" = "Ocultar icono";

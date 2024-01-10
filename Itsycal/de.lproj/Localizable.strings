@@ -68,6 +68,8 @@ Itsycal ist nützlicher, wenn es Ereignisse aus Ihrem Kalender angezeigt werden 
 "Friday" = "Freitag";
 /* General prefs tab label */
 "General" = "Allgemein";
+"Go to Date…" = "Datum anzeigen …";
+"Go to date" = "Datum anzeigen";
 "Help" = "Hilfe";
 "Help…" = "Hilfe …";
 "Hide icon" = "Menüleistensymbol verbergen";

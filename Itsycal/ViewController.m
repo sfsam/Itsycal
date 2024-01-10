@@ -11,6 +11,7 @@
 #import "ViewController.h"
 #import "Itsycal.h"
 #import "ItsycalWindow.h"
+#import "DatePickerVC.h"
 #import "SBCalendar.h"
 #import "EventViewController.h"
 #import "PrefsVC.h"
@@ -183,6 +184,7 @@
     BOOL noFlags = !(flags & (NSEventModifierFlagCommand | NSEventModifierFlagShift | NSEventModifierFlagOption | NSEventModifierFlagControl));
     BOOL cmdFlag = (flags & NSEventModifierFlagCommand) &&  !(flags & (NSEventModifierFlagShift | NSEventModifierFlagOption | NSEventModifierFlagControl));
     BOOL cmdOptFlag = (flags & NSEventModifierFlagCommand) && (flags & NSEventModifierFlagOption) &&  !(flags & (NSEventModifierFlagShift | NSEventModifierFlagControl));
+    BOOL cmdShiftFlag = (flags & NSEventModifierFlagCommand) && (flags & NSEventModifierFlagShift) &&  !(flags & (NSEventModifierFlagOption | NSEventModifierFlagControl));
     unichar keyChar = [charsIgnoringModifiers characterAtIndex:0];
     
     if (keyChar == 'w' && noFlags) {
@@ -193,6 +195,9 @@
     }
     else if (keyChar == ',' && cmdFlag) {
         [self showPrefs:self];
+    }
+    else if (keyChar == 'T' && cmdShiftFlag) {
+        [self showDatePickerPopover:self];
     }
     else if (keyChar == 'r' && cmdOptFlag) {
         [_ec refresh];
@@ -336,6 +341,8 @@
     [optMenu insertItemWithTitle:NSLocalizedString(@"About Itsycal", @"") action:@selector(showAbout:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Check for Updates…", @"") action:@selector(checkForUpdates:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
+    [optMenu insertItemWithTitle:NSLocalizedString(@"Go to Date…", @"") action:@selector(showDatePickerPopover:) keyEquivalent:@"T" atIndex:i++];
+    [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:prefsString action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Date & Time…", @"") action:@selector(openDateAndTimePrefs:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
@@ -420,6 +427,26 @@
 {
     NSURL *url = [NSURL URLWithString:@"https://www.mowglii.com/itsycal/help.html"];
     [NSWorkspace.sharedWorkspace openURL:url];
+}
+
+- (void)showDatePickerPopover:(id)sender
+{
+    NSView *positionView = [[NSView alloc] initWithFrame:NSMakeRect(NSWidth(self.view.frame)/2 - 5, NSHeight(self.view.frame) - 70, 10, 10)];
+    [self.view addSubview:positionView positioned:NSWindowBelow relativeTo:nil];
+
+    NSPopover *datePickerPopover = [NSPopover new];
+
+    DatePickerVC *vc = [[DatePickerVC alloc] initWithMoCal:_moCal nsCal:_nsCal];
+    vc.enclosingPopover = datePickerPopover;
+
+    datePickerPopover.contentViewController = vc;
+    datePickerPopover.behavior = NSPopoverBehaviorTransient;
+    datePickerPopover.appearance = NSApp.effectiveAppearance;
+    [datePickerPopover showRelativeToRect:positionView.bounds ofView:positionView preferredEdge:NSRectEdgeMinY];
+
+    // Move the positioning view to trick the popover to hide it's arrow.
+    // https://nyrra33.com/2018/08/08/a-small-trick-to-hide-nspopovers-arrow/
+    positionView.frame = NSMakeRect(0, -200, 10, 10);
 }
 
 #pragma mark -

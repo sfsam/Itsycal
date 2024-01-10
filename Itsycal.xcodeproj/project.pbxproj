@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		920B5D7C2B4D10B6004A10D3 /* DatePickerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 920B5D7B2B4D10B6004A10D3 /* DatePickerVC.m */; };
 		920D6D51266A83AC00498E19 /* MoLoginItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 920D6D4F266A83AC00498E19 /* MoLoginItem.m */; };
 		921181C722E0192A00591FDA /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 921181C622E0192A00591FDA /* Colors.xcassets */; };
 		9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */; };
@@ -77,6 +78,8 @@
 		6F21F6F31F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.strings"; sourceTree = "<group>"; };
 		6F21F6F41F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		6F21F6F51F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		920B5D7A2B4D10B6004A10D3 /* DatePickerVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DatePickerVC.h; sourceTree = "<group>"; };
+		920B5D7B2B4D10B6004A10D3 /* DatePickerVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DatePickerVC.m; sourceTree = "<group>"; };
 		920D6D4F266A83AC00498E19 /* MoLoginItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoLoginItem.m; sourceTree = "<group>"; };
 		920D6D50266A83AC00498E19 /* MoLoginItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoLoginItem.h; sourceTree = "<group>"; };
 		921181C622E0192A00591FDA /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
@@ -237,6 +240,8 @@
 				9242A5831A82A189005AA4B3 /* ViewController.m */,
 				9242A5851A82A1A1005AA4B3 /* ItsycalWindow.h */,
 				9242A5861A82A1A1005AA4B3 /* ItsycalWindow.m */,
+				920B5D7A2B4D10B6004A10D3 /* DatePickerVC.h */,
+				920B5D7B2B4D10B6004A10D3 /* DatePickerVC.m */,
 				92CDDE7C1A97FFE700D7675C /* MoCode */,
 				9228A5A5210509910076BFFC /* Prefs */,
 				929223E91E2D6E0800F1A119 /* HighlightPicker.h */,
@@ -420,6 +425,7 @@
 				9242A5921A82A40B005AA4B3 /* MoCalGrid.m in Sources */,
 				92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */,
 				922232CD1A8DF672003BFAD9 /* EventCenter.m in Sources */,
+				920B5D7C2B4D10B6004A10D3 /* DatePickerVC.m in Sources */,
 				926A6D8F1E3EC89100AAA991 /* PrefsVC.m in Sources */,
 				922D9B261DC7A1CA0050AB2F /* MoUtils.m in Sources */,
 				9242A5651A82A136005AA4B3 /* main.m in Sources */,

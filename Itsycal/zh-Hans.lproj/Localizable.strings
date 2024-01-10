@@ -68,6 +68,8 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Friday" = "星期五";
 /* General prefs tab label */
 "General" = "通用";
+"Go to Date…" = "前往日期…";
+"Go to date" = "前往日期";
 "Help" = "帮助";
 "Help…" = "帮助…";
 "Hide icon" = "隐藏图标";
