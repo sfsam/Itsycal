@@ -42,8 +42,7 @@
     label.font = [NSFont systemFontOfSize:[NSFont systemFontSize] weight:NSFontWeightSemibold];
     [v addSubview:label];
 
-    NSImage *sym = [NSImage imageWithSystemSymbolName:@"play.fill" accessibilityDescription:@""];
-    NSButton *btn = [NSButton buttonWithImage:sym target:self action:@selector(buttonAction:)];
+    NSButton *btn = [NSButton buttonWithTitle:@"→" target:self action:@selector(buttonAction:)];
     btn.translatesAutoresizingMaskIntoConstraints = NO;
     btn.keyEquivalent = @"\r";
     [v addSubview:btn];
