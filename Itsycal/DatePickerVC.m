@@ -45,6 +45,7 @@
     NSImage *sym = [NSImage imageWithSystemSymbolName:@"play.fill" accessibilityDescription:@""];
     NSButton *btn = [NSButton buttonWithImage:sym target:self action:@selector(buttonAction:)];
     btn.translatesAutoresizingMaskIntoConstraints = NO;
+    btn.keyEquivalent = @"\r";
     [v addSubview:btn];
 
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_picker, label, btn)];
