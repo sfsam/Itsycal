@@ -1180,8 +1180,17 @@ static NSString *kEventCellIdentifier = @"EventCell";
             statusLabel.font = [NSFont fontWithName:@"Mow" size:SizePref.fontSize];
             [statusLabel setContentCompressionResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
 
+            // EKParticipant name and URL.resourceSpecifier (email addr)
+            // are nullable (why?...). Make sure we don't try to create
+            // a label with a null string.
+            NSString *participantString = participant.name;
+            if (!participantString) {
+                participantString = participant.URL.resourceSpecifier; // email addr
+                if (!participantString) participantString = @"***";
+            }
+
             // Participant uses system font, CAN compress.
-            NSTextField *participantLabel = [NSTextField labelWithString:participant.name];
+            NSTextField *participantLabel = [NSTextField labelWithString:participantString];
             participantLabel.selectable = YES;
             participantLabel.lineBreakMode = NSLineBreakByTruncatingTail;
             participantLabel.textColor = textColor;
