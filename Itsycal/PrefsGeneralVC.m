@@ -164,8 +164,6 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     _sourcesAndCalendars = [self.ec sourcesAndCalendars];
     
-    [_calendarsTV reloadData];
-
     // The API used to check the login item's state (LSSharedFileList) causes
     // errors for users who have network drives but are not connected to their
     // network (github.com/sfsam/Itsycal/issues/15). Give them an option to
@@ -180,6 +178,15 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     
     _calendarsTV.enabled = self.ec.calendarAccessGranted;
     _agendaDaysPopup.enabled = self.ec.calendarAccessGranted;
+}
+
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+
+    // We can properly measure row heights now that the view has been laid out
+    // and the width of the tableview is known.
+    [_calendarsTV reloadData];
 }
 
 #pragma mark -
@@ -214,9 +221,31 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
-    // If access is denied, row height is the height of the tableview
-    // so we can show some helpful message text.
-    return self.ec.calendarAccessGranted ? 24.0 : 170.0;
+    // If access is denied, row height is the height of the tableview so we can
+    // show some helpful message text.
+    if (!self.ec.calendarAccessGranted) return 170.0;
+
+    // Calculate the height of either the source title or the calendar title.
+    // In the case of the source title, the available width is the full width
+    // of the tablie view minus the left and right margins. In the case of the
+    // calendar title, we have to make an adjustment to account for the space
+    // occupied by the checkbox. We also add room for top and bottom margins
+    // after the text height has been calculated.
+
+    id obj = _sourcesAndCalendars[row];
+    CGFloat tvWidth = NSWidth(_calendarsTV.frame);
+    CGFloat textWidth = tvWidth - 4 - 4; // minus left & right margins
+    NSString *str;
+
+    if ([obj isKindOfClass:[CalendarInfo class]]) {
+        str = ((CalendarInfo *)obj).calendar.title;
+        textWidth -= 20.0; // account for checkbox
+    } else {
+        str = (NSString *)obj; // source title
+    }
+    NSAttributedString *attrStr = [[NSAttributedString alloc] initWithString:str attributes:@{NSFontAttributeName: [NSFont boldSystemFontOfSize:12]}];
+    CGRect attrStrRect = [attrStr boundingRectWithSize:CGSizeMake(textWidth, 10000) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil];
+    return NSHeight(attrStrRect) + 4 + 4; // plus top & bottom margins
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
@@ -226,9 +255,8 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-    // If calendar access was denied, show a helpful message.
-    // We repurpose the SourceCellView for this since it is
-    // basically just a textfield with nice margins.
+    // If calendar access was denied, show a helpful message. We repurpose the
+    // SourceCellView since it is just a textfield with nice margins.
     if (!self.ec.calendarAccessGranted) {
         SourceCellView *message = [tableView makeViewWithIdentifier:kSourceCellId owner:self];
         if (!message) message = [SourceCellView new];
@@ -281,12 +309,12 @@ static NSString * const kCalendarCellId = @"CalendarCell";
         self.identifier = kSourceCellId;
         _textField = [NSTextField labelWithString:@""];
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
-        _textField.lineBreakMode = NSLineBreakByTruncatingTail;
+        _textField.lineBreakMode = NSLineBreakByWordWrapping;
         _textField.font = [NSFont boldSystemFontOfSize:12];
         _textField.stringValue = @"";
         [self addSubview:_textField];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-4-[_textField]-4-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-4-[_textField]-2-|" options:0 metrics:nil views:@{@"_textField": _textField}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-4-[_textField]" options:0 metrics:nil views:@{@"_textField": _textField}]];
     }
     return self;
 }
@@ -306,10 +334,10 @@ static NSString * const kCalendarCellId = @"CalendarCell";
         self.identifier = kCalendarCellId;
         _checkbox = [NSButton new];
         _checkbox.translatesAutoresizingMaskIntoConstraints = NO;
-        _checkbox.lineBreakMode = NSLineBreakByTruncatingTail;
+        _checkbox.lineBreakMode = NSLineBreakByWordWrapping;
         [_checkbox setButtonType:NSButtonTypeSwitch];
         [self addSubview:_checkbox];
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[_checkbox]-4-|" options:0 metrics:nil views:@{@"_checkbox": _checkbox}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-4-[_checkbox]-4-|" options:0 metrics:nil views:@{@"_checkbox": _checkbox}]];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-4-[_checkbox]" options:0 metrics:nil views:@{@"_checkbox": _checkbox}]];
     }
     return self;
