@@ -128,7 +128,25 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // effect. Without this, the size won't shrink to zero when
     // transitioning from an agenda with events to one without.
     height = MAX(height, 0.001);
-    self.preferredContentSize = NSMakeSize(NSWidth(_tv.frame), height);
+
+    // 😭😭😭 Hack alert!
+    // On macOS Sonoma 14.3.1, window drawing (specifically the drawing done
+    // in `ItsycalWindow` `-drawRect:`) is corrupted when:
+    //   1. There are many events making the agenda too big to fit on-screen.
+    //   2. The user has 2 monitors and switches to the smaller one.
+    // I have no idea why setting `preferredContentSize` via a call to
+    // `-performSelectorOnMainThread:withObject:waitUntilDone` works while
+    // simply setting it here as we used to do no longer does.
+    NSSize prefSize = NSMakeSize(NSWidth(_tv.frame), height);
+    NSValue *value = [NSValue valueWithSize:prefSize];
+    [self performSelectorOnMainThread:@selector(setPreferredContentSizeHack:) 
+                           withObject:value waitUntilDone:NO];
+}
+
+- (void)setPreferredContentSizeHack:(NSValue *)value
+{
+    // See -viewDidLayout for why this is done here.
+    self.preferredContentSize = value.sizeValue;
 }
 
 - (void)updateViewConstraints
