@@ -1150,6 +1150,18 @@
         && components.minute == 0
         && components.second == 0) {
         NSSound *beepbeep = [NSSound soundNamed:@"beep"];
+        // See if the user has put their own beep.mp3 in our Application
+        // Support folder. The user-supplied sound is in a folder named for
+        // our bundle identifier.
+        NSURL *beepURL = [[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] firstObject];
+        if (beepURL) {
+            NSString *bundleID = NSBundle.mainBundle.bundleIdentifier;
+            beepURL = [beepURL URLByAppendingPathComponent:bundleID isDirectory:YES];
+            beepURL = [beepURL URLByAppendingPathComponent:@"beep.mp3" isDirectory:NO];
+            if ([NSFileManager.defaultManager fileExistsAtPath:beepURL.path isDirectory:NULL]) {
+                beepbeep = [[NSSound alloc] initWithContentsOfURL:beepURL byReference:NO];
+            }
+        }
         [beepbeep setVolume:[self volumeRelativeToSystemVolumeWithCap:0.12]];
         [beepbeep play];
     }
