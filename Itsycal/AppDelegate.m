@@ -71,6 +71,15 @@
     // used throught the app instead of '[Sizer shared]'.
     [Sizer shared];
 
+    // Create our Application Support folder if it doesn't exist.
+    // ~/Library/Application Support/com.mowglii.ItsycalApp/
+    NSURL *url = [[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] firstObject];
+    if (url) {
+        NSString *bundleID = NSBundle.mainBundle.bundleIdentifier;
+        url = [url URLByAppendingPathComponent:bundleID isDirectory:YES];
+        [[NSFileManager defaultManager] createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:NULL];
+    }
+
     // 0.11.1 introduced a new way to highlight columns in the calendar.
     [self weekendHighlightFixup];
     
