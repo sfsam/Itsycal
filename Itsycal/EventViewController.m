@@ -370,8 +370,6 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     // Populate alert popup AFTER calendar popup since its
     // contents depends on which calendar is selected.
     [self populateAlertPopup];
-
-    [self.view.window makeFirstResponder:_title];
 }
 
 - (void)viewDidAppear
