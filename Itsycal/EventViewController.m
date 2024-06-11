@@ -22,13 +22,16 @@
 - (BOOL)becomeFirstResponder
 {
     // Empty NSTextView gets focus but no cursor is visible
+    // https://stackoverflow.com/a/39167917
     // https://stackoverflow.com/a/77020301/111418
     BOOL result = [super becomeFirstResponder];
     if (result) {
-        if (!self.string.length) {
-            self.string = @" ";
-            self.string = @"";
-        }
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (!self.string.length) {
+                self.string = @" ";
+                self.string = @"";
+            }
+        });
     }
     return result;
 }
