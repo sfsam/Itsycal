@@ -63,6 +63,9 @@ typedef enum : NSInteger {
 // DOW colums to highlight
 @property (nonatomic) DOWMask highlightedDOWs;
 
+// Should calendar draw an outline around the current month?
+@property (nonatomic) BOOL doNotDrawOutlineAroundCurrentMonth;
+
 // An optional view controller for tooltips.
 @property (nonatomic) NSViewController<MoCalTooltipProvider> *tooltipVC;
 

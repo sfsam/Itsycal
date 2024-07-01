@@ -124,6 +124,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     _weekStartDOW = 0;  // 0=Sunday, 1=Monday...
     _highlightedDOWs = DOWMaskNone;
     _showWeeks    = NO;
+    _doNotDrawOutlineAroundCurrentMonth = NO;
     _monthDate    = MakeDate(1583, 0, 1);   // _monthDate must be different from the
     _selectedDate = MakeDate(1583, 0, 1);   // date set in setMonthDate:selectedDate:
     _todayDate    = MakeDate(1986, 10, 12); // so calendar will draw on first display
@@ -238,6 +239,12 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 {
     _highlightedDOWs = highlightedDOWs;
     [self updateCalendar];
+}
+
+- (void)setDoNotDrawOutlineAroundCurrentMonth:(BOOL)doNotDrawOutlineAroundCurrentMonth
+{
+    _doNotDrawOutlineAroundCurrentMonth = doNotDrawOutlineAroundCurrentMonth;
+    [self setNeedsDisplay:YES];
 }
 
 - (void)setTooltipVC:(NSViewController<MoCalTooltipProvider> *)tooltipVC
@@ -804,11 +811,13 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         [highlightPath fill];
     }
 
-    NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:radius inset:0 useRects:NO];
-    
-    [Theme.currentMonthOutlineColor set];
-    [outlinePath setLineWidth:1.5];
-    [outlinePath stroke];
+    if (!self.doNotDrawOutlineAroundCurrentMonth) {
+        NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:radius inset:0 useRects:NO];
+
+        [Theme.currentMonthOutlineColor set];
+        [outlinePath setLineWidth:1.5];
+        [outlinePath stroke];
+    }
 }
 
 - (NSBezierPath *)bezierPathWithStartCell:(MoCalCell *)startCell endCell:(MoCalCell *)endCell radius:(CGFloat)r inset:(CGFloat)inset useRects:(BOOL)useRects

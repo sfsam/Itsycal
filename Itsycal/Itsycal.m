@@ -28,3 +28,4 @@ NSString * const kUseColoredDots = @"UseColoredDots";
 NSString * const kBeepBeepOnTheHour = @"BeepBeepOnTheHour";
 NSString * const kBaselineOffset = @"BaselineOffset";
 NSString * const kEnableMeetingButtonIndefinitely = @"EnableMeetingButtonIndefinitely";
+NSString * const kDoNotDrawOutlineAroundCurrentMonth = @"DoNotDrawOutlineAroundCurrentMonth";

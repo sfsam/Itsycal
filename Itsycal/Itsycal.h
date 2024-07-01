@@ -29,3 +29,4 @@ extern NSString * const kUseColoredDots;
 extern NSString * const kBeepBeepOnTheHour;
 extern NSString * const kBaselineOffset;
 extern NSString * const kEnableMeetingButtonIndefinitely;
+extern NSString * const kDoNotDrawOutlineAroundCurrentMonth;
