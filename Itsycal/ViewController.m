@@ -317,9 +317,17 @@
         [alert runModal];
         return;
     }
+
+    // HACK: Navigate Calendar.app to `date` AFTER A DELAY. Since around
+    // macOS 14.5, Calendar.app seems to remember the previous date it was set
+    // to and automatically reverts to it after activation. By waiting, we
+    // allow Calendar.app to revert and then we navigate properly to `date`.
     [calendarApp activate]; // bring to foreground
-    if (dayView) [calendarApp switchViewTo:SBCalendarCALViewTypeForScriptingDayView];
-    [calendarApp viewCalendarAt:date];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [calendarApp activate]; // bring to foreground
+        if (dayView) [calendarApp switchViewTo:SBCalendarCALViewTypeForScriptingDayView];
+        [calendarApp viewCalendarAt:date];
+    });
 }
 
 - (void)showCalendarAppWithURLScheme:(NSString *)urlScheme date:(NSDate *)date
