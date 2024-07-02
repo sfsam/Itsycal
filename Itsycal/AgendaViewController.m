@@ -185,7 +185,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Invoked just before menu is to be displayed.
     // Show a context menu ONLY for non-group rows.
     [menu removeAllItems];
-    if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
+    if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
+        [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
     [menu addItemWithTitle:NSLocalizedString(@"Open Calendar", nil) action:@selector(showCalendarApp:) keyEquivalent:@""];
     [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
     EventInfo *info = self.events[_tv.clickedRow];
@@ -245,8 +246,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)showPopover:(id)sender
 {
-    if (_tv.clickedRow == -1 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
-    
+    if (_tv.clickedRow == -1 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
+        [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
+
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         self->_popover = [NSPopover new];
@@ -337,6 +339,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
         cell.DOWTextField.stringValue = [self DOWStringForDate:obj];
         cell.dayTextField.textColor = Theme.agendaDayTextColor;
         cell.DOWTextField.textColor = Theme.agendaDOWTextColor;
+        if ([(NSDate*)obj hasNoEvents]) {
+            cell.dayTextField.textColor = NSColor.tertiaryLabelColor;
+            cell.DOWTextField.textColor = NSColor.tertiaryLabelColor;
+        }
         v = cell;
     }
     else {
@@ -378,6 +384,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return [self.events[row] isKindOfClass:[NSDate class]];
 }
 
+- (BOOL)tableView:(NSTableView *)tableView isEmptyEventRow:(NSInteger)row
+{
+    id obj = self.events[row];
+    return ([obj isKindOfClass:[EventInfo class]] &&
+            ((EventInfo *)obj).event == nil);
+}
+
 - (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
 {
     return NO; // disable selection
@@ -385,13 +398,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)tableView:(MoTableView *)tableView didHoverOverRow:(NSInteger)hoveredRow
 {
-    if (hoveredRow == -1 || [self tableView:_tv isGroupRow:hoveredRow]) {
+    if (hoveredRow == -1 || [self tableView:_tv isGroupRow:hoveredRow] ||
+        [self tableView:_tv isEmptyEventRow:hoveredRow]) {
         hoveredRow = -1;
     }
     for (NSInteger row = 0; row < [_tv numberOfRows]; row++) {
         if (![self tableView:_tv isGroupRow:row]) {
+            BOOL isEmptyEventRow = [self tableView:_tv isEmptyEventRow:row];
             AgendaRowView *rowView = [_tv rowViewAtRow:row makeIfNecessary:NO];
-            rowView.isHovered = (row == hoveredRow);
+            rowView.isHovered = (row == hoveredRow && !isEmptyEventRow);
         }
     }
     if (self.delegate && [self.delegate respondsToSelector:@selector(agendaHoveredOverRow:)]) {
@@ -471,6 +486,20 @@ static NSString *kEventCellIdentifier = @"EventCell";
         intervalFormatter.dateStyle = NSDateIntervalFormatterNoStyle;
         intervalFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
     }
+
+    // There are no events on this date.
+    if (!info.event) {
+        cell.eventInfo = nil;
+        cell.dim = YES;
+        cell.titleTextField.stringValue = NSLocalizedString(@"", @"");
+        cell.titleTextField.textColor = NSColor.tertiaryLabelColor;
+        [cell.grid rowAtIndex:1].hidden = YES; // hide location row
+        [cell.grid rowAtIndex:2].hidden = YES; // hide duration row
+        cell.btnVideo.enabled = NO;
+        cell.btnVideo.hidden = YES;
+        return;
+    }
+
     NSString *title = @"";
     NSString *location = @"";
     NSString *duration = @"";
@@ -825,6 +854,19 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)drawRect:(NSRect)dirtyRect
 {
+    // There are no events on this date. Draw a dash.
+    if (!self.eventInfo) {
+        [NSColor.tertiaryLabelColor set];
+        CGFloat diameter = SizePref.agendaDotWidth/3.0;
+        CGFloat y = (NSHeight(self.bounds) - diameter)/2.0;
+        NSRect rect = NSMakeRect(11, y, diameter * 3.0, diameter);
+        CGFloat radius = diameter/2.0;
+        [[NSBezierPath bezierPathWithRoundedRect:rect
+                                         xRadius:radius
+                                         yRadius:radius] fill];
+        return;
+    }
+
     // Draw a pattern background for events that are pending
     // participation acceptance. Inset and radius match the
     // hover values in AgendaRowView -drawBackgroundInRect:.

@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 mowglii.com. All rights reserved.
 //
 
+#import <objc/runtime.h>
 #import <Cocoa/Cocoa.h>
 #import "MoDate.h"
 
@@ -30,3 +31,23 @@ extern NSString * const kBeepBeepOnTheHour;
 extern NSString * const kBaselineOffset;
 extern NSString * const kEnableMeetingButtonIndefinitely;
 extern NSString * const kDoNotDrawOutlineAroundCurrentMonth;
+extern NSString * const kShowDaysWithNoEventsInAgenda;
+
+// Set an associated object on NSDate to indicate
+// whether of not this date has events.
+// https://stackoverflow.com/a/16708352
+@interface NSDate (HasNoEvents)
+@end
+
+@implementation NSDate (HasNoEvents)
+
+- (BOOL)hasNoEvents {
+    NSNumber *num = objc_getAssociatedObject(self, @selector(hasNoEvents));
+    return [num boolValue];
+}
+
+- (void)setHasNoEvents:(BOOL)hasNoEvents {
+    objc_setAssociatedObject(self, @selector(hasNoEvents), @(hasNoEvents), OBJC_ASSOCIATION_RETAIN);
+}
+
+@end

@@ -111,6 +111,7 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "Settings…" = "Configuración…";
 "Show calendar weeks" = "Mostrar semanas del calendario";
 "Show day of week in icon" = "El icono muestra día de la semana";
+"Show days with no events" = "Mostrar días sin eventos";
 "Show event dots" = "Mostrar puntos para eventos";
 "Show event location" = "Mostrar ubicación del evento";
 "Show month in icon" = "El icono muestra mes";

@@ -51,6 +51,7 @@
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kMenuBarIconType];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMonthInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDaysWithNoEventsInAgenda];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kClockFormat];
 }
 
@@ -1035,8 +1036,23 @@
         NSDate *nsDate = MakeNSDateWithDate(date, _nsCal);
         NSArray *events = _filteredEventsForDate[nsDate];
         if (events != nil) {
+            [nsDate setHasNoEvents:NO];
             [datesAndEvents addObject:nsDate];
             [datesAndEvents addObjectsFromArray:events];
+        }
+        else {
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowDaysWithNoEventsInAgenda]) {
+                // If the user wants to show days with no events in the agenda,
+                // we need the objects we add to `datesAndEvents` to be
+                // annotated so AgendaViewController can handle them
+                // appropriately. For the date, we set an associated object.
+                // For the event we give it a new EventInfo. Importantly, the
+                // EventInfo's `event` property will be nil and we will use
+                // this fact in AgendaViewController.
+                [nsDate setHasNoEvents:YES];
+                [datesAndEvents addObject:nsDate];
+                [datesAndEvents addObject:[EventInfo new]];
+            }
         }
         date = AddDaysToDate(1, date);
     }
@@ -1327,7 +1343,7 @@
     }];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -1337,7 +1353,8 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:kShowEventDays]) {
+    if ([keyPath isEqualToString:kShowEventDays] ||
+        [keyPath isEqualToString:kShowDaysWithNoEventsInAgenda]) {
         [self updateAgenda];
     }
     else if ([keyPath isEqualToString:kMenuBarIconType] ||
