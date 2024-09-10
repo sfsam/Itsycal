@@ -45,7 +45,7 @@ const NSTimeInterval kAlertAllDayRelativeOffsets[kAlertAllDayNumOffsets] = {
     32400,    // On day of event (9 AM)
     -54000,   // 1 day before (9 AM)
     -140400,  // 2 days before (9 AM)
-    -604800   // 1 week before
+    -572400   // 1 week before
 };
 const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     MAXFLOAT, // None
