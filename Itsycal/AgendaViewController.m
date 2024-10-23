@@ -244,10 +244,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 #pragma mark -
 #pragma mark TableView click actions
 
-- (void)showPopover:(id)sender
+- (void)showPopoverForRow:(NSInteger)row
 {
-    if (_tv.clickedRow == -1 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
-        [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
+    if (row == -1 || [self tableView:_tv isGroupRow:row] ||
+        [self tableView:_tv isEmptyEventRow:row]) return;
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -257,7 +257,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self->_popover.animates = NO;
     });
     
-    AgendaEventCell *cell = [_tv viewAtColumn:0 row:_tv.clickedRow makeIfNecessary:NO];
+    AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
     
     if (!cell) return; // should never happen
     
@@ -266,14 +266,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [popoverVC populateWithEventInfo:cell.eventInfo];
     
     if (cell.eventInfo.event.calendar.allowsContentModifications) {
-        popoverVC.btnDelete.tag = _tv.clickedRow;
+        popoverVC.btnDelete.tag = row;
         popoverVC.btnDelete.target = self;
         popoverVC.btnDelete.action = @selector(deleteEvent:);
         unichar backspaceKey = NSBackspaceCharacter;
         popoverVC.btnDelete.keyEquivalent = [NSString stringWithCharacters:&backspaceKey length:1];
     }
     
-    NSRect positionRect = NSInsetRect([_tv rectOfRow:_tv.clickedRow], 8, 0);
+    NSRect positionRect = NSInsetRect([_tv rectOfRow:row], 8, 0);
     [_popover setAppearance:NSApp.effectiveAppearance];
     [_popover showRelativeToRect:positionRect ofView:_tv preferredEdge:NSRectEdgeMinX];
     [_popover setContentSize:popoverVC.size];
@@ -281,6 +281,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
     
     // Prevent popoverVC's _note from eating key presses (like esc and delete).
     [popoverVC.view.window makeFirstResponder:popoverVC.btnDelete];
+}
+
+- (void)showPopover:(id)sender
+{
+    if (_tv.clickedRow == -1 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
+        [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
+
+    [self showPopoverForRow:_tv.clickedRow];
 }
 
 - (void)showCalendarApp:(id)sender
@@ -398,15 +406,23 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)tableView:(MoTableView *)tableView didHoverOverRow:(NSInteger)hoveredRow
 {
+    BOOL showPopoverOnHover = [[NSUserDefaults standardUserDefaults] boolForKey:kShowEventPopoverOnHover];
     if (hoveredRow == -1 || [self tableView:_tv isGroupRow:hoveredRow] ||
         [self tableView:_tv isEmptyEventRow:hoveredRow]) {
+        if (kShowEventPopoverOnHover && hoveredRow != -1) {
+            [_popover close];
+        }
         hoveredRow = -1;
     }
     for (NSInteger row = 0; row < [_tv numberOfRows]; row++) {
         if (![self tableView:_tv isGroupRow:row]) {
             BOOL isEmptyEventRow = [self tableView:_tv isEmptyEventRow:row];
+            BOOL isHovered = (row == hoveredRow && !isEmptyEventRow);
             AgendaRowView *rowView = [_tv rowViewAtRow:row makeIfNecessary:NO];
-            rowView.isHovered = (row == hoveredRow && !isEmptyEventRow);
+            rowView.isHovered = isHovered;
+            if (showPopoverOnHover && isHovered) {
+                [self showPopoverForRow:hoveredRow];
+            }
         }
     }
     if (self.delegate && [self.delegate respondsToSelector:@selector(agendaHoveredOverRow:)]) {

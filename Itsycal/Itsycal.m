@@ -30,3 +30,4 @@ NSString * const kBaselineOffset = @"BaselineOffset";
 NSString * const kEnableMeetingButtonIndefinitely = @"EnableMeetingButtonIndefinitely";
 NSString * const kDoNotDrawOutlineAroundCurrentMonth = @"DoNotDrawOutlineAroundCurrentMonth";
 NSString * const kShowDaysWithNoEventsInAgenda = @"ShowDaysWithNoEventsInAgenda";
+NSString * const kShowEventPopoverOnHover = @"ShowEventPopoverOnHover";
