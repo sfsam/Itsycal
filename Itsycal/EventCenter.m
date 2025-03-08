@@ -439,7 +439,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                      || [link containsString:@"public.senfcall.de"]
                      || [link containsString:@"facetime.apple.com/join"]
                      || [link containsString:@"workplace.com/meet"]
-                     || [link containsString:@"youcanbook.me/zoom/"]) {
+                     || [link containsString:@"youcanbook.me/zoom/"]
+                     || [link containsString:@"vk.com/call/"]) {
                 info.zoomURL = result.URL;
             }
             *stop = info.zoomURL != nil;
