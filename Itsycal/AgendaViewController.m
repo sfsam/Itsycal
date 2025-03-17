@@ -414,7 +414,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     BOOL showPopoverOnHover = [[NSUserDefaults standardUserDefaults] boolForKey:kShowEventPopoverOnHover];
     if (hoveredRow == -1 || [self tableView:_tv isGroupRow:hoveredRow] ||
         [self tableView:_tv isEmptyEventRow:hoveredRow]) {
-        if (kShowEventPopoverOnHover && hoveredRow != -1) {
+        if (showPopoverOnHover && hoveredRow != -1) {
             [_popover close];
         }
         hoveredRow = -1;
