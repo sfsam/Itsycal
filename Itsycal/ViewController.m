@@ -1220,8 +1220,9 @@
         fireDate = [NSDate dateWithTimeIntervalSinceReferenceDate:nextSecond];
     }
     else {
-        components.second = 0;
-        fireDate = [_nsCal nextDateAfterDate:now matchingComponents:components options:NSCalendarMatchNextTime];
+        NSDateComponents *comp = [NSDateComponents new];
+        comp.second = 0;
+        fireDate = [_nsCal nextDateAfterDate:now matchingComponents:comp options:NSCalendarMatchNextTime];
     }
     [_timer invalidate];
     _timer = [[NSTimer alloc] initWithFireDate:fireDate interval:0 target:self selector:@selector(updateTimer) userInfo:nil repeats:NO];
