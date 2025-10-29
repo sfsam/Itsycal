@@ -1187,7 +1187,8 @@
 
 - (void)updateTimer
 {
-    NSDateComponents *components = [_nsCal components:NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond fromDate:[NSDate new]];
+    NSDate *now = [NSDate date];
+    NSDateComponents *components = [_nsCal components:NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond fromDate:now];
 
     // Should we beep-beep on the hour? If so, cap the volume relative to the
     // system volume so it's not too loud.
@@ -1212,20 +1213,16 @@
     }
 
     // Set up _timer to fire on next minute or second.
+    NSDate *fireDate;
     if (_clockUsesSeconds) {
-        components.second += 1;
+        NSTimeInterval nowSeconds = [now timeIntervalSinceReferenceDate];
+        NSTimeInterval nextSecond = floor(nowSeconds) + 1.0;
+        fireDate = [NSDate dateWithTimeIntervalSinceReferenceDate:nextSecond];
     }
     else {
-        components.minute += 1;
         components.second = 0;
+        fireDate = [_nsCal nextDateAfterDate:now matchingComponents:components options:NSCalendarMatchNextTime];
     }
-    NSDate *fireDate = [_nsCal dateFromComponents:components];
-    // Set new fireDate a quarter second late in the hope that it
-    // avoids the edge case when we fall back at the end of Daylight
-    // Savings time. Some users reported either the seconds timer
-    // getting stuck in a loop and pinning CPU at 100% or the minute
-    // timer not firing until the fallback hour has ended.
-    fireDate = [fireDate dateByAddingTimeInterval:0.25];
     [_timer invalidate];
     _timer = [[NSTimer alloc] initWithFireDate:fireDate interval:0 target:self selector:@selector(updateTimer) userInfo:nil repeats:NO];
     [NSRunLoop.mainRunLoop addTimer:_timer forMode:NSRunLoopCommonModes];
@@ -1390,3 +1387,4 @@
 }
 
 @end
+
