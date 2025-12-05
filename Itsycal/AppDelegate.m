@@ -38,6 +38,7 @@
         kShowDayOfWeekInIcon:  @(NO),
         kShowEventDots:        @(YES),
         kUseColoredDots:       @(YES),
+        kShowPastEvents:       @(YES),
         kThemePreference:      @0, // System=0, Light=1, Dark=2
         kHideIcon:             @(NO)
     }];
