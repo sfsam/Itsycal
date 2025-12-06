@@ -38,8 +38,10 @@
 @end
 
 // These values map to _alertAllDayStrings and _alertRegularStrings.
-const NSInteger kAlertAllDayNumOffsets  = 5;
-const NSInteger kAlertRegularNumOffsets = 10;
+enum {
+    kAlertAllDayNumOffsets = 5,
+    kAlertRegularNumOffsets = 10
+};
 const NSTimeInterval kAlertAllDayRelativeOffsets[kAlertAllDayNumOffsets] = {
     MAXFLOAT, // None
     32400,    // On day of event (9 AM)
