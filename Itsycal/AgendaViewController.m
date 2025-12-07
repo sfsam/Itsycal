@@ -764,8 +764,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSTextField* (^label)(void) = ^NSTextField* () {
         NSTextField *lbl = [NSTextField labelWithString:@""];
         lbl.font = [NSFont systemFontOfSize:SizePref.fontSize];
-        lbl.lineBreakMode = NSLineBreakByWordWrapping;
-        lbl.cell.truncatesLastVisibleLine = YES;
+        lbl.lineBreakMode = NSLineBreakByTruncatingTail;
+        lbl.allowsExpansionToolTips = YES;
         return lbl;
     };
     self = [super init];
