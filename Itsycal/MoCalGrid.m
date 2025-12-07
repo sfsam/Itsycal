@@ -46,6 +46,11 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)addRow
 {
     NSMutableArray *cells = [_cells mutableCopy];

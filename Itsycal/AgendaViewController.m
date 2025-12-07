@@ -727,6 +727,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)sizeChanged:(id)sender
 {
     _dayTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
@@ -823,6 +828,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
         REGISTER_FOR_SIZE_CHANGE;
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)sizeChanged:(id)sender

@@ -15,10 +15,10 @@ extern NSString * const kSizeDidChangeNotification;
 
 // Convenience macro for notification observer for sizeable components
 #define REGISTER_FOR_SIZE_CHANGE [[NSNotificationCenter defaultCenter] \
-                                   addObserverForName:kSizeDidChangeNotification \
-                                   object:nil queue:[NSOperationQueue mainQueue] \
-                                   usingBlock:^(NSNotification *note) { \
-                                   [self sizeChanged:nil];}];
+                                   addObserver:self \
+                                   selector:@selector(sizeChanged:) \
+                                   name:kSizeDidChangeNotification \
+                                   object:nil]
 
 typedef enum : NSInteger {
     SizePreferenceSmall = 0,
