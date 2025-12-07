@@ -191,7 +191,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
     EventInfo *info = self.events[_tv.clickedRow];
     if (info.event.calendar.allowsContentModifications) {
-        NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
+        NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete…", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
         item.tag = _tv.clickedRow;
     }
 }

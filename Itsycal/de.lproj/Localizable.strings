@@ -46,7 +46,7 @@ Itsycal ist nützlicher, wenn es Ereignisse aus Ihrem Kalender angezeigt werden 
 "Dark" = "Dunkles Design";
 "Date & Time…" = "Datum & Uhrzeit …";
 "Datetime pattern" = "Datum & Zeit Muster";
-"Delete" = "Löschen";
+"Delete…" = "Löschen …";
 "Delete All Future Events" = "Alle zukünftigen Ereignisse löschen";
 "Delete Only This Event" = "Nur dieses Ereignis löschen";
 "Delete This Event" = "Löschen";
