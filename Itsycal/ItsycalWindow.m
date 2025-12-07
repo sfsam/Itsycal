@@ -199,6 +199,9 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
         [rectPath appendBezierPath:arrowPath];
     }
     [Theme.windowBorderColor setStroke];
+#ifdef DEBUG
+    [NSColor.greenColor setStroke];
+#endif
     [rectPath setLineWidth:2*kBorderWidth];
     [rectPath stroke];
     [Theme.mainBackgroundColor setFill];
