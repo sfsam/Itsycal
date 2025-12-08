@@ -52,7 +52,7 @@
     NSTextField *emojiTwitter = label(@"🙅‍♂️", NO);
     NSTextField *emojiDonate  = label(@"♥️", NO);
 
-    NSTextField *copyright1 = label(@"© 2012—2024", NO);
+    NSTextField *copyright1 = label(@"© 2012—2025", NO);
     MoTextField *copyright2 = label(@"mowglii.com", YES);
 
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(appName, version, help, emojiHelp, follow, emojiTwitter, donate, emojiDonate, smile, copyright1, copyright2)];
