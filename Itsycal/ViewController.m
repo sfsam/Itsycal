@@ -360,6 +360,25 @@
     [optMenu insertItemWithTitle:NSLocalizedString(@"Help…", @"") action:@selector(navigateToHelp:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
+
+    if (@available(macOS 26, *)) {
+        // The menu item glyphs introduced in macOS 26 Tahoe.
+        NSInteger index = 0;
+        NSArray *symbolNames = @[
+            @"info.circle",
+            @"arrow.trianglehead.2.clockwise",
+            @"21.calendar",
+            @"gear",
+            @"calendar.badge.clock",
+            @"questionmark.circle",
+            @"xmark.rectangle"
+        ];
+        for (NSMenuItem *item in optMenu.itemArray) {
+            if (item.isSeparatorItem) continue;
+            item.image = [NSImage imageWithSystemSymbolName:symbolNames[index++] accessibilityDescription:nil];
+        }
+    }
+
     NSPoint pt = NSOffsetRect(_btnOpt.frame, -5, -10).origin;
     [optMenu popUpMenuPositioningItem:nil atLocation:pt inView:self.view];
 }
