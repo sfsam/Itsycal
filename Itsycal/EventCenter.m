@@ -397,6 +397,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                 // Test if user has the Zoom app and, if so, create a Zoom app link.
                 if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"zoommtg://"]]) {
                     link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"zoommtg://"];
+                    link = [link stringByReplacingOccurrencesOfString:@"http://" withString:@"zoommtg://"];
                     link = [link stringByReplacingOccurrencesOfString:@"?" withString:@"&"];
                     link = [link stringByReplacingOccurrencesOfString:@"/j/" withString:@"/join?confno="];
                     link = [link stringByReplacingOccurrencesOfString:@"/s/" withString:@"/join?confno="];
