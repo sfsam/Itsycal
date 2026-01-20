@@ -293,7 +293,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     
     // If self.calSelectedDate is today, the initialStart is set to
     // the next whole hour. Otherwise, 8am of self.calselectedDate.
-    // InitialEnd is one hour after initialStart.
+    // Default duration is same as setting in Calendar.app.
     NSDate *initialStart, *initialEnd, *today = [NSDate new];
     if ([self.cal isDate:self.calSelectedDate inSameDayAsDate:today]) {
         NSInteger hour;
@@ -304,7 +304,11 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     else {
         initialStart = [self.cal dateBySettingHour:8 minute:0 second:0 ofDate:self.calSelectedDate options:0];
     }
-    initialEnd = [self.cal dateByAddingUnit:NSCalendarUnitHour value:1 toDate:initialStart options:0];
+    NSInteger newEventDuration = [self defaultDurationInMinutesForNewEvent];
+    initialEnd = [self.cal dateByAddingUnit:NSCalendarUnitMinute
+                                      value:newEventDuration
+                                     toDate:initialStart
+                                    options:0];
     
     // Initial values for form fields.
     _title.stringValue = @"";
@@ -392,6 +396,19 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [frameView addSubview:backgroundColorView positioned:NSWindowBelow relativeTo:nil];
 }
 
+- (NSInteger)defaultDurationInMinutesForNewEvent {
+    NSUserDefaults *calendarDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"com.apple.iCal"];
+    NSNumber *durationMinutes = [calendarDefaults objectForKey:@"Default duration in minutes for new event"];
+
+    // Check if the value was found.
+    if (durationMinutes != nil) {
+        return [durationMinutes longValue];
+    }
+    // Return the system default (60 minutes) if the
+    // setting isn't explicitly defined.
+    return 60;
+}
+
 - (void)cancelOperation:(id)sender
 {
     // User hit 'esc' or pressed Cancel button.
@@ -425,10 +442,14 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
 {
     // Make sure endDate is never before startDate.
     // Make sure repeatEndDate is never before endDate.
-    // Default endDate is one hour after startDate.
+    // Default duration is same as setting in Calendar.app.
+    NSInteger newEventDuration = [self defaultDurationInMinutesForNewEvent];
     _endDate.minDate    = _startDate.dateValue;
     _repEndDate.minDate = _startDate.dateValue;
-    _endDate.dateValue = [self.cal dateByAddingUnit:NSCalendarUnitHour value:1 toDate:_startDate.dateValue options:0];
+    _endDate.dateValue = [self.cal dateByAddingUnit:NSCalendarUnitMinute
+                                              value:newEventDuration
+                                             toDate:_startDate.dateValue
+                                            options:0];
 }
 
 - (void)repPopupChanged:(id)sender
