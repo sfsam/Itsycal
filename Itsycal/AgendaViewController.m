@@ -14,9 +14,10 @@
 #import "Themer.h"
 #import "Sizer.h"
 
-static NSString *kColumnIdentifier    = @"Column";
-static NSString *kDateCellIdentifier  = @"DateCell";
-static NSString *kEventCellIdentifier = @"EventCell";
+static NSString *kColumnIdentifier       = @"Column";
+static NSString *kDateCellIdentifier     = @"DateCell";
+static NSString *kEventCellIdentifier    = @"EventCell";
+static NSString *kReminderCellIdentifier = @"ReminderCell";
 
 @interface ThemedScroller : NSScroller
 @end
@@ -38,6 +39,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @property (nonatomic) NSTextField *durationTextField;
 @property (nonatomic) MoButton *btnVideo;
 @property (nonatomic, weak) EventInfo *eventInfo;
+@property (nonatomic) BOOL dim;
+@end
+
+@interface AgendaReminderCell : NSView
+@property (nonatomic) NSGridView *grid;
+@property (nonatomic) NSButton *checkbox;
+@property (nonatomic) NSTextField *titleTextField;
+@property (nonatomic) NSTextField *dueDateTextField;
+@property (nonatomic, weak) ReminderInfo *reminderInfo;
 @property (nonatomic) BOOL dim;
 @end
 
@@ -187,6 +197,18 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [menu removeAllItems];
     if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
         [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
+
+    // Reminder rows get a different context menu.
+    if ([self tableView:_tv isReminderRow:_tv.clickedRow]) {
+        ReminderInfo *info = self.events[_tv.clickedRow];
+        NSString *toggleTitle = info.isCompleted
+            ? NSLocalizedString(@"Mark as Incomplete", nil)
+            : NSLocalizedString(@"Mark as Complete", nil);
+        NSMenuItem *item = [menu addItemWithTitle:toggleTitle action:@selector(toggleReminder:) keyEquivalent:@""];
+        item.tag = _tv.clickedRow;
+        return;
+    }
+
     [menu addItemWithTitle:NSLocalizedString(@"Open Calendar", nil) action:@selector(showCalendarApp:) keyEquivalent:@""];
     [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
     EventInfo *info = self.events[_tv.clickedRow];
@@ -252,7 +274,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)showPopoverForRow:(NSInteger)row
 {
     if (row == -1 || [self tableView:_tv isGroupRow:row] ||
-        [self tableView:_tv isEmptyEventRow:row]) return;
+        [self tableView:_tv isEmptyEventRow:row] ||
+        [self tableView:_tv isReminderRow:row]) return;
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -291,7 +314,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)showPopover:(id)sender
 {
     if (_tv.clickedRow == -1 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
-        [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
+        [self tableView:_tv isEmptyEventRow:_tv.clickedRow] ||
+        [self tableView:_tv isReminderRow:_tv.clickedRow]) return;
 
     [self showPopoverForRow:_tv.clickedRow];
 }
@@ -343,7 +367,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     NSView *v = nil;
     id obj = self.events[row];
-    
+
     if ([obj isKindOfClass:[NSDate class]]) {
         AgendaDateCell *cell = [_tv makeViewWithIdentifier:kDateCellIdentifier owner:self];
         if (cell == nil) cell = [AgendaDateCell new];
@@ -358,6 +382,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
         }
         v = cell;
     }
+    else if ([obj isKindOfClass:[ReminderInfo class]]) {
+        ReminderInfo *info = obj;
+        AgendaReminderCell *cell = [_tv makeViewWithIdentifier:kReminderCellIdentifier owner:self];
+        if (!cell) cell = [AgendaReminderCell new];
+        [self populateReminderCell:cell withInfo:info row:row];
+        v = cell;
+    }
     else {
         EventInfo *info = obj;
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
@@ -370,24 +401,31 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
-    // Keep a cell around for measuring event cell height.
+    // Keep cells around for measuring heights.
     static AgendaDateCell *dateCell = nil;
     static AgendaEventCell *eventCell = nil;
-    
+    static AgendaReminderCell *reminderCell = nil;
+
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         eventCell = [AgendaEventCell new];
+        reminderCell = [AgendaReminderCell new];
         dateCell = [AgendaDateCell new];
         dateCell.frame = NSMakeRect(0, 0, NSWidth(self->_tv.frame), 999); // only width is important here
         dateCell.dayTextField.integerValue = 21;
     });
-    
+
     CGFloat height = dateCell.fittingSize.height;
     id obj = self.events[row];
     if ([obj isKindOfClass:[EventInfo class]]) {
         eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
         [self populateEventCell:eventCell withInfo:obj];
         height = eventCell.fittingSize.height;
+    }
+    else if ([obj isKindOfClass:[ReminderInfo class]]) {
+        reminderCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999);
+        [self populateReminderCell:reminderCell withInfo:obj row:row];
+        height = reminderCell.fittingSize.height;
     }
     return height;
 }
@@ -402,6 +440,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     id obj = self.events[row];
     return ([obj isKindOfClass:[EventInfo class]] &&
             ((EventInfo *)obj).event == nil);
+}
+
+- (BOOL)tableView:(NSTableView *)tableView isReminderRow:(NSInteger)row
+{
+    return [self.events[row] isKindOfClass:[ReminderInfo class]];
 }
 
 - (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
@@ -425,7 +468,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
             BOOL isHovered = (row == hoveredRow && !isEmptyEventRow);
             AgendaRowView *rowView = [_tv rowViewAtRow:row makeIfNecessary:NO];
             rowView.isHovered = isHovered;
-            if (showPopoverOnHover && isHovered) {
+            if (showPopoverOnHover && isHovered && ![self tableView:_tv isReminderRow:hoveredRow]) {
                 [self showPopoverForRow:hoveredRow];
             }
         }
@@ -607,6 +650,79 @@ static NSString *kEventCellIdentifier = @"EventCell";
         cell.btnVideo.actionBlock = ^{
             [NSWorkspace.sharedWorkspace openURL:info.zoomURL];
         };
+    }
+}
+
+- (void)populateReminderCell:(AgendaReminderCell *)cell withInfo:(ReminderInfo *)info row:(NSInteger)row
+{
+    cell.reminderInfo = info;
+    cell.checkbox.state = info.isCompleted ? NSControlStateValueOn : NSControlStateValueOff;
+    cell.checkbox.tag = row;
+    cell.checkbox.target = self;
+    cell.checkbox.action = @selector(toggleReminder:);
+
+    NSString *title = info.reminder.title ?: @"";
+    cell.titleTextField.stringValue = title;
+    cell.titleTextField.textColor = info.isCompleted ? Theme.agendaEventDateTextColor : Theme.agendaEventTextColor;
+
+    // Show due time if the reminder has a specific time component.
+    NSDateComponents *dueDateComponents = info.reminder.dueDateComponents;
+    if (dueDateComponents && dueDateComponents.hour != NSDateComponentUndefined) {
+        static NSDateFormatter *timeFormatter = nil;
+        if (!timeFormatter) {
+            timeFormatter = [NSDateFormatter new];
+            timeFormatter.dateStyle = NSDateFormatterNoStyle;
+            timeFormatter.timeStyle = NSDateFormatterShortStyle;
+        }
+        timeFormatter.timeZone = [NSTimeZone localTimeZone];
+        NSDate *dueDate = [self.nsCal dateFromComponents:dueDateComponents];
+        if (dueDate) {
+            NSString *timeStr = [timeFormatter stringFromDate:dueDate];
+            // Remove :00 for English locales in 12hr mode.
+            if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
+                if ([[timeFormatter dateFormat] rangeOfString:@"a"].location != NSNotFound) {
+                    timeStr = [timeStr stringByReplacingOccurrencesOfString:@":00" withString:@""];
+                }
+            }
+            cell.dueDateTextField.stringValue = timeStr;
+            [cell.grid rowAtIndex:1].hidden = NO;
+        } else {
+            [cell.grid rowAtIndex:1].hidden = YES;
+        }
+    } else {
+        [cell.grid rowAtIndex:1].hidden = YES;
+    }
+
+    cell.dueDateTextField.textColor = Theme.agendaEventDateTextColor;
+    cell.dim = info.isCompleted;
+
+    // Apply strikethrough for completed reminders.
+    if (info.isCompleted) {
+        NSAttributedString *strikeTitle = [[NSAttributedString alloc]
+            initWithString:title
+                attributes:@{
+                    NSStrikethroughStyleAttributeName: @(NSUnderlineStyleSingle),
+                    NSForegroundColorAttributeName: Theme.agendaEventDateTextColor,
+                    NSFontAttributeName: cell.titleTextField.font
+                }];
+        cell.titleTextField.attributedStringValue = strikeTitle;
+    }
+}
+
+- (void)toggleReminder:(id)sender
+{
+    NSInteger row = -1;
+    if ([sender isKindOfClass:[NSButton class]]) {
+        row = [(NSButton *)sender tag];
+    } else if ([sender isKindOfClass:[NSMenuItem class]]) {
+        row = [(NSMenuItem *)sender tag];
+    }
+    if (row < 0 || row >= (NSInteger)self.events.count) return;
+    id obj = self.events[row];
+    if (![obj isKindOfClass:[ReminderInfo class]]) return;
+    ReminderInfo *info = obj;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToToggleReminder:)]) {
+        [self.delegate agendaWantsToToggleReminder:info.reminder];
     }
 }
 
@@ -930,6 +1046,110 @@ static NSString *kEventCellIdentifier = @"EventCell";
         [p stroke];
     } else {
         [p fill];
+    }
+}
+
+@end
+
+// =========================================================================
+// AgendaReminderCell
+// =========================================================================
+
+@implementation AgendaReminderCell {
+    NSLayoutConstraint *_gridLeadingConstraint;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.identifier = kReminderCellIdentifier;
+
+        _checkbox = [NSButton checkboxWithTitle:@"" target:nil action:nil];
+        _checkbox.translatesAutoresizingMaskIntoConstraints = NO;
+        [_checkbox setContentHuggingPriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
+
+        _titleTextField = [NSTextField labelWithString:@""];
+        _titleTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
+        _titleTextField.lineBreakMode = NSLineBreakByTruncatingTail;
+        _titleTextField.maximumNumberOfLines = 1;
+        _titleTextField.allowsExpansionToolTips = YES;
+
+        _dueDateTextField = [NSTextField labelWithString:@""];
+        _dueDateTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
+        _dueDateTextField.lineBreakMode = NSLineBreakByTruncatingTail;
+
+        _grid = [NSGridView gridViewWithViews:@[@[_titleTextField],
+                                                @[_dueDateTextField]]];
+        _grid.translatesAutoresizingMaskIntoConstraints = NO;
+        _grid.rowSpacing = 0;
+
+        [self addSubview:_checkbox];
+        [self addSubview:_grid];
+
+        MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_checkbox, _grid)];
+        [vfl :@"H:[_grid]-11-|"];
+        [vfl :@"V:|-3-[_grid]-3-|"];
+
+        CGFloat leadingConstant = SizePref.agendaEventLeadingMargin;
+        _gridLeadingConstraint = [_grid.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:leadingConstant];
+        _gridLeadingConstraint.active = YES;
+
+        [_checkbox.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:leadingConstant - 6].active = YES;
+        [_checkbox.centerYAnchor constraintEqualToAnchor:_titleTextField.centerYAnchor].active = YES;
+
+        // Shift grid to the right to make room for checkbox.
+        _gridLeadingConstraint.constant = leadingConstant + 14;
+
+        REGISTER_FOR_SIZE_CHANGE;
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)sizeChanged:(id)sender
+{
+    _gridLeadingConstraint.constant = SizePref.agendaEventLeadingMargin + 14;
+    _titleTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
+    _dueDateTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
+}
+
+- (void)setFrame:(NSRect)frame
+{
+    [super setFrame:frame];
+    CGFloat margins = _gridLeadingConstraint.constant + 5;
+    _titleTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
+    _dueDateTextField.preferredMaxLayoutWidth = NSWidth(frame) - margins;
+}
+
+- (void)setDim:(BOOL)dim {
+    if (_dim != dim) {
+        _dim = dim;
+        [self setNeedsDisplay:YES];
+    }
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    if (!self.reminderInfo) return;
+
+    // Draw a small circle (outline) as the reminder indicator.
+    CGFloat alpha = self.dim ? 0.5 : 1;
+    CGFloat dotWidth = SizePref.agendaDotWidth;
+    CGFloat yOffset = SizePref.fontSize + 2;
+    NSColor *dotColor = self.reminderInfo.reminder.calendar.color ?: NSColor.systemOrangeColor;
+    [[dotColor colorWithAlphaComponent:alpha] set];
+
+    NSBezierPath *p = [NSBezierPath bezierPathWithOvalInRect:NSMakeRect(11, NSHeight(self.bounds) - yOffset, dotWidth, dotWidth)];
+    if (self.reminderInfo.isCompleted) {
+        [p fill];
+    } else {
+        p.lineWidth = 1.5;
+        [p stroke];
     }
 }
 

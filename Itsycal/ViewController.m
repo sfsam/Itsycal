@@ -35,6 +35,7 @@
     NSDateFormatter       *_iconDateFormatter;
     NSTimeInterval         _inactiveTime;
     NSDictionary          *_filteredEventsForDate;
+    NSDictionary          *_filteredRemindersForDate;
     NSTimer   *_timer;
     NSString  *_clockFormat;
     BOOL       _clockUsesSeconds;
@@ -53,6 +54,7 @@
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDaysWithNoEventsInAgenda];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kClockFormat];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowReminders];
 }
 
 #pragma mark -
@@ -938,14 +940,29 @@
         [_moCal unhighlightCells];
     }
     else {
-        EventInfo *info = _agendaVC.events[row];
-        MoDate startDate = MakeDateWithNSDate(info.event.startDate, _nsCal);
-        MoDate endDate   = MakeDateWithNSDate(info.event.endDate,   _nsCal);
-        // Fixup for endDates that are at midnight
-        if ([info.event.endDate compare:[_nsCal startOfDayForDate:info.event.endDate]] == NSOrderedSame) {
-            endDate = AddDaysToDate(-1, endDate);
+        id obj = _agendaVC.events[row];
+        if ([obj isKindOfClass:[EventInfo class]]) {
+            EventInfo *info = obj;
+            MoDate startDate = MakeDateWithNSDate(info.event.startDate, _nsCal);
+            MoDate endDate   = MakeDateWithNSDate(info.event.endDate,   _nsCal);
+            // Fixup for endDates that are at midnight
+            if ([info.event.endDate compare:[_nsCal startOfDayForDate:info.event.endDate]] == NSOrderedSame) {
+                endDate = AddDaysToDate(-1, endDate);
+            }
+            [_moCal highlightCellsFromDate:startDate toDate:endDate withColor:info.event.calendar.color];
         }
-        [_moCal highlightCellsFromDate:startDate toDate:endDate withColor:info.event.calendar.color];
+        else if ([obj isKindOfClass:[ReminderInfo class]]) {
+            ReminderInfo *info = obj;
+            NSDateComponents *dueDateComponents = info.reminder.dueDateComponents;
+            if (dueDateComponents) {
+                NSDate *dueDate = [_nsCal dateFromComponents:dueDateComponents];
+                if (dueDate) {
+                    MoDate moDate = MakeDateWithNSDate(dueDate, _nsCal);
+                    NSColor *color = info.reminder.calendar.color ?: NSColor.systemOrangeColor;
+                    [_moCal highlightCellsFromDate:moDate toDate:moDate withColor:color];
+                }
+            }
+        }
     }
 }
 
@@ -1014,6 +1031,15 @@
     }
 }
 
+- (void)agendaWantsToToggleReminder:(EKReminder *)reminder
+{
+    NSError *error = nil;
+    BOOL result = [_ec toggleReminderCompleted:reminder error:&error];
+    if (!result && error) {
+        [[NSAlert alertWithError:error] runModal];
+    }
+}
+
 - (void)agendaShowCalendarAppAtDate:(NSDate *)date
 {
     [self showCalendarAppAtDate:date dayView:YES];
@@ -1043,12 +1069,27 @@
 - (NSArray<NSColor *> *)dotColorsForDate:(MoDate)date useColor:(BOOL)useColor
 {
     NSArray<EventInfo *> *events = [self eventsForDate:date];
-    if (!events || events.count == 0) return nil;
+    NSDate *nsDate = MakeNSDateWithDate(date, _nsCal);
+    NSArray<ReminderInfo *> *reminders = nil;
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowReminders]) {
+        reminders = _filteredRemindersForDate[nsDate];
+    }
+    BOOL hasEvents = events && events.count > 0;
+    BOOL hasReminders = reminders && reminders.count > 0;
+    if (!hasEvents && !hasReminders) return nil;
     if (!useColor) return @[];
     NSMutableOrderedSet *colors = [NSMutableOrderedSet new];
     for (EventInfo *eventInfo in events) {
         [colors addObject:eventInfo.event.calendar.color];
         if (colors.count == 3) break;
+    }
+    if (colors.count < 3) {
+        for (ReminderInfo *reminderInfo in reminders) {
+            if (reminderInfo.reminder.calendar.color) {
+                [colors addObject:reminderInfo.reminder.calendar.color];
+            }
+            if (colors.count == 3) break;
+        }
     }
     switch (colors.count) {
         case 1: return @[colors[0]];
@@ -1068,25 +1109,27 @@
 
 - (NSArray *)datesAndEventsForDate:(MoDate)date days:(NSInteger)days
 {
+    BOOL showReminders = [[NSUserDefaults standardUserDefaults] boolForKey:kShowReminders];
     NSMutableArray *datesAndEvents = [NSMutableArray new];
     MoDate endDate = AddDaysToDate(days, date);
     while (CompareDates(date, endDate) < 0) {
         NSDate *nsDate = MakeNSDateWithDate(date, _nsCal);
         NSArray *events = _filteredEventsForDate[nsDate];
-        if (events != nil) {
+        NSArray *reminders = showReminders ? _filteredRemindersForDate[nsDate] : nil;
+        BOOL hasEvents = events != nil && events.count > 0;
+        BOOL hasReminders = reminders != nil && reminders.count > 0;
+        if (hasEvents || hasReminders) {
             [nsDate setHasNoEvents:NO];
             [datesAndEvents addObject:nsDate];
-            [datesAndEvents addObjectsFromArray:events];
+            if (hasEvents) {
+                [datesAndEvents addObjectsFromArray:events];
+            }
+            if (hasReminders) {
+                [datesAndEvents addObjectsFromArray:reminders];
+            }
         }
         else {
             if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowDaysWithNoEventsInAgenda]) {
-                // If the user wants to show days with no events in the agenda,
-                // we need the objects we add to `datesAndEvents` to be
-                // annotated so AgendaViewController can handle them
-                // appropriately. For the date, we set an associated object.
-                // For the event we give it a new EventInfo. Importantly, the
-                // EventInfo's `event` property will be nil and we will use
-                // this fact in AgendaViewController.
                 [nsDate setHasNoEvents:YES];
                 [datesAndEvents addObject:nsDate];
                 [datesAndEvents addObject:[EventInfo new]];
@@ -1104,6 +1147,7 @@
 {
     //os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
     _filteredEventsForDate = [_ec filteredEventsForDate];
+    _filteredRemindersForDate = [_ec filteredRemindersForDate];
     [_moCal reloadData];
     [self updateAgenda];
 }
@@ -1379,7 +1423,7 @@
     }];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat, kShowReminders]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -1390,7 +1434,9 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
 {
     if ([keyPath isEqualToString:kShowEventDays] ||
-        [keyPath isEqualToString:kShowDaysWithNoEventsInAgenda]) {
+        [keyPath isEqualToString:kShowDaysWithNoEventsInAgenda] ||
+        [keyPath isEqualToString:kShowReminders]) {
+        [_moCal reloadData];
         [self updateAgenda];
     }
     else if ([keyPath isEqualToString:kMenuBarIconType] ||

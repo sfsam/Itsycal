@@ -14,14 +14,16 @@
 static NSString *kSelectedCalendars = @"SelectedCalendars";
 
 // Properties auto-synthesized.
-@implementation CalendarInfo @end
-@implementation EventInfo    @end
+@implementation CalendarInfo  @end
+@implementation EventInfo     @end
+@implementation ReminderInfo  @end
 
 @implementation EventCenter {                      // Accessed on:
     EKEventStore         *_store;
     NSCalendar           *_cal;
     NSMutableDictionary  *_eventsForDate;          // _queueWork
     NSDictionary         *_filteredEventsForDate;  // _queueIsol
+    NSDictionary         *_filteredRemindersForDate; // _queueIsol
     NSMutableIndexSet    *_previouslyFetchedDates; // _queueWork
     NSArray              *_sourcesAndCalendars;    // _queueIsol2
     dispatch_queue_t      _queueWork;
@@ -54,6 +56,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         _sourcesAndCalendars = [NSArray new];
         _eventsForDate  = [NSMutableDictionary new];
         _filteredEventsForDate = [NSDictionary new];
+        _filteredRemindersForDate = [NSDictionary new];
         _previouslyFetchedDates = [NSMutableIndexSet new];
         _queueWork = dispatch_queue_create("com.mowglii.Itsycal.queueWork", DISPATCH_QUEUE_SERIAL);
         _queueIsol = dispatch_queue_create("com.mowglii.Itsycal.queueIsol", DISPATCH_QUEUE_SERIAL);
@@ -63,6 +66,25 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             [_store requestFullAccessToEventsWithCompletion:requestCompletionHandler];
         } else {
             [_store requestAccessToEntityType:EKEntityTypeEvent completion:requestCompletionHandler];
+        }
+
+        // Also request reminder access.
+        if (@available(macOS 14.0, *)) {
+            [_store requestFullAccessToRemindersWithCompletion:^(BOOL granted, NSError *error) {
+                if (granted) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self refetchAll];
+                    });
+                }
+            }];
+        } else {
+            [_store requestAccessToEntityType:EKEntityTypeReminder completion:^(BOOL granted, NSError *error) {
+                if (granted) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self refetchAll];
+                    });
+                }
+            }];
         }
 
         // Refetch everything when the event store has changed.
@@ -88,6 +110,14 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     }
 }
 
+- (BOOL)reminderAccessGranted {
+    if (@available(macOS 14.0, *)) {
+        return [EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder] == EKAuthorizationStatusFullAccess;
+    } else {
+        return [EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder] == EKAuthorizationStatusAuthorized;
+    }
+}
+
 - (NSString *)defaultCalendarIdentifier {
     EKCalendar *cal = [_store defaultCalendarForNewEvents];
     return cal.calendarIdentifier;
@@ -103,6 +133,14 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 
 - (BOOL)removeEvent:(EKEvent *)event span:(EKSpan)span error:(NSError **)error {
     return [_store removeEvent:event span:span commit:YES error:error];
+}
+
+- (BOOL)toggleReminderCompleted:(EKReminder *)reminder error:(NSError **)error {
+    reminder.completed = !reminder.completed;
+    if (reminder.completed) {
+        reminder.completionDate = [NSDate date];
+    }
+    return [_store saveReminder:reminder commit:YES error:error];
 }
 
 - (void)updateSelectedCalendarsForIdentifier:(NSString *)identifier selected:(BOOL)selected {
@@ -149,6 +187,14 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     return filteredEventsForDate;
 }
 
+- (NSDictionary *)filteredRemindersForDate {
+    __block NSDictionary *filteredRemindersForDate;
+    dispatch_sync(_queueIsol, ^{
+        filteredRemindersForDate = [self->_filteredRemindersForDate copy];
+    });
+    return filteredRemindersForDate;
+}
+
 - (void)fetchEvents {
     //os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
     MoDate startMoDate = [self.delegate fetchStartDate];
@@ -156,6 +202,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     dispatch_async(_queueWork, ^{
         @autoreleasepool {
             [self _fetchEventsWithStartDate:startMoDate endDate:endMoDate refetch:NO];
+            [self _fetchRemindersWithStartDate:startMoDate endDate:endMoDate];
         }
     });
 }
@@ -171,6 +218,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         @autoreleasepool {
             [self _fetchSourcesAndCalendars];
             [self _fetchEventsWithStartDate:startMoDate endDate:endMoDate refetch:YES];
+            [self _fetchRemindersWithStartDate:startMoDate endDate:endMoDate];
         }
     });
 }
@@ -349,6 +397,102 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     
     [_eventsForDate addEntriesFromDictionary:eventsForDate];
     [self _filterEvents];
+}
+
+- (void)_fetchRemindersWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate
+{
+    if (!self.reminderAccessGranted) return;
+
+    NSDate *startDate = MakeNSDateWithDate(startMoDate, _cal);
+    NSDate *endDate   = MakeNSDateWithDate(endMoDate,   _cal);
+
+    // Fetch incomplete reminders with due dates in the range.
+    NSPredicate *predicate = [_store predicateForIncompleteRemindersWithDueDateStarting:startDate ending:endDate calendars:nil];
+
+    // fetchRemindersMatchingPredicate: is asynchronous. Use a semaphore
+    // to wait for results since we are already on a background queue.
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    __block NSArray<EKReminder *> *fetchedReminders = nil;
+
+    [_store fetchRemindersMatchingPredicate:predicate completion:^(NSArray<EKReminder *> *reminders) {
+        fetchedReminders = reminders;
+        dispatch_semaphore_signal(sema);
+    }];
+
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+
+    // Also fetch completed reminders for the date range so we can show
+    // recently completed items.
+    NSPredicate *completedPredicate = [_store predicateForCompletedRemindersWithCompletionDateStarting:startDate ending:endDate calendars:nil];
+    __block NSArray<EKReminder *> *completedReminders = nil;
+    dispatch_semaphore_t sema2 = dispatch_semaphore_create(0);
+
+    [_store fetchRemindersMatchingPredicate:completedPredicate completion:^(NSArray<EKReminder *> *reminders) {
+        completedReminders = reminders;
+        dispatch_semaphore_signal(sema2);
+    }];
+
+    dispatch_semaphore_wait(sema2, DISPATCH_TIME_FOREVER);
+
+    // Build a dictionary mapping dates to arrays of ReminderInfo.
+    NSMutableDictionary *remindersForDate = [NSMutableDictionary new];
+
+    void (^processReminder)(EKReminder *) = ^(EKReminder *reminder) {
+        NSDateComponents *dueDateComponents = reminder.dueDateComponents;
+        if (!dueDateComponents) return;
+
+        NSDate *dueDate = [self->_cal dateFromComponents:dueDateComponents];
+        if (!dueDate) return;
+
+        dueDate = [self->_cal startOfDayForDate:dueDate];
+
+        ReminderInfo *info = [ReminderInfo new];
+        info.reminder = reminder;
+        info.isCompleted = reminder.completed;
+
+        if (remindersForDate[dueDate] == nil) {
+            remindersForDate[dueDate] = [NSMutableArray new];
+        }
+        [remindersForDate[dueDate] addObject:info];
+    };
+
+    for (EKReminder *reminder in fetchedReminders) {
+        processReminder(reminder);
+    }
+    for (EKReminder *reminder in completedReminders) {
+        processReminder(reminder);
+    }
+
+    // Sort reminders: incomplete first, then by title.
+    for (NSDate *date in remindersForDate) {
+        [remindersForDate[date] sortUsingComparator:^NSComparisonResult(ReminderInfo *r1, ReminderInfo *r2) {
+            if (r1.isCompleted != r2.isCompleted) {
+                return r1.isCompleted ? NSOrderedDescending : NSOrderedAscending;
+            }
+            NSString *title1 = r1.reminder.title ?: @"";
+            NSString *title2 = r2.reminder.title ?: @"";
+            return [title1 compare:title2];
+        }];
+    }
+
+    // Deduplicate: a reminder might appear in both incomplete and completed
+    // fetches if its state changed. Keep only unique calendar item identifiers.
+    for (NSDate *date in remindersForDate) {
+        NSMutableArray *deduped = [NSMutableArray new];
+        NSMutableSet *seenIDs = [NSMutableSet new];
+        for (ReminderInfo *info in remindersForDate[date]) {
+            NSString *rid = info.reminder.calendarItemIdentifier;
+            if (rid && ![seenIDs containsObject:rid]) {
+                [seenIDs addObject:rid];
+                [deduped addObject:info];
+            }
+        }
+        remindersForDate[date] = deduped;
+    }
+
+    dispatch_async(_queueIsol, ^{
+        self->_filteredRemindersForDate = [remindersForDate copy];
+    });
 }
 
 - (void)_filterEvents {

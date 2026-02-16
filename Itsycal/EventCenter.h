@@ -12,7 +12,7 @@
 
 // =========================================================================
 // EventCenter
-// Provide calendar and event data.
+// Provide calendar, event, and reminder data.
 // =========================================================================
 
 @protocol EventCenterDelegate;
@@ -21,6 +21,9 @@
 
 // Did the user grant calendar access?
 @property (nonatomic, readonly) BOOL calendarAccessGranted;
+
+// Did the user grant reminders access?
+@property (nonatomic, readonly) BOOL reminderAccessGranted;
 
 @property (nonatomic, readonly) NSString *defaultCalendarIdentifier;
 
@@ -35,6 +38,9 @@
 
 - (BOOL)removeEvent:(EKEvent *)event span:(EKSpan)span error:(NSError **)error;
 
+// Toggle a reminder's completion status.
+- (BOOL)toggleReminderCompleted:(EKReminder *)reminder error:(NSError **)error;
+
 - (void)fetchEvents;
 
 // Sorted array of 2 types: NSStrings and CalendarInfo objects.
@@ -47,6 +53,10 @@
 // A dict that maps dates to an array of EventInfo objects.
 // Only contains events for user's selected (i.e. filtered) calendars.
 - (NSDictionary *)filteredEventsForDate;
+
+// A dict that maps dates to an array of ReminderInfo objects.
+// Only contains incomplete reminders with due dates.
+- (NSDictionary *)filteredRemindersForDate;
 
 // When the user selects/unselects calendars in Prefs, we update
 // the list of selected calendars.
@@ -94,4 +104,14 @@
 @property (nonatomic) BOOL isEndDate;   // event ends, but doesn't start, on this date
 @property (nonatomic) BOOL isAllDay;    // event is all-day, or spans across this date
 @property (nonatomic) NSURL *zoomURL;   // Zoom, Google Meet, Microsoft Teams, etc. URL
+@end
+
+// =========================================================================
+// ReminderInfo
+// =========================================================================
+
+@interface ReminderInfo : NSObject
+
+@property (nonatomic) EKReminder *reminder; // The reminder
+@property (nonatomic) BOOL isCompleted;     // Whether the reminder is completed
 @end
