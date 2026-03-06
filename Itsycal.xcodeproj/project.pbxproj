@@ -346,7 +346,6 @@
 				TargetAttributes = {
 					9242A55B1A82A136005AA4B3 = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = HFT3T55WND;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.HardenedRuntime = {
@@ -613,6 +612,7 @@
 				CURRENT_PROJECT_VERSION = 2350;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = HFT3T55WND;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = 6XWJB5YJ6J;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -641,6 +641,7 @@
 				CURRENT_PROJECT_VERSION = 2350;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = HFT3T55WND;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = 6XWJB5YJ6J;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
