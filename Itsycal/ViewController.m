@@ -787,12 +787,11 @@
     }
 	BOOL itemIsVisible = !!(_statusItem.button.window.occlusionState & NSWindowOcclusionStateVisible);
 	if (statusItemScreen == nil || !itemIsVisible) {
-		// Either we didn't find a screen the item belongs to, or
-		// it's been hidden by either the system, or a menubar
-		// management app. In that case, we anchor the window to
-		// the right of the screen. The rest of the code will take
-		// care of clamping both the x and y positions within the
-		// screen.
+		// Either we didn't find a screen the item belongs to, or it's
+        // been hidden by either the system, or a menubar management
+        // app. In that case, we anchor the window to the right of the
+        // screen. The rest of the code will take care of clamping both
+        // the x and y positions within the screen.
 		statusItemScreen = [NSScreen mainScreen];
 		statusItemFrame.origin.x = NSMaxX(statusItemScreen.frame);
 	}
