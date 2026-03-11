@@ -41,6 +41,7 @@
         kThemePreference:      @0, // System=0, Light=1, Dark=2
         kHideIcon:             @(NO),
         kShowLocation:         @(NO),
+        kShowContactEvents:    @(YES), // Show contact anniversaries and birthdays
         kDoNotDrawOutlineAroundCurrentMonth: @(NO)
     }];
     

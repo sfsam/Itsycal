@@ -187,9 +187,18 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [menu removeAllItems];
     if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
         [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
+    
+    EventInfo *info = self.events[_tv.clickedRow];
+    
+    // Contact events (birthdays, anniversaries, etc.) don't have calendar references
+    // so we only show the "Copy" option for them
+    if (info.isContactEvent) {
+        [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
+        return;
+    }
+    
     [menu addItemWithTitle:NSLocalizedString(@"Open Calendar", nil) action:@selector(showCalendarApp:) keyEquivalent:@""];
     [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
-    EventInfo *info = self.events[_tv.clickedRow];
     if (info.event.calendar.allowsContentModifications) {
         NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete…", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
         item.tag = _tv.clickedRow;
@@ -254,6 +263,17 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (row == -1 || [self tableView:_tv isGroupRow:row] ||
         [self tableView:_tv isEmptyEventRow:row]) return;
 
+    // Get the cell to check if it's a contact event
+    AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
+    if (!cell) return; // should never happen
+    
+    // Don't show popup for contact events (birthdays, anniversaries, etc.)
+    // since they don't have a reference in the calendar
+    if (cell.eventInfo.isContactEvent) {
+        [_popover close];
+        return;
+    }
+
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         self->_popover = [NSPopover new];
@@ -261,10 +281,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self->_popover.behavior = NSPopoverBehaviorTransient;
         self->_popover.animates = NO;
     });
-    
-    AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
-    
-    if (!cell) return; // should never happen
     
     AgendaPopoverVC *popoverVC = (AgendaPopoverVC *)_popover.contentViewController;
     [popoverVC setNsCal:self.nsCal];
@@ -299,6 +315,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (void)showCalendarApp:(id)sender
 {
     if (_tv.clickedRow == -1 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
+
+    // Get the event info to check if it's a contact event
+    id obj = self.events[_tv.clickedRow];
+    if ([obj isKindOfClass:[EventInfo class]]) {
+        EventInfo *info = (EventInfo *)obj;
+        // Don't open Calendar app for contact events (birthdays, anniversaries, etc.)
+        // since they don't have a reference in the calendar
+        if (info.isContactEvent) return;
+    }
 
     // Work backwards from the clicked row (which is an EventInfo row)
     // to find the parent NSDate row. We do this instead of just getting
@@ -400,8 +425,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (BOOL)tableView:(NSTableView *)tableView isEmptyEventRow:(NSInteger)row
 {
     id obj = self.events[row];
-    return ([obj isKindOfClass:[EventInfo class]] &&
-            ((EventInfo *)obj).event == nil);
+    if (![obj isKindOfClass:[EventInfo class]]) {
+        return NO;
+    }
+    EventInfo *info = (EventInfo *)obj;
+    // Empty rows are EventInfo with nil event AND not a contact event
+    // Contact events have nil event but ARE valid events to display
+    return (info.event == nil && !info.isContactEvent);
 }
 
 - (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
@@ -508,8 +538,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
         intervalFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
     }
 
-    // There are no events on this date.
-    if (!info.event) {
+    // There are no events on this date (but contact events have nil event!)
+    if (!info.event && !info.isContactEvent) {
         cell.eventInfo = nil;
         cell.dim = YES;
         cell.titleTextField.stringValue = NSLocalizedString(@"", @"");
@@ -532,7 +562,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
     
     cell.eventInfo = info;
 
-    if (info && info.event) {
+    // Handle contact events (which have nil event property)
+    if (info.isContactEvent && info.event == nil) {
+        title = info.contactEventTitle ? info.contactEventTitle : @"";
+        // Contact events are always all-day, so no duration
+    }
+    else if (info && info.event) {
         if (info.event.title) {
             // If title has newlines or stretches of whitespace, compress
             // them into a single space.

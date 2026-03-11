@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3660790F2F413E99008E7160 /* ContactEventManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3660790E2F413E99008E7160 /* ContactEventManager.m */; };
+		366079112F413FA4008E7160 /* ContactEventManager.h in Sources */ = {isa = PBXBuildFile; fileRef = 366079102F413F5B008E7160 /* ContactEventManager.h */; };
 		920B5D7C2B4D10B6004A10D3 /* DatePickerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 920B5D7B2B4D10B6004A10D3 /* DatePickerVC.m */; };
 		920D6D51266A83AC00498E19 /* MoLoginItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 920D6D4F266A83AC00498E19 /* MoLoginItem.m */; };
 		921181C722E0192A00591FDA /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 921181C622E0192A00591FDA /* Colors.xcassets */; };
@@ -75,6 +77,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3660790E2F413E99008E7160 /* ContactEventManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactEventManager.m; sourceTree = "<group>"; };
+		366079102F413F5B008E7160 /* ContactEventManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactEventManager.h; sourceTree = "<group>"; };
 		6F21F6F31F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.strings"; sourceTree = "<group>"; };
 		6F21F6F41F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		6F21F6F51F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -257,7 +261,9 @@
 				9261EB2E1EEF447500DCFFC4 /* Themer.h */,
 				9261EB2F1EEF447500DCFFC4 /* Themer.m */,
 				92B28CCD210BD17500485AE2 /* Sizer.h */,
+				366079102F413F5B008E7160 /* ContactEventManager.h */,
 				92B28CCE210BD17500485AE2 /* Sizer.m */,
+				3660790E2F413E99008E7160 /* ContactEventManager.m */,
 			);
 			path = Itsycal;
 			sourceTree = "<group>";
@@ -346,7 +352,6 @@
 				TargetAttributes = {
 					9242A55B1A82A136005AA4B3 = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = HFT3T55WND;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.HardenedRuntime = {
@@ -439,6 +444,8 @@
 				9261EB301EEF447500DCFFC4 /* Themer.m in Sources */,
 				922B6BBB1A85E0EC00DEA9CD /* MoTextField.m in Sources */,
 				9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */,
+				366079112F413FA4008E7160 /* ContactEventManager.h in Sources */,
+				3660790F2F413E99008E7160 /* ContactEventManager.m in Sources */,
 				9242A5901A82A40B005AA4B3 /* MoDate.m in Sources */,
 				925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */,
 				921E62D01E26B9D2007B029F /* PrefsAppearanceVC.m in Sources */,
@@ -613,6 +620,7 @@
 				CURRENT_PROJECT_VERSION = 2350;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = HFT3T55WND;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = YW2WSR36CA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -641,6 +649,7 @@
 				CURRENT_PROJECT_VERSION = 2350;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = HFT3T55WND;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = YW2WSR36CA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

@@ -22,6 +22,7 @@
 #import "MoVFLHelper.h"
 #import "MoUtils.h"
 #import "Sparkle/SUUpdater.h"
+#import "ContactEventManager.h"
 
 @implementation ViewController
 {
@@ -131,6 +132,21 @@
     [self createStatusItem];
     
     _ec = [[EventCenter alloc] initWithCalendar:_nsCal delegate:self];
+    
+    // Request contacts access if showing contact events is enabled
+    BOOL showContactEvents = [[NSUserDefaults standardUserDefaults] boolForKey:kShowContactEvents];
+    
+    if (showContactEvents) {
+        NSLog(@"[ViewController] Requesting contacts access...");
+        [_ec.contactEventManager requestContactsAccessWithCompletion:^(BOOL granted) {
+            if (granted) {
+                // Refetch events to include contact events
+                [self->_ec refetchAll];
+            }
+        }];
+    } else {
+        NSLog(@"[ViewController] Contact events are disabled in preferences");
+    }
     
     TooltipViewController *tooltipVC = [TooltipViewController new];
     tooltipVC.tooltipDelegate = self;
@@ -939,13 +955,22 @@
     }
     else {
         EventInfo *info = _agendaVC.events[row];
-        MoDate startDate = MakeDateWithNSDate(info.event.startDate, _nsCal);
-        MoDate endDate   = MakeDateWithNSDate(info.event.endDate,   _nsCal);
-        // Fixup for endDates that are at midnight
-        if ([info.event.endDate compare:[_nsCal startOfDayForDate:info.event.endDate]] == NSOrderedSame) {
-            endDate = AddDaysToDate(-1, endDate);
+        
+        // Handle contact events (which have nil event property)
+        if (info.isContactEvent && info.event == nil) {
+            MoDate contactDate = MakeDateWithNSDate(info.contactEventDate, _nsCal);
+            NSColor *highlightColor = info.contactEventColor ?: [NSColor purpleColor];
+            [_moCal highlightCellsFromDate:contactDate toDate:contactDate withColor:highlightColor];
         }
-        [_moCal highlightCellsFromDate:startDate toDate:endDate withColor:info.event.calendar.color];
+        else if (info.event) {
+            MoDate startDate = MakeDateWithNSDate(info.event.startDate, _nsCal);
+            MoDate endDate   = MakeDateWithNSDate(info.event.endDate,   _nsCal);
+            // Fixup for endDates that are at midnight
+            if ([info.event.endDate compare:[_nsCal startOfDayForDate:info.event.endDate]] == NSOrderedSame) {
+                endDate = AddDaysToDate(-1, endDate);
+            }
+            [_moCal highlightCellsFromDate:startDate toDate:endDate withColor:info.event.calendar.color];
+        }
     }
 }
 
@@ -1047,7 +1072,16 @@
     if (!useColor) return @[];
     NSMutableOrderedSet *colors = [NSMutableOrderedSet new];
     for (EventInfo *eventInfo in events) {
-        [colors addObject:eventInfo.event.calendar.color];
+        NSColor *eventColor;
+        if (eventInfo.isContactEvent && eventInfo.event == nil) {
+            // Use the contact event color
+            eventColor = eventInfo.contactEventColor ?: [NSColor purpleColor];
+        } else if (eventInfo.event) {
+            eventColor = eventInfo.event.calendar.color;
+        } else {
+            continue; // Skip if we can't determine a color
+        }
+        [colors addObject:eventColor];
         if (colors.count == 3) break;
     }
     switch (colors.count) {
@@ -1159,6 +1193,9 @@
     BOOL show = NO;
     NSArray *todayEvents = [self eventsForDate:[self todayDate]];
     for (EventInfo *info in todayEvents) {
+        // Skip contact events - they don't have zoom URLs
+        if (info.isContactEvent || !info.event) continue;
+        
         // Show meeting indicator 15 minutes prior to event start until end.
         NSDate *fifteenMinutesPrior = [_nsCal dateByAddingUnit:NSCalendarUnitSecond value:-(15 * 60 + 30) toDate:info.event.startDate options:0];
         if (info.zoomURL && !info.event.isAllDay
@@ -1377,9 +1414,25 @@
         [self updateMenubarIcon];
         [self updateTimer];
     }];
+    
+    // Contact events preference changed notification
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"ContactEventsPreferenceChanged" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        BOOL showContactEvents = [[NSUserDefaults standardUserDefaults] boolForKey:kShowContactEvents];
+        if (showContactEvents && !self->_ec.contactEventManager.contactsAccessGranted) {
+            // Request contacts access if not already granted
+            [self->_ec.contactEventManager requestContactsAccessWithCompletion:^(BOOL granted) {
+                if (granted) {
+                    [self->_ec refetchAll];
+                }
+            }];
+        } else {
+            // Just refetch events (will include or exclude contact events based on preference)
+            [self->_ec refetchAll];
+        }
+    }];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat, kShowContactEvents]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -1403,6 +1456,20 @@
     }
     else if ([keyPath isEqualToString:kClockFormat]) {
         [self clockFormatDidChange];
+    }
+    else if ([keyPath isEqualToString:kShowContactEvents]) {
+        BOOL showContactEvents = [[NSUserDefaults standardUserDefaults] boolForKey:kShowContactEvents];
+        if (showContactEvents && !_ec.contactEventManager.contactsAccessGranted) {
+            // Request contacts access if not already granted
+            [_ec.contactEventManager requestContactsAccessWithCompletion:^(BOOL granted) {
+                if (granted) {
+                    [self->_ec refetchAll];
+                }
+            }];
+        } else {
+            // Just refetch events (will include or exclude contact events based on preference)
+            [_ec refetchAll];
+        }
     }
 }
 

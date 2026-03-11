@@ -9,6 +9,8 @@
 #import <os/log.h>
 #import <AppKit/NSWorkspace.h>
 #import "EventCenter.h"
+#import "ContactEventManager.h"
+#import "Itsycal.h"
 
 // NSUserDefaults key for array of selected calendar IDs.
 static NSString *kSelectedCalendars = @"SelectedCalendars";
@@ -24,6 +26,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSDictionary         *_filteredEventsForDate;  // _queueIsol
     NSMutableIndexSet    *_previouslyFetchedDates; // _queueWork
     NSArray              *_sourcesAndCalendars;    // _queueIsol2
+    ContactEventManager  *_contactEventManager;
     dispatch_queue_t      _queueWork;
     dispatch_queue_t      _queueIsol;
     dispatch_queue_t      _queueIsol2;
@@ -55,10 +58,24 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         _eventsForDate  = [NSMutableDictionary new];
         _filteredEventsForDate = [NSDictionary new];
         _previouslyFetchedDates = [NSMutableIndexSet new];
-        _queueWork = dispatch_queue_create("com.mowglii.Itsycal.queueWork", DISPATCH_QUEUE_SERIAL);
-        _queueIsol = dispatch_queue_create("com.mowglii.Itsycal.queueIsol", DISPATCH_QUEUE_SERIAL);
-        _queueIsol2 = dispatch_queue_create("com.mowglii.Itsycal.queueIsol2", DISPATCH_QUEUE_SERIAL);
+        
+        // Create queues with explicit QoS to avoid priority inversions
+        // Use UTILITY QoS for event fetching - users expect to see events reasonably quickly
+        dispatch_queue_attr_t queueAttr = dispatch_queue_attr_make_with_qos_class(
+            DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, 0);
+        _queueWork = dispatch_queue_create("com.mowglii.Itsycal.queueWork", queueAttr);
+        
+        // Isolation queues are accessed from main thread, so use USER_INITIATED QoS
+        queueAttr = dispatch_queue_attr_make_with_qos_class(
+            DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, 0);
+        _queueIsol = dispatch_queue_create("com.mowglii.Itsycal.queueIsol", queueAttr);
+        _queueIsol2 = dispatch_queue_create("com.mowglii.Itsycal.queueIsol2", queueAttr);
+        
         _store = [EKEventStore new];
+        
+        // Initialize contact event manager
+        _contactEventManager = [[ContactEventManager alloc] initWithCalendar:calendar];
+        
         if (@available(macOS 14.0, *)) {
             [_store requestFullAccessToEventsWithCompletion:requestCompletionHandler];
         } else {
@@ -80,6 +97,10 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 
 #pragma mark - Public (main thread)
 
+- (ContactEventManager *)contactEventManager {
+    return _contactEventManager;
+}
+
 - (BOOL)calendarAccessGranted {
     if (@available(macOS 14.0, *)) {
         return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusFullAccess;
@@ -95,6 +116,15 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 
 - (EKEvent *)newEvent {
     return [EKEvent eventWithEventStore:_store];
+}
+
+- (EKEvent *)refreshEvent:(EKEvent *)event {
+    // If the event's eventStore is nil, refresh it from our store
+    if (!event || !event.eventIdentifier) {
+        return event;
+    }
+    // Get a fresh copy of the event from the store
+    return [_store eventWithIdentifier:event.eventIdentifier];
 }
 
 - (BOOL)saveEvent:(EKEvent *)event error:(NSError **)error {
@@ -332,18 +362,57 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     }
     
     // eventsForDate is a dict that maps dates to an array of EventInfo objects.
-    // Sort those arrays so that AllDay events are first, the sort by startTime.
-    // All-day events are sorted by calendar title with real all-day events before
-    // spanning all-day events.
+    // We'll sort after merging contact events to avoid sorting twice.
+    
+    // Merge in contact events if enabled
+    BOOL showContactEvents = [[NSUserDefaults standardUserDefaults] boolForKey:kShowContactEvents];
+    
+    if (showContactEvents && _contactEventManager.contactsAccessGranted) {
+        // Use a semaphore to wait for the async contact events fetch
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        __block NSDictionary *contactEvents = nil;
+        
+        [_contactEventManager contactEventsFromDate:startMoDate toDate:endMoDate completion:^(NSDictionary<NSDate *,NSArray<EventInfo *> *> * _Nonnull events) {
+            contactEvents = events;
+            dispatch_semaphore_signal(semaphore);
+        }];
+        
+        // Wait for the async operation to complete
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        
+        // Merge contact events into eventsForDate
+        for (NSDate *date in contactEvents) {
+            if (eventsForDate[date] == nil) {
+                eventsForDate[date] = [NSMutableArray new];
+            }
+            [eventsForDate[date] addObjectsFromArray:contactEvents[date]];
+        }
+    } else if (showContactEvents) {
+        NSLog(@"[EventCenter] Contact events enabled but access not granted yet");
+    }
+    
+    // Sort all events: contact events first (alphabetically), then calendar events
+    // Calendar events are sorted with all-day first (by calendar title), then by start time
     for (NSDate *date in eventsForDate) {
         [eventsForDate[date] sortUsingComparator:^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
-            if (e1.event.isAllDay && e2.event.isAllDay)  { return [e1.event.calendar.title compare:e2.event.calendar.title];}
-            else if (e1.event.isAllDay && !e2.event.isAllDay) { return NSOrderedAscending; }
-            else if (!e1.event.isAllDay && e2.event.isAllDay) { return NSOrderedDescending; }
-            else if (e1.isAllDay && e2.isAllDay) { return [e1.event.calendar.title compare:e2.event.calendar.title];}
-            else if (e1.isAllDay) { return NSOrderedAscending;  }
-            else if (e2.isAllDay) { return NSOrderedDescending; }
-            else { return [e1.event.startDate compare:e2.event.startDate]; }
+            // Contact events always come first
+            if (e1.isContactEvent && !e2.isContactEvent) {
+                return NSOrderedAscending;
+            } else if (!e1.isContactEvent && e2.isContactEvent) {
+                return NSOrderedDescending;
+            } else if (e1.isContactEvent && e2.isContactEvent) {
+                // Both are contact events, sort alphabetically by title
+                return [e1.contactEventTitle compare:e2.contactEventTitle];
+            } else {
+                // Both are calendar events, sort by all-day status then time
+                if (e1.event.isAllDay && e2.event.isAllDay)  { return [e1.event.calendar.title compare:e2.event.calendar.title];}
+                else if (e1.event.isAllDay && !e2.event.isAllDay) { return NSOrderedAscending; }
+                else if (!e1.event.isAllDay && e2.event.isAllDay) { return NSOrderedDescending; }
+                else if (e1.isAllDay && e2.isAllDay) { return [e1.event.calendar.title compare:e2.event.calendar.title];}
+                else if (e1.isAllDay) { return NSOrderedAscending;  }
+                else if (e2.isAllDay) { return NSOrderedDescending; }
+                else { return [e1.event.startDate compare:e2.event.startDate]; }
+            }
         }];
     }
     
@@ -357,7 +426,17 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSArray *selectedCalendars = [[NSUserDefaults standardUserDefaults] arrayForKey:kSelectedCalendars];
     for (NSDate *date in _eventsForDate) {
         for (EventInfo *info in _eventsForDate[date]) {
-            if ([selectedCalendars containsObject:info.event.calendar.calendarIdentifier]) {
+            // Include contact events (which have nil event property) if contact events are enabled
+            BOOL isContactEvent = info.isContactEvent && info.event == nil;
+            BOOL showContactEvents = [[NSUserDefaults standardUserDefaults] boolForKey:kShowContactEvents];
+            
+            if (isContactEvent && showContactEvents) {
+                if (filteredEventsForDate[date] == nil) {
+                    filteredEventsForDate[date] = [NSMutableArray new];
+                }
+                [filteredEventsForDate[date] addObject:info];
+            }
+            else if (!isContactEvent && [selectedCalendars containsObject:info.event.calendar.calendarIdentifier]) {
                 if (filteredEventsForDate[date] == nil) {
                     filteredEventsForDate[date] = [NSMutableArray new];
                 }
