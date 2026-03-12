@@ -75,6 +75,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		92CF00001A82A136005AA4B3 /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = SOURCE_ROOT; };
 		6F21F6F31F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.strings"; sourceTree = "<group>"; };
 		6F21F6F41F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		6F21F6F51F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -207,6 +208,7 @@
 			children = (
 				9242A55E1A82A136005AA4B3 /* Itsycal */,
 				9242A55D1A82A136005AA4B3 /* Products */,
+				92CF00001A82A136005AA4B3 /* Local.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -346,8 +348,6 @@
 				TargetAttributes = {
 					9242A55B1A82A136005AA4B3 = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = HFT3T55WND;
-						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.HardenedRuntime = {
 								enabled = 1;
@@ -605,6 +605,7 @@
 		};
 		9242A57A1A82A136005AA4B3 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92CF00001A82A136005AA4B3 /* Local.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Itsycal/Itsycal.entitlements;
@@ -612,7 +613,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2350;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = HFT3T55WND;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -632,6 +632,7 @@
 		};
 		9242A57B1A82A136005AA4B3 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92CF00001A82A136005AA4B3 /* Local.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Itsycal/Itsycal.entitlements;
@@ -640,7 +641,6 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 2350;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = HFT3T55WND;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
