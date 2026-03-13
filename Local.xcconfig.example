@@ -13,11 +13,15 @@
 //   Set DEVELOPMENT_TEAM to your 10-character team ID (found at
 //   developer.apple.com under Membership) and use Manual signing.
 
-// Option 1 - Automatic signing
+// Option 1 - No Apple Developer account (local builds only)
 DEVELOPMENT_TEAM =
+CODE_SIGN_IDENTITY = -
 CODE_SIGN_STYLE = Automatic
+ENABLE_HARDENED_RUNTIME = NO
 
-// Option 2 - Your Developer account
+// Option 2 - Your Apple Developer account
 // Uncomment the lines below and comment out the lines above.
 // DEVELOPMENT_TEAM = XXXXXXXXXX
+// CODE_SIGN_IDENTITY = Apple Development
 // CODE_SIGN_STYLE = Manual
+// ENABLE_HARDENED_RUNTIME = YES
