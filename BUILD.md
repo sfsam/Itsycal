@@ -1,3 +1,11 @@
+### Code Signing
+
+This project uses a Local.xcconfig file to handle code signing so that signing info stays out of the repo (`project.pbxproj`). Copy `Local.xcconfig.example` to `Local.xcconfig`. You can leave the defaults for local development. See the comments in the file for more info.
+
+```
+cp Local.xcconfig.example Local.xcconfig
+```
+
 ### Build and Notarize
 
 1. In Xcode, choose Product > Archive
