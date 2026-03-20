@@ -14,6 +14,9 @@
 
 - (void)tableView:(nonnull MoTableView *)tableView didHoverOverRow:(NSInteger)row;
 
+@optional
+- (BOOL)tableView:(nonnull MoTableView *)tableView handleKeyDown:(nonnull NSEvent *)event;
+
 @end
 
 @interface MoTableView : NSTableView

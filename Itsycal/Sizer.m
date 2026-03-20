@@ -27,6 +27,14 @@ Sizer *SizePref = nil;
     return shared;
 }
 
+- (void)setNilValueForKey:(NSString *)key {
+    if ([key isEqualToString:@"sizePreference"]) {
+        _sizePreference = SizePreferenceSmall;
+        return;
+    }
+    [super setNilValueForKey:key];
+}
+
 - (void)setSizePreference:(SizePreference)sizePreference {
     _sizePreference = sizePreference;
     // Post notification on the main thread because the selector,
@@ -48,7 +56,7 @@ Sizer *SizePref = nil;
 }
 
 - (CGFloat)cellSize {
-    return SML_MED_LRG(23, 28, 32);
+    return SML_MED_LRG(26, 32, 36);
 }
 
 - (CGFloat)cellTextFieldVerticalSpace {
@@ -60,7 +68,7 @@ Sizer *SizePref = nil;
 }
 
 - (CGFloat)cellRadius {
-    return SML_MED_LRG(2, 3, 4);
+    return SML_MED_LRG(5, 6, 7);
 }
 
 - (CGFloat)tooltipWidth {

@@ -52,6 +52,7 @@
 
 - (void)setIsToday:(BOOL)isToday {
     _isToday = isToday;
+    [self updateTextColor];
     [self setNeedsDisplay:YES];
 }
 
@@ -88,32 +89,35 @@
 }
 
 - (void)updateTextColor {
-    self.textField.textColor = self.isInCurrentMonth ? Theme.currentMonthTextColor : Theme.noncurrentMonthTextColor;
+    if (self.isToday) {
+        self.textField.textColor = [NSColor whiteColor];
+    } else if (self.isInCurrentMonth) {
+        self.textField.textColor = Theme.currentMonthTextColor;
+    } else {
+        self.textField.textColor = Theme.noncurrentMonthTextColor;
+    }
 }
 
 - (void)drawRect:(NSRect)dirtyRect
 {
     CGFloat radius = SizePref.cellRadius;
+    NSRect r = NSInsetRect(self.bounds, 3, 3);
     if (self.isToday) {
-        [Theme.todayCellColor set];
-        NSRect r = NSInsetRect(self.bounds, 3, 3);
-        NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius];
-        [p setLineWidth:2];
-        [p stroke];
+        // Filled rounded rect for today — not a full circle,
+        // so wider numbers like "28" fit comfortably.
+        NSRect todayRect = NSInsetRect(self.bounds, 4, 4);
+        [Theme.todayCellColor setFill];
+        [[NSBezierPath bezierPathWithRoundedRect:todayRect xRadius:radius yRadius:radius] fill];
     }
     else if (self.isSelected) {
-        [Theme.selectedCellColor set];
-        NSRect r = NSInsetRect(self.bounds, 3, 3);
-        NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius];
-        [p setLineWidth:2];
-        [p stroke];
+        // Subtle filled background for selection
+        [[NSColor.labelColor colorWithAlphaComponent:0.12] setFill];
+        [[NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius] fill];
     }
     else if (self.isHovered) {
-        [Theme.hoveredCellColor set];
-        NSRect r = NSInsetRect(self.bounds, 3, 3);
-        NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius];
-        [p setLineWidth:2];
-        [p stroke];
+        // Very subtle hover fill
+        [[NSColor.labelColor colorWithAlphaComponent:0.06] setFill];
+        [[NSBezierPath bezierPathWithRoundedRect:r xRadius:radius yRadius:radius] fill];
     }
     if (self.dotColors) {
         CGFloat sz = SizePref.cellSize;

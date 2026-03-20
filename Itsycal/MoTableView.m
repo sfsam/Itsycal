@@ -73,6 +73,16 @@
 // stackoverflow.com/a/30594427/111418
 - (void)drawContextMenuHighlightForRow:(NSInteger)row {}
 
+- (void)keyDown:(NSEvent *)theEvent
+{
+    if ([self.delegate respondsToSelector:@selector(tableView:handleKeyDown:)]) {
+        if ([self.delegate tableView:self handleKeyDown:theEvent]) {
+            return;
+        }
+    }
+    [super keyDown:theEvent];
+}
+
 #pragma mark -
 #pragma mark NSTrackingArea
 

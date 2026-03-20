@@ -217,6 +217,10 @@
     else if (keyChar == 'j' && cmdFlag) {
         if (![_agendaVC clickFirstActiveZoomButton]) NSBeep();
     }
+    else if (keyChar == NSTabCharacter && noFlags) {
+        // Tab from calendar moves focus to the agenda table view.
+        [self.itsycalWindow makeFirstResponder:_agendaVC.tv];
+    }
     else {
         [super keyDown:theEvent];
     }
@@ -496,7 +500,7 @@
     _statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
     _statusItem.button.target = self;
     _statusItem.button.action = @selector(statusItemClicked:);
-    [_statusItem.button sendActionOn:NSEventMaskLeftMouseDown];
+    [_statusItem.button sendActionOn:NSEventMaskLeftMouseDown | NSEventMaskRightMouseDown];
     [(NSButtonCell *)_statusItem.button.cell setHighlightsBy:NSNoCellMask];
 
     // Remember item position in menubar. (@pskowronek (Github))
@@ -850,6 +854,15 @@
 
 - (void)statusItemClicked:(id)sender
 {
+    // Right-click: show context menu with Quit.
+    if ([NSApp currentEvent].type == NSEventTypeRightMouseDown) {
+        NSMenu *menu = [[NSMenu alloc] init];
+        [menu addItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@""];
+        _statusItem.menu = menu;
+        [_statusItem.button performClick:nil];
+        _statusItem.menu = nil;
+        return;
+    }
     // If there are multiple screens and Itsycal is showing
     // on one and the user clicks the menu item on another,
     // instead of a regular toggle, we want Itsycal to hide
@@ -910,7 +923,12 @@
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    [self positionItsycalWindow];
+    // Only reposition if the window is not yet visible (during initial show).
+    // While the window is visible, let it grow/shrink from its top-left point
+    // naturally, without jumping to re-center under the status item.
+    if (!([self.itsycalWindow occlusionState] & NSWindowOcclusionStateVisible)) {
+        [self positionItsycalWindow];
+    }
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
@@ -1033,6 +1051,37 @@
     }
 }
 
+- (void)agendaWantsToEditEvent:(EKEvent *)event
+{
+    // Close popover if it's already showing.
+    if (_newEventPopover.shown) {
+        [_newEventPopover close];
+    }
+
+    // Was prefs window open in the past and then hidden when
+    // app became inactive? This prevents it from reappearing.
+    [self.prefsWC close];
+
+    [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+
+    if (!_newEventPopover) {
+        _newEventPopover = [NSPopover new];
+        _newEventPopover.animates = NO;
+        _newEventPopover.delegate = self;
+    }
+    EventViewController *eventVC = [EventViewController new];
+    eventVC.ec = _ec;
+    eventVC.enclosingPopover = _newEventPopover;
+    eventVC.cal = _nsCal;
+    eventVC.title = @"";
+    eventVC.calSelectedDate = event.startDate;
+    eventVC.editingEvent = event;
+
+    _newEventPopover.contentViewController = eventVC;
+    _newEventPopover.appearance = NSApp.effectiveAppearance;
+    [_newEventPopover showRelativeToRect:_btnAdd.bounds ofView:_btnAdd preferredEdge:NSRectEdgeMinX];
+}
+
 - (void)agendaShowCalendarAppAtDate:(NSDate *)date
 {
     [self showCalendarAppAtDate:date dayView:YES];
@@ -1040,7 +1089,17 @@
 
 - (CGFloat)agendaMaxPossibleHeight
 {
-    return NSHeight(_screenFrame) - NSHeight(_moCal.frame) - 140;
+    CGFloat screenH = NSHeight(_screenFrame);
+    // Hard limit: don't let window extend beyond the screen.
+    CGFloat screenLimit = screenH - NSHeight(_moCal.frame) - 140;
+    // Preferred limit: keep window compact (~60-65% of screen).
+    CGFloat compactLimit = screenH * 0.35;
+    return MIN(screenLimit, compactLimit);
+}
+
+- (void)agendaWantsToReturnFocusToCalendar
+{
+    [self.itsycalWindow makeFirstResponder:_moCal];
 }
 
 #pragma mark -
@@ -1074,6 +1133,14 @@
         case 2: return @[colors[0], colors[1]];
         case 3: return @[colors[0], colors[1], colors[2]];
         default: return nil;
+    }
+}
+
+- (void)calendar:(MoCalendar *)cal didDropEventWithIdentifier:(NSString *)eventId onDate:(MoDate)date
+{
+    BOOL success = [_ec moveEventWithIdentifier:eventId toDate:date];
+    if (!success) {
+        NSBeep();
     }
 }
 

@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 mowglii.com. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "MoCalendar.h"
 #import "MoCalCell.h"
 #import "MoCalGrid.h"
@@ -35,6 +36,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     NSColor *_highlightColor;
     MoCalResizeHandle *_resizeHandle;
     NSInteger _repeatCount;
+    CGFloat _scrollAccumulator;
+    NSTimeInterval _lastScrollMonthChange;
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
@@ -88,6 +91,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     numRows = MIN(MAX(numRows, 6), 10);
     
     _dateGrid = [[MoCalGrid alloc] initWithRows:numRows columns:7 horizontalMargin:6 verticalMargin:6];
+    _dateGrid.wantsLayer = YES;
     _weekGrid = [[MoCalGrid alloc] initWithRows:numRows columns:1 horizontalMargin:0 verticalMargin:6];
     _dowGrid  = [[MoCalGrid alloc] initWithRows:1 columns:7 horizontalMargin:6 verticalMargin:0];
 
@@ -121,6 +125,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleLocaleNotification:) name:NSCurrentLocaleDidChangeNotification object:nil];
 
+    [self registerForDraggedTypes:@[@"com.mowglii.itsycal.event"]];
+
     _weekStartDOW = 0;  // 0=Sunday, 1=Monday...
     _highlightedDOWs = DOWMaskNone;
     _showWeeks    = NO;
@@ -140,7 +146,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 - (BOOL)isOpaque
 {
-    return YES;
+    return NO;
 }
 
 #pragma mark
@@ -607,6 +613,40 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 - (void)scrollWheel:(NSEvent *)theEvent
 {
+    // Reset accumulator when scrolling ends.
+    if (theEvent.phase == NSEventPhaseEnded || theEvent.phase == NSEventPhaseCancelled) {
+        _scrollAccumulator = 0;
+        return;
+    }
+
+    // Handle vertical scroll for month navigation.
+    CGFloat deltaY = theEvent.scrollingDeltaY;
+    if (fabs(deltaY) > fabs(theEvent.scrollingDeltaX)) {
+        // Cooldown: ignore scroll deltas for 0.4s after a month change
+        // to prevent trackpad momentum from rapidly flipping months.
+        NSTimeInterval now = [NSProcessInfo processInfo].systemUptime;
+        if (now - _lastScrollMonthChange < 0.4) {
+            return;
+        }
+        _scrollAccumulator += deltaY;
+        if (_scrollAccumulator > 20) {
+            [self showPreviousMonth:nil];
+            _scrollAccumulator = 0;
+            _lastScrollMonthChange = now;
+            [[NSHapticFeedbackManager defaultPerformer]
+                performFeedbackPattern:NSHapticFeedbackPatternAlignment
+                 performanceTime:NSHapticFeedbackPerformanceTimeDefault];
+        } else if (_scrollAccumulator < -20) {
+            [self showNextMonth:nil];
+            _scrollAccumulator = 0;
+            _lastScrollMonthChange = now;
+            [[NSHapticFeedbackManager defaultPerformer]
+                performFeedbackPattern:NSHapticFeedbackPatternAlignment
+                 performanceTime:NSHapticFeedbackPerformanceTimeDefault];
+        }
+        return;
+    }
+
     // Left/right swipes change to previous/next months.
     if (theEvent.phase == NSEventPhaseBegan) {
         CGFloat dX = theEvent.scrollingDeltaX;
@@ -623,7 +663,61 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
             }];
         }
     }
-    [super scrollWheel:theEvent];
+}
+
+#pragma mark -
+#pragma mark Drag and drop
+
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
+{
+    NSPasteboard *pb = sender.draggingPasteboard;
+    if ([pb stringForType:@"com.mowglii.itsycal.event"]) {
+        return NSDragOperationMove;
+    }
+    return NSDragOperationNone;
+}
+
+- (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender
+{
+    NSPoint location = [_dateGrid convertPoint:[sender draggingLocation] fromView:nil];
+    MoCalCell *cell = [_dateGrid cellAtPoint:location];
+    if (cell && cell != _hoveredCell) {
+        _hoveredCell.isHovered = NO;
+        _hoveredCell = cell;
+        _hoveredCell.isHovered = YES;
+    }
+    return cell ? NSDragOperationMove : NSDragOperationNone;
+}
+
+- (void)draggingExited:(id<NSDraggingInfo>)sender
+{
+    _hoveredCell.isHovered = NO;
+    _hoveredCell = nil;
+}
+
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
+{
+    NSPasteboard *pb = sender.draggingPasteboard;
+    NSString *eventId = [pb stringForType:@"com.mowglii.itsycal.event"];
+    if (!eventId) return NO;
+
+    NSPoint location = [_dateGrid convertPoint:[sender draggingLocation] fromView:nil];
+    MoCalCell *cell = [_dateGrid cellAtPoint:location];
+    if (!cell) return NO;
+
+    _hoveredCell.isHovered = NO;
+    _hoveredCell = nil;
+
+    if ([self.delegate respondsToSelector:@selector(calendar:didDropEventWithIdentifier:onDate:)]) {
+        [self.delegate calendar:self didDropEventWithIdentifier:eventId onDate:cell.date];
+    }
+    return YES;
+}
+
+- (void)draggingEnded:(id<NSDraggingInfo>)sender
+{
+    _hoveredCell.isHovered = NO;
+    _hoveredCell = nil;
 }
 
 #pragma mark
@@ -701,6 +795,13 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     
     if (CompareDates(monthDate, self.monthDate) != 0) {
         _monthDate = monthDate;
+
+        // Add a smooth crossfade transition when the month changes.
+        CATransition *transition = [CATransition animation];
+        transition.type = kCATransitionFade;
+        transition.duration = 0.15;
+        [_dateGrid.layer addAnimation:transition forKey:@"monthTransition"];
+
         [self updateCalendar];
         didChangeMonth = YES;
     }
@@ -773,9 +874,6 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    [Theme.mainBackgroundColor set];
-    NSRectFill(self.bounds);
-    
     CGFloat radius = SizePref.cellRadius + 3;
     CGFloat sz = SizePref.cellSize;
     if (self.highlightedDOWs) {
@@ -814,8 +912,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     if (!self.doNotDrawOutlineAroundCurrentMonth) {
         NSBezierPath *outlinePath = [self bezierPathWithStartCell:_monthStartCell endCell:_monthEndCell radius:radius inset:0 useRects:NO];
 
-        [Theme.currentMonthOutlineColor set];
-        [outlinePath setLineWidth:1.5];
+        [[Theme.currentMonthOutlineColor colorWithAlphaComponent:0.15] set];
+        [outlinePath setLineWidth:1];
         [outlinePath stroke];
     }
 }

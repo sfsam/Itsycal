@@ -6,17 +6,42 @@
 //  Copyright (c) 2014 mowglii.com. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "ItsycalWindow.h"
 #import "Themer.h"
 
 static const CGFloat kMinimumSpaceBetweenWindowAndScreenEdge = 10;
 static const CGFloat kArrowHeight  = 8;
-static const CGFloat kCornerRadius = 10;
+static const CGFloat kCornerRadius = 12;
 static const CGFloat kBorderWidth  = 1;
 static const CGFloat kMarginWidth  = 0;
 static const CGFloat kWindowTopMargin    = kCornerRadius + kBorderWidth + kArrowHeight;
 static const CGFloat kWindowSideMargin   = kMarginWidth  + kBorderWidth;
 static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
+
+// Convert NSBezierPath to CGPathRef for use as a layer mask.
+static CGPathRef CGPathCreateFromNSBezierPath(NSBezierPath *bezierPath) {
+    CGMutablePathRef path = CGPathCreateMutable();
+    NSInteger n = bezierPath.elementCount;
+    for (NSInteger i = 0; i < n; i++) {
+        NSPoint points[3];
+        switch ([bezierPath elementAtIndex:i associatedPoints:points]) {
+            case NSBezierPathElementMoveTo:
+                CGPathMoveToPoint(path, NULL, points[0].x, points[0].y);
+                break;
+            case NSBezierPathElementLineTo:
+                CGPathAddLineToPoint(path, NULL, points[0].x, points[0].y);
+                break;
+            case NSBezierPathElementCurveTo:
+                CGPathAddCurveToPoint(path, NULL, points[0].x, points[0].y, points[1].x, points[1].y, points[2].x, points[2].y);
+                break;
+            case NSBezierPathElementClosePath:
+                CGPathCloseSubpath(path);
+                break;
+        }
+    }
+    return path;
+}
 
 @interface ItsycalWindowFrameView : NSView
 @property (nonatomic, assign) CGFloat arrowMidX;
@@ -153,34 +178,46 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
 // =========================================================================
 
 @implementation ItsycalWindowFrameView
-
-- (void)drawRect:(NSRect)dirtyRect
 {
-    // Draw the window background with the little arrow
-    // at the top.
-    
+    NSVisualEffectView *_vibrancyView;
+}
+
+- (instancetype)initWithFrame:(NSRect)frameRect
+{
+    self = [super initWithFrame:frameRect];
+    if (self) {
+        [self setupVibrancyView];
+    }
+    return self;
+}
+
+- (void)setupVibrancyView
+{
+    _vibrancyView = [[NSVisualEffectView alloc] initWithFrame:self.bounds];
+    _vibrancyView.material = NSVisualEffectMaterialMenu;
+    _vibrancyView.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+    _vibrancyView.state = NSVisualEffectStateActive;
+    _vibrancyView.translatesAutoresizingMaskIntoConstraints = NO;
+    _vibrancyView.wantsLayer = YES;
+    [self addSubview:_vibrancyView positioned:NSWindowBelow relativeTo:nil];
+    [NSLayoutConstraint activateConstraints:@[
+        [_vibrancyView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+        [_vibrancyView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+        [_vibrancyView.topAnchor constraintEqualToAnchor:self.topAnchor],
+        [_vibrancyView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+    ]];
+}
+
+- (NSBezierPath *)windowShapePath
+{
     // The rectangular part of frame view must be inset and
     // shortened to make room for the border and arrow.
     NSRect rect = NSInsetRect(self.bounds, kBorderWidth, kBorderWidth);
     rect.size.height -= kArrowHeight;
-    
-    // Do we need to draw the whole window?
-    // If dirtyRect is inside the body of the window, we can just fill it.
-    NSRect bodyRect = NSInsetRect(rect, 1, kCornerRadius);
-    if (NSContainsRect(bodyRect, dirtyRect)) {
-        [Theme.mainBackgroundColor setFill];
-        NSRectFill(dirtyRect);
-        return;
-    }
-    
-    // We need to draw the whole window.
 
-    [[NSColor clearColor] set];
-    NSRectFill(self.bounds);
-    
     NSBezierPath *rectPath = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:kCornerRadius yRadius:kCornerRadius];
-    
-    // Append the arrow to the body if its right ege is inside
+
+    // Append the arrow to the body if its right edge is inside
     // the right edge of the body (taking into account the corner
     // radius). This accounts for the edge-case where Itsycal is
     // all the way to the right in the menu bar. This is possible
@@ -198,14 +235,38 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
         [arrowPath relativeCurveToPoint:NSMakePoint(kArrowHeight + curveOffset, -kArrowHeight) controlPoint1:NSMakePoint(curveOffset, 0) controlPoint2:NSMakePoint(kArrowHeight, -kArrowHeight)];
         [rectPath appendBezierPath:arrowPath];
     }
+    return rectPath;
+}
+
+- (void)updateVibrancyMask
+{
+    NSBezierPath *shapePath = [self windowShapePath];
+    CAShapeLayer *maskLayer = [CAShapeLayer layer];
+    maskLayer.frame = self.bounds;
+    CGPathRef cgPath = CGPathCreateFromNSBezierPath(shapePath);
+    maskLayer.path = cgPath;
+    CGPathRelease(cgPath);
+    _vibrancyView.layer.mask = maskLayer;
+}
+
+- (void)layout
+{
+    [super layout];
+    [self updateVibrancyMask];
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    // Clear the entire frame so the vibrancy view shows through.
+    [[NSColor clearColor] set];
+    NSRectFill(self.bounds);
+
+    // Draw only the border stroke around the window shape.
+    // The vibrancy view provides the translucent background.
+    NSBezierPath *shapePath = [self windowShapePath];
     [Theme.windowBorderColor setStroke];
-#ifdef DEBUG
-    [NSColor.greenColor setStroke];
-#endif
-    [rectPath setLineWidth:2*kBorderWidth];
-    [rectPath stroke];
-    [Theme.mainBackgroundColor setFill];
-    [rectPath fill];
+    [shapePath setLineWidth:2*kBorderWidth];
+    [shapePath stroke];
 }
 
 @end

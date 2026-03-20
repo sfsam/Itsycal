@@ -101,5 +101,9 @@ typedef enum : NSInteger {
 // - Otherwise, there are up to 3 dots with the given colors.
 - (NSArray<NSColor *> *)dotColorsForDate:(MoDate)date useColor:(BOOL)useColor;
 
+@optional
+// Called when the user drops an event (dragged from the agenda) onto a calendar cell.
+- (void)calendar:(MoCalendar *)cal didDropEventWithIdentifier:(NSString *)eventId onDate:(MoDate)date;
+
 @end
 

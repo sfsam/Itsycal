@@ -290,7 +290,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [super viewWillAppear];
 
     self.view.window.defaultButtonCell = _saveButton.cell;
-    
+
     // If self.calSelectedDate is today, the initialStart is set to
     // the next whole hour. Otherwise, 8am of self.calselectedDate.
     // Default duration is same as setting in Calendar.app.
@@ -309,7 +309,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
                                       value:newEventDuration
                                      toDate:initialStart
                                     options:0];
-    
+
     // Initial values for form fields.
     _title.stringValue = @"";
     _location.stringValue = @"";
@@ -330,7 +330,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [_repEndPopup selectItemAtIndex:0];  // 'Never' selected
     [_alertPopup selectItemAtIndex:0];   // 'None' selected
     _saveButton.enabled  = NO;
-    
+
     // Function to make colored dots for calendar popup.
     NSImage* (^coloredDot)(NSColor *) = ^NSImage* (NSColor *color) {
         return [NSImage imageWithSize:NSMakeSize(8, 8) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
@@ -339,7 +339,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
             return YES;
         }];
     };
-    
+
     // Populate calendar popup.
     NSString *defaultCalendarIdentifier = [self.ec defaultCalendarIdentifier];
     NSArray *sourcesAndCalendars = [self.ec sourcesAndCalendars];
@@ -372,10 +372,123 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
             }
         }
     }
-    
+
     // Populate alert popup AFTER calendar popup since its
     // contents depends on which calendar is selected.
     [self populateAlertPopup];
+
+    // If editing an existing event, populate fields from it.
+    if (self.editingEvent) {
+        [self populateFieldsFromEditingEvent];
+    }
+}
+
+- (void)populateFieldsFromEditingEvent
+{
+    EKEvent *event = self.editingEvent;
+
+    // Title
+    _title.stringValue = event.title ?: @"";
+
+    // Location
+    _location.stringValue = event.location ?: @"";
+
+    // URL
+    _url.stringValue = event.URL ? event.URL.absoluteString : @"";
+
+    // Notes
+    _notes.string = event.notes ?: @"";
+
+    // All-day
+    _allDayCheckbox.state = event.isAllDay ? NSControlStateValueOn : NSControlStateValueOff;
+    if (event.isAllDay) {
+        _startDate.datePickerElements = NSDatePickerElementFlagYearMonthDay;
+        _endDate.datePickerElements   = NSDatePickerElementFlagYearMonthDay;
+    } else {
+        _startDate.datePickerElements = NSDatePickerElementFlagYearMonthDay | NSDatePickerElementFlagHourMinute;
+        _endDate.datePickerElements   = NSDatePickerElementFlagYearMonthDay | NSDatePickerElementFlagHourMinute;
+    }
+
+    // Start/end dates
+    _startDate.dateValue = event.startDate;
+    _endDate.minDate     = event.startDate;
+    _endDate.dateValue   = event.endDate;
+    _repEndDate.minDate  = event.startDate;
+    _repEndDate.dateValue = event.endDate;
+
+    // Calendar — select the event's calendar in the popup.
+    NSArray *sourcesAndCalendars = [self.ec sourcesAndCalendars];
+    for (id obj in sourcesAndCalendars) {
+        if ([obj isKindOfClass:[CalendarInfo class]]) {
+            CalendarInfo *calInfo = obj;
+            if ([calInfo.calendar.calendarIdentifier isEqualToString:event.calendar.calendarIdentifier]) {
+                NSInteger tag = [sourcesAndCalendars indexOfObject:obj];
+                [_calPopup selectItemWithTag:tag];
+                break;
+            }
+        }
+    }
+
+    // Recurrence rule
+    if (event.hasRecurrenceRules && event.recurrenceRules.count > 0) {
+        EKRecurrenceRule *rule = event.recurrenceRules.firstObject;
+        NSInteger repIndex = 0;
+        switch (rule.frequency) {
+            case EKRecurrenceFrequencyDaily:
+                repIndex = 1; // Every Day
+                break;
+            case EKRecurrenceFrequencyWeekly:
+                repIndex = (rule.interval == 2) ? 3 : 2; // Every 2 Weeks or Every Week
+                break;
+            case EKRecurrenceFrequencyMonthly:
+                repIndex = 4; // Every Month
+                break;
+            case EKRecurrenceFrequencyYearly:
+                repIndex = 5; // Every Year
+                break;
+        }
+        [_repPopup selectItemAtIndex:repIndex];
+        _repEndLabel.hidden = (repIndex == 0);
+        _repEndPopup.hidden = (repIndex == 0);
+
+        if (rule.recurrenceEnd && rule.recurrenceEnd.endDate) {
+            [_repEndPopup selectItemAtIndex:1]; // 'On Date'
+            _repEndDate.dateValue = rule.recurrenceEnd.endDate;
+            _repEndDate.hidden = NO;
+        } else {
+            [_repEndPopup selectItemAtIndex:0]; // 'Never'
+            _repEndDate.hidden = YES;
+        }
+    }
+
+    // Alert — repopulate for the correct all-day state, then try to match.
+    [self populateAlertPopup];
+    if (event.alarms.count > 0) {
+        NSTimeInterval offset = event.alarms.firstObject.relativeOffset;
+        NSInteger numOffsets = 0;
+        const NSTimeInterval *offsets = nil;
+        if (event.isAllDay) {
+            numOffsets = kAlertAllDayNumOffsets;
+            offsets = kAlertAllDayRelativeOffsets;
+        } else {
+            numOffsets = kAlertRegularNumOffsets;
+            offsets = kAlertRegularRelativeOffsets;
+        }
+        for (NSInteger i = 0; i < numOffsets; i++) {
+            if (offsets[i] == offset) {
+                [_alertPopup selectItemAtIndex:i];
+                break;
+            }
+        }
+    }
+
+    // Update notes scroll view height for pre-populated text.
+    [self textDidChange:[NSNotification notificationWithName:NSTextDidChangeNotification object:_notes]];
+
+    // Enable save button since we have a title, update button label.
+    NSString *trimmedTitle = [_title.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    _saveButton.enabled = ![trimmedTitle isEqualToString:@""];
+    _saveButton.title = NSLocalizedString(@"Save Changes", @"");
 }
 
 - (void)viewDidAppear
@@ -522,15 +635,15 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     // Set startDate and endDate.
     NSDate *startDate = _startDate.dateValue;
     NSDate *endDate   = _endDate.dateValue;
-    
+
     // Get the calendar.
     NSInteger index = _calPopup.selectedItem.tag;
     NSArray *sourcesAndCalendars = [self.ec sourcesAndCalendars];
     CalendarInfo *calInfo = sourcesAndCalendars[index];
 
-    // Create the event.
+    // Use existing event in edit mode, or create a new one.
     NSCharacterSet *whitespaceSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-    EKEvent *event  = [self.ec newEvent];
+    EKEvent *event = self.editingEvent ?: [self.ec newEvent];
     event.title     = [_title.stringValue stringByTrimmingCharactersInSet:whitespaceSet];
     event.location  = [_location.stringValue stringByTrimmingCharactersInSet:whitespaceSet];
     event.URL       = [NSURL URLWithString:[_url.stringValue stringByTrimmingCharactersInSet:whitespaceSet]];
@@ -541,6 +654,8 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     NSString *notes = [_notes.string stringByTrimmingCharactersInSet:whitespaceSet];
     if (![notes isEqualToString:@""]) {
         event.notes = notes;
+    } else {
+        event.notes = nil;
     }
     // !Important! timeZone MUST be nil if it is an allDay event.
     // If you set timeZone after setting allDay, the start and end dates
@@ -548,7 +663,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     // Alternatively, we could have set timeZone before setting allDay
     // because setting allDay == YES sets timeZone to nil.
     event.timeZone  = event.isAllDay ? nil : [NSTimeZone localTimeZone];
-    
+
     // Recurrence rule.
     EKRecurrenceFrequency frequency;
     NSInteger interval = 1;
@@ -583,15 +698,21 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     if (repIndex != 0) {
         recurrence = [[EKRecurrenceRule alloc] initRecurrenceWithFrequency:frequency interval:interval end:recurrenceEnd];
     }
+    // In edit mode, clear existing recurrence rules before setting new ones.
+    if (self.editingEvent) {
+        for (EKRecurrenceRule *existingRule in [event.recurrenceRules copy]) {
+            [event removeRecurrenceRule:existingRule];
+        }
+    }
     if (recurrence != nil) {
         event.recurrenceRules = @[recurrence];
     }
-    
+
     // Remove default alert(s) set on this event. We only add the
     // alert the user has selected - which may be the default alert
     // since we tried to set it in -populateAlertPopup. This avoids
     // having the default alert set twice.
-    for (EKAlarm *alarm in event.alarms) {
+    for (EKAlarm *alarm in [event.alarms copy]) {
         [event removeAlarm:alarm];
     }
     // Set the alert that was selected in the alert popup.
@@ -608,10 +729,17 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
             [event addAlarm:[EKAlarm alarmWithRelativeOffset:offset]];
         }
     }
-    
+
     // Commit the event.
     NSError *error = NULL;
-    BOOL saved = [self.ec saveEvent:event error:&error];
+    BOOL saved;
+    if (self.editingEvent) {
+        // For recurring events, default to editing only this occurrence.
+        EKSpan span = event.hasRecurrenceRules ? EKSpanThisEvent : EKSpanThisEvent;
+        saved = [self.ec updateEvent:event span:span error:&error];
+    } else {
+        saved = [self.ec saveEvent:event error:&error];
+    }
     if (saved == NO && error != nil) {
         [[NSAlert alertWithError:error] runModal];
     }
