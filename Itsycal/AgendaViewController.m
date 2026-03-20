@@ -44,6 +44,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @interface AgendaPopoverVC : NSViewController
 @property (nonatomic, weak) NSCalendar *nsCal;
 @property (nonatomic) NSButton *btnDelete;
+@property (nonatomic) NSButton *btnEdit;
 - (void)populateWithEventInfo:(EventInfo *)info;
 - (void)scrollToTopAndFlashScrollers;
 - (NSSize)size;
@@ -59,10 +60,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @implementation AgendaViewController
 {
     NSPopover *_popover;
+    NSMutableArray<NSNumber *> *_cachedRowHeights;
+    CGFloat _lastKnownWidth;
+    NSInteger _lastHoveredRow;
 }
 
 - (void)loadView
 {
+    _lastHoveredRow = -1;
+
     // View controller content view
     NSView *v = [NSView new];
 
@@ -78,7 +84,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _tv.intercellSpacing = NSMakeSize(0, 0);
     _tv.backgroundColor = NSColor.clearColor;
     _tv.floatsGroupRows = YES;
-    _tv.refusesFirstResponder = YES;
+    _tv.refusesFirstResponder = NO;
     _tv.dataSource = self;
     _tv.delegate = self;
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 110000
@@ -87,7 +93,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
 #endif
     [_tv addTableColumn:[[NSTableColumn alloc] initWithIdentifier:kColumnIdentifier]];
-    
+    [_tv setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
+    _tv.draggingDestinationFeedbackStyle = NSTableViewDraggingDestinationFeedbackStyleNone;
+
     // Calendars enclosing scrollview
     NSScrollView *tvContainer = [NSScrollView new];
     tvContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -111,12 +119,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)viewDidLayout
 {
-    // Calculate height of view based on _tv row heights.
+    // Calculate height of view based on cached row heights.
     // We set the view's height using preferredContentSize.
-    NSInteger rows = [_tv numberOfRows];
+    [self ensureRowHeightsCached];
     CGFloat height = 0;
-    for (NSInteger row = 0; row < rows; ++row) {
-        height += [self tableView:_tv heightOfRow:row];
+    for (NSNumber *h in _cachedRowHeights) {
+        height += h.doubleValue;
     }
     if ([self.identifier isEqualToString:@"AgendaVC"]) {
         // Limit height so everything fits on the screen.
@@ -164,12 +172,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     if (_showLocation != showLocation) {
         _showLocation = showLocation;
+        _cachedRowHeights = nil;
         [self reloadData];
     }
 }
 
 - (void)reloadData
 {
+    _cachedRowHeights = nil;
+    _lastHoveredRow = -1;
     [_tv reloadData];
     [_tv scrollRowToVisible:0];
     [[_tv enclosingScrollView] flashScrollers];
@@ -191,6 +202,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
     EventInfo *info = self.events[_tv.clickedRow];
     if (info.event.calendar.allowsContentModifications) {
+        NSMenuItem *editItem = [menu addItemWithTitle:NSLocalizedString(@"Edit…", nil) action:@selector(editEvent:) keyEquivalent:@""];
+        editItem.tag = _tv.clickedRow;
         NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete…", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
         item.tag = _tv.clickedRow;
     }
@@ -276,14 +289,18 @@ static NSString *kEventCellIdentifier = @"EventCell";
         popoverVC.btnDelete.action = @selector(deleteEvent:);
         unichar backspaceKey = NSBackspaceCharacter;
         popoverVC.btnDelete.keyEquivalent = [NSString stringWithCharacters:&backspaceKey length:1];
+
+        popoverVC.btnEdit.tag = row;
+        popoverVC.btnEdit.target = self;
+        popoverVC.btnEdit.action = @selector(editEvent:);
     }
-    
+
     NSRect positionRect = NSInsetRect([_tv rectOfRow:row], 8, 0);
     [_popover setAppearance:NSApp.effectiveAppearance];
     [_popover showRelativeToRect:positionRect ofView:_tv preferredEdge:NSRectEdgeMinX];
     [_popover setContentSize:popoverVC.size];
     [popoverVC scrollToTopAndFlashScrollers];
-    
+
     // Prevent popoverVC's _note from eating key presses (like esc and delete).
     [popoverVC.view.window makeFirstResponder:popoverVC.btnDelete];
 }
@@ -368,24 +385,69 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return v;
 }
 
-- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
+- (void)ensureRowHeightsCached
 {
+    // Invalidate cache if table width changed significantly.
+    CGFloat currentWidth = NSWidth(_tv.frame);
+    if (_cachedRowHeights && fabs(currentWidth - _lastKnownWidth) > 0.5) {
+        _cachedRowHeights = nil;
+    }
+    if (_cachedRowHeights) return;
+
     // Keep a cell around for measuring event cell height.
     static AgendaDateCell *dateCell = nil;
     static AgendaEventCell *eventCell = nil;
-    
+
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         eventCell = [AgendaEventCell new];
         dateCell = [AgendaDateCell new];
-        dateCell.frame = NSMakeRect(0, 0, NSWidth(self->_tv.frame), 999); // only width is important here
+        dateCell.frame = NSMakeRect(0, 0, NSWidth(self->_tv.frame), 999);
         dateCell.dayTextField.integerValue = 21;
     });
-    
+
+    _lastKnownWidth = currentWidth;
+    NSInteger rows = self.events ? (NSInteger)self.events.count : 0;
+    _cachedRowHeights = [NSMutableArray arrayWithCapacity:rows];
+    dateCell.frame = NSMakeRect(0, 0, currentWidth, 999);
+    CGFloat dateCellHeight = dateCell.fittingSize.height;
+
+    for (NSInteger row = 0; row < rows; row++) {
+        id obj = self.events[row];
+        CGFloat height;
+        if ([obj isKindOfClass:[EventInfo class]]) {
+            eventCell.frame = NSMakeRect(0, 0, currentWidth, 999);
+            [self populateEventCell:eventCell withInfo:obj];
+            height = eventCell.fittingSize.height;
+        } else {
+            height = dateCellHeight;
+        }
+        [_cachedRowHeights addObject:@(height)];
+    }
+}
+
+- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
+{
+    [self ensureRowHeightsCached];
+    if (_cachedRowHeights && row < (NSInteger)_cachedRowHeights.count) {
+        return _cachedRowHeights[row].doubleValue;
+    }
+    // Fallback: compute directly (should not normally be reached).
+    static AgendaDateCell *dateCell = nil;
+    static AgendaEventCell *eventCell = nil;
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        eventCell = [AgendaEventCell new];
+        dateCell = [AgendaDateCell new];
+        dateCell.frame = NSMakeRect(0, 0, NSWidth(self->_tv.frame), 999);
+        dateCell.dayTextField.integerValue = 21;
+    });
+
     CGFloat height = dateCell.fittingSize.height;
     id obj = self.events[row];
     if ([obj isKindOfClass:[EventInfo class]]) {
-        eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
+        eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999);
         [self populateEventCell:eventCell withInfo:obj];
         height = eventCell.fittingSize.height;
     }
@@ -406,7 +468,33 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
 {
-    return NO; // disable selection
+    // Allow selecting event rows but not group (date header) rows or empty event rows.
+    if ([self tableView:tableView isGroupRow:row]) return NO;
+    if ([self tableView:tableView isEmptyEventRow:row]) return NO;
+    return YES;
+}
+
+#pragma mark -
+#pragma mark Drag source
+
+- (id<NSPasteboardWriting>)tableView:(NSTableView *)tableView pasteboardWriterForRow:(NSInteger)row
+{
+    // Only allow dragging real event rows from modifiable calendars.
+    if ([self tableView:tableView isGroupRow:row]) return nil;
+    if ([self tableView:tableView isEmptyEventRow:row]) return nil;
+    id obj = self.events[row];
+    if (![obj isKindOfClass:[EventInfo class]]) return nil;
+    EventInfo *info = (EventInfo *)obj;
+    if (!info.event) return nil;
+    if (!info.event.calendar.allowsContentModifications) return nil;
+    NSPasteboardItem *item = [NSPasteboardItem new];
+    [item setString:info.event.eventIdentifier forType:@"com.mowglii.itsycal.event"];
+    return item;
+}
+
+- (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes
+{
+    session.animatesToStartingPositionsOnCancelOrFail = YES;
 }
 
 - (void)tableView:(MoTableView *)tableView didHoverOverRow:(NSInteger)hoveredRow
@@ -419,19 +507,105 @@ static NSString *kEventCellIdentifier = @"EventCell";
         }
         hoveredRow = -1;
     }
-    for (NSInteger row = 0; row < [_tv numberOfRows]; row++) {
-        if (![self tableView:_tv isGroupRow:row]) {
-            BOOL isEmptyEventRow = [self tableView:_tv isEmptyEventRow:row];
-            BOOL isHovered = (row == hoveredRow && !isEmptyEventRow);
-            AgendaRowView *rowView = [_tv rowViewAtRow:row makeIfNecessary:NO];
-            rowView.isHovered = isHovered;
-            if (showPopoverOnHover && isHovered) {
+    // Only update the previously hovered row and the newly hovered row
+    // instead of iterating all rows.
+    if (_lastHoveredRow != hoveredRow) {
+        if (_lastHoveredRow >= 0 && _lastHoveredRow < [_tv numberOfRows]) {
+            AgendaRowView *oldRowView = [_tv rowViewAtRow:_lastHoveredRow makeIfNecessary:NO];
+            oldRowView.isHovered = NO;
+        }
+        if (hoveredRow >= 0 && hoveredRow < [_tv numberOfRows]) {
+            AgendaRowView *newRowView = [_tv rowViewAtRow:hoveredRow makeIfNecessary:NO];
+            newRowView.isHovered = YES;
+            if (showPopoverOnHover) {
                 [self showPopoverForRow:hoveredRow];
             }
         }
+        _lastHoveredRow = hoveredRow;
     }
     if (self.delegate && [self.delegate respondsToSelector:@selector(agendaHoveredOverRow:)]) {
         [self.delegate agendaHoveredOverRow:hoveredRow];
+    }
+}
+
+#pragma mark -
+#pragma mark Keyboard navigation
+
+- (BOOL)tableView:(MoTableView *)tableView handleKeyDown:(NSEvent *)event
+{
+    NSString *chars = [event charactersIgnoringModifiers];
+    if (chars.length != 1) return NO;
+    unichar keyChar = [chars characterAtIndex:0];
+    NSUInteger flags = [event modifierFlags];
+    BOOL noModifiers = !(flags & (NSEventModifierFlagCommand | NSEventModifierFlagShift | NSEventModifierFlagOption | NSEventModifierFlagControl));
+
+    // Return/Enter: show popover for the selected row
+    if (noModifiers && (keyChar == NSCarriageReturnCharacter || keyChar == NSEnterCharacter)) {
+        NSInteger selectedRow = [_tv selectedRow];
+        if (selectedRow >= 0) {
+            [self showPopoverForRow:selectedRow];
+        }
+        return YES;
+    }
+
+    // Escape: deselect and return focus to calendar
+    if (keyChar == 0x1B) { // Escape
+        [_tv deselectAll:nil];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToReturnFocusToCalendar)]) {
+            [self.delegate agendaWantsToReturnFocusToCalendar];
+        }
+        return YES;
+    }
+
+    // Tab: return focus to calendar
+    if (noModifiers && keyChar == NSTabCharacter) {
+        [_tv deselectAll:nil];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToReturnFocusToCalendar)]) {
+            [self.delegate agendaWantsToReturnFocusToCalendar];
+        }
+        return YES;
+    }
+
+    // Up arrow: move selection to previous selectable (event) row
+    if (noModifiers && keyChar == NSUpArrowFunctionKey) {
+        [self moveSelectionByDirection:-1];
+        return YES;
+    }
+
+    // Down arrow: move selection to next selectable (event) row
+    if (noModifiers && keyChar == NSDownArrowFunctionKey) {
+        [self moveSelectionByDirection:1];
+        return YES;
+    }
+
+    return NO;
+}
+
+- (void)moveSelectionByDirection:(NSInteger)direction
+{
+    NSInteger rowCount = [_tv numberOfRows];
+    if (rowCount == 0) return;
+
+    NSInteger selectedRow = [_tv selectedRow];
+    NSInteger candidate = selectedRow;
+
+    // If nothing selected, start from top or bottom depending on direction.
+    if (candidate == -1) {
+        candidate = (direction > 0) ? -1 : rowCount;
+    }
+
+    // Walk in the given direction to find the next selectable row.
+    while (YES) {
+        candidate += direction;
+        if (candidate < 0 || candidate >= rowCount) {
+            // Reached the boundary; keep current selection (or none).
+            return;
+        }
+        if ([self tableView:_tv shouldSelectRow:candidate]) {
+            [_tv selectRowIndexes:[NSIndexSet indexSetWithIndex:candidate] byExtendingSelection:NO];
+            [_tv scrollRowToVisible:candidate];
+            return;
+        }
     }
 }
 
@@ -457,6 +631,29 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToDeleteEvent:)]) {
         EventInfo *info = self.events[row];
         [self.delegate agendaWantsToDeleteEvent:info.event];
+    }
+}
+
+#pragma mark -
+#pragma mark Edit event
+
+- (void)editEvent:(id)sender
+{
+    NSInteger row = -1;
+    if ([sender isKindOfClass:[NSButton class]]) {
+        NSButton *button = (NSButton *)sender;
+        button.bordered = YES;
+        button.bordered = NO;
+        row = button.tag;
+    } else if ([sender isKindOfClass:[NSMenuItem class]]) {
+        row = [(NSMenuItem *)sender tag];
+    }
+    if (row < 0) return;
+    // Close the popover before notifying the delegate.
+    [_popover close];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToEditEvent:)]) {
+        EventInfo *info = self.events[row];
+        [self.delegate agendaWantsToEditEvent:info.event];
     }
 }
 
@@ -615,12 +812,22 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)dimEventsIfNecessary
 {
-    // If the user has the window showing, reload the agenda cells.
-    // This will redraw the events, dimming if necessary.
-    // This also enables/disables zoom buttons if necessary
-    // depending on whether a virtual meeting is in progress.
+    // If the user has the window showing, update only visible event cells.
+    // This redraws events to dim past ones and enables/disables zoom
+    // buttons depending on whether a virtual meeting is in progress.
     if (self.view.window.isVisible) {
-        [_tv reloadData];
+        NSRange visibleRange = [_tv rowsInRect:[_tv visibleRect]];
+        for (NSUInteger i = 0; i < visibleRange.length; i++) {
+            NSInteger row = (NSInteger)(visibleRange.location + i);
+            if (row >= (NSInteger)self.events.count) break;
+            id obj = self.events[row];
+            if ([obj isKindOfClass:[EventInfo class]]) {
+                AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
+                if (cell) {
+                    [self populateEventCell:cell withInfo:obj];
+                }
+            }
+        }
     }
 }
 
@@ -659,7 +866,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)flag
 {
-    [Theme.mainBackgroundColor set];
+    [[NSColor clearColor] set];
     NSRectFill(slotRect);
 }
 
@@ -675,16 +882,33 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @implementation AgendaRowView
 
 - (void)drawBackgroundInRect:(NSRect)dirtyRect {
-    if (self.isHovered) {
+    NSRect rect = NSInsetRect(self.bounds, 8, 1);
+    if (self.isSelected) {
+        // Draw a stronger highlight for keyboard selection.
+        [[Theme.agendaHoverColor colorWithAlphaComponent:0.6] set];
+        [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:8 yRadius:8] fill];
+    } else if (self.isHovered) {
         [Theme.agendaHoverColor set];
-        NSRect rect = NSInsetRect(self.bounds, 8, 1);
-        [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:5 yRadius:5] fill];
+        [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:8 yRadius:8] fill];
     }
+}
+
+// Suppress the default blue selection highlight drawn by NSTableRowView.
+- (void)drawSelectionInRect:(NSRect)dirtyRect {
+    // Intentionally empty; selection is drawn in drawBackgroundInRect:.
 }
 
 - (void)setIsHovered:(BOOL)isHovered {
     if (_isHovered != isHovered) {
         _isHovered = isHovered;
+        [self setNeedsDisplay:YES];
+    }
+}
+
+- (void)setSelected:(BOOL)selected {
+    BOOL changed = (self.isSelected != selected);
+    [super setSelected:selected];
+    if (changed) {
         [self setNeedsDisplay:YES];
     }
 }
@@ -740,8 +964,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    // Must be opaque so rows can scroll under it.
-    [Theme.mainBackgroundColor set];
+    // Semi-transparent so rows scroll under it while vibrancy partially shows through.
+    [[Theme.mainBackgroundColor colorWithAlphaComponent:0.9] set];
     NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
     NSRect r = NSMakeRect(10, self.bounds.size.height - 4, self.bounds.size.width - 20, 1);
     [Theme.agendaDividerColor set];
@@ -772,6 +996,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (self) {
         self.identifier = kEventCellIdentifier;
         _titleTextField = label();
+        _titleTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightMedium];
         _titleTextField.maximumNumberOfLines = 1;
         _locationTextField = label();
         _locationTextField.maximumNumberOfLines = 2;
@@ -817,7 +1042,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_grid)];
         [vfl :@"H:[_grid]-11-|"];
-        [vfl :@"V:|-3-[_grid]-3-|"];
+        [vfl :@"V:|-5-[_grid]-5-|"];
         
         CGFloat leadingConstant = SizePref.agendaEventLeadingMargin;
         _gridLeadingConstraint = [_grid.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:leadingConstant];
@@ -840,7 +1065,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _gridLeadingConstraint.constant = SizePref.agendaEventLeadingMargin;
     _btnVideo.image = [NSImage imageNamed:SizePref.videoImageName];
     _btnVideo.image.template = YES;
-    _titleTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
+    _titleTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightMedium];
     _locationTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
     _durationTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
 }
@@ -905,26 +1130,19 @@ static NSString *kEventCellIdentifier = @"EventCell";
     BOOL isPending = [[self.eventInfo.event valueForKey:@"participationStatus"] integerValue] == EKParticipantStatusPending;
     if (self.eventInfo.event.hasAttendees && isPending) {
         [[NSColor colorWithPatternImage:[self pendingPatternImage]] set];
-        [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(self.bounds, 8, 1) xRadius:5 yRadius:5] fill];
+        [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(self.bounds, 8, 1) xRadius:8 yRadius:8] fill];
     }
-    // Draw colored dot. Dot is elongated for all-day events.
-    // Stroke for tentative and pending events, otherwise fill.
+    // Draw vertical color bar on the left edge of the event cell.
+    // Taller pill for all-day events.
     CGFloat alpha = self.dim ? 0.5 : 1;
-    CGFloat x = 11;
-    CGFloat yOffset = SizePref.fontSize + 2;
-    CGFloat dotWidthX = SizePref.agendaDotWidth;
-    CGFloat dotWidthY = dotWidthX;
-    CGFloat radius = dotWidthX / 2.0;
+    CGFloat barWidth = 3;
+    CGFloat barX = 10;
+    CGFloat barPadding = 5;
+    CGFloat barHeight = NSHeight(self.bounds) - 2 * barPadding;
+    CGFloat barRadius = barWidth / 2.0;
     NSColor *dotColor = self.eventInfo.event.calendar.color;
-    if (self.eventInfo.isAllDay) {
-        x += 1;
-        yOffset += 2;
-        dotWidthX -= 2;
-        dotWidthY += 4;
-        radius -= 1;
-    }
     [[dotColor colorWithAlphaComponent:alpha] set];
-    NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:NSMakeRect(x, NSHeight(self.bounds) - yOffset, dotWidthX, dotWidthY) xRadius:radius yRadius:radius];
+    NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:NSMakeRect(barX, barPadding, barWidth, barHeight) xRadius:barRadius yRadius:barRadius];
     if (self.eventInfo.event.hasAttendees && (isTentative || isPending)) {
         p.lineWidth = 1.5;
         [p stroke];
@@ -1003,12 +1221,19 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _btnDelete.focusRingType = NSFocusRingTypeNone;
         _btnDelete.bordered = NO;
         _btnDelete.contentTintColor = NSColor.secondaryLabelColor;
-        
+
+        _btnEdit = [NSButton new];
+        _btnEdit.title = @"✎";
+        _btnEdit.focusRingType = NSFocusRingTypeNone;
+        _btnEdit.bordered = NO;
+        _btnEdit.contentTintColor = NSColor.secondaryLabelColor;
+
         NSView *titleHolder = [NSView new];
         [titleHolder addSubview:_title];
+        [titleHolder addSubview:_btnEdit];
         [titleHolder addSubview:_btnDelete];
-        MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:titleHolder metrics:nil views:NSDictionaryOfVariableBindings(_title, _btnDelete)];
-        [vfl :@"H:|[_title]-(>=10)-[_btnDelete]|" :NSLayoutFormatAlignAllCenterY];
+        MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:titleHolder metrics:nil views:NSDictionaryOfVariableBindings(_title, _btnEdit, _btnDelete)];
+        [vfl :@"H:|[_title]-(>=10)-[_btnEdit]-2-[_btnDelete]|" :NSLayoutFormatAlignAllCenterY];
         [vfl :@"V:|[_title]|"];
         [titleHolder.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
         
@@ -1129,8 +1354,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Hide URL row IF there's no URL.
     [_grid rowAtIndex:9].hidden = !info.event.URL;
 
-    // Hide delete button IF event doesn't allow modification.
+    // Hide edit and delete buttons IF event doesn't allow modification.
     _btnDelete.hidden = !info.event.calendar.allowsContentModifications;
+    _btnEdit.hidden   = !info.event.calendar.allowsContentModifications;
 
     // All-day events don't show time.
     intervalFormatter.timeStyle = info.event.isAllDay
@@ -1335,6 +1561,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     _duration.font = [NSFont systemFontOfSize:SizePref.fontSize];
     _recurrence.font = _duration.font;
     _btnDelete.font  = [NSFont systemFontOfSize:SizePref.fontSize+3];
+    _btnEdit.font    = [NSFont systemFontOfSize:SizePref.fontSize+3];
 
     _title.textColor = Theme.agendaEventTextColor;
     _duration.textColor = Theme.agendaEventTextColor;
