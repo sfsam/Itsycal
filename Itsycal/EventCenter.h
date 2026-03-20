@@ -33,6 +33,8 @@
 
 - (BOOL)saveEvent:(EKEvent *)event error:(NSError **)error;
 
+- (BOOL)updateEvent:(EKEvent *)event span:(EKSpan)span error:(NSError **)error;
+
 - (BOOL)removeEvent:(EKEvent *)event span:(EKSpan)span error:(NSError **)error;
 
 - (void)fetchEvents;
@@ -51,6 +53,10 @@
 // When the user selects/unselects calendars in Prefs, we update
 // the list of selected calendars.
 - (void)updateSelectedCalendarsForIdentifier:(NSString *)identifier selected:(BOOL)selected;
+
+// Move an event to a new date, preserving its time-of-day and duration.
+// Returns YES on success.
+- (BOOL)moveEventWithIdentifier:(NSString *)eventIdentifier toDate:(MoDate)date;
 
 // Clear cached events and refetch.
 - (void)refetchAll;

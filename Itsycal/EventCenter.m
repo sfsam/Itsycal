@@ -24,6 +24,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSDictionary         *_filteredEventsForDate;  // _queueIsol
     NSMutableIndexSet    *_previouslyFetchedDates; // _queueWork
     NSArray              *_sourcesAndCalendars;    // _queueIsol2
+    NSMutableDictionary  *_meetingURLCache;        // _queueWork, keyed by event identifier
     dispatch_queue_t      _queueWork;
     dispatch_queue_t      _queueIsol;
     dispatch_queue_t      _queueIsol2;
@@ -55,6 +56,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         _eventsForDate  = [NSMutableDictionary new];
         _filteredEventsForDate = [NSDictionary new];
         _previouslyFetchedDates = [NSMutableIndexSet new];
+        _meetingURLCache = [NSMutableDictionary new];
         _queueWork = dispatch_queue_create("com.mowglii.Itsycal.queueWork", DISPATCH_QUEUE_SERIAL);
         _queueIsol = dispatch_queue_create("com.mowglii.Itsycal.queueIsol", DISPATCH_QUEUE_SERIAL);
         _queueIsol2 = dispatch_queue_create("com.mowglii.Itsycal.queueIsol2", DISPATCH_QUEUE_SERIAL);
@@ -101,8 +103,38 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     return [_store saveEvent:event span:EKSpanThisEvent commit:YES error:error];
 }
 
+- (BOOL)updateEvent:(EKEvent *)event span:(EKSpan)span error:(NSError **)error {
+    return [_store saveEvent:event span:span commit:YES error:error];
+}
+
 - (BOOL)removeEvent:(EKEvent *)event span:(EKSpan)span error:(NSError **)error {
     return [_store removeEvent:event span:span commit:YES error:error];
+}
+
+- (BOOL)moveEventWithIdentifier:(NSString *)eventIdentifier toDate:(MoDate)date {
+    if (!eventIdentifier) return NO;
+    EKEvent *event = [_store eventWithIdentifier:eventIdentifier];
+    if (!event) return NO;
+    if (!event.calendar.allowsContentModifications) return NO;
+
+    // Calculate the day difference between old start date and new date.
+    NSDate *newStartNSDate = MakeNSDateWithDate(date, _cal);
+    NSDate *oldStartDay = [_cal startOfDayForDate:event.startDate];
+    NSDateComponents *diff = [_cal components:NSCalendarUnitDay fromDate:oldStartDay toDate:newStartNSDate options:0];
+    if (diff.day == 0) return YES; // already on that date
+
+    // Shift both startDate and endDate by the day difference.
+    NSDate *newStart = [_cal dateByAddingUnit:NSCalendarUnitDay value:diff.day toDate:event.startDate options:0];
+    NSDate *newEnd   = [_cal dateByAddingUnit:NSCalendarUnitDay value:diff.day toDate:event.endDate options:0];
+    event.startDate = newStart;
+    event.endDate   = newEnd;
+
+    NSError *error = nil;
+    BOOL result = [_store saveEvent:event span:EKSpanThisEvent commit:YES error:&error];
+    if (!result && error) {
+        os_log_error(OS_LOG_DEFAULT, "Failed to move event: %{public}@", error.localizedDescription);
+    }
+    return result;
 }
 
 - (void)updateSelectedCalendarsForIdentifier:(NSString *)identifier selected:(BOOL)selected {
@@ -169,6 +201,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     MoDate endMoDate   = [self.delegate fetchEndDate];
     dispatch_async(_queueWork, ^{
         @autoreleasepool {
+            [self->_meetingURLCache removeAllObjects];
             [self _fetchSourcesAndCalendars];
             [self _fetchEventsWithStartDate:startMoDate endDate:endMoDate refetch:YES];
         }
@@ -354,7 +387,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 - (void)_filterEvents {
     //os_log(OS_LOG_DEFAULT, " %s", __FUNCTION__);
     NSMutableDictionary *filteredEventsForDate = [NSMutableDictionary new];
-    NSArray *selectedCalendars = [[NSUserDefaults standardUserDefaults] arrayForKey:kSelectedCalendars];
+    NSSet *selectedCalendars = [NSSet setWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:kSelectedCalendars]];
     for (NSDate *date in _eventsForDate) {
         for (EventInfo *info in _eventsForDate[date]) {
             if ([selectedCalendars containsObject:info.event.calendar.calendarIdentifier]) {
@@ -364,7 +397,15 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                 // Check if there is a virtual meeting (e.g. Zoom) link.
                 // We limit this check to filtered events in an
                 // attempt to limit how much text processing we do.
-                [self checkForZoomURL:info];
+                // Use cached result if available to avoid expensive NSDataDetector work.
+                NSString *eventID = info.event.eventIdentifier;
+                id cachedURL = _meetingURLCache[eventID];
+                if (cachedURL) {
+                    info.zoomURL = (cachedURL == [NSNull null]) ? nil : cachedURL;
+                } else {
+                    [self checkForZoomURL:info];
+                    _meetingURLCache[eventID] = info.zoomURL ?: [NSNull null];
+                }
                 [filteredEventsForDate[date] addObject:info];
             }
         }

@@ -32,7 +32,9 @@
 @optional
 - (void)agendaHoveredOverRow:(NSInteger)row;
 - (void)agendaWantsToDeleteEvent:(EKEvent *)event;
+- (void)agendaWantsToEditEvent:(EKEvent *)event;
 - (void)agendaShowCalendarAppAtDate:(NSDate *)date;
 - (CGFloat)agendaMaxPossibleHeight;
+- (void)agendaWantsToReturnFocusToCalendar;
 
 @end
