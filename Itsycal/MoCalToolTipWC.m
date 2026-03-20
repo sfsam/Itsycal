@@ -73,7 +73,7 @@
 - (void)showTooltip
 {
     [self positionTooltip];
-    [self showWindow:self];
+    [self.window orderFront:nil];
     [self.window setAlphaValue:1];
 }
 
