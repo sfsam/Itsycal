@@ -59,6 +59,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @implementation AgendaViewController
 {
     NSPopover *_popover;
+    NSMutableArray<NSNumber *> *_cachedRowHeights;
+    CGFloat _lastKnownWidth;
 }
 
 - (void)loadView
@@ -111,12 +113,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)viewDidLayout
 {
-    // Calculate height of view based on _tv row heights.
+    // Calculate height of view based on cached row heights.
     // We set the view's height using preferredContentSize.
-    NSInteger rows = [_tv numberOfRows];
+    [self ensureRowHeightsCached];
     CGFloat height = 0;
-    for (NSInteger row = 0; row < rows; ++row) {
-        height += [self tableView:_tv heightOfRow:row];
+    for (NSNumber *h in _cachedRowHeights) {
+        height += h.doubleValue;
     }
     if ([self.identifier isEqualToString:@"AgendaVC"]) {
         // Limit height so everything fits on the screen.
@@ -164,12 +166,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     if (_showLocation != showLocation) {
         _showLocation = showLocation;
+        _cachedRowHeights = nil;
         [self reloadData];
     }
 }
 
 - (void)reloadData
 {
+    _cachedRowHeights = nil;
     [_tv reloadData];
     [_tv scrollRowToVisible:0];
     [[_tv enclosingScrollView] flashScrollers];
@@ -368,24 +372,69 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return v;
 }
 
-- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
+- (void)ensureRowHeightsCached
 {
+    // Invalidate cache if table width changed significantly.
+    CGFloat currentWidth = NSWidth(_tv.frame);
+    if (_cachedRowHeights && fabs(currentWidth - _lastKnownWidth) > 0.5) {
+        _cachedRowHeights = nil;
+    }
+    if (_cachedRowHeights) return;
+
     // Keep a cell around for measuring event cell height.
     static AgendaDateCell *dateCell = nil;
     static AgendaEventCell *eventCell = nil;
-    
+
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         eventCell = [AgendaEventCell new];
         dateCell = [AgendaDateCell new];
-        dateCell.frame = NSMakeRect(0, 0, NSWidth(self->_tv.frame), 999); // only width is important here
+        dateCell.frame = NSMakeRect(0, 0, NSWidth(self->_tv.frame), 999);
         dateCell.dayTextField.integerValue = 21;
     });
-    
+
+    _lastKnownWidth = currentWidth;
+    NSInteger rows = self.events ? (NSInteger)self.events.count : 0;
+    _cachedRowHeights = [NSMutableArray arrayWithCapacity:rows];
+    dateCell.frame = NSMakeRect(0, 0, currentWidth, 999);
+    CGFloat dateCellHeight = dateCell.fittingSize.height;
+
+    for (NSInteger row = 0; row < rows; row++) {
+        id obj = self.events[row];
+        CGFloat height;
+        if ([obj isKindOfClass:[EventInfo class]]) {
+            eventCell.frame = NSMakeRect(0, 0, currentWidth, 999);
+            [self populateEventCell:eventCell withInfo:obj];
+            height = eventCell.fittingSize.height;
+        } else {
+            height = dateCellHeight;
+        }
+        [_cachedRowHeights addObject:@(height)];
+    }
+}
+
+- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
+{
+    [self ensureRowHeightsCached];
+    if (_cachedRowHeights && row < (NSInteger)_cachedRowHeights.count) {
+        return _cachedRowHeights[row].doubleValue;
+    }
+    // Fallback: compute directly (should not normally be reached).
+    static AgendaDateCell *dateCell = nil;
+    static AgendaEventCell *eventCell = nil;
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        eventCell = [AgendaEventCell new];
+        dateCell = [AgendaDateCell new];
+        dateCell.frame = NSMakeRect(0, 0, NSWidth(self->_tv.frame), 999);
+        dateCell.dayTextField.integerValue = 21;
+    });
+
     CGFloat height = dateCell.fittingSize.height;
     id obj = self.events[row];
     if ([obj isKindOfClass:[EventInfo class]]) {
-        eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999); // only width is important here
+        eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999);
         [self populateEventCell:eventCell withInfo:obj];
         height = eventCell.fittingSize.height;
     }
