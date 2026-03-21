@@ -166,7 +166,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     if (_showLocation != showLocation) {
         _showLocation = showLocation;
-        _cachedRowHeights = nil;
         [self reloadData];
     }
 }
