@@ -59,10 +59,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @implementation AgendaViewController
 {
     NSPopover *_popover;
+    NSInteger _lastHoveredRow;
 }
 
 - (void)loadView
 {
+    _lastHoveredRow = -1;
     // View controller content view
     NSView *v = [NSView new];
 
@@ -170,6 +172,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)reloadData
 {
+    _lastHoveredRow = -1;
     [_tv reloadData];
     [_tv scrollRowToVisible:0];
     [[_tv enclosingScrollView] flashScrollers];
@@ -419,16 +422,21 @@ static NSString *kEventCellIdentifier = @"EventCell";
         }
         hoveredRow = -1;
     }
-    for (NSInteger row = 0; row < [_tv numberOfRows]; row++) {
-        if (![self tableView:_tv isGroupRow:row]) {
-            BOOL isEmptyEventRow = [self tableView:_tv isEmptyEventRow:row];
-            BOOL isHovered = (row == hoveredRow && !isEmptyEventRow);
-            AgendaRowView *rowView = [_tv rowViewAtRow:row makeIfNecessary:NO];
-            rowView.isHovered = isHovered;
-            if (showPopoverOnHover && isHovered) {
+    // Only update the previously hovered row and the newly hovered row
+    // instead of iterating all rows.
+    if (_lastHoveredRow != hoveredRow) {
+        if (_lastHoveredRow >= 0 && _lastHoveredRow < [_tv numberOfRows]) {
+            AgendaRowView *oldRowView = [_tv rowViewAtRow:_lastHoveredRow makeIfNecessary:NO];
+            oldRowView.isHovered = NO;
+        }
+        if (hoveredRow >= 0 && hoveredRow < [_tv numberOfRows]) {
+            AgendaRowView *newRowView = [_tv rowViewAtRow:hoveredRow makeIfNecessary:NO];
+            newRowView.isHovered = YES;
+            if (showPopoverOnHover) {
                 [self showPopoverForRow:hoveredRow];
             }
         }
+        _lastHoveredRow = hoveredRow;
     }
     if (self.delegate && [self.delegate respondsToSelector:@selector(agendaHoveredOverRow:)]) {
         [self.delegate agendaHoveredOverRow:hoveredRow];
