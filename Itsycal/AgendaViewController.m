@@ -615,12 +615,22 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)dimEventsIfNecessary
 {
-    // If the user has the window showing, reload the agenda cells.
-    // This will redraw the events, dimming if necessary.
-    // This also enables/disables zoom buttons if necessary
-    // depending on whether a virtual meeting is in progress.
+    // If the user has the window showing, update only visible event cells.
+    // This redraws events to dim past ones and enables/disables zoom
+    // buttons depending on whether a virtual meeting is in progress.
     if (self.view.window.isVisible) {
-        [_tv reloadData];
+        NSRange visibleRange = [_tv rowsInRect:[_tv visibleRect]];
+        for (NSUInteger i = 0; i < visibleRange.length; i++) {
+            NSInteger row = (NSInteger)(visibleRange.location + i);
+            if (row >= (NSInteger)self.events.count) break;
+            id obj = self.events[row];
+            if ([obj isKindOfClass:[EventInfo class]]) {
+                AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
+                if (cell) {
+                    [self populateEventCell:cell withInfo:obj];
+                }
+            }
+        }
     }
 }
 
