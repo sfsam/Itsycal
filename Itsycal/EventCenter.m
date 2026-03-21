@@ -354,7 +354,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 - (void)_filterEvents {
     //os_log(OS_LOG_DEFAULT, " %s", __FUNCTION__);
     NSMutableDictionary *filteredEventsForDate = [NSMutableDictionary new];
-    NSSet *selectedCalendars = [NSSet setWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:kSelectedCalendars]];
+    NSArray *selectedArray = [[NSUserDefaults standardUserDefaults] arrayForKey:kSelectedCalendars];
+    NSSet *selectedCalendars = selectedArray ? [NSSet setWithArray:selectedArray] : [NSSet set];
     for (NSDate *date in _eventsForDate) {
         for (EventInfo *info in _eventsForDate[date]) {
             if ([selectedCalendars containsObject:info.event.calendar.calendarIdentifier]) {
