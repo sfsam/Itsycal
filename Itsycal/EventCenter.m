@@ -384,9 +384,9 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // Check cache first to avoid expensive NSDataDetector runs.
     NSString *eventID = info.event.eventIdentifier;
     if (eventID) {
-        NSURL *cachedURL = _meetingURLCache[eventID];
-        if (cachedURL) {
-            info.zoomURL = [cachedURL isEqual:[NSNull null]] ? nil : cachedURL;
+        id cachedValue = _meetingURLCache[eventID];
+        if (cachedValue) {
+            info.zoomURL = [cachedValue isEqual:[NSNull null]] ? nil : cachedValue;
             return;
         }
     }
