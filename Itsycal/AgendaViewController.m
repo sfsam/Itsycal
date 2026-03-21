@@ -416,29 +416,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
     [self ensureRowHeightsCached];
-    if (_cachedRowHeights && row < (NSInteger)_cachedRowHeights.count) {
-        return _cachedRowHeights[row].doubleValue;
-    }
-    // Fallback: compute directly (should not normally be reached).
-    static AgendaDateCell *dateCell = nil;
-    static AgendaEventCell *eventCell = nil;
-
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        eventCell = [AgendaEventCell new];
-        dateCell = [AgendaDateCell new];
-        dateCell.frame = NSMakeRect(0, 0, NSWidth(self->_tv.frame), 999);
-        dateCell.dayTextField.integerValue = 21;
-    });
-
-    CGFloat height = dateCell.fittingSize.height;
-    id obj = self.events[row];
-    if ([obj isKindOfClass:[EventInfo class]]) {
-        eventCell.frame = NSMakeRect(0, 0, NSWidth(_tv.frame), 999);
-        [self populateEventCell:eventCell withInfo:obj];
-        height = eventCell.fittingSize.height;
-    }
-    return height;
+    return _cachedRowHeights[row].doubleValue;
 }
 
 - (BOOL)tableView:(NSTableView *)tableView isGroupRow:(NSInteger)row
