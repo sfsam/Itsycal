@@ -414,7 +414,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {
     [self ensureRowHeightsCached];
-    return _cachedRowHeights[row].doubleValue;
+    if (row < (NSInteger)_cachedRowHeights.count) {
+        return _cachedRowHeights[row].doubleValue;
+    }
+    return 0;
 }
 
 - (BOOL)tableView:(NSTableView *)tableView isGroupRow:(NSInteger)row
