@@ -42,10 +42,15 @@
     BOOL       _shouldShowMeetingIndicator;
     NSRect     _screenFrame;
     NSPopover *_newEventPopover;
+    NSMutableArray *_notificationTokens;
 }
 
 - (void)dealloc
 {
+    for (id token in _notificationTokens) {
+        [[NSNotificationCenter defaultCenter] removeObserver:token];
+        [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:token];
+    }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowEventDays];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kMenuBarIconType];
@@ -140,6 +145,7 @@
     
     // Now that everything else is set up, we file for notifications.
     // Some of the notification handlers rely on stuff we just set up.
+    _notificationTokens = [NSMutableArray new];
     [self fileNotifications];
 
     [_moCal bind:@"showWeeks" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowWeeks] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
@@ -1354,39 +1360,57 @@
 
 - (void)fileNotifications
 {
+    __weak typeof(self) weakSelf = self;
+    id token;
+
     // Day changed notification
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self resetCalendarToToday];
-        [self updateMenubarIcon];
-        [self updateTimer];
+    token = [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf resetCalendarToToday];
+        [strongSelf updateMenubarIcon];
+        [strongSelf updateTimer];
     }];
-    
+    [_notificationTokens addObject:token];
+
     // Timezone changed notification
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemTimeZoneDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateMenubarIcon];
-        [self updateTimer];
-        [self->_ec refetchAll];
+    token = [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemTimeZoneDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf updateMenubarIcon];
+        [strongSelf updateTimer];
+        [strongSelf->_ec refetchAll];
     }];
-    
+    [_notificationTokens addObject:token];
+
     // Locale notifications
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateMenubarIcon];
-        [self updateTimer];
-        [self updateAgenda]; // 12/24 hr time change in sys prefs
+    token = [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf updateMenubarIcon];
+        [strongSelf updateTimer];
+        [strongSelf updateAgenda]; // 12/24 hr time change in sys prefs
     }];
-    
+    [_notificationTokens addObject:token];
+
     // System clock notification
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateMenubarIcon];
-        [self updateTimer];
-        [self->_ec refetchAll];
+    token = [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf updateMenubarIcon];
+        [strongSelf updateTimer];
+        [strongSelf->_ec refetchAll];
     }];
+    [_notificationTokens addObject:token];
 
     // Wake from sleep notification
-    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserverForName:NSWorkspaceDidWakeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
-        [self updateMenubarIcon];
-        [self updateTimer];
+    token = [[[NSWorkspace sharedWorkspace] notificationCenter] addObserverForName:NSWorkspaceDidWakeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf updateMenubarIcon];
+        [strongSelf updateTimer];
     }];
+    [_notificationTokens addObject:token];
 
     // Observe NSUserDefaults for preference changes
     for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat]) {
