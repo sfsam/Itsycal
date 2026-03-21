@@ -388,7 +388,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     dispatch_once(&onceToken, ^{
         eventCell = [AgendaEventCell new];
         dateCell = [AgendaDateCell new];
-        dateCell.frame = NSMakeRect(0, 0, NSWidth(self->_tv.frame), 999);
         dateCell.dayTextField.integerValue = 21;
     });
 
