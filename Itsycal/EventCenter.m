@@ -24,6 +24,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSDictionary         *_filteredEventsForDate;  // _queueIsol
     NSMutableIndexSet    *_previouslyFetchedDates; // _queueWork
     NSArray              *_sourcesAndCalendars;    // _queueIsol2
+    NSMutableDictionary  *_meetingURLCache;        // _queueWork
     dispatch_queue_t      _queueWork;
     dispatch_queue_t      _queueIsol;
     dispatch_queue_t      _queueIsol2;
@@ -55,6 +56,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         _eventsForDate  = [NSMutableDictionary new];
         _filteredEventsForDate = [NSDictionary new];
         _previouslyFetchedDates = [NSMutableIndexSet new];
+        _meetingURLCache = [NSMutableDictionary new];
         _queueWork = dispatch_queue_create("com.mowglii.Itsycal.queueWork", DISPATCH_QUEUE_SERIAL);
         _queueIsol = dispatch_queue_create("com.mowglii.Itsycal.queueIsol", DISPATCH_QUEUE_SERIAL);
         _queueIsol2 = dispatch_queue_create("com.mowglii.Itsycal.queueIsol2", DISPATCH_QUEUE_SERIAL);
@@ -252,6 +254,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     if (refetch) {
         _previouslyFetchedDates = [NSMutableIndexSet new];
         _eventsForDate = [NSMutableDictionary new];
+        _meetingURLCache = [NSMutableDictionary new];
     }
     // Return immediately if we've already fetched for this date range.
     NSRange dateRange = NSMakeRange(startMoDate.julian, endMoDate.julian - startMoDate.julian);
@@ -378,6 +381,15 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 }
 
 - (void)checkForZoomURL:(EventInfo *)info {
+    // Check cache first to avoid expensive NSDataDetector runs.
+    NSString *eventID = info.event.eventIdentifier;
+    if (eventID) {
+        NSURL *cachedURL = _meetingURLCache[eventID];
+        if (cachedURL) {
+            info.zoomURL = [cachedURL isEqual:[NSNull null]] ? nil : cachedURL;
+            return;
+        }
+    }
     static NSDataDetector *linkDetector = nil;
     if (linkDetector == nil) {
         linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
@@ -448,10 +460,12 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     };
     info.zoomURL = nil;
     if (info.event.location) GetZoomURL(info.event.location);
-    if (info.zoomURL) return;
-    if (info.event.URL) GetZoomURL(info.event.URL.absoluteString);
-    if (info.zoomURL) return;
-    if (info.event.hasNotes && info.event.notes) GetZoomURL(info.event.notes);
+    if (!info.zoomURL && info.event.URL) GetZoomURL(info.event.URL.absoluteString);
+    if (!info.zoomURL && info.event.hasNotes && info.event.notes) GetZoomURL(info.event.notes);
+    // Cache the result (NSNull for no URL found).
+    if (eventID) {
+        _meetingURLCache[eventID] = info.zoomURL ?: (id)[NSNull null];
+    }
 }
 
 @end
