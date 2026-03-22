@@ -496,7 +496,7 @@
     _statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
     _statusItem.button.target = self;
     _statusItem.button.action = @selector(statusItemClicked:);
-    [_statusItem.button sendActionOn:NSEventMaskLeftMouseDown];
+    [_statusItem.button sendActionOn:NSEventMaskLeftMouseDown | NSEventMaskRightMouseDown];
     [(NSButtonCell *)_statusItem.button.cell setHighlightsBy:NSNoCellMask];
 
     // Remember item position in menubar. (@pskowronek (Github))
@@ -850,6 +850,19 @@
 
 - (void)statusItemClicked:(id)sender
 {
+    // Right-click: show context menu with Quit option.
+    NSEvent *event = [NSApp currentEvent];
+    if (event.type == NSEventTypeRightMouseDown) {
+        NSMenu *contextMenu = [[NSMenu alloc] init];
+        [contextMenu addItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"")
+                               action:@selector(terminate:)
+                        keyEquivalent:@""];
+        [contextMenu popUpMenuPositioningItem:nil
+                                   atLocation:NSMakePoint(0, _statusItem.button.bounds.size.height)
+                                       inView:_statusItem.button];
+        return;
+    }
+
     // If there are multiple screens and Itsycal is showing
     // on one and the user clicks the menu item on another,
     // instead of a regular toggle, we want Itsycal to hide
