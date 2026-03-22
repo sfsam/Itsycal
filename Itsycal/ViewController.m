@@ -857,9 +857,11 @@
         [contextMenu addItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"")
                                action:@selector(terminate:)
                         keyEquivalent:@""];
+        _statusItem.button.appearance = NSApp.effectiveAppearance;
         [contextMenu popUpMenuPositioningItem:nil
                                    atLocation:NSMakePoint(0, _statusItem.button.bounds.size.height)
                                        inView:_statusItem.button];
+        _statusItem.button.appearance = nil;
         return;
     }
 
