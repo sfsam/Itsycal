@@ -43,6 +43,7 @@
     NSRect     _screenFrame;
     NSPopover *_newEventPopover;
     NSMutableArray *_notificationTokens;
+    id _rightClickMonitor;
 }
 
 - (void)dealloc
@@ -496,7 +497,7 @@
     _statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
     _statusItem.button.target = self;
     _statusItem.button.action = @selector(statusItemClicked:);
-    [_statusItem.button sendActionOn:NSEventMaskLeftMouseDown | NSEventMaskRightMouseDown];
+    [_statusItem.button sendActionOn:NSEventMaskLeftMouseDown];
     [(NSButtonCell *)_statusItem.button.cell setHighlightsBy:NSNoCellMask];
 
     // Remember item position in menubar. (@pskowronek (Github))
@@ -509,6 +510,25 @@
     // Notification for when status item view moves
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidMoveNotification object:_statusItem.button.window];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidResizeNotification object:_statusItem.button.window];
+
+    // Right-click on status item: show context menu with Quit option.
+    // Use an event monitor so the system handles showing _statusItem.menu
+    // with correct appearance. Clear the menu on close so left-click
+    // continues to toggle the popup window.
+    _rightClickMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskRightMouseDown handler:^NSEvent *(NSEvent *event) {
+        if (event.window == self->_statusItem.button.window) {
+            NSPoint loc = [self->_statusItem.button convertPoint:event.locationInWindow fromView:nil];
+            if (NSPointInRect(loc, self->_statusItem.button.bounds)) {
+                NSMenu *contextMenu = [[NSMenu alloc] init];
+                contextMenu.delegate = self;
+                [contextMenu addItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"")
+                                       action:@selector(terminate:)
+                                keyEquivalent:@""];
+                self->_statusItem.menu = contextMenu;
+            }
+        }
+        return event;
+    }];
 }
 
 - (void)updateStatusItemFont
@@ -535,6 +555,10 @@
 
 - (void)removeStatusItem
 {
+    if (_rightClickMonitor) {
+        [NSEvent removeMonitor:_rightClickMonitor];
+        _rightClickMonitor = nil;
+    }
     if (_statusItem) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidMoveNotification object:_statusItem.button.window];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidResizeNotification object:_statusItem.button.window];
@@ -850,21 +874,6 @@
 
 - (void)statusItemClicked:(id)sender
 {
-    // Right-click: show context menu with Quit option.
-    NSEvent *event = [NSApp currentEvent];
-    if (event.type == NSEventTypeRightMouseDown) {
-        NSMenu *contextMenu = [[NSMenu alloc] init];
-        [contextMenu addItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"")
-                               action:@selector(terminate:)
-                        keyEquivalent:@""];
-        _statusItem.button.appearance = NSApp.effectiveAppearance;
-        [contextMenu popUpMenuPositioningItem:nil
-                                   atLocation:NSMakePoint(0, _statusItem.button.bounds.size.height)
-                                       inView:_statusItem.button];
-        _statusItem.button.appearance = nil;
-        return;
-    }
-
     // If there are multiple screens and Itsycal is showing
     // on one and the user clicks the menu item on another,
     // instead of a regular toggle, we want Itsycal to hide
@@ -890,6 +899,13 @@
     }
     else {
         [self showItsycalWindow];
+    }
+}
+
+- (void)menuDidClose:(NSMenu *)menu
+{
+    if (_statusItem.menu == menu) {
+        _statusItem.menu = nil;
     }
 }
 
