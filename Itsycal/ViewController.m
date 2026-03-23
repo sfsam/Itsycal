@@ -29,6 +29,7 @@
     MoCalendar    *_moCal;
     NSCalendar    *_nsCal;
     NSStatusItem  *_statusItem;
+    id             _rightClickMonitor;
     MoButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
     NSWindowController    *_prefsWC;
     AgendaViewController  *_agendaVC;
@@ -43,7 +44,6 @@
     NSRect     _screenFrame;
     NSPopover *_newEventPopover;
     NSMutableArray *_notificationTokens;
-    id _rightClickMonitor;
 }
 
 - (void)dealloc
@@ -511,24 +511,35 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidMoveNotification object:_statusItem.button.window];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidResizeNotification object:_statusItem.button.window];
 
-    // Right-click on status item: show context menu with Quit option.
+    // Right-click on status item: show context menu.
     // Use an event monitor so the system handles showing _statusItem.menu
     // with correct appearance. Clear the menu on close so left-click
     // continues to toggle the popup window.
+    __weak typeof(self) weakSelf = self;
     _rightClickMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskRightMouseDown handler:^NSEvent *(NSEvent *event) {
-        if (event.window == self->_statusItem.button.window) {
-            NSPoint loc = [self->_statusItem.button convertPoint:event.locationInWindow fromView:nil];
-            if (NSPointInRect(loc, self->_statusItem.button.bounds)) {
-                NSMenu *contextMenu = [[NSMenu alloc] init];
-                contextMenu.delegate = self;
-                [contextMenu addItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"")
-                                       action:@selector(terminate:)
-                                keyEquivalent:@""];
-                self->_statusItem.menu = contextMenu;
-            }
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return event;
+        if (event.window == strongSelf->_statusItem.button.window) {
+            strongSelf->_statusItem.menu = [strongSelf statusItemContextMenu];
         }
         return event;
     }];
+}
+
+- (NSMenu *)statusItemContextMenu
+{
+    NSString *prefsString = NSLocalizedString(@"Preferences…", @"");
+    if (@available(macOS 13.0, *)) {
+        prefsString = NSLocalizedString(@"Settings…", @"");
+    }
+
+    NSMenu *menu = [[NSMenu alloc] init];
+    menu.delegate = self;
+    [menu addItemWithTitle:prefsString action:@selector(showPrefs:) keyEquivalent:@""];
+    [menu addItemWithTitle:NSLocalizedString(@"Date & Time…", @"") action:@selector(openDateAndTimePrefs:) keyEquivalent:@""];
+    [menu addItem:[NSMenuItem separatorItem]];
+    [menu addItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@""];
+    return menu;
 }
 
 - (void)updateStatusItemFont
