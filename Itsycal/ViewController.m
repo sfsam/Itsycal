@@ -48,6 +48,10 @@
 
 - (void)dealloc
 {
+    if (_rightClickMonitor) {
+        [NSEvent removeMonitor:_rightClickMonitor];
+        _rightClickMonitor = nil;
+    }
     for (id token in _notificationTokens) {
         [[NSNotificationCenter defaultCenter] removeObserver:token];
         [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:token];
