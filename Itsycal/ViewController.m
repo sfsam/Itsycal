@@ -191,6 +191,17 @@
 }
 
 #pragma mark -
+#pragma mark Utility
+
+- (NSString *)settingsString
+{
+    if (@available(macOS 13.0, *)) {
+        return NSLocalizedString(@"Settings…", @"");
+    }
+    return NSLocalizedString(@"Preferences…", @"");
+}
+
+#pragma mark -
 #pragma mark Keyboard & button actions
 
 - (void)keyDown:(NSEvent *)theEvent
@@ -358,17 +369,13 @@
 {
     NSMenu *optMenu = [[NSMenu alloc] initWithTitle:@"Options Menu"];
     NSInteger i = 0;
-    NSString *prefsString = NSLocalizedString(@"Preferences…", @"");
-    if (@available(macOS 13.0, *)) {
-        prefsString = NSLocalizedString(@"Settings…", @"");
-    }
 
     [optMenu insertItemWithTitle:NSLocalizedString(@"About Itsycal", @"") action:@selector(showAbout:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Check for Updates…", @"") action:@selector(checkForUpdates:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Go to Date…", @"") action:@selector(showDatePickerPopover:) keyEquivalent:@"T" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
-    [optMenu insertItemWithTitle:prefsString action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
+    [optMenu insertItemWithTitle:[self settingsString] action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Date & Time…", @"") action:@selector(openDateAndTimePrefs:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Help…", @"") action:@selector(navigateToHelp:) keyEquivalent:@"" atIndex:i++];
@@ -532,17 +539,31 @@
 
 - (NSMenu *)statusItemContextMenu
 {
-    NSString *prefsString = NSLocalizedString(@"Preferences…", @"");
-    if (@available(macOS 13.0, *)) {
-        prefsString = NSLocalizedString(@"Settings…", @"");
-    }
-
     NSMenu *menu = [[NSMenu alloc] init];
     menu.delegate = self;
-    [menu addItemWithTitle:prefsString action:@selector(showPrefs:) keyEquivalent:@""];
-    [menu addItemWithTitle:NSLocalizedString(@"Date & Time…", @"") action:@selector(openDateAndTimePrefs:) keyEquivalent:@""];
+
+    NSMenuItem *item = [menu addItemWithTitle:[self settingsString] action:@selector(showPrefs:) keyEquivalent:@""];
+    item.target = self;
+    item = [menu addItemWithTitle:NSLocalizedString(@"Date & Time…", @"") action:@selector(openDateAndTimePrefs:) keyEquivalent:@""];
+    item.target = self;
     [menu addItem:[NSMenuItem separatorItem]];
-    [menu addItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@""];
+    item = [menu addItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@""];
+    item.target = NSApp;
+
+    if (@available(macOS 26, *)) {
+        // The menu item glyphs introduced in macOS 26 Tahoe.
+        NSArray<NSString *> *symbolNames = @[@"gear",
+                                             @"calendar.badge.clock",
+                                             @"xmark.rectangle"];
+        NSUInteger index = 0;
+        for (NSMenuItem *item in menu.itemArray) {
+            if (item.isSeparatorItem) continue;
+            if (index >= symbolNames.count) break;
+            item.image = [NSImage imageWithSystemSymbolName:symbolNames[index] accessibilityDescription:nil];
+            index++;
+        }
+    }
+
     return menu;
 }
 
@@ -917,8 +938,14 @@
     }
 }
 
+#pragma mark -
+#pragma mark NSMenu Delegate
+
 - (void)menuDidClose:(NSMenu *)menu
 {
+    // The status item shows a menu on right-click. Clear the menu on close
+    // so that left-click continues to toggle the Itsycal window.
+    // See -createStatusItem for more info.
     if (_statusItem.menu == menu) {
         _statusItem.menu = nil;
     }
