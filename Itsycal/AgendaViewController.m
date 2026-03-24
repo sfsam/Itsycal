@@ -1362,7 +1362,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [attrString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:SizePref.fontSize] range:NSMakeRange(0, attrString.length)];
     [attrString addAttribute:NSForegroundColorAttributeName value:Theme.agendaEventTextColor range:NSMakeRange(0, attrString.length)];
     [_messageLinksRegex enumerateMatchesInString:attrString.string options:kNilOptions range:NSMakeRange(0, attrString.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
-        NSString *link = [string substringWithRange:result.range];
+        NSString *link = [attrString.string substringWithRange:result.range];
         [attrString addAttribute:NSLinkAttributeName value:link range:result.range];
         [messageLinkRanges addObject:[NSValue valueWithRange:result.range]];
     }];
