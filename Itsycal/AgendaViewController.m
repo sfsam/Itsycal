@@ -10,6 +10,7 @@
 #import "AgendaViewController.h"
 #import "EventCenter.h"
 #import "MoButton.h"
+#import "MoThemeView.h"
 #import "MoVFLHelper.h"
 #import "Themer.h"
 #import "Sizer.h"
@@ -260,6 +261,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self->_popover.contentViewController = [AgendaPopoverVC new];
         self->_popover.behavior = NSPopoverBehaviorTransient;
         self->_popover.animates = NO;
+        if (@available(macOS 26.0, *)) {
+            // Enable coloring the full background including the arrow.
+            // See AgendaPopoverVC -loadView.
+            self->_popover.hasFullSizeContent = YES;
+        }
     });
     
     AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
@@ -1062,11 +1068,35 @@ static NSString *kEventCellIdentifier = @"EventCell";
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:view metrics:nil views:NSDictionaryOfVariableBindings(_scrollView)];
     [vfl :@"H:|[_scrollView]|"];
     [vfl :@"V:|-8-[_scrollView]-8-|"];
+
+    if (@available(macOS 26.0, *)) {
+        // On macOS 26 the trick we use in -viewDidAppear to paint
+        // the popover's full background no longer works. Now we
+        // set the popover's hasFullContentSize=YES and use the
+        // safeAreaLayoutGuide of a view that paints its background
+        // according to the Theme to inset our content.
+        view.translatesAutoresizingMaskIntoConstraints = NO;
+        MoThemeView *v = [MoThemeView new];
+        [v addSubview:view];
+        [NSLayoutConstraint activateConstraints:@[
+            [view.topAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.topAnchor],
+            [view.bottomAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.bottomAnchor],
+            [view.leftAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.leftAnchor],
+            [view.rightAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.rightAnchor],
+        ]];
+        self.view = v;
+        return;
+    }
+
     self.view = view;
 }
 
 - (void)viewDidAppear
 {
+    // macOS 26 uses MoThemeView and fullSizeContent on the popover
+    // to paint the whole background so we can just return early.
+    if (@available(macOS 26.0, *)) return;
+
     // Add a colored subview at the bottom the of popover's
     // window's frameView's view hierarchy. This should color
     // the popover including the arrow.
@@ -1086,6 +1116,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (NSSize)size
 {
     // See -loadView. Vertial padding top+bottom = 16.
+    if (@available(macOS 26.0, *)) {
+        // On macOS 26 we need to additionally take into account safe area.
+        CGFloat h = self.view.safeAreaInsets.left + self.view.safeAreaInsets.right;
+        CGFloat v = self.view.safeAreaInsets.top + self.view.safeAreaInsets.bottom;
+        return NSMakeSize(_grid.fittingSize.width + h,
+                          _grid.fittingSize.height + v + 16);
+    }
     return NSMakeSize(_grid.fittingSize.width, _grid.fittingSize.height + 16);
 }
 
