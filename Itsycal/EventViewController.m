@@ -8,6 +8,7 @@
 
 #import "EventViewController.h"
 #import "EventCenter.h"
+#import "MoThemeView.h"
 #import "MoVFLHelper.h"
 #import "Themer.h"
 
@@ -282,6 +283,25 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [_startDate setContentHuggingPriority:1 forOrientation:NSLayoutConstraintOrientationHorizontal];
     [_endDate   setContentHuggingPriority:1 forOrientation:NSLayoutConstraintOrientationHorizontal];
     
+    if (@available(macOS 26.0, *)) {
+        // On macOS 26 the trick we use in -viewDidAppear to paint
+        // the popover's full background no longer works. Now we
+        // set the popover's hasFullContentSize=YES and use the
+        // safeAreaLayoutGuide of a view that paints its background
+        // according to the Theme to inset our content.
+        v.translatesAutoresizingMaskIntoConstraints = NO;
+        MoThemeView *view = [MoThemeView new];
+        [view addSubview:v];
+        [NSLayoutConstraint activateConstraints:@[
+            [v.topAnchor constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor],
+            [v.bottomAnchor constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor],
+            [v.leftAnchor constraintEqualToAnchor:view.safeAreaLayoutGuide.leftAnchor],
+            [v.rightAnchor constraintEqualToAnchor:view.safeAreaLayoutGuide.rightAnchor],
+        ]];
+        self.view = view;
+        return;
+    }
+    
     self.view = v;
 }
 
@@ -380,6 +400,10 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
 
 - (void)viewDidAppear
 {
+    // macOS 26 uses MoThemeView and fullSizeContent on the popover
+    // to paint the whole background so we can just return early.
+    if (@available(macOS 26.0, *)) return;
+
     // Add a colored subview at the bottom the of popover's
     // window's frameView's view hierarchy. This should color
     // the popover including the arrow.

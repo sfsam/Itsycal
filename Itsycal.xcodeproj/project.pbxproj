@@ -10,6 +10,7 @@
 		920B5D7C2B4D10B6004A10D3 /* DatePickerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 920B5D7B2B4D10B6004A10D3 /* DatePickerVC.m */; };
 		920D6D51266A83AC00498E19 /* MoLoginItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 920D6D4F266A83AC00498E19 /* MoLoginItem.m */; };
 		921181C722E0192A00591FDA /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 921181C622E0192A00591FDA /* Colors.xcassets */; };
+		92121EDD2F7339C2005E6DC0 /* MoThemeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92121EDC2F7339C2005E6DC0 /* MoThemeView.m */; };
 		9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */; };
 		921E62CD1E26B3EA007B029F /* PrefsGeneralVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */; };
 		921E62D01E26B9D2007B029F /* PrefsAppearanceVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62CF1E26B9D2007B029F /* PrefsAppearanceVC.m */; };
@@ -84,6 +85,8 @@
 		920D6D4F266A83AC00498E19 /* MoLoginItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoLoginItem.m; sourceTree = "<group>"; };
 		920D6D50266A83AC00498E19 /* MoLoginItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoLoginItem.h; sourceTree = "<group>"; };
 		921181C622E0192A00591FDA /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		92121EDB2F7339C2005E6DC0 /* MoThemeView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MoThemeView.h; sourceTree = "<group>"; };
+		92121EDC2F7339C2005E6DC0 /* MoThemeView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MoThemeView.m; sourceTree = "<group>"; };
 		9215AD4A1E3AECA700317FAE /* MoVFLHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoVFLHelper.h; sourceTree = "<group>"; };
 		9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoVFLHelper.m; sourceTree = "<group>"; };
 		921949F3225D283E00223258 /* Itsycal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Itsycal.entitlements; sourceTree = "<group>"; };
@@ -309,6 +312,8 @@
 				920D6D4F266A83AC00498E19 /* MoLoginItem.m */,
 				9215AD4A1E3AECA700317FAE /* MoVFLHelper.h */,
 				9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */,
+				92121EDB2F7339C2005E6DC0 /* MoThemeView.h */,
+				92121EDC2F7339C2005E6DC0 /* MoThemeView.m */,
 			);
 			name = MoCode;
 			sourceTree = "<group>";
@@ -431,6 +436,7 @@
 				9242A5651A82A136005AA4B3 /* main.m in Sources */,
 				92B28CCF210BD17500485AE2 /* Sizer.m in Sources */,
 				9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */,
+				92121EDD2F7339C2005E6DC0 /* MoThemeView.m in Sources */,
 				929223EB1E2D6E0900F1A119 /* HighlightPicker.m in Sources */,
 				925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */,
 				9242A5871A82A1A1005AA4B3 /* ItsycalWindow.m in Sources */,
