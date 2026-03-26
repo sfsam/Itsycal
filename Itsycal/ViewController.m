@@ -290,11 +290,13 @@
         _newEventPopover = [NSPopover new];
         _newEventPopover.animates = NO;
         _newEventPopover.delegate = self;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
         if (@available(macOS 26.0, *)) {
             // Enable coloring the full background including the arrow.
             // See EventViewController -loadView.
             _newEventPopover.hasFullSizeContent = YES;
         }
+#endif
     }
     EventViewController *eventVC = [EventViewController new];
     eventVC.ec = _ec;

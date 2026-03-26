@@ -261,11 +261,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self->_popover.contentViewController = [AgendaPopoverVC new];
         self->_popover.behavior = NSPopoverBehaviorTransient;
         self->_popover.animates = NO;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
         if (@available(macOS 26.0, *)) {
             // Enable coloring the full background including the arrow.
             // See AgendaPopoverVC -loadView.
             self->_popover.hasFullSizeContent = YES;
         }
+#endif
     });
     
     AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
