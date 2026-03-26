@@ -40,6 +40,7 @@
 		924C518C1E5F721C0049E3A9 /* MoCalResizeHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 924C518B1E5F721C0049E3A9 /* MoCalResizeHandle.m */; };
 		925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B47171A93B63100E0329A /* MoCalToolTipWC.m */; };
 		925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B471A1A93CD2A00E0329A /* TooltipViewController.m */; };
+		9261BAB02F74A801000773A6 /* NSMenuItem+NoImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 9261BAAF2F74A801000773A6 /* NSMenuItem+NoImages.m */; };
 		9261EB301EEF447500DCFFC4 /* Themer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9261EB2F1EEF447500DCFFC4 /* Themer.m */; };
 		92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92658E611A9DBD8E002AE86C /* EventViewController.m */; };
 		926A6D8F1E3EC89100AAA991 /* PrefsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 926A6D8E1E3EC89100AAA991 /* PrefsVC.m */; };
@@ -76,7 +77,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		92CF00001A82A136005AA4B3 /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = SOURCE_ROOT; };
 		6F21F6F31F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.strings"; sourceTree = "<group>"; };
 		6F21F6F41F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		6F21F6F51F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -149,6 +149,8 @@
 		925B47191A93CD2A00E0329A /* TooltipViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TooltipViewController.h; sourceTree = "<group>"; };
 		925B471A1A93CD2A00E0329A /* TooltipViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TooltipViewController.m; sourceTree = "<group>"; };
 		925B471D1A93E3D800E0329A /* MoCalTooltipProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoCalTooltipProvider.h; sourceTree = "<group>"; };
+		9261BAAE2F74A801000773A6 /* NSMenuItem+NoImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSMenuItem+NoImages.h"; sourceTree = "<group>"; };
+		9261BAAF2F74A801000773A6 /* NSMenuItem+NoImages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSMenuItem+NoImages.m"; sourceTree = "<group>"; };
 		9261EB2E1EEF447500DCFFC4 /* Themer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Themer.h; sourceTree = "<group>"; };
 		9261EB2F1EEF447500DCFFC4 /* Themer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Themer.m; sourceTree = "<group>"; };
 		92658E601A9DBD8E002AE86C /* EventViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventViewController.h; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 		92B28CCE210BD17500485AE2 /* Sizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Sizer.m; sourceTree = "<group>"; };
 		92CDDE791A955D7F00D7675C /* AgendaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AgendaViewController.h; sourceTree = "<group>"; };
 		92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AgendaViewController.m; sourceTree = "<group>"; };
+		92CF00001A82A136005AA4B3 /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -263,6 +266,8 @@
 				9261EB2F1EEF447500DCFFC4 /* Themer.m */,
 				92B28CCD210BD17500485AE2 /* Sizer.h */,
 				92B28CCE210BD17500485AE2 /* Sizer.m */,
+				9261BAAE2F74A801000773A6 /* NSMenuItem+NoImages.h */,
+				9261BAAF2F74A801000773A6 /* NSMenuItem+NoImages.m */,
 			);
 			path = Itsycal;
 			sourceTree = "<group>";
@@ -450,6 +455,7 @@
 				921E62D01E26B9D2007B029F /* PrefsAppearanceVC.m in Sources */,
 				9242A5961A82BE5E005AA4B3 /* Itsycal.m in Sources */,
 				9242A5931A82A40B005AA4B3 /* MoCalendar.m in Sources */,
+				9261BAB02F74A801000773A6 /* NSMenuItem+NoImages.m in Sources */,
 				9242A5911A82A40B005AA4B3 /* MoCalCell.m in Sources */,
 				9224B0751A8BE75500D63030 /* MoButton.m in Sources */,
 				9242A5841A82A189005AA4B3 /* ViewController.m in Sources */,
@@ -594,10 +600,10 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = YES;
-				DEVELOPMENT_TEAM = "";
-				ENABLE_HARDENED_RUNTIME = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;

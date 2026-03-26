@@ -10,6 +10,7 @@
 #import "EventCenter.h"
 #import "MoThemeView.h"
 #import "MoVFLHelper.h"
+#import "NSMenuItem+NoImages.h"
 #import "Themer.h"
 
 @interface HackyTextView : NSTextView
@@ -241,6 +242,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     // will be repopulated in -viewWillAppear.
     NSMenuItem *calItem = [NSMenuItem new];
     calItem.image = [NSImage imageWithSize:NSMakeSize(8, 8) flipped:NO drawingHandler:^BOOL(NSRect dstRect) { return YES; }];
+    calItem.rs_shouldShowImage = YES;
     [_calPopup.menu addItem:calItem];
     
     // Save and Cancel buttons
@@ -386,6 +388,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
             calItem.title = calInfo.calendar.title;
             calItem.image = coloredDot(calInfo.calendar.color);
             calItem.tag   = [sourcesAndCalendars indexOfObject:obj];
+            calItem.rs_shouldShowImage = YES;
             [_calPopup.menu addItem:calItem];
             if ([calInfo.calendar.calendarIdentifier isEqualToString:defaultCalendarIdentifier]) {
                 [_calPopup selectItemWithTag:calItem.tag];
