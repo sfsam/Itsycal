@@ -1295,11 +1295,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
             NSColor *textColor = Theme.agendaEventDateTextColor;
             if (participant.participantStatus == EKParticipantStatusAccepted) {
                 statusIcon = @"􀁢"; // checkmark.circle (Requires SF fonts to see)
-                textColor = Theme.agendaEventTextColor;
+                textColor = NSColor.systemGreenColor;
             }
             if (participant.participantStatus == EKParticipantStatusDeclined) {
                 statusIcon = @"􀁐"; // x.circle (Requires SF fonts to see)
-                textColor = Theme.agendaEventTextColor;
+                textColor = NSColor.systemRedColor;
             }
 
             // Status icons are in the embedded font Mow.otf, CANNOT compress.
@@ -1321,13 +1321,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
             NSTextField *participantLabel = [NSTextField labelWithString:participantString];
             participantLabel.selectable = YES;
             participantLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-            participantLabel.textColor = textColor;
+            participantLabel.textColor = Theme.agendaEventTextColor;
             participantLabel.font = [NSFont systemFontOfSize:SizePref.fontSize];
             [participantLabel setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
 
             // Organizer icon uses system font, CANNOT compress.
             NSTextField *organizerLabel = [NSTextField labelWithString:orgIcon];
-            organizerLabel.textColor = textColor;
+            organizerLabel.textColor = Theme.agendaEventTextColor;
             organizerLabel.font = [NSFont systemFontOfSize:SizePref.fontSize];
             [organizerLabel setContentCompressionResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
 
