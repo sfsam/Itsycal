@@ -1048,6 +1048,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _scrollView.drawsBackground = NO;
         _scrollView.hasVerticalScroller = YES;
         _scrollView.documentView = _grid;
+        _scrollView.verticalScroller = [ThemedScroller new];
 
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
         _hiddenLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"<((https?|rdar):\\/\\/[^\\s]+)>" options:NSRegularExpressionCaseInsensitive error:NULL];
