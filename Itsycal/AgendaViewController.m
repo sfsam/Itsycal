@@ -261,7 +261,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self->_popover.contentViewController = [AgendaPopoverVC new];
         self->_popover.behavior = NSPopoverBehaviorTransient;
         self->_popover.animates = NO;
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
         if (@available(macOS 26.0, *)) {
             // Enable coloring the full background including the arrow.
             // See AgendaPopoverVC -loadView.
