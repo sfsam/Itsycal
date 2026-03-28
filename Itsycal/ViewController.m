@@ -41,6 +41,7 @@
     BOOL       _clockUsesSeconds;
     BOOL       _clockUsesTime;
     BOOL       _shouldShowMeetingIndicator;
+    NSString  *_eventCountdownString;
     NSRect     _screenFrame;
     NSPopover *_newEventPopover;
     NSMutableArray *_notificationTokens;
@@ -63,6 +64,7 @@
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDaysWithNoEventsInAgenda];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMeetingIndicator];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowEventCountdown];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kHideIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kBaselineOffset];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kClockFormat];
@@ -705,7 +707,29 @@
             // Prepend a space to _clockFormat text to separate it from icon.
             buttonText = [@" " stringByAppendingString:buttonText];
         }
+        if (_eventCountdownString) {
+            buttonText = [buttonText stringByAppendingFormat:@"  %@", _eventCountdownString];
+        }
         _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
+    }
+    else if (_eventCountdownString) {
+        // No clock format, but countdown is enabled: show countdown as the title.
+        CGFloat baselineOffset = 0;
+        if ([defaults objectForKey:kBaselineOffset]) {
+            baselineOffset = [defaults floatForKey:kBaselineOffset];
+            baselineOffset = MIN(2.0, MAX(-2.0, baselineOffset));
+        }
+        NSString *buttonText = hideIcon ? _eventCountdownString : [@" " stringByAppendingString:_eventCountdownString];
+        _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
+        if (hideIcon) {
+            _statusItem.button.imagePosition = NSImageLeft;
+        }
+    }
+    else {
+        _statusItem.button.attributedTitle = nil;
+    }
+    if (_eventCountdownString) {
+        accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", _eventCountdownString];
     }
     _statusItem.button.accessibilityTitle = accessibilityTitle;
     [self adjustStatusItemWidthIfNecessary];
@@ -1273,6 +1297,67 @@
     }
 }
 
+- (void)updateEventCountdownIfNecessary
+{
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:kShowEventCountdown]) {
+        if (_eventCountdownString != nil) {
+            _eventCountdownString = nil;
+            [self updateMenubarIcon];
+        }
+        return;
+    }
+
+    NSString *countdown = nil;
+    NSDate *now = [NSDate date];
+    NSArray *todayEvents = [self eventsForDate:[self todayDate]];
+
+    // Find the nearest upcoming or in-progress non-all-day event.
+    NSDate *earliestStart = nil;
+    EventInfo *nextEvent = nil;
+    for (EventInfo *info in todayEvents) {
+        if (info.isAllDay || !info.event) continue;
+        // Skip events that have already ended.
+        if ([now compare:info.event.endDate] != NSOrderedAscending) continue;
+        if (earliestStart == nil || [info.event.startDate compare:earliestStart] == NSOrderedAscending) {
+            earliestStart = info.event.startDate;
+            nextEvent = info;
+        }
+    }
+
+    if (nextEvent) {
+        NSTimeInterval delta;
+        NSString *prefix;
+        if ([now compare:nextEvent.event.startDate] == NSOrderedAscending) {
+            // Event hasn't started yet: show time until start.
+            delta = [nextEvent.event.startDate timeIntervalSinceDate:now];
+            prefix = @"in";
+        } else {
+            // Event is in progress: show time until end.
+            delta = [nextEvent.event.endDate timeIntervalSinceDate:now];
+            prefix = @"ends in";
+        }
+
+        NSInteger hours = (NSInteger)(delta / 3600);
+        NSInteger minutes = (NSInteger)(fmod(delta, 3600) / 60);
+        // Round up so "59s left" shows as "1m" not "0m".
+        if (minutes == 0 && delta > 0 && hours == 0) minutes = 1;
+
+        NSString *timeStr;
+        if (hours > 0) {
+            timeStr = [NSString stringWithFormat:@"%ldh %ldm", (long)hours, (long)minutes];
+        } else {
+            timeStr = [NSString stringWithFormat:@"%ldm", (long)minutes];
+        }
+
+        countdown = [NSString stringWithFormat:@"%@ %@ %@", nextEvent.event.title, prefix, timeStr];
+    }
+
+    if (![_eventCountdownString isEqualToString:countdown] && (countdown != _eventCountdownString)) {
+        _eventCountdownString = countdown;
+        [self updateMenubarIcon];
+    }
+}
+
 - (float)volumeRelativeToSystemVolumeWithCap:(float)cap
 {
     // https://stackoverflow.com/a/8953438/111418
@@ -1355,6 +1440,7 @@
         [_agendaVC dimEventsIfNecessary];
         dimEventsTime = currentTime;
         [self showMeetingIndicatorIfNecessary];
+        [self updateEventCountdownIfNecessary];
     }
     // Reset calendar to today after 10 minutes of inactivity.
     elapsedTime = currentTime - _inactiveTime;
@@ -1496,7 +1582,7 @@
     [_notificationTokens addObject:token];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kShowEventCountdown, kHideIcon, kBaselineOffset, kClockFormat]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -1509,6 +1595,9 @@
     if ([keyPath isEqualToString:kShowEventDays] ||
         [keyPath isEqualToString:kShowDaysWithNoEventsInAgenda]) {
         [self updateAgenda];
+    }
+    else if ([keyPath isEqualToString:kShowEventCountdown]) {
+        [self updateEventCountdownIfNecessary];
     }
     else if ([keyPath isEqualToString:kMenuBarIconType] ||
              [keyPath isEqualToString:kShowMonthInIcon] ||
