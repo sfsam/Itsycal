@@ -677,8 +677,8 @@
         }
     }
     else {
-        NSString *iconText = [self iconText];
-        accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", iconText];
+        NSString *iconText = _eventCountdownString ? @"|" : [self iconText];
+        accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", _eventCountdownString ? @"Event countdown" : iconText];
         _statusItem.button.image = [self iconImageForText:iconText];
         _statusItem.button.imagePosition = (_clockFormat || _eventCountdownString) ? NSImageLeft : NSImageOnly;
     }
