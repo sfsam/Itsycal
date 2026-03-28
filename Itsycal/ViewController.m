@@ -1229,6 +1229,7 @@
     _filteredEventsForDate = [_ec filteredEventsForDate];
     [_moCal reloadData];
     [self updateAgenda];
+    [self updateEventCountdownIfNecessary];
 }
 
 - (MoDate)fetchStartDate
