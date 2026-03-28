@@ -1339,12 +1339,20 @@
 
     NSString *countdown = nil;
     NSDate *now = [NSDate date];
-    NSArray *todayEvents = [self eventsForDate:[self todayDate]];
 
-    // Find the nearest upcoming or in-progress non-all-day event.
+    // Check today and tomorrow to catch events within the 8-hour window across midnight.
+    MoDate today = [self todayDate];
+    MoDate tomorrow = AddDaysToDate(1, today);
+    NSMutableArray *candidates = [NSMutableArray new];
+    NSArray *todayEvents = [self eventsForDate:today];
+    NSArray *tomorrowEvents = [self eventsForDate:tomorrow];
+    if (todayEvents) [candidates addObjectsFromArray:todayEvents];
+    if (tomorrowEvents) [candidates addObjectsFromArray:tomorrowEvents];
+
+    // Find the nearest upcoming or in-progress non-all-day event within 8 hours.
     NSDate *earliestStart = nil;
     EventInfo *nextEvent = nil;
-    for (EventInfo *info in todayEvents) {
+    for (EventInfo *info in candidates) {
         if (info.isAllDay || !info.event) continue;
         // Skip events that have already ended.
         if ([now compare:info.event.endDate] != NSOrderedAscending) continue;
