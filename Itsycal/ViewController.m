@@ -680,7 +680,7 @@
         NSString *iconText = [self iconText];
         accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", iconText];
         _statusItem.button.image = [self iconImageForText:iconText];
-        _statusItem.button.imagePosition = _clockFormat ? NSImageLeft : NSImageOnly;
+        _statusItem.button.imagePosition = (_clockFormat || _eventCountdownString) ? NSImageLeft : NSImageOnly;
     }
     if (_clockFormat) {
         [_iconDateFormatter setDateFormat:_clockFormat];
