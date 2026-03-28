@@ -1333,24 +1333,33 @@
             delta = [nextEvent.event.startDate timeIntervalSinceDate:now];
             prefix = @"in";
         } else {
-            // Event is in progress: show time until end.
-            delta = [nextEvent.event.endDate timeIntervalSinceDate:now];
-            prefix = @"-";
+            // Event is in progress: show "now" for the first few minutes.
+            NSTimeInterval elapsed = [now timeIntervalSinceDate:nextEvent.event.startDate];
+            NSTimeInterval duration = [nextEvent.event.endDate timeIntervalSinceDate:nextEvent.event.startDate];
+            NSTimeInterval nowThreshold = (duration > 15 * 60) ? 10 * 60 : 5 * 60;
+            if (elapsed < nowThreshold) {
+                countdown = [NSString stringWithFormat:@"%@ - now", nextEvent.event.title];
+            } else {
+                delta = [nextEvent.event.endDate timeIntervalSinceDate:now];
+                prefix = @"-";
+            }
         }
 
-        NSInteger hours = (NSInteger)(delta / 3600);
-        NSInteger minutes = (NSInteger)(fmod(delta, 3600) / 60);
-        // Round up so "59s left" shows as "1m" not "0m".
-        if (minutes == 0 && delta > 0 && hours == 0) minutes = 1;
+        if (countdown == nil) {
+            NSInteger hours = (NSInteger)(delta / 3600);
+            NSInteger minutes = (NSInteger)(fmod(delta, 3600) / 60);
+            // Round up so "59s left" shows as "1m" not "0m".
+            if (minutes == 0 && delta > 0 && hours == 0) minutes = 1;
 
-        NSString *timeStr;
-        if (hours > 0) {
-            timeStr = [NSString stringWithFormat:@"%ldh %ldm", (long)hours, (long)minutes];
-        } else {
-            timeStr = [NSString stringWithFormat:@"%ldm", (long)minutes];
+            NSString *timeStr;
+            if (hours > 0) {
+                timeStr = [NSString stringWithFormat:@"%ldh %ldm", (long)hours, (long)minutes];
+            } else {
+                timeStr = [NSString stringWithFormat:@"%ldm", (long)minutes];
+            }
+
+            countdown = [NSString stringWithFormat:@"%@ %@ %@", nextEvent.event.title, prefix, timeStr];
         }
-
-        countdown = [NSString stringWithFormat:@"%@ %@ %@", nextEvent.event.title, prefix, timeStr];
     }
 
     if (![_eventCountdownString isEqualToString:countdown] && (countdown != _eventCountdownString)) {
