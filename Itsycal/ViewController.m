@@ -676,11 +676,15 @@
             _statusItem.button.imagePosition = NSNoImage;
         }
     }
+    else if (_eventCountdownString) {
+        _statusItem.button.image = nil;
+        _statusItem.button.imagePosition = NSNoImage;
+    }
     else {
-        NSString *iconText = _eventCountdownString ? @"|" : [self iconText];
-        accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", _eventCountdownString ? @"Event countdown" : iconText];
+        NSString *iconText = [self iconText];
+        accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", iconText];
         _statusItem.button.image = [self iconImageForText:iconText];
-        _statusItem.button.imagePosition = (_clockFormat || _eventCountdownString) ? NSImageLeft : NSImageOnly;
+        _statusItem.button.imagePosition = _clockFormat ? NSImageLeft : NSImageOnly;
     }
     if (_clockFormat) {
         [_iconDateFormatter setDateFormat:_clockFormat];
@@ -708,7 +712,7 @@
             buttonText = [@" " stringByAppendingString:buttonText];
         }
         if (_eventCountdownString) {
-            buttonText = [buttonText stringByAppendingFormat:@"  %@", _eventCountdownString];
+            buttonText = [buttonText stringByAppendingFormat:@"  | %@", _eventCountdownString];
         }
         _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
     }
@@ -719,11 +723,8 @@
             baselineOffset = [defaults floatForKey:kBaselineOffset];
             baselineOffset = MIN(2.0, MAX(-2.0, baselineOffset));
         }
-        NSString *buttonText = hideIcon ? _eventCountdownString : [@" " stringByAppendingString:_eventCountdownString];
+        NSString *buttonText = [NSString stringWithFormat:@"| %@", _eventCountdownString];
         _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
-        if (hideIcon) {
-            _statusItem.button.imagePosition = NSImageLeft;
-        }
     }
     else {
         _statusItem.button.attributedTitle = nil;
