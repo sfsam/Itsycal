@@ -659,6 +659,16 @@
     return iconText;
 }
 
+- (NSAttributedString *)countdownAttributedStringWithBaselineOffset:(CGFloat)baselineOffset prefix:(NSString *)prefix
+{
+    NSFont *boldFont = [NSFont systemFontOfSize:0 weight:NSFontWeightHeavy];
+    NSFont *regularFont = [NSFont systemFontOfSize:0 weight:NSFontWeightRegular];
+    NSMutableAttributedString *result = [NSMutableAttributedString new];
+    [result appendAttributedString:[[NSAttributedString alloc] initWithString:[prefix stringByAppendingString:@"|"] attributes:@{NSFontAttributeName: boldFont, NSBaselineOffsetAttributeName: @(baselineOffset)}]];
+    [result appendAttributedString:[[NSAttributedString alloc] initWithString:[@" " stringByAppendingString:_eventCountdownString] attributes:@{NSFontAttributeName: regularFont, NSBaselineOffsetAttributeName: @(baselineOffset)}]];
+    return result;
+}
+
 - (void)updateMenubarIcon
 {
     NSString *accessibilityTitle = @"Itsycal";
@@ -712,19 +722,20 @@
             buttonText = [@" " stringByAppendingString:buttonText];
         }
         if (_eventCountdownString) {
-            buttonText = [buttonText stringByAppendingFormat:@"  | %@", _eventCountdownString];
+            NSMutableAttributedString *combined = [[NSMutableAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
+            [combined appendAttributedString:[self countdownAttributedStringWithBaselineOffset:baselineOffset prefix:@"  "]];
+            _statusItem.button.attributedTitle = combined;
+        } else {
+            _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
         }
-        _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
     }
     else if (_eventCountdownString) {
-        // No clock format, but countdown is enabled: show countdown as the title.
         CGFloat baselineOffset = 0;
         if ([defaults objectForKey:kBaselineOffset]) {
             baselineOffset = [defaults floatForKey:kBaselineOffset];
             baselineOffset = MIN(2.0, MAX(-2.0, baselineOffset));
         }
-        NSString *buttonText = [NSString stringWithFormat:@"| %@", _eventCountdownString];
-        _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
+        _statusItem.button.attributedTitle = [self countdownAttributedStringWithBaselineOffset:baselineOffset prefix:@""];
     }
     else {
         _statusItem.button.attributedTitle = nil;
