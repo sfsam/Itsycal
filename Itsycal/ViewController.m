@@ -661,10 +661,27 @@
 
 - (NSAttributedString *)countdownAttributedStringWithBaselineOffset:(CGFloat)baselineOffset prefix:(NSString *)prefix
 {
-    NSFont *boldFont = [NSFont systemFontOfSize:0 weight:NSFontWeightHeavy];
+    // Draw a thick rounded bar as an image.
+    CGFloat barWidth = 3.5;
+    CGFloat barHeight = 13.0;
+    NSImage *barImage = [NSImage imageWithSize:NSMakeSize(barWidth, barHeight) flipped:NO drawingHandler:^BOOL(NSRect rect) {
+        [[NSColor labelColor] setFill];
+        [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:barWidth / 2.0 yRadius:barWidth / 2.0] fill];
+        return YES;
+    }];
+    barImage.template = YES;
+
+    NSTextAttachment *attachment = [NSTextAttachment new];
+    attachment.image = barImage;
+    // Vertically center the bar relative to the text.
+    attachment.bounds = NSMakeRect(0, -1.5, barWidth, barHeight);
+
     NSFont *regularFont = [NSFont systemFontOfSize:0 weight:NSFontWeightRegular];
     NSMutableAttributedString *result = [NSMutableAttributedString new];
-    [result appendAttributedString:[[NSAttributedString alloc] initWithString:[prefix stringByAppendingString:@"|"] attributes:@{NSFontAttributeName: boldFont, NSBaselineOffsetAttributeName: @(baselineOffset)}]];
+    if (prefix.length > 0) {
+        [result appendAttributedString:[[NSAttributedString alloc] initWithString:prefix attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}]];
+    }
+    [result appendAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
     [result appendAttributedString:[[NSAttributedString alloc] initWithString:[@" " stringByAppendingString:_eventCountdownString] attributes:@{NSFontAttributeName: regularFont, NSBaselineOffsetAttributeName: @(baselineOffset)}]];
     return result;
 }
