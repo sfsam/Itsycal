@@ -1334,7 +1334,7 @@
         } else {
             // Event is in progress: show time until end.
             delta = [nextEvent.event.endDate timeIntervalSinceDate:now];
-            prefix = @"ends in";
+            prefix = @"-";
         }
 
         NSInteger hours = (NSInteger)(delta / 3600);
