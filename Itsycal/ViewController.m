@@ -1348,6 +1348,9 @@
         if (info.isAllDay || !info.event) continue;
         // Skip events that have already ended.
         if ([now compare:info.event.endDate] != NSOrderedAscending) continue;
+        // Skip events starting more than 8 hours from now.
+        if ([now compare:info.event.startDate] == NSOrderedAscending &&
+            [info.event.startDate timeIntervalSinceDate:now] > 8 * 3600) continue;
         if (earliestStart == nil || [info.event.startDate compare:earliestStart] == NSOrderedAscending) {
             earliestStart = info.event.startDate;
             nextEvent = info;
