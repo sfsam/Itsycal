@@ -1,0 +1,5 @@
+"NSAppleEventsUsageDescription" = "선택한 날짜를 캘린더 앱에서 열려면 AppleEvents 접근이 필요해요. 이 설정은 시스템 설정 › 개인정보 보호 및 보안 › 개인 정보 보호에서 변경할 수 있어요.";
+
+"NSCalendarsUsageDescription" = "캘린더 이벤트를 보여주려면 캘린더 접근이 필요해요. 이 설정은 시스템 설정 › 개인정보 보호 및 보안 › 개인 정보 보호에서 변경할 수 있어요.";
+
+"NSCalendarsFullAccessUsageDescription" = "캘린더 이벤트를 만들고 수정하고 삭제하려면 캘린더에 대한 전체 접근 권한이 필요해요. 이 설정은 시스템 설정 › 개인정보 보호 및 보안 › 캘린더에서 변경할 수 있어요.";
