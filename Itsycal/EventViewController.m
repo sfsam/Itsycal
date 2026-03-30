@@ -211,6 +211,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _notesScrollView.verticalScrollElasticity = NSScrollElasticityNone;
     _notesScrollView.drawsBackground = NO;
     _notesScrollView.hasVerticalScroller = YES;
+    _notesScrollView.verticalScroller = [ThemedScroller new];
     [v addSubview:_notesScrollView];
 
     NSSize noteContentSize = _notesScrollView.contentSize;

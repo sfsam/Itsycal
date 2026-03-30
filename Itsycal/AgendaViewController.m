@@ -19,9 +19,6 @@ static NSString *kColumnIdentifier    = @"Column";
 static NSString *kDateCellIdentifier  = @"DateCell";
 static NSString *kEventCellIdentifier = @"EventCell";
 
-@interface ThemedScroller : NSScroller
-@end
-
 @interface AgendaRowView : NSTableRowView
 @property (nonatomic) BOOL isHovered;
 @end
@@ -648,27 +645,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
         }
     }
     return NO;
-}
-
-@end
-
-#pragma mark -
-#pragma mark ThemedScroller
-
-// =========================================================================
-// ThemedScroller
-// =========================================================================
-
-@implementation ThemedScroller
-
-+ (BOOL)isCompatibleWithOverlayScrollers {
-    return self == [ThemedScroller class];
-}
-
-- (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)flag
-{
-    [Theme.mainBackgroundColor set];
-    NSRectFill(slotRect);
 }
 
 @end

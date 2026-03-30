@@ -8,3 +8,7 @@
 @interface MoThemeView : NSView
 
 @end
+
+@interface ThemedScroller : NSScroller
+
+@end
