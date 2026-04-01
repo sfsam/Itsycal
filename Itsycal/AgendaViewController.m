@@ -286,6 +286,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSRect positionRect = NSInsetRect([_tv rectOfRow:row], 8, 0);
     [_popover setAppearance:NSApp.effectiveAppearance];
     [_popover showRelativeToRect:positionRect ofView:_tv preferredEdge:NSRectEdgeMinX];
+    // Force a layout pass now that the view is in a window. This ensures
+    // preferredMaxLayoutWidth is set on wrapping NSTextField labels before
+    // fittingSize is queried, preventing an incorrectly short popover on
+    // first display (second display would have been correct without this).
+    [popoverVC.view layoutSubtreeIfNeeded];
     [_popover setContentSize:popoverVC.size];
     [popoverVC scrollToTopAndFlashScrollers];
     
@@ -1232,7 +1237,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
             [_grid rowAtIndex:1].hidden = YES;
         }
         else {
-            [self populateTextView:_location withString:trimmedLoc heightConstraint:_locHeight];
+            // Append a space to force correct height calc on first display.
+            // Same technique used for the URL field below.
+            [self populateTextView:_location withString:[trimmedLoc stringByAppendingString:@" "] heightConstraint:_locHeight];
         }
     }
     
@@ -1331,7 +1338,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
             [_grid rowAtIndex:8].hidden = YES;
         }
         else {
-            [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight];
+            // Append a space to force correct height calc on first display.
+            // Same technique used for the URL field below.
+            [self populateTextView:_note withString:[trimmedNotes stringByAppendingString:@" "] heightConstraint:_noteHeight];
         }
     }
 
