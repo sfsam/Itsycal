@@ -51,7 +51,9 @@
 	<string>Itsycal is more useful when it can display events from your calendars. You can change this setting in System Settings › Privacy &amp; Security › Calendars</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security &amp; Privacy › Privacy</string>
-	<key>NSHumanReadableCopyright</key>
+    <key>NSContactsUsageDescription</key>
+    <string>Itsycal would like to access your contacts to display birthdays, anniversaries, and other important dates in the calendar.</string>
+    <key>NSHumanReadableCopyright</key>
 	<string>© 2012 − 2025 mowglii.com</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>

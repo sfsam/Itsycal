@@ -10,6 +10,8 @@
 #import <EventKit/EventKit.h>
 #import "MoDate.h"
 
+@class ContactEventManager;
+
 // =========================================================================
 // EventCenter
 // Provide calendar and event data.
@@ -24,12 +26,18 @@
 
 @property (nonatomic, readonly) NSString *defaultCalendarIdentifier;
 
+// Contact event manager
+@property (nonatomic, readonly) ContactEventManager *contactEventManager;
+
 // Delegate is responsible for...
 @property (nonatomic, weak) id<EventCenterDelegate> delegate;
 
 - (instancetype)initWithCalendar:(NSCalendar *)calendar delegate:(id<EventCenterDelegate>)delegate;
 
 - (EKEvent *)newEvent;
+
+// Refresh an event from the event store to restore its connection
+- (EKEvent *)refreshEvent:(EKEvent *)event;
 
 - (BOOL)saveEvent:(EKEvent *)event error:(NSError **)error;
 
@@ -94,4 +102,11 @@
 @property (nonatomic) BOOL isEndDate;   // event ends, but doesn't start, on this date
 @property (nonatomic) BOOL isAllDay;    // event is all-day, or spans across this date
 @property (nonatomic) NSURL *zoomURL;   // Zoom, Google Meet, Microsoft Teams, etc. URL
+
+// Contact event properties (used when event is nil)
+@property (nonatomic) BOOL isContactEvent;
+@property (nonatomic) NSString *contactEventTitle;
+@property (nonatomic) NSDate *contactEventDate;
+@property (nonatomic) NSColor *contactEventColor;
+
 @end
