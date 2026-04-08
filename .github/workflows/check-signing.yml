@@ -1,0 +1,25 @@
+name: Check Signing Settings
+
+on:
+  pull_request:
+    paths:
+      - 'Itsycal.xcodeproj/project.pbxproj'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fail if signing settings were modified
+        run: |
+          if git diff origin/${{ github.base_ref }}...HEAD -- Itsycal.xcodeproj/project.pbxproj \
+            | grep -E '^\+.*(DEVELOPMENT_TEAM|DevelopmentTeam|ProvisioningStyle)'; then
+            echo ""
+            echo "ERROR: This PR modifies code signing settings in project.pbxproj."
+            echo "Please revert those changes before submitting."
+            echo "See CONTRIBUTING.md for instructions on setting up Local.xcconfig."
+            exit 1
+          fi

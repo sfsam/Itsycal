@@ -10,6 +10,7 @@
 #import "AgendaViewController.h"
 #import "EventCenter.h"
 #import "MoButton.h"
+#import "MoThemeView.h"
 #import "MoVFLHelper.h"
 #import "Themer.h"
 #import "Sizer.h"
@@ -17,9 +18,6 @@
 static NSString *kColumnIdentifier    = @"Column";
 static NSString *kDateCellIdentifier  = @"DateCell";
 static NSString *kEventCellIdentifier = @"EventCell";
-
-@interface ThemedScroller : NSScroller
-@end
 
 @interface AgendaRowView : NSTableRowView
 @property (nonatomic) BOOL isHovered;
@@ -280,6 +278,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self->_popover.contentViewController = [AgendaPopoverVC new];
         self->_popover.behavior = NSPopoverBehaviorTransient;
         self->_popover.animates = NO;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
+        if (@available(macOS 26.0, *)) {
+            // Enable coloring the full background including the arrow.
+            // See AgendaPopoverVC -loadView.
+            self->_popover.hasFullSizeContent = YES;
+        }
+#endif
     });
     
     AgendaPopoverVC *popoverVC = (AgendaPopoverVC *)_popover.contentViewController;
@@ -297,6 +302,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSRect positionRect = NSInsetRect([_tv rectOfRow:row], 8, 0);
     [_popover setAppearance:NSApp.effectiveAppearance];
     [_popover showRelativeToRect:positionRect ofView:_tv preferredEdge:NSRectEdgeMinX];
+    // Force a layout pass now that the view is in a window. This ensures
+    // preferredMaxLayoutWidth is set on wrapping NSTextField labels before
+    // fittingSize is queried, preventing an incorrectly short popover on
+    // first display (second display would have been correct without this).
+    [popoverVC.view layoutSubtreeIfNeeded];
     [_popover setContentSize:popoverVC.size];
     [popoverVC scrollToTopAndFlashScrollers];
     
@@ -680,27 +690,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @end
 
 #pragma mark -
-#pragma mark ThemedScroller
-
-// =========================================================================
-// ThemedScroller
-// =========================================================================
-
-@implementation ThemedScroller
-
-+ (BOOL)isCompatibleWithOverlayScrollers {
-    return self == [ThemedScroller class];
-}
-
-- (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)flag
-{
-    [Theme.mainBackgroundColor set];
-    NSRectFill(slotRect);
-}
-
-@end
-
-#pragma mark -
 #pragma mark Agenda Row View
 
 // =========================================================================
@@ -1075,6 +1064,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
         _scrollView.drawsBackground = NO;
         _scrollView.hasVerticalScroller = YES;
         _scrollView.documentView = _grid;
+        _scrollView.verticalScroller = [ThemedScroller new];
 
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
         _hiddenLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"<((https?|rdar):\\/\\/[^\\s]+)>" options:NSRegularExpressionCaseInsensitive error:NULL];
@@ -1097,11 +1087,35 @@ static NSString *kEventCellIdentifier = @"EventCell";
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:view metrics:nil views:NSDictionaryOfVariableBindings(_scrollView)];
     [vfl :@"H:|[_scrollView]|"];
     [vfl :@"V:|-8-[_scrollView]-8-|"];
+
+    if (@available(macOS 26.0, *)) {
+        // On macOS 26 the trick we use in -viewDidAppear to paint
+        // the popover's full background no longer works. Now we
+        // set the popover's hasFullContentSize=YES and use the
+        // safeAreaLayoutGuide of a view that paints its background
+        // according to the Theme to inset our content.
+        view.translatesAutoresizingMaskIntoConstraints = NO;
+        MoThemeView *v = [MoThemeView new];
+        [v addSubview:view];
+        [NSLayoutConstraint activateConstraints:@[
+            [view.topAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.topAnchor],
+            [view.bottomAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.bottomAnchor],
+            [view.leftAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.leftAnchor],
+            [view.rightAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.rightAnchor],
+        ]];
+        self.view = v;
+        return;
+    }
+
     self.view = view;
 }
 
 - (void)viewDidAppear
 {
+    // macOS 26 uses MoThemeView and fullSizeContent on the popover
+    // to paint the whole background so we can just return early.
+    if (@available(macOS 26.0, *)) return;
+
     // Add a colored subview at the bottom the of popover's
     // window's frameView's view hierarchy. This should color
     // the popover including the arrow.
@@ -1121,6 +1135,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
 - (NSSize)size
 {
     // See -loadView. Vertial padding top+bottom = 16.
+    if (@available(macOS 26.0, *)) {
+        // On macOS 26 we need to additionally take into account safe area.
+        CGFloat h = self.view.safeAreaInsets.left + self.view.safeAreaInsets.right;
+        CGFloat v = self.view.safeAreaInsets.top + self.view.safeAreaInsets.bottom;
+        return NSMakeSize(_grid.fittingSize.width + h,
+                          _grid.fittingSize.height + v + 16);
+    }
     return NSMakeSize(_grid.fittingSize.width, _grid.fittingSize.height + 16);
 }
 
@@ -1251,7 +1272,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
             [_grid rowAtIndex:1].hidden = YES;
         }
         else {
-            [self populateTextView:_location withString:trimmedLoc heightConstraint:_locHeight];
+            // Append a space to force correct height calc on first display.
+            // Same technique used for the URL field below.
+            [self populateTextView:_location withString:[trimmedLoc stringByAppendingString:@" "] heightConstraint:_locHeight];
         }
     }
     
@@ -1293,11 +1316,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
             NSColor *textColor = Theme.agendaEventDateTextColor;
             if (participant.participantStatus == EKParticipantStatusAccepted) {
                 statusIcon = @"􀁢"; // checkmark.circle (Requires SF fonts to see)
-                textColor = Theme.agendaEventTextColor;
+                textColor = NSColor.systemGreenColor;
             }
             if (participant.participantStatus == EKParticipantStatusDeclined) {
                 statusIcon = @"􀁐"; // x.circle (Requires SF fonts to see)
-                textColor = Theme.agendaEventTextColor;
+                textColor = NSColor.systemRedColor;
             }
 
             // Status icons are in the embedded font Mow.otf, CANNOT compress.
@@ -1319,13 +1342,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
             NSTextField *participantLabel = [NSTextField labelWithString:participantString];
             participantLabel.selectable = YES;
             participantLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-            participantLabel.textColor = textColor;
+            participantLabel.textColor = Theme.agendaEventTextColor;
             participantLabel.font = [NSFont systemFontOfSize:SizePref.fontSize];
             [participantLabel setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
 
             // Organizer icon uses system font, CANNOT compress.
             NSTextField *organizerLabel = [NSTextField labelWithString:orgIcon];
-            organizerLabel.textColor = textColor;
+            organizerLabel.textColor = Theme.agendaEventTextColor;
             organizerLabel.font = [NSFont systemFontOfSize:SizePref.fontSize];
             [organizerLabel setContentCompressionResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
 
@@ -1350,7 +1373,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
             [_grid rowAtIndex:8].hidden = YES;
         }
         else {
-            [self populateTextView:_note withString:trimmedNotes heightConstraint:_noteHeight];
+            // Append a space to force correct height calc on first display.
+            // Same technique used for the URL field below.
+            [self populateTextView:_note withString:[trimmedNotes stringByAppendingString:@" "] heightConstraint:_noteHeight];
         }
     }
 
@@ -1397,7 +1422,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [attrString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:SizePref.fontSize] range:NSMakeRange(0, attrString.length)];
     [attrString addAttribute:NSForegroundColorAttributeName value:Theme.agendaEventTextColor range:NSMakeRange(0, attrString.length)];
     [_messageLinksRegex enumerateMatchesInString:attrString.string options:kNilOptions range:NSMakeRange(0, attrString.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
-        NSString *link = [string substringWithRange:result.range];
+        NSString *link = [attrString.string substringWithRange:result.range];
         [attrString addAttribute:NSLinkAttributeName value:link range:result.range];
         [messageLinkRanges addObject:[NSValue valueWithRange:result.range]];
     }];

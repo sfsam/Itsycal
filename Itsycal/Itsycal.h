@@ -34,6 +34,7 @@ extern NSString * const kDoNotDrawOutlineAroundCurrentMonth;
 extern NSString * const kShowDaysWithNoEventsInAgenda;
 extern NSString * const kShowEventPopoverOnHover;
 extern NSString * const kShowContactEvents;
+extern NSString * const kEnableTahoeMenuIcons;
 
 // Set an associated object on NSDate to indicate
 // whether of not this date has events.

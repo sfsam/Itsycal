@@ -12,4 +12,9 @@ and delete (but not edit) events.
 
 For more info, see: http://www.mowglii.com/itsycal
 
+= = = = = = = =
+
+This project uses a local xcconfig file for signing -
+see CONTRIBUTING.md and Local.xcconfig.example
+
 MIT Licensed - see License file

@@ -12,6 +12,7 @@
 		920B5D7C2B4D10B6004A10D3 /* DatePickerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 920B5D7B2B4D10B6004A10D3 /* DatePickerVC.m */; };
 		920D6D51266A83AC00498E19 /* MoLoginItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 920D6D4F266A83AC00498E19 /* MoLoginItem.m */; };
 		921181C722E0192A00591FDA /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 921181C622E0192A00591FDA /* Colors.xcassets */; };
+		92121EDD2F7339C2005E6DC0 /* MoThemeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92121EDC2F7339C2005E6DC0 /* MoThemeView.m */; };
 		9215AD4C1E3AECA700317FAE /* MoVFLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */; };
 		921E62CD1E26B3EA007B029F /* PrefsGeneralVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62C11E26B3EA007B029F /* PrefsGeneralVC.m */; };
 		921E62D01E26B9D2007B029F /* PrefsAppearanceVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 921E62CF1E26B9D2007B029F /* PrefsAppearanceVC.m */; };
@@ -41,6 +42,7 @@
 		924C518C1E5F721C0049E3A9 /* MoCalResizeHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 924C518B1E5F721C0049E3A9 /* MoCalResizeHandle.m */; };
 		925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B47171A93B63100E0329A /* MoCalToolTipWC.m */; };
 		925B471B1A93CD2A00E0329A /* TooltipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925B471A1A93CD2A00E0329A /* TooltipViewController.m */; };
+		9261BAB02F74A801000773A6 /* NSMenuItem+NoImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 9261BAAF2F74A801000773A6 /* NSMenuItem+NoImages.m */; };
 		9261EB301EEF447500DCFFC4 /* Themer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9261EB2F1EEF447500DCFFC4 /* Themer.m */; };
 		92658E621A9DBD8E002AE86C /* EventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92658E611A9DBD8E002AE86C /* EventViewController.m */; };
 		926A6D8F1E3EC89100AAA991 /* PrefsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 926A6D8E1E3EC89100AAA991 /* PrefsVC.m */; };
@@ -87,6 +89,8 @@
 		920D6D4F266A83AC00498E19 /* MoLoginItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoLoginItem.m; sourceTree = "<group>"; };
 		920D6D50266A83AC00498E19 /* MoLoginItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoLoginItem.h; sourceTree = "<group>"; };
 		921181C622E0192A00591FDA /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		92121EDB2F7339C2005E6DC0 /* MoThemeView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MoThemeView.h; sourceTree = "<group>"; };
+		92121EDC2F7339C2005E6DC0 /* MoThemeView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MoThemeView.m; sourceTree = "<group>"; };
 		9215AD4A1E3AECA700317FAE /* MoVFLHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoVFLHelper.h; sourceTree = "<group>"; };
 		9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoVFLHelper.m; sourceTree = "<group>"; };
 		921949F3225D283E00223258 /* Itsycal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Itsycal.entitlements; sourceTree = "<group>"; };
@@ -149,6 +153,8 @@
 		925B47191A93CD2A00E0329A /* TooltipViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TooltipViewController.h; sourceTree = "<group>"; };
 		925B471A1A93CD2A00E0329A /* TooltipViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TooltipViewController.m; sourceTree = "<group>"; };
 		925B471D1A93E3D800E0329A /* MoCalTooltipProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoCalTooltipProvider.h; sourceTree = "<group>"; };
+		9261BAAE2F74A801000773A6 /* NSMenuItem+NoImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSMenuItem+NoImages.h"; sourceTree = "<group>"; };
+		9261BAAF2F74A801000773A6 /* NSMenuItem+NoImages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSMenuItem+NoImages.m"; sourceTree = "<group>"; };
 		9261EB2E1EEF447500DCFFC4 /* Themer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Themer.h; sourceTree = "<group>"; };
 		9261EB2F1EEF447500DCFFC4 /* Themer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Themer.m; sourceTree = "<group>"; };
 		92658E601A9DBD8E002AE86C /* EventViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventViewController.h; sourceTree = "<group>"; };
@@ -165,6 +171,10 @@
 		92B28CCE210BD17500485AE2 /* Sizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Sizer.m; sourceTree = "<group>"; };
 		92CDDE791A955D7F00D7675C /* AgendaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AgendaViewController.h; sourceTree = "<group>"; };
 		92CDDE7A1A955D7F00D7675C /* AgendaViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AgendaViewController.m; sourceTree = "<group>"; };
+		92CF00001A82A136005AA4B3 /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = SOURCE_ROOT; };
+		B0A100012F74710000AAA001 /* ko */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/MainMenu.strings; sourceTree = "<group>"; };
+		B0A100022F74710000AAA001 /* ko */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B0A100032F74710000AAA001 /* ko */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +221,7 @@
 			children = (
 				9242A55E1A82A136005AA4B3 /* Itsycal */,
 				9242A55D1A82A136005AA4B3 /* Products */,
+				92CF00001A82A136005AA4B3 /* Local.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -264,6 +275,8 @@
 				366079102F413F5B008E7160 /* ContactEventManager.h */,
 				92B28CCE210BD17500485AE2 /* Sizer.m */,
 				3660790E2F413E99008E7160 /* ContactEventManager.m */,
+				9261BAAE2F74A801000773A6 /* NSMenuItem+NoImages.h */,
+				9261BAAF2F74A801000773A6 /* NSMenuItem+NoImages.m */,
 			);
 			path = Itsycal;
 			sourceTree = "<group>";
@@ -313,6 +326,8 @@
 				920D6D4F266A83AC00498E19 /* MoLoginItem.m */,
 				9215AD4A1E3AECA700317FAE /* MoVFLHelper.h */,
 				9215AD4B1E3AECA700317FAE /* MoVFLHelper.m */,
+				92121EDB2F7339C2005E6DC0 /* MoThemeView.h */,
+				92121EDC2F7339C2005E6DC0 /* MoThemeView.m */,
 			);
 			name = MoCode;
 			sourceTree = "<group>";
@@ -372,6 +387,7 @@
 				es,
 				it,
 				de,
+				ko,
 				"zh-Hans",
 			);
 			mainGroup = 9242A5531A82A136005AA4B3;
@@ -436,6 +452,7 @@
 				9242A5651A82A136005AA4B3 /* main.m in Sources */,
 				92B28CCF210BD17500485AE2 /* Sizer.m in Sources */,
 				9278CADB1A990462004B6BB9 /* MoTableView.m in Sources */,
+				92121EDD2F7339C2005E6DC0 /* MoThemeView.m in Sources */,
 				929223EB1E2D6E0900F1A119 /* HighlightPicker.m in Sources */,
 				925B47181A93B63100E0329A /* MoCalToolTipWC.m in Sources */,
 				9242A5871A82A1A1005AA4B3 /* ItsycalWindow.m in Sources */,
@@ -451,6 +468,7 @@
 				921E62D01E26B9D2007B029F /* PrefsAppearanceVC.m in Sources */,
 				9242A5961A82BE5E005AA4B3 /* Itsycal.m in Sources */,
 				9242A5931A82A40B005AA4B3 /* MoCalendar.m in Sources */,
+				9261BAB02F74A801000773A6 /* NSMenuItem+NoImages.m in Sources */,
 				9242A5911A82A40B005AA4B3 /* MoCalCell.m in Sources */,
 				9224B0751A8BE75500D63030 /* MoButton.m in Sources */,
 				9242A5841A82A189005AA4B3 /* ViewController.m in Sources */,
@@ -471,6 +489,7 @@
 				922B6BD21A881DBF00DEA9CD /* fr */,
 				922B6BD71A88359800DEA9CD /* es */,
 				922B6BDB1A88667700DEA9CD /* it */,
+				B0A100032F74710000AAA001 /* ko */,
 				6F21F6F51F0CDA7D00F443BE /* zh-Hans */,
 			);
 			name = Localizable.strings;
@@ -483,6 +502,7 @@
 				922B6BD31A8821A200DEA9CD /* fr */,
 				922B6BD61A88359800DEA9CD /* es */,
 				922B6BDC1A886C6900DEA9CD /* it */,
+				B0A100022F74710000AAA001 /* ko */,
 				6F21F6F41F0CDA7D00F443BE /* zh-Hans */,
 			);
 			name = InfoPlist.strings;
@@ -496,6 +516,7 @@
 				922B6BD41A8821A300DEA9CD /* fr */,
 				922B6BD51A88359800DEA9CD /* es */,
 				922B6BDD1A886C6900DEA9CD /* it */,
+				B0A100012F74710000AAA001 /* ko */,
 				6F21F6F31F0CDA7D00F443BE /* zh-Hans */,
 			);
 			name = MainMenu.xib;
@@ -533,9 +554,12 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -589,10 +613,13 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -612,12 +639,12 @@
 		};
 		9242A57A1A82A136005AA4B3 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92CF00001A82A136005AA4B3 /* Local.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Itsycal/Itsycal.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2350;
+				CURRENT_PROJECT_VERSION = 2370;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = HFT3T55WND;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = YW2WSR36CA;
@@ -631,7 +658,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.15.10;
+				MARKETING_VERSION = 0.15.12;
 				OTHER_LDFLAGS = "-Wl,-rpath,@loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mowglii.$(PRODUCT_NAME:rfc1034identifier)App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -640,13 +667,13 @@
 		};
 		9242A57B1A82A136005AA4B3 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92CF00001A82A136005AA4B3 /* Local.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Itsycal/Itsycal.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2350;
+				CURRENT_PROJECT_VERSION = 2370;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = HFT3T55WND;
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = YW2WSR36CA;
@@ -660,7 +687,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.15.10;
+				MARKETING_VERSION = 0.15.12;
 				OTHER_LDFLAGS = "-Wl,-rpath,@loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mowglii.$(PRODUCT_NAME:rfc1034identifier)App";
 				PRODUCT_NAME = "$(TARGET_NAME)";

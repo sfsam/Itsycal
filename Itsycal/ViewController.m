@@ -30,6 +30,7 @@
     MoCalendar    *_moCal;
     NSCalendar    *_nsCal;
     NSStatusItem  *_statusItem;
+    id             _rightClickMonitor;
     MoButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
     NSWindowController    *_prefsWC;
     AgendaViewController  *_agendaVC;
@@ -43,16 +44,28 @@
     BOOL       _shouldShowMeetingIndicator;
     NSRect     _screenFrame;
     NSPopover *_newEventPopover;
+    NSMutableArray *_notificationTokens;
 }
 
 - (void)dealloc
 {
+    if (_rightClickMonitor) {
+        [NSEvent removeMonitor:_rightClickMonitor];
+        _rightClickMonitor = nil;
+    }
+    for (id token in _notificationTokens) {
+        [[NSNotificationCenter defaultCenter] removeObserver:token];
+        [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:token];
+    }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowEventDays];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kMenuBarIconType];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMonthInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDaysWithNoEventsInAgenda];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMeetingIndicator];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kHideIcon];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kBaselineOffset];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kClockFormat];
 }
 
@@ -156,6 +169,7 @@
     
     // Now that everything else is set up, we file for notifications.
     // Some of the notification handlers rely on stuff we just set up.
+    _notificationTokens = [NSMutableArray new];
     [self fileNotifications];
 
     [_moCal bind:@"showWeeks" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowWeeks] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
@@ -190,6 +204,17 @@
     _moCal.doNotDrawOutlineAroundCurrentMonth = [defaults boolForKey:kDoNotDrawOutlineAroundCurrentMonth];
 
     [self.itsycalWindow makeFirstResponder:_moCal];
+}
+
+#pragma mark -
+#pragma mark Utility
+
+- (NSString *)settingsString
+{
+    if (@available(macOS 13.0, *)) {
+        return NSLocalizedString(@"Settings…", @"");
+    }
+    return NSLocalizedString(@"Preferences…", @"");
 }
 
 #pragma mark -
@@ -281,6 +306,13 @@
         _newEventPopover = [NSPopover new];
         _newEventPopover.animates = NO;
         _newEventPopover.delegate = self;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
+        if (@available(macOS 26.0, *)) {
+            // Enable coloring the full background including the arrow.
+            // See EventViewController -loadView.
+            _newEventPopover.hasFullSizeContent = YES;
+        }
+#endif
     }
     EventViewController *eventVC = [EventViewController new];
     eventVC.ec = _ec;
@@ -360,17 +392,13 @@
 {
     NSMenu *optMenu = [[NSMenu alloc] initWithTitle:@"Options Menu"];
     NSInteger i = 0;
-    NSString *prefsString = NSLocalizedString(@"Preferences…", @"");
-    if (@available(macOS 13.0, *)) {
-        prefsString = NSLocalizedString(@"Settings…", @"");
-    }
 
     [optMenu insertItemWithTitle:NSLocalizedString(@"About Itsycal", @"") action:@selector(showAbout:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Check for Updates…", @"") action:@selector(checkForUpdates:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Go to Date…", @"") action:@selector(showDatePickerPopover:) keyEquivalent:@"T" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
-    [optMenu insertItemWithTitle:prefsString action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
+    [optMenu insertItemWithTitle:[self settingsString] action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Date & Time…", @"") action:@selector(openDateAndTimePrefs:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Help…", @"") action:@selector(navigateToHelp:) keyEquivalent:@"" atIndex:i++];
@@ -516,6 +544,50 @@
     // Notification for when status item view moves
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidMoveNotification object:_statusItem.button.window];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidResizeNotification object:_statusItem.button.window];
+
+    // Right-click on status item: show context menu.
+    // Use an event monitor so the system handles showing _statusItem.menu
+    // with correct appearance. Clear the menu on close so left-click
+    // continues to toggle the popup window.
+    __weak typeof(self) weakSelf = self;
+    _rightClickMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskRightMouseDown handler:^NSEvent *(NSEvent *event) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return event;
+        if (event.window == strongSelf->_statusItem.button.window) {
+            strongSelf->_statusItem.menu = [strongSelf statusItemContextMenu];
+        }
+        return event;
+    }];
+}
+
+- (NSMenu *)statusItemContextMenu
+{
+    NSMenu *menu = [[NSMenu alloc] init];
+    menu.delegate = self;
+
+    NSMenuItem *item = [menu addItemWithTitle:[self settingsString] action:@selector(showPrefs:) keyEquivalent:@""];
+    item.target = self;
+    item = [menu addItemWithTitle:NSLocalizedString(@"Date & Time…", @"") action:@selector(openDateAndTimePrefs:) keyEquivalent:@""];
+    item.target = self;
+    [menu addItem:[NSMenuItem separatorItem]];
+    item = [menu addItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@""];
+    item.target = NSApp;
+
+    if (@available(macOS 26, *)) {
+        // The menu item glyphs introduced in macOS 26 Tahoe.
+        NSArray<NSString *> *symbolNames = @[@"gear",
+                                             @"calendar.badge.clock",
+                                             @"xmark.rectangle"];
+        NSUInteger index = 0;
+        for (NSMenuItem *item in menu.itemArray) {
+            if (item.isSeparatorItem) continue;
+            if (index >= symbolNames.count) break;
+            item.image = [NSImage imageWithSystemSymbolName:symbolNames[index] accessibilityDescription:nil];
+            index++;
+        }
+    }
+
+    return menu;
 }
 
 - (void)updateStatusItemFont
@@ -542,6 +614,10 @@
 
 - (void)removeStatusItem
 {
+    if (_rightClickMonitor) {
+        [NSEvent removeMonitor:_rightClickMonitor];
+        _rightClickMonitor = nil;
+    }
     if (_statusItem) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidMoveNotification object:_statusItem.button.window];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidResizeNotification object:_statusItem.button.window];
@@ -872,6 +948,19 @@
     }
     else {
         [self showItsycalWindow];
+    }
+}
+
+#pragma mark -
+#pragma mark NSMenu Delegate
+
+- (void)menuDidClose:(NSMenu *)menu
+{
+    // The status item shows a menu on right-click. Clear the menu on close
+    // so that left-click continues to toggle the Itsycal window.
+    // See -createStatusItem for more info.
+    if (_statusItem.menu == menu) {
+        _statusItem.menu = nil;
     }
 }
 
@@ -1381,38 +1470,55 @@
 
 - (void)fileNotifications
 {
+    __weak typeof(self) weakSelf = self;
+    id token;
+
     // Day changed notification
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self resetCalendarToToday];
-        [self updateMenubarIcon];
-        [self updateTimer];
+    token = [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf resetCalendarToToday];
+        [strongSelf updateMenubarIcon];
+        [strongSelf updateTimer];
     }];
-    
+    [_notificationTokens addObject:token];
+
     // Timezone changed notification
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemTimeZoneDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateMenubarIcon];
-        [self updateTimer];
-        [self->_ec refetchAll];
+    token = [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemTimeZoneDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf updateMenubarIcon];
+        [strongSelf updateTimer];
+        [strongSelf->_ec refetchAll];
     }];
-    
+    [_notificationTokens addObject:token];
+
     // Locale notifications
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateMenubarIcon];
-        [self updateTimer];
-        [self updateAgenda]; // 12/24 hr time change in sys prefs
+    token = [[NSNotificationCenter defaultCenter] addObserverForName:NSCurrentLocaleDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf updateMenubarIcon];
+        [strongSelf updateTimer];
+        [strongSelf updateAgenda]; // 12/24 hr time change in sys prefs
     }];
-    
+    [_notificationTokens addObject:token];
+
     // System clock notification
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [self updateMenubarIcon];
-        [self updateTimer];
-        [self->_ec refetchAll];
+    token = [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf updateMenubarIcon];
+        [strongSelf updateTimer];
+        [strongSelf->_ec refetchAll];
     }];
+    [_notificationTokens addObject:token];
 
     // Wake from sleep notification
-    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserverForName:NSWorkspaceDidWakeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
-        [self updateMenubarIcon];
-        [self updateTimer];
+    token = [[[NSWorkspace sharedWorkspace] notificationCenter] addObserverForName:NSWorkspaceDidWakeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        [strongSelf updateMenubarIcon];
+        [strongSelf updateTimer];
     }];
     
     // Contact events preference changed notification
@@ -1430,6 +1536,7 @@
             [self->_ec refetchAll];
         }
     }];
+    [_notificationTokens addObject:token];
 
     // Observe NSUserDefaults for preference changes
     for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat, kShowContactEvents]) {

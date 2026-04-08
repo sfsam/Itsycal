@@ -81,6 +81,9 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         } else {
             [_store requestAccessToEntityType:EKEntityTypeEvent completion:requestCompletionHandler];
         }
+#else
+        [_store requestAccessToEntityType:EKEntityTypeEvent completion:requestCompletionHandler];
+#endif
 
         // Refetch everything when the event store has changed.
         __weak __typeof(self) weakSelf = self;
@@ -102,11 +105,15 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 }
 
 - (BOOL)calendarAccessGranted {
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
     if (@available(macOS 14.0, *)) {
         return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusFullAccess;
     } else {
         return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusAuthorized;
     }
+#else
+    return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusAuthorized;
+#endif
 }
 
 - (NSString *)defaultCalendarIdentifier {
