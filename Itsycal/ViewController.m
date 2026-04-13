@@ -65,6 +65,7 @@
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMeetingIndicator];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kHideIcon];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kBaselineOffset];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowPastEvents];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kClockFormat];
 }
 
@@ -1159,9 +1160,25 @@
 {
     NSMutableArray *datesAndEvents = [NSMutableArray new];
     MoDate endDate = AddDaysToDate(days, date);
+    BOOL showPastEvents = [[NSUserDefaults standardUserDefaults] boolForKey:kShowPastEvents];
     while (CompareDates(date, endDate) < 0) {
         NSDate *nsDate = MakeNSDateWithDate(date, _nsCal);
         NSArray *events = _filteredEventsForDate[nsDate];
+
+        // Filter out past events if preference is disabled
+        if (events != nil && !showPastEvents) {
+            NSMutableArray *filteredEvents = [NSMutableArray new];
+            for (EventInfo *eventInfo in events) {
+                // Keep event if it's all-day or not yet ended
+                if (eventInfo.isAllDay ||
+                    [NSDate.date compare:eventInfo.event.endDate] == NSOrderedAscending) {
+                    [filteredEvents addObject:eventInfo];
+                }
+            }
+            // If filtering removed all events, treat as if there were no events
+            events = filteredEvents.count > 0 ? filteredEvents : nil;
+        }
+
         if (events != nil) {
             [nsDate setHasNoEvents:NO];
             [datesAndEvents addObject:nsDate];
@@ -1337,12 +1354,19 @@
     [NSRunLoop.mainRunLoop addTimer:_timer forMode:NSRunLoopCommonModes];
     
     // Check if past events should be dimmed each minute.
+    // If we're hiding past events, we need to fully refresh the agenda
+    // to remove events that have ended. Otherwise just dim them.
     // Also check if we should show the meeting indicator.
     static NSTimeInterval dimEventsTime = 0;
     NSTimeInterval currentTime = MonotonicClockTime();
     NSTimeInterval elapsedTime = currentTime - dimEventsTime;
     if (elapsedTime > 60 || fabs(elapsedTime - 60) < 0.5) {
-        [_agendaVC dimEventsIfNecessary];
+        BOOL showPastEvents = [[NSUserDefaults standardUserDefaults] boolForKey:kShowPastEvents];
+        if (showPastEvents) {
+            [_agendaVC dimEventsIfNecessary];
+        } else {
+            [self updateAgenda];
+        }
         dimEventsTime = currentTime;
         [self showMeetingIndicatorIfNecessary];
     }
@@ -1486,7 +1510,7 @@
     [_notificationTokens addObject:token];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat]) {
+    for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowDaysWithNoEventsInAgenda, kShowPastEvents, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat]) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }
@@ -1497,7 +1521,8 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
 {
     if ([keyPath isEqualToString:kShowEventDays] ||
-        [keyPath isEqualToString:kShowDaysWithNoEventsInAgenda]) {
+        [keyPath isEqualToString:kShowDaysWithNoEventsInAgenda] ||
+        [keyPath isEqualToString:kShowPastEvents]) {
         [self updateAgenda];
     }
     else if ([keyPath isEqualToString:kMenuBarIconType] ||
