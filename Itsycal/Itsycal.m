@@ -32,3 +32,18 @@ NSString * const kDoNotDrawOutlineAroundCurrentMonth = @"DoNotDrawOutlineAroundC
 NSString * const kShowDaysWithNoEventsInAgenda = @"ShowDaysWithNoEventsInAgenda";
 NSString * const kShowEventPopoverOnHover = @"ShowEventPopoverOnHover";
 NSString * const kEnableTahoeMenuIcons = @"EnableTahoeMenuIcons";
+
+@implementation NSDate (HasNoEvents)
+
+- (BOOL)hasNoEvents
+{
+    NSNumber *num = objc_getAssociatedObject(self, @selector(hasNoEvents));
+    return [num boolValue];
+}
+
+- (void)setHasNoEvents:(BOOL)hasNoEvents
+{
+    objc_setAssociatedObject(self, @selector(hasNoEvents), @(hasNoEvents), OBJC_ASSOCIATION_RETAIN);
+}
+
+@end

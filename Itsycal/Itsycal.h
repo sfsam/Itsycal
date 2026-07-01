@@ -39,17 +39,5 @@ extern NSString * const kEnableTahoeMenuIcons;
 // whether of not this date has events.
 // https://stackoverflow.com/a/16708352
 @interface NSDate (HasNoEvents)
-@end
-
-@implementation NSDate (HasNoEvents)
-
-- (BOOL)hasNoEvents {
-    NSNumber *num = objc_getAssociatedObject(self, @selector(hasNoEvents));
-    return [num boolValue];
-}
-
-- (void)setHasNoEvents:(BOOL)hasNoEvents {
-    objc_setAssociatedObject(self, @selector(hasNoEvents), @(hasNoEvents), OBJC_ASSOCIATION_RETAIN);
-}
-
+@property (nonatomic) BOOL hasNoEvents;
 @end
