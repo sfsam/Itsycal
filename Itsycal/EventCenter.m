@@ -377,11 +377,14 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             }
         }
     }
+    // Notify the delegate from inside the _queueIsol block so the
+    // write to _filteredEventsForDate is visible before the delegate
+    // reads it back via -filteredEventsForDate.
     dispatch_async(_queueIsol, ^{
         self->_filteredEventsForDate = [filteredEventsForDate copy];
-    });
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegate eventCenterEventsChanged];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate eventCenterEventsChanged];
+        });
     });
 }
 
