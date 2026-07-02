@@ -404,16 +404,25 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     }
     void (^GetZoomURL)(NSString*) = ^(NSString *text) {
         [linkDetector enumerateMatchesInString:text options:kNilOptions range:NSMakeRange(0, text.length) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
-            NSString *link = result.URL.absoluteString;
-            if (   [link containsString:@"zoom.us/j/"]
-                || [link containsString:@"zoom.us/s/"]
-                || [link containsString:@"zoom.us/w/"]
-                || [link containsString:@"zoom.us/my/"]
-                || [link containsString:@"zoomgov.com/j/"]
-                || [link containsString:@"zoomgov.com/s/"]
-                || [link containsString:@"zoomgov.com/w/"]
-                || [link containsString:@"zoomgov.com/my/"]) {
-                info.zoomURL = result.URL;
+            NSURL *url = result.URL;
+            NSString *link = url.absoluteString;
+            // Match on the URL's host (and scheme, for app-link URIs), not on
+            // the raw URL string. A substring check like
+            // [link containsString:@"zoom.us/j/"] would also match a hostile
+            // link such as https://evil.example/zoom.us/j/123.
+            NSString *host   = url.host.lowercaseString ?: @"";
+            NSString *path   = url.path ?: @"";
+            NSString *scheme = url.scheme.lowercaseString ?: @"";
+            BOOL (^hostIs)(NSString *) = ^BOOL(NSString *domain) {
+                return [host isEqualToString:domain] || [host hasSuffix:[@"." stringByAppendingString:domain]];
+            };
+            BOOL (^hostHasPrefix)(NSString *) = ^BOOL(NSString *prefix) {
+                return [host hasPrefix:prefix];
+            };
+            if (   (hostIs(@"zoom.us") || hostIs(@"zoomgov.com"))
+                && ([path hasPrefix:@"/j/"] || [path hasPrefix:@"/s/"]
+                    || [path hasPrefix:@"/w/"] || [path hasPrefix:@"/my/"])) {
+                info.zoomURL = url;
                 // Test if user has the Zoom app and, if so, create a Zoom app link.
                 if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"zoommtg://"]]) {
                     link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"zoommtg://"];
@@ -425,8 +434,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                     if (appLink) info.zoomURL = appLink;
                 }
             }
-            else if ([link containsString:@"teams.microsoft.com/l/meetup-join/"]) {
-                info.zoomURL = result.URL;
+            else if (hostIs(@"teams.microsoft.com") && [path hasPrefix:@"/l/meetup-join/"]) {
+                info.zoomURL = url;
                 // Test if user has the Teams app and, if so, create a Teams app link.
                 if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"msteams://"]]) {
                     link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"msteams://"];
@@ -434,8 +443,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                     if (appLink) info.zoomURL = appLink;
                 }
             }
-            else if ([link containsString:@"chime.aws/"]) {
-                info.zoomURL = result.URL;
+            else if (hostIs(@"chime.aws")) {
+                info.zoomURL = url;
                 // Test if user has the Chime app, and if so, create a Chime app link.
                 if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"chime://"]]) {
                     link = [link stringByReplacingOccurrencesOfString:@"https://chime.aws/" withString:@"chime://meeting?pin="];
@@ -443,25 +452,24 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                     if (appLink) info.zoomURL = appLink;
                 }
             }
-            else if (   [link containsString:@"zoommtg://"]
-                     || [link containsString:@"msteams://"]
-                     || [link containsString:@"chime://"]
-                     || [link containsString:@"meet.google.com/"]
-                     || [link containsString:@"hangouts.google.com/"]
-                     || [link containsString:@"webex.com/"]
-                     || [link containsString:@"gotomeeting.com/join"]
-                     || [link containsString:@"ringcentral.com/j"]
-                     || [link containsString:@"bigbluebutton.org/gl"]
-                     || [link containsString:@"https://bigbluebutton."]
-                     || [link containsString:@"https://bbb."]
-                     || [link containsString:@"https://meet.jit.si/"]
-                     || [link containsString:@"indigo.collocall.de"]
-                     || [link containsString:@"public.senfcall.de"]
-                     || [link containsString:@"facetime.apple.com/join"]
-                     || [link containsString:@"workplace.com/meet"]
-                     || [link containsString:@"youcanbook.me/zoom/"]
-                     || [link containsString:@"vk.com/call/"]) {
-                info.zoomURL = result.URL;
+            else if (   [scheme isEqualToString:@"zoommtg"]
+                     || [scheme isEqualToString:@"msteams"]
+                     || [scheme isEqualToString:@"chime"]
+                     || hostIs(@"meet.google.com")
+                     || hostIs(@"hangouts.google.com")
+                     || hostIs(@"webex.com")
+                     || (hostIs(@"gotomeeting.com") && [path hasPrefix:@"/join"])
+                     || (hostIs(@"ringcentral.com") && [path hasPrefix:@"/j"])
+                     || (hostIs(@"bigbluebutton.org") && [path hasPrefix:@"/gl"])
+                     || ([scheme isEqualToString:@"https"] && (hostHasPrefix(@"bigbluebutton.") || hostHasPrefix(@"bbb.")))
+                     || hostIs(@"meet.jit.si")
+                     || hostIs(@"indigo.collocall.de")
+                     || hostIs(@"public.senfcall.de")
+                     || (hostIs(@"facetime.apple.com") && [path hasPrefix:@"/join"])
+                     || (hostIs(@"workplace.com") && [path hasPrefix:@"/meet"])
+                     || (hostIs(@"youcanbook.me") && [path hasPrefix:@"/zoom/"])
+                     || (hostIs(@"vk.com") && [path hasPrefix:@"/call/"])) {
+                info.zoomURL = url;
             }
             *stop = info.zoomURL != nil;
         }];
