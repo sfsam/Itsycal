@@ -1061,15 +1061,14 @@
     });
     NSDate *endDate = event.endDate;
     if (event.isAllDay) {
-        // EKEvent allDay events go from 12 AM to 12 AM. So, a one-day event
-        // will just barely span two days. For example, a one-day event on Aug 4
-        // results in a duration of Aug 4-5. By subtracting some time, we get the
-        // duration in days we would expect.
-        endDate = [_nsCal dateByAddingUnit:NSCalendarUnitHour value:-4 toDate:event.endDate options:0];
-        durationFormatter.timeStyle = NSDateIntervalFormatterNoStyle;
-    }
-    else {
-        durationFormatter.timeStyle = NSDateIntervalFormatterShortStyle;
+        // Before macOS 13, all-day endDate is midnight of the day AFTER the
+        // last day (exclusive). Since macOS 13, it's 11:59:59 PM of the last
+        // day itself (inclusive). See -[AgendaViewController
+        // copyEventToPasteboard] for the same EventKit change.
+        endDate = [_nsCal dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:event.endDate options:0];
+        if (@available(macOS 13.0, *)) {
+            endDate = event.endDate;
+        }
     }
     durationFormatter.timeStyle = event.isAllDay ? NSDateIntervalFormatterNoStyle : NSDateIntervalFormatterShortStyle;
     NSString *title = event.title == nil ? @"" : event.title;
