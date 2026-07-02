@@ -634,9 +634,15 @@
         // calendar set explicityly. By using our own locale that captures
         // the correct language and country, but omits the buggy ISO 8601
         // calendar, we can show the day of the week per the user's preference.
-        NSString *localeID = [NSString stringWithFormat:@"%@_%@@calendar=gregorian",
-                              NSLocale.currentLocale.languageCode,
-                              NSLocale.currentLocale.countryCode];
+        // languageCode/countryCode can be nil (e.g. a language-only locale
+        // with no country component), so guard against building a malformed
+        // "en_(null)@calendar=gregorian" identifier.
+        NSString *languageCode = NSLocale.currentLocale.languageCode;
+        NSString *countryCode = NSLocale.currentLocale.countryCode;
+        NSString *languageAndCountry = (languageCode && countryCode)
+            ? [NSString stringWithFormat:@"%@_%@", languageCode, countryCode]
+            : (languageCode ?: @"en");
+        NSString *localeID = [languageAndCountry stringByAppendingString:@"@calendar=gregorian"];
         NSLocale *localeWithoutCalendar = [NSLocale localeWithLocaleIdentifier:localeID];
         NSMutableString *template = @"d".mutableCopy;
         if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowMonthInIcon]) {
