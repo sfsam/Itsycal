@@ -9,12 +9,6 @@
 #import <time.h>
 #import "MoUtils.h"
 
-BOOL OSVersionIsAtLeast(NSInteger majorVersion, NSInteger minorVersion, NSInteger patchVersion)
-{
-    NSOperatingSystemVersion v = {majorVersion, minorVersion, patchVersion};
-    return [NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:v];
-}
-
 NSTimeInterval MonotonicClockTime(void)
 {
     struct timespec t;

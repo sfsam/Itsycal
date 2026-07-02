@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-BOOL OSVersionIsAtLeast(NSInteger majorVersion, NSInteger minorVersion, NSInteger patchVersion);
-
 /**
  * A clock that increments monotonically, tracking the time since an arbitrary
  * point, and will continue to increment while the system is asleep.
