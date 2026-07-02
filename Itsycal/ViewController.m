@@ -693,14 +693,7 @@
         // on Mojave and slightly lower than it should on Catalina.
         // As a workaround, instead of setting the title with an NSString,
         // provide an NSAttributedString with a baseline offset.
-        CGFloat scaleFactor = NSScreen.mainScreen.backingScaleFactor ?: 2.0;
-        CGFloat baselineOffset = -1.0 / scaleFactor;
-        if (@available(macOS 10.15, *)) {
-            baselineOffset = 0.5;
-        }
-        if (@available(macOS 11, *)) {
-            baselineOffset = 0;
-        }
+        CGFloat baselineOffset = 0;
         if ([defaults objectForKey:kBaselineOffset]) {
             baselineOffset = [defaults floatForKey:kBaselineOffset];
             baselineOffset = MIN(2.0, MAX(-2.0, baselineOffset));
@@ -748,10 +741,7 @@
         }
         dummyButton.title = _statusItem.button.title;
         [dummyButton sizeToFit];
-        _statusItem.length = NSWidth(dummyButton.frame) + 2;
-        if (@available(macOS 11, *)) {
-            _statusItem.length = NSWidth(dummyButton.frame) - 8;
-        }
+        _statusItem.length = NSWidth(dummyButton.frame) - 8;
         //os_log(OS_LOG_DEFAULT, "[%@] %@ --> %.0f, %.0f", [self iconText], _statusItem.button.title,
         //      _statusItem.button.frame.size.width, _statusItem.button.image.size.width);
     }
@@ -837,10 +827,8 @@
     // As a result, this method positions the window *uncentered* below
     // the status item. Adjust the frame with a value empirically
     // determined to make the window appear centered.
-    if (@available(macOS 11.0, *)) {
-        if (_statusItem.length != NSVariableStatusItemLength) {
-            statusItemFrame.size.width += 15;
-        }
+    if (_statusItem.length != NSVariableStatusItemLength) {
+        statusItemFrame.size.width += 15;
     }
     
     // Hack alert:
