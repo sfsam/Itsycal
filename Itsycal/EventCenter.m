@@ -290,6 +290,15 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     NSArray *events = [_store eventsMatchingPredicate:predicate];
     NSMutableDictionary *eventsForDate = [NSMutableDictionary new];
     
+    // Does EKEvent still respond to the private 'participationStatus'
+    // selector? Check once instead of risking an NSUndefinedKeyException
+    // on every event if a future OS renames or removes it.
+    static BOOL participationStatusKeySupported;
+    static dispatch_once_t participationStatusOnceToken;
+    dispatch_once(&participationStatusOnceToken, ^{
+        participationStatusKeySupported = [EKEvent instancesRespondToSelector:NSSelectorFromString(@"participationStatus")];
+    });
+
     // Iterate over events matching startDate/endDate. We will
     // populate a dictionary, eventsForDate, that maps each date
     // to an array of events that fall on that date.
@@ -300,7 +309,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         // This is much faster than accessing the 'attendees' property
         // and then looping over the participants to see if the current
         // user has declined the event.
-        if (event.hasAttendees &&
+        if (event.hasAttendees && participationStatusKeySupported &&
             [[event valueForKey:@"participationStatus"] integerValue] == EKParticipantStatusDeclined) {
             continue;
         }
