@@ -23,6 +23,15 @@
 #import "MoUtils.h"
 #import "Sparkle/SUUpdater.h"
 
+// Keys observed in NSUserDefaults for preference changes. Registered in
+// -fileNotifications and unregistered in -dealloc.
+static NSArray<NSString *> *ObservedDefaultsKeys(void)
+{
+    return @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon,
+              kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon,
+              kBaselineOffset, kClockFormat];
+}
+
 @implementation ViewController
 {
     EventCenter   *_ec;
@@ -57,15 +66,9 @@
         [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:token];
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowEventDays];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kMenuBarIconType];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMonthInIcon];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDayOfWeekInIcon];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowDaysWithNoEventsInAgenda];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowMeetingIndicator];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kHideIcon];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kBaselineOffset];
-    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kClockFormat];
+    for (NSString *keyPath in ObservedDefaultsKeys()) {
+        [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:keyPath];
+    }
 }
 
 #pragma mark -
@@ -1047,17 +1050,7 @@
         durationFormatter = [NSDateIntervalFormatter new];
         durationFormatter.dateStyle = NSDateIntervalFormatterMediumStyle;
     });
-    NSDate *endDate = event.endDate;
-    if (event.isAllDay) {
-        // Before macOS 13, all-day endDate is midnight of the day AFTER the
-        // last day (exclusive). Since macOS 13, it's 11:59:59 PM of the last
-        // day itself (inclusive). See -[AgendaViewController
-        // copyEventToPasteboard] for the same EventKit change.
-        endDate = [_nsCal dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:event.endDate options:0];
-        if (@available(macOS 13.0, *)) {
-            endDate = event.endDate;
-        }
-    }
+    NSDate *endDate = AdjustedEventEndDate(event, _nsCal);
     durationFormatter.timeStyle = event.isAllDay ? NSDateIntervalFormatterNoStyle : NSDateIntervalFormatterShortStyle;
     NSString *title = event.title == nil ? @"" : event.title;
     NSString *duration = [durationFormatter stringFromDate:event.startDate toDate:endDate];
@@ -1242,7 +1235,7 @@
     NSArray *todayEvents = [self eventsForDate:[self todayDate]];
     for (EventInfo *info in todayEvents) {
         // Show meeting indicator 15 minutes prior to event start until end.
-        NSDate *fifteenMinutesPrior = [_nsCal dateByAddingUnit:NSCalendarUnitSecond value:-(15 * 60 + 30) toDate:info.event.startDate options:0];
+        NSDate *fifteenMinutesPrior = MeetingJoinableThreshold(info.event, _nsCal);
         if (info.zoomURL && !info.event.isAllDay
             && [fifteenMinutesPrior compare:NSDate.date] == NSOrderedAscending
             && [NSDate.date compare:info.event.endDate] == NSOrderedAscending) {
@@ -1479,7 +1472,7 @@
     [_notificationTokens addObject:token];
 
     // Observe NSUserDefaults for preference changes
-    for (NSString *keyPath in @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon, kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon, kBaselineOffset, kClockFormat]) {
+    for (NSString *keyPath in ObservedDefaultsKeys()) {
         [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew context:NULL];
     }
 }

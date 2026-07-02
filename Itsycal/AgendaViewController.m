@@ -11,6 +11,7 @@
 #import "EventCenter.h"
 #import "MoButton.h"
 #import "MoThemeView.h"
+#import "MoUtils.h"
 #import "MoVFLHelper.h"
 #import "Themer.h"
 #import "Sizer.h"
@@ -211,26 +212,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     intervalFormatter.timeStyle = cell.eventInfo.event.isAllDay
         ? NSDateIntervalFormatterNoStyle
         : NSDateIntervalFormatterShortStyle;
-    // All-day events technically end at the start of the day after
-    // their end date. So display endDate as one less.
-    NSDate *endDate = cell.eventInfo.event.isAllDay
-        ? [self.nsCal dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:cell.eventInfo.event.endDate options:0]
-        : cell.eventInfo.event.endDate;
-    if (@available(macOS 13.0, *)) {
-        // macOS 13 changed All-day events' end date from 12 AM of
-        // day after last day of event to 11:59:59 PM of last day.
-        endDate = cell.eventInfo.event.endDate;
-    }
+    NSDate *endDate = AdjustedEventEndDate(cell.eventInfo.event, self.nsCal);
     // Interval formatter just prints single date when from == to.
     NSString *duration = [intervalFormatter stringFromDate:cell.eventInfo.event.startDate toDate:endDate];
-    // If the locale is English and we are in 12 hour time,
-    // remove :00 from the time. Effect is 3:00 PM -> 3 PM.
-    if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
-        if ([duration containsString:@"AM"] || [duration containsString:@"PM"] ||
-            [duration containsString:@"am"] || [duration containsString:@"pm"]) {
-            duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
-        }
-    }
+    duration = StringByStrippingZeroMinutes(duration);
     NSString *eventText = [NSString stringWithFormat:@"%@\n%@\n%@%@",
                            cell.titleTextField.stringValue,
                            duration,
@@ -570,13 +555,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
                 duration = [intervalFormatter stringFromDate:info.event.startDate toDate:info.event.endDate];
             }
         }
-        // If the locale is English and we are in 12 hour time,
-        // remove :00 from the time. Effect is 3:00 PM -> 3 PM.
-        if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
-            if ([[timeFormatter dateFormat] rangeOfString:@"a"].location != NSNotFound) {
-                duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
-            }
-        }
+        duration = StringByStrippingZeroMinutes(duration);
     }
 
     // Virtual meeting button.
@@ -603,7 +582,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     
     // Enable the zoom button 15 minutes prior to event start until end.
     // If the user prefers, button can remain enabled indefinitely.
-    NSDate *fifteenMinutesPrior = [self.nsCal dateByAddingUnit:NSCalendarUnitSecond value:-(15 * 60 + 30) toDate:info.event.startDate options:0];
+    NSDate *fifteenMinutesPrior = MeetingJoinableThreshold(info.event, self.nsCal);
     if (info.zoomURL && !info.event.isAllDay
         && [fifteenMinutesPrior compare:NSDate.date] == NSOrderedAscending
         && ([NSDate.date compare:info.event.endDate] == NSOrderedAscending
@@ -1153,26 +1132,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     intervalFormatter.timeStyle = info.event.isAllDay
         ? NSDateIntervalFormatterNoStyle
         : NSDateIntervalFormatterShortStyle;
-    // All-day events technically end at the start of the day after
-    // their end date. So display endDate as one less.
-    NSDate *endDate = info.event.isAllDay
-        ? [self.nsCal dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:info.event.endDate options:0]
-        : info.event.endDate;
-    if (@available(macOS 13.0, *)) {
-        // macOS 13 changed All-day events' end date from 12 AM of
-        // day after last day of event to 11:59:59 PM of last day.
-        endDate = info.event.endDate;
-    }
+    NSDate *endDate = AdjustedEventEndDate(info.event, self.nsCal);
     // Interval formatter just prints single date when from == to.
     duration = [intervalFormatter stringFromDate:info.event.startDate toDate:endDate];
-    // If the locale is English and we are in 12 hour time,
-    // remove :00 from the time. Effect is 3:00 PM -> 3 PM.
-    if ([[[NSLocale currentLocale] localeIdentifier] hasPrefix:@"en"]) {
-        if ([duration containsString:@"AM"] || [duration containsString:@"PM"] ||
-            [duration containsString:@"am"] || [duration containsString:@"pm"]) {
-            duration = [duration stringByReplacingOccurrencesOfString:@":00" withString:@""];
-        }
-    }
+    duration = StringByStrippingZeroMinutes(duration);
     // If the event is not All-day and the start and end dates are
     // different, put them on different lines.
     // The – is U+2013 (en-dash) and the space is U+2009 (thin space)
