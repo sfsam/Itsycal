@@ -8,7 +8,9 @@
 
 #import "EventViewController.h"
 #import "EventCenter.h"
+#import "MoThemeView.h"
 #import "MoVFLHelper.h"
+#import "NSMenuItem+NoImages.h"
 #import "Themer.h"
 
 @interface HackyTextView : NSTextView
@@ -209,6 +211,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _notesScrollView.verticalScrollElasticity = NSScrollElasticityNone;
     _notesScrollView.drawsBackground = NO;
     _notesScrollView.hasVerticalScroller = YES;
+    _notesScrollView.verticalScroller = [ThemedScroller new];
     [v addSubview:_notesScrollView];
 
     NSSize noteContentSize = _notesScrollView.contentSize;
@@ -240,6 +243,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     // will be repopulated in -viewWillAppear.
     NSMenuItem *calItem = [NSMenuItem new];
     calItem.image = [NSImage imageWithSize:NSMakeSize(8, 8) flipped:NO drawingHandler:^BOOL(NSRect dstRect) { return YES; }];
+    calItem.rs_shouldShowImage = YES;
     [_calPopup.menu addItem:calItem];
     
     // Save and Cancel buttons
@@ -282,6 +286,25 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     [_startDate setContentHuggingPriority:1 forOrientation:NSLayoutConstraintOrientationHorizontal];
     [_endDate   setContentHuggingPriority:1 forOrientation:NSLayoutConstraintOrientationHorizontal];
     
+    if (@available(macOS 26.0, *)) {
+        // On macOS 26 the trick we use in -viewDidAppear to paint
+        // the popover's full background no longer works. Now we
+        // set the popover's hasFullContentSize=YES and use the
+        // safeAreaLayoutGuide of a view that paints its background
+        // according to the Theme to inset our content.
+        v.translatesAutoresizingMaskIntoConstraints = NO;
+        MoThemeView *view = [MoThemeView new];
+        [view addSubview:v];
+        [NSLayoutConstraint activateConstraints:@[
+            [v.topAnchor constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor],
+            [v.bottomAnchor constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor],
+            [v.leftAnchor constraintEqualToAnchor:view.safeAreaLayoutGuide.leftAnchor],
+            [v.rightAnchor constraintEqualToAnchor:view.safeAreaLayoutGuide.rightAnchor],
+        ]];
+        self.view = view;
+        return;
+    }
+    
     self.view = v;
 }
 
@@ -293,7 +316,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     
     // If self.calSelectedDate is today, the initialStart is set to
     // the next whole hour. Otherwise, 8am of self.calselectedDate.
-    // InitialEnd is one hour after initialStart.
+    // Default duration is same as setting in Calendar.app.
     NSDate *initialStart, *initialEnd, *today = [NSDate new];
     if ([self.cal isDate:self.calSelectedDate inSameDayAsDate:today]) {
         NSInteger hour;
@@ -304,7 +327,11 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     else {
         initialStart = [self.cal dateBySettingHour:8 minute:0 second:0 ofDate:self.calSelectedDate options:0];
     }
-    initialEnd = [self.cal dateByAddingUnit:NSCalendarUnitHour value:1 toDate:initialStart options:0];
+    NSInteger newEventDuration = [self defaultDurationInMinutesForNewEvent];
+    initialEnd = [self.cal dateByAddingUnit:NSCalendarUnitMinute
+                                      value:newEventDuration
+                                     toDate:initialStart
+                                    options:0];
     
     // Initial values for form fields.
     _title.stringValue = @"";
@@ -362,6 +389,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
             calItem.title = calInfo.calendar.title;
             calItem.image = coloredDot(calInfo.calendar.color);
             calItem.tag   = [sourcesAndCalendars indexOfObject:obj];
+            calItem.rs_shouldShowImage = YES;
             [_calPopup.menu addItem:calItem];
             if ([calInfo.calendar.calendarIdentifier isEqualToString:defaultCalendarIdentifier]) {
                 [_calPopup selectItemWithTag:calItem.tag];
@@ -376,6 +404,10 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
 
 - (void)viewDidAppear
 {
+    // macOS 26 uses MoThemeView and fullSizeContent on the popover
+    // to paint the whole background so we can just return early.
+    if (@available(macOS 26.0, *)) return;
+
     // Add a colored subview at the bottom the of popover's
     // window's frameView's view hierarchy. This should color
     // the popover including the arrow.
@@ -390,6 +422,19 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     backgroundColorView.borderWidth = 0;
     backgroundColorView.fillColor = Theme.mainBackgroundColor;
     [frameView addSubview:backgroundColorView positioned:NSWindowBelow relativeTo:nil];
+}
+
+- (NSInteger)defaultDurationInMinutesForNewEvent {
+    NSUserDefaults *calendarDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"com.apple.iCal"];
+    NSNumber *durationMinutes = [calendarDefaults objectForKey:@"Default duration in minutes for new event"];
+
+    // Check if the value was found.
+    if (durationMinutes != nil) {
+        return [durationMinutes longValue];
+    }
+    // Return the system default (60 minutes) if the
+    // setting isn't explicitly defined.
+    return 60;
 }
 
 - (void)cancelOperation:(id)sender
@@ -425,10 +470,14 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
 {
     // Make sure endDate is never before startDate.
     // Make sure repeatEndDate is never before endDate.
-    // Default endDate is one hour after startDate.
+    // Default duration is same as setting in Calendar.app.
+    NSInteger newEventDuration = [self defaultDurationInMinutesForNewEvent];
     _endDate.minDate    = _startDate.dateValue;
     _repEndDate.minDate = _startDate.dateValue;
-    _endDate.dateValue = [self.cal dateByAddingUnit:NSCalendarUnitHour value:1 toDate:_startDate.dateValue options:0];
+    _endDate.dateValue = [self.cal dateByAddingUnit:NSCalendarUnitMinute
+                                              value:newEventDuration
+                                             toDate:_startDate.dateValue
+                                            options:0];
 }
 
 - (void)repPopupChanged:(id)sender

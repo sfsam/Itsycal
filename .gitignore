@@ -1,4 +1,7 @@
 ## User settings
 xcuserdata/
 
+## Local signing config (do not commit — see Local.xcconfig.example)
+Local.xcconfig
+
 .DS_Store

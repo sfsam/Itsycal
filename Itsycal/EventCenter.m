@@ -59,11 +59,15 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         _queueIsol = dispatch_queue_create("com.mowglii.Itsycal.queueIsol", DISPATCH_QUEUE_SERIAL);
         _queueIsol2 = dispatch_queue_create("com.mowglii.Itsycal.queueIsol2", DISPATCH_QUEUE_SERIAL);
         _store = [EKEventStore new];
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
         if (@available(macOS 14.0, *)) {
             [_store requestFullAccessToEventsWithCompletion:requestCompletionHandler];
         } else {
             [_store requestAccessToEntityType:EKEntityTypeEvent completion:requestCompletionHandler];
         }
+#else
+        [_store requestAccessToEntityType:EKEntityTypeEvent completion:requestCompletionHandler];
+#endif
 
         // Refetch everything when the event store has changed.
         __weak __typeof(self) weakSelf = self;
@@ -81,11 +85,15 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 #pragma mark - Public (main thread)
 
 - (BOOL)calendarAccessGranted {
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
     if (@available(macOS 14.0, *)) {
         return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusFullAccess;
     } else {
         return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusAuthorized;
     }
+#else
+    return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusAuthorized;
+#endif
 }
 
 - (NSString *)defaultCalendarIdentifier {
