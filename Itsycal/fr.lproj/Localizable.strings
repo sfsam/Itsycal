@@ -46,7 +46,7 @@ Itsycal est plus utile quand il peut afficher les événements de vos calendrier
 "Dark" = "Thème Sombre";
 "Date & Time…" = "Date et heure…";
 "Datetime pattern" = "Modèle de date et d'heure";
-"Delete" = "Supprimer";
+"Delete…" = "Supprimer…";
 "Delete All Future Events" = "Supprimer tous les événements futurs";
 "Delete Only This Event" = "Seulement cette occurrence";
 "Delete This Event" = "Supprimer";

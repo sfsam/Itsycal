@@ -110,6 +110,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     tvContainer.scrollerStyle = NSScrollerStyleLegacy;
     tvContainer.hasVerticalScroller = YES;
     tvContainer.documentView = _calendarsTV;
+    tvContainer.borderType = NSLineBorder;
     [v addSubview:tvContainer];
     
     // Agenda days label

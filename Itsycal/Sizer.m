@@ -48,7 +48,14 @@ Sizer *SizePref = nil;
 
 - (void)setSizePreference:(SizePreference)sizePreference {
     _sizePreference = sizePreference;
-    [[NSNotificationCenter defaultCenter] postNotificationName:kSizeDidChangeNotification object:nil];
+    // Post notification on the main thread because the selector,
+    // @selector(sizeChanged:), updates the UI and therefore must
+    // run on the main thread. See the REGISTER_FOR_SIZE_CHANGE
+    // macro in Sizer.h.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:kSizeDidChangeNotification object:nil];
+    });
 }
 
 - (CGFloat)fontSize {

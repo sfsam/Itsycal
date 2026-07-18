@@ -73,7 +73,7 @@
 - (void)showTooltip
 {
     [self positionTooltip];
-    [self showWindow:self];
+    [self.window orderFront:nil];
     [self.window setAlphaValue:1];
 }
 
@@ -138,6 +138,11 @@
         REGISTER_FOR_SIZE_CHANGE;
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)sizeChanged:(id)sender

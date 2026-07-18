@@ -46,7 +46,7 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Dark" = "深色";
 "Date & Time…" = "日期与时间…";
 "Datetime pattern" = "日期时间模式";
-"Delete" = "删除";
+"Delete…" = "删除…";
 "Delete All Future Events" = "删除所有未来事件";
 "Delete Only This Event" = "仅删除此事件";
 "Delete This Event" = "删除此事件";
