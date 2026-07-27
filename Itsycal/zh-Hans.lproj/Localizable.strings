@@ -44,7 +44,8 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Calendar grid" = "日历网格";
 "Cancel" = "取消";
 "Check for Updates…" = "检查更新…";
-"Copy" = "复制";
+"Copy Event Details" = "复制事件详细信息";
+"Copy Meeting Link" = "复制会议链接";
 /* Dark theme name */
 "Dark Theme" = "深色主题";
 "Date & Time…" = "日期与时间…";

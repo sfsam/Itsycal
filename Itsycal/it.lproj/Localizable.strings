@@ -44,7 +44,8 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 "Calendar grid" = "Griglia del calendario";
 "Cancel" = "Annulla";
 "Check for Updates…" = "Controlla aggiornamenti…";
-"Copy" = "Copia";
+"Copy Event Details" = "Copia dettagli evento";
+"Copy Meeting Link" = "Copia link riunione";
 /* Dark theme name */
 "Dark Theme" = "Tema scuro";
 "Date & Time…" = "Data e Ora…";
