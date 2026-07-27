@@ -41,7 +41,8 @@ Itsycal ist nützlicher, wenn es Ereignisse aus Ihrem Kalender angezeigt werden 
 "Calendar access was denied." = "Kalenderzugriff verweigert.";
 "Cancel" = "Abbrechen";
 "Check for Updates…" = "Nach Updates suchen …";
-"Copy" = "Kopieren";
+"Copy Event Details" = "Ereignisdetails kopieren";
+"Copy Meeting Link" = "Meeting-Link kopieren";
 /* Dark theme name */
 "Dark" = "Dunkles Design";
 "Date & Time…" = "Datum & Uhrzeit …";
