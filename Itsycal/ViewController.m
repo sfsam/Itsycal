@@ -707,17 +707,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
             // Prepend a space to _clockFormat text to separate it from icon.
             buttonText = [@" " stringByAppendingString:buttonText];
         }
-        // Start with AppKit's default status-item title attributes so its
-        // dynamic foreground color follows the active menu bar on each screen.
-        // Creating an attributed string with only a baseline offset causes
-        // the text to default to black, making it illegible on inactive
-        // displays with a dark menu bar.
-        _statusItem.button.title = buttonText;
-        NSMutableAttributedString *attributedTitle = _statusItem.button.attributedTitle.mutableCopy;
-        [attributedTitle addAttribute:NSBaselineOffsetAttributeName
-                                value:@(baselineOffset)
-                                range:NSMakeRange(0, attributedTitle.length)];
-        _statusItem.button.attributedTitle = attributedTitle;
+        _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
     }
     _statusItem.button.accessibilityTitle = accessibilityTitle;
     [self adjustStatusItemWidthIfNecessary];
@@ -1510,3 +1500,4 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 }
 
 @end
+
