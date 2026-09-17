@@ -707,7 +707,22 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
             // Prepend a space to _clockFormat text to separate it from icon.
             buttonText = [@" " stringByAppendingString:buttonText];
         }
-        _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{NSBaselineOffsetAttributeName: @(baselineOffset)}];
+        if (@available(macOS 26.0, *)) {
+            // macOS 26 dims the entire status item on an inactive display,
+            // so the default title color ends up dimmed twice and is
+            // unreadable. Pin the text to the label color instead.
+            _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{
+                NSBaselineOffsetAttributeName: @(baselineOffset),
+                NSForegroundColorAttributeName: NSColor.labelColor}];
+        }
+        else {
+            // Earlier systems dim the default title color themselves on an
+            // inactive display. Setting labelColor here would keep the
+            // text at full contrast while the icon dims. This is the
+            // original code that shipped for years.
+            _statusItem.button.attributedTitle = [[NSAttributedString alloc] initWithString:buttonText attributes:@{
+                NSBaselineOffsetAttributeName: @(baselineOffset)}];
+        }
     }
     _statusItem.button.accessibilityTitle = accessibilityTitle;
     [self adjustStatusItemWidthIfNecessary];
