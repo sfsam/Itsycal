@@ -8,10 +8,13 @@
 
 #import "EventViewController.h"
 #import "EventCenter.h"
+#import "EventQuickEntryParser.h"
+#import "EventQuickEntryLanguagePackRegistry.h"
 #import "MoThemeView.h"
 #import "MoVFLHelper.h"
 #import "NSMenuItem+NoImages.h"
 #import "Themer.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface HackyTextView : NSTextView
 // The placeholderAttributedString property in NSTextView
@@ -37,6 +40,68 @@
     }
     return result;
 }
+@end
+
+// A lightweight, borderless tooltip window shown above the app's own
+// window, which runs at NSMainMenuWindowLevel (see ItsycalWindow.m).
+// AppKit's native tooltip mechanism (NSToolTipAttributeName / addToolTipRect:)
+// draws its tooltip at a level too low to appear above a window already at
+// menu-bar level, so it's invisible there — the same problem MoCalToolTipWC
+// solves for calendar day-cell tooltips. This mirrors that approach.
+@interface QuickEntryTooltipWindow : NSPanel
+@property (nonatomic, readonly) NSTextField *label;
+- (void)showText:(NSString *)text atScreenPoint:(NSPoint)screenPoint;
+- (void)hide;
+@end
+
+@implementation QuickEntryTooltipWindow
+
+- (instancetype)init
+{
+    self = [super initWithContentRect:NSZeroRect styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
+    if (self) {
+        self.backgroundColor = [NSColor clearColor];
+        self.opaque = NO;
+        self.level = NSPopUpMenuWindowLevel;
+        self.ignoresMouseEvents = YES;
+        self.hasShadow = YES;
+
+        NSView *background = [NSView new];
+        background.wantsLayer = YES;
+        background.layer.backgroundColor = [NSColor controlBackgroundColor].CGColor;
+        background.layer.cornerRadius = 5;
+        background.layer.borderWidth = 1;
+        background.layer.borderColor = [NSColor separatorColor].CGColor;
+        self.contentView = background;
+
+        _label = [NSTextField labelWithString:@""];
+        _label.font = [NSFont toolTipsFontOfSize:0];
+        _label.translatesAutoresizingMaskIntoConstraints = NO;
+        [background addSubview:_label];
+        [NSLayoutConstraint activateConstraints:@[
+            [_label.topAnchor constraintEqualToAnchor:background.topAnchor constant:4],
+            [_label.bottomAnchor constraintEqualToAnchor:background.bottomAnchor constant:-4],
+            [_label.leadingAnchor constraintEqualToAnchor:background.leadingAnchor constant:6],
+            [_label.trailingAnchor constraintEqualToAnchor:background.trailingAnchor constant:-6],
+        ]];
+    }
+    return self;
+}
+
+- (void)showText:(NSString *)text atScreenPoint:(NSPoint)screenPoint
+{
+    self.label.stringValue = text;
+    NSSize size = self.contentView.fittingSize;
+    NSRect frame = NSMakeRect(screenPoint.x + 10, screenPoint.y - size.height - 10, size.width, size.height);
+    [self setFrame:frame display:YES];
+    [self orderFront:nil];
+}
+
+- (void)hide
+{
+    [self orderOut:nil];
+}
+
 @end
 
 // These values map to _alertAllDayStrings and _alertRegularStrings.
@@ -66,7 +131,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
 
 @implementation EventViewController
 {
-    NSTextField *_title, *_location, *_url, *_repEndLabel;
+    NSTextField *_quickEntry, *_title, *_location, *_url, *_repEndLabel;
     NSButton *_allDayCheckbox, *_saveButton;
     NSDatePicker *_startDate, *_endDate, *_repEndDate;
     NSPopUpButton *_repPopup, *_repEndPopup, *_alertPopup, *_calPopup;
@@ -75,6 +140,15 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     NSScrollView *_notesScrollView;
     NSLayoutConstraint *_notesScrollViewHeightConstraint;
     CGFloat _notesHeightOfOneLine;
+    EventQuickEntryParser *_quickEntryParser;
+    NSArray<EventQuickEntrySpan *> *_quickEntryRecognizedSpans;
+    QuickEntryTooltipWindow *_quickEntryTooltipWindow;
+}
+
+- (nullable id<EventQuickEntryLanguagePack>)quickEntryLanguagePackForCurrentLocale
+{
+    NSString *language = [NSBundle mainBundle].preferredLocalizations.firstObject;
+    return [EventQuickEntryLanguagePackRegistry packForLanguageCode:language ?: @""];
 }
 
 - (void)loadView
@@ -129,6 +203,25 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
         [v addSubview:btn];
         return btn;
     };
+
+    // Rather than show a field that silently fails to understand phrases in
+    // unsupported languages, only create it when a language pack is
+    // registered for the app's active language (see EventQuickEntryParser.h).
+    id<EventQuickEntryLanguagePack> quickEntryLanguagePack = [self quickEntryLanguagePackForCurrentLocale];
+    BOOL quickEntrySupported = quickEntryLanguagePack != nil;
+    if (quickEntrySupported) {
+        _quickEntry = txt(quickEntryLanguagePack.placeholderExample, YES);
+        _quickEntry.delegate = self;
+        _quickEntryParser = [[EventQuickEntryParser alloc] initWithLanguagePack:quickEntryLanguagePack];
+
+        // Drives our own tooltip window (see QuickEntryTooltipWindow above) since
+        // native tooltips can't appear above this app's NSMainMenuWindowLevel window.
+        NSTrackingArea *quickEntryTrackingArea = [[NSTrackingArea alloc] initWithRect:NSZeroRect
+                                                                               options:NSTrackingMouseMoved | NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp | NSTrackingInVisibleRect
+                                                                                 owner:self
+                                                                              userInfo:nil];
+        [_quickEntry addTrackingArea:quickEntryTrackingArea];
+    }
 
     // Title, location, and URL text fields
     _title = txt(NSLocalizedString(@"New Event", @""), YES);
@@ -251,9 +344,19 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _saveButton.enabled = NO; // we'll enable when the form is valid.
     NSButton *cancelButton = btn(NSLocalizedString(@"Cancel", @""), self, @selector(cancelOperation:));
     
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_title, _calPopup, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _notesScrollView, _url, cancelButton, _saveButton)];
+    NSMutableDictionary<NSString *, id> *views = [NSDictionaryOfVariableBindings(_title, _calPopup, _location, _allDayCheckbox, allDayLabel, startsLabel, endsLabel, _startDate, _endDate, repLabel, alertLabel, _repPopup, _repEndLabel, _repEndPopup, _repEndDate, _alertPopup, _notesScrollView, _url, cancelButton, _saveButton) mutableCopy];
+    if (quickEntrySupported) {
+        views[@"_quickEntry"] = _quickEntry;
+    }
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:views];
 
-    [vfl :@"V:|-[_title]-[_location]-15-[_allDayCheckbox]"];
+    if (quickEntrySupported) {
+        [vfl :@"V:|-[_quickEntry]-[_title]-[_location]-15-[_allDayCheckbox]"];
+        [vfl :@"H:|-[_quickEntry]-|"];
+    }
+    else {
+        [vfl :@"V:|-[_title]-[_location]-15-[_allDayCheckbox]"];
+    }
     [vfl :@"V:[_allDayCheckbox]-[_startDate]-[_endDate]-[_repPopup]-[_repEndPopup]-[_alertPopup]" :NSLayoutFormatAlignAllLeading];
     [vfl :@"V:[_alertPopup]-20-[_notesScrollView]-10-[_url]-15-[_saveButton]-|"];
     [vfl :@"H:|-[_title]-[_calPopup]-|" :NSLayoutFormatAlignAllCenterY];
@@ -335,6 +438,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     
     // Initial values for form fields.
     _title.stringValue = @"";
+    _quickEntry.stringValue = @"";
     _location.stringValue = @"";
     _url.stringValue = @"";
     _notes.string = @"";
@@ -440,14 +544,172 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
 - (void)cancelOperation:(id)sender
 {
     // User hit 'esc' or pressed Cancel button.
+    [_quickEntryTooltipWindow hide];
     [self.enclosingPopover close];
 }
 
 - (void)controlTextDidChange:(NSNotification *)obj
 {
+    if (obj.object == _quickEntry) {
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(applyQuickEntryParse) object:nil];
+        [self performSelector:@selector(applyQuickEntryParse) withObject:nil afterDelay:0.2];
+        return;
+    }
+    [self updateSaveButtonEnabledState];
+}
+
+- (void)updateSaveButtonEnabledState
+{
     // Enable the Save button if the title is non-whitespace.
     NSString *trimmedTitle = [_title.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     _saveButton.enabled = ![trimmedTitle isEqualToString:@""];
+}
+
+- (void)applyQuickEntryParse
+{
+    // Spans are about to move/change; hide any tooltip showing stale content
+    // until the next mouse movement re-evaluates against the new spans.
+    [_quickEntryTooltipWindow hide];
+
+    EventQuickEntryResult *result = [_quickEntryParser parse:_quickEntry.stringValue calendar:self.cal];
+
+    if (result.date) {
+        NSCalendarUnit units = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
+        NSDateComponents *parsedComponents = [self.cal components:units fromDate:result.date];
+        NSDateComponents *startComponents  = [self.cal components:units fromDate:_startDate.dateValue];
+        startComponents.year  = parsedComponents.year;
+        startComponents.month = parsedComponents.month;
+        startComponents.day   = parsedComponents.day;
+        if (result.hasExplicitTime) {
+            startComponents.hour   = parsedComponents.hour;
+            startComponents.minute = parsedComponents.minute;
+        }
+        NSDate *newStart = [self.cal dateFromComponents:startComponents];
+        _startDate.dateValue = newStart;
+        // Reuses the existing clamp/default-duration logic.
+        [self startDateChanged:_startDate];
+    }
+
+    if (result.durationMinutes > 0) {
+        _endDate.minDate = _startDate.dateValue;
+        _endDate.dateValue = [self.cal dateByAddingUnit:NSCalendarUnitMinute
+                                                   value:result.durationMinutes
+                                                  toDate:_startDate.dateValue
+                                                 options:0];
+    }
+
+    if (result.location.length > 0) {
+        _location.stringValue = result.location;
+    }
+
+    if (result.recurrence != EventQuickEntryRecurrenceNone) {
+        [_repPopup selectItemAtIndex:result.recurrence];
+        [self repPopupChanged:_repPopup];
+    }
+
+    if (result.title.length > 0) {
+        _title.stringValue = result.title;
+    }
+    _quickEntryRecognizedSpans = result.recognizedSpans;
+    [self updateSaveButtonEnabledState];
+    [self highlightRecognizedSpans:result.recognizedSpans];
+}
+
+- (nullable NSTextView *)activeQuickEntryFieldEditor
+{
+    // Only the active field editor has an NSTextStorage/NSLayoutManager we
+    // can safely use without disturbing the field's cursor position or undo
+    // stack. Returns nil when _quickEntry isn't the field currently being
+    // edited.
+    NSText *fieldEditor = [self.view.window fieldEditor:NO forObject:_quickEntry];
+    return [fieldEditor isKindOfClass:[NSTextView class]] ? (NSTextView *)fieldEditor : nil;
+}
+
+- (void)highlightRecognizedSpans:(NSArray<EventQuickEntrySpan *> *)spans
+{
+    NSTextView *textView = [self activeQuickEntryFieldEditor];
+    if (!textView) return;
+
+    NSTextStorage *storage = textView.textStorage;
+    NSRange fullRange = NSMakeRange(0, storage.length);
+
+    // NSToolTipAttributeName isn't used here — native tooltips can't appear
+    // above this app's NSMainMenuWindowLevel window (see ItsycalWindow.m),
+    // so hover feedback is driven by QuickEntryTooltipWindow instead, via
+    // -mouseMoved:/-mouseExited: below.
+    [storage removeAttribute:NSUnderlineStyleAttributeName range:fullRange];
+    [storage removeAttribute:NSUnderlineColorAttributeName range:fullRange];
+
+    for (EventQuickEntrySpan *span in spans) {
+        NSRange range = span.range;
+        if (NSMaxRange(range) > storage.length) continue;
+
+        // Color-coded by span type so adjacent spans (e.g. "@ Cafe Luna on
+        // Tuesday") are visually distinguishable even when they abut with
+        // only a single space between them, which barely reads as a gap.
+        [storage addAttribute:NSUnderlineStyleAttributeName value:@(NSUnderlineStyleSingle) range:range];
+        [storage addAttribute:NSUnderlineColorAttributeName value:[self colorForSpanKind:span.kind] range:range];
+    }
+}
+
+- (NSColor *)colorForSpanKind:(EventQuickEntrySpanKind)kind
+{
+    switch (kind) {
+        case EventQuickEntrySpanKindDate:     return [NSColor systemBlueColor];
+        case EventQuickEntrySpanKindDuration: return [NSColor systemOrangeColor];
+        case EventQuickEntrySpanKindLocation: return [NSColor systemGreenColor];
+        case EventQuickEntrySpanKindRepeat:   return [NSColor systemPurpleColor];
+    }
+    return [NSColor labelColor];
+}
+
+- (void)mouseMoved:(NSEvent *)event
+{
+    [self updateQuickEntryTooltipForEvent:event];
+}
+
+- (void)mouseExited:(NSEvent *)event
+{
+    [_quickEntryTooltipWindow hide];
+}
+
+- (void)updateQuickEntryTooltipForEvent:(NSEvent *)event
+{
+    NSTextView *textView = [self activeQuickEntryFieldEditor];
+    if (!textView || _quickEntryRecognizedSpans.count == 0) {
+        [_quickEntryTooltipWindow hide];
+        return;
+    }
+
+    // boundingRectForGlyphRange:inTextContainer: and characterIndexForPoint:
+    // both operate in the text CONTAINER's coordinate space, which is offset
+    // from the view's own bounds by textContainerOrigin.
+    NSPoint pointInEditor = [textView convertPoint:event.locationInWindow fromView:nil];
+    NSPoint pointInContainer = NSMakePoint(pointInEditor.x - textView.textContainerOrigin.x,
+                                            pointInEditor.y - textView.textContainerOrigin.y);
+    NSUInteger charIndex = [textView.layoutManager characterIndexForPoint:pointInContainer
+                                                            inTextContainer:textView.textContainer
+                                   fractionOfDistanceBetweenInsertionPoints:NULL];
+
+    EventQuickEntrySpan *hitSpan = nil;
+    for (EventQuickEntrySpan *span in _quickEntryRecognizedSpans) {
+        if (NSLocationInRange(charIndex, span.range)) {
+            hitSpan = span;
+            break;
+        }
+    }
+
+    if (!hitSpan) {
+        [_quickEntryTooltipWindow hide];
+        return;
+    }
+
+    if (!_quickEntryTooltipWindow) {
+        _quickEntryTooltipWindow = [QuickEntryTooltipWindow new];
+    }
+    NSPoint screenPoint = [self.view.window convertPointToScreen:event.locationInWindow];
+    NSString *text = [NSString stringWithFormat:@"%@: %@", hitSpan.label, hitSpan.displayValue];
+    [_quickEntryTooltipWindow showText:text atScreenPoint:screenPoint];
 }
 
 - (void)allDayClicked:(NSButton *)allDayCheckbox
@@ -644,6 +906,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
         [[NSAlert alertWithError:error] runModal];
     }
     else {
+        [_quickEntryTooltipWindow hide];
         [self.enclosingPopover close];
     }
 }

@@ -1,0 +1,54 @@
+/* Keyword data for EventQuickEntryKeywordLanguagePack (see EventQuickEntryParser.h).
+   Array-valued entries are pipe-delimited ("word1|word2"). */
+
+"languageCode" = "en";
+
+/* Duration */
+"durationPrefixWord" = "for";
+"halfHourPhrase" = "half an hour";
+"oneHourPhrases" = "a hour|an hour";
+"hourUnitWords" = "hours|hour|hrs|hr";
+"minuteUnitWords" = "minutes|minute|mins|min";
+
+/* Location */
+"locationPrefixWords" = "at|in";
+
+/* Date */
+"danglingPrefixWords" = "on";
+"mealWords" = "lunch|breakfast|dinner|brunch";
+"explicitTimeWords" = "noon|midnight|morning|afternoon|evening";
+"dateTimeConnector" = "at";
+
+/* Relative-period phrases NSDataDetector doesn't recognize on its own */
+"nextWeekPhrase" = "next week";
+"nextMonthPhrase" = "next month";
+"nextYearPhrase" = "next year";
+"relativePeriodPrefixWord" = "in";
+"relativePeriodFromNowSuffix" = "from now";
+"weekUnitWords" = "weeks|week";
+"monthUnitWords" = "months|month";
+"yearUnitWords" = "years|year";
+"numberWords" = "one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve";
+
+/* Recurrence phrases, keyed by frequency */
+"recurrencePhrases.every2Weeks" = "every other week|biweekly";
+"recurrencePhrases.everyDay" = "every day|daily";
+"recurrencePhrases.everyWeek" = "every week|weekly";
+"recurrencePhrases.everyMonth" = "every month|monthly";
+"recurrencePhrases.everyYear" = "every year|yearly|annually";
+
+/* Recurrence display labels, keyed by frequency */
+"recurrenceLabel.every2Weeks" = "Every 2 Weeks";
+"recurrenceLabel.everyDay" = "Every Day";
+"recurrenceLabel.everyWeek" = "Every Week";
+"recurrenceLabel.everyMonth" = "Every Month";
+"recurrenceLabel.everyYear" = "Every Year";
+
+/* Span tooltip category labels */
+"dateSpanLabel" = "Date";
+"durationSpanLabel" = "Duration";
+"locationSpanLabel" = "Location";
+"repeatSpanLabel" = "Repeat";
+
+/* Quick-entry field placeholder */
+"placeholderExample" = "Meeting with Bob for 30 min this Friday";

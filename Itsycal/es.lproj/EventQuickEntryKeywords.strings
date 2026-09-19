@@ -1,0 +1,89 @@
+/* Keyword data for EventQuickEntryKeywordLanguagePack (see EventQuickEntryParser.h).
+   Array-valued entries are pipe-delimited ("word1|word2").
+
+   Best-effort translation, verified against real NSDataDetector output but
+   NOT reviewed by a native Spanish speaker — please review before relying
+   on it.
+
+   locationPrefixWords deliberately omits "a" (too common a short
+   preposition; risks false-positive location matches).
+
+   danglingPrefixWords: "el" and "esta" were individually verified via
+   NSDataDetector probing to get stranded before a date match (e.g. "el
+   próximo lunes", "esta noche"); "la"/"los"/"las"/"este" were added by
+   analogy, not each individually verified.
+
+   explicitTimeWords deliberately excludes "mañana": it means both
+   "tomorrow" and "morning", and probing showed NSDataDetector treating it
+   as a plain date word (no specific hour) far more often than as a
+   time-of-day word — including it would make hasExplicitTime incorrectly
+   true for phrases that only mean "tomorrow". "tarde"/"mediodía"/
+   "medianoche" are included by analogy with "noche" (individually
+   verified to resolve to a specific hour) but were not each verified.
+
+   recurrencePhrases/recurrenceLabel match the app's existing
+   es.lproj/Localizable.strings translations for the repeat popup, so
+   quick-entry's tooltip text stays consistent with what the popup itself
+   already shows.
+
+   nextWeekPhrase/nextMonthPhrase/nextYearPhrase/relativePeriodPrefixWord/
+   relativePeriodFromNowSuffix/weekUnitWords/monthUnitWords/yearUnitWords/
+   numberWords are plain translations, not verified against NSDataDetector
+   output — unlike the rest of this file, NSDataDetector plays no role in
+   recognizing these phrases (that's the point of them), so there was
+   nothing to probe. relativePeriodFromNowSuffix ("a partir de ahora") is a
+   literal translation of "from now"; a native speaker may prefer a
+   different construction (e.g. "dentro de dos semanas" as a prefix form
+   instead) — flagging for review rather than guessing further. */
+
+"languageCode" = "es";
+
+/* Duration */
+"durationPrefixWord" = "durante";
+"halfHourPhrase" = "media hora";
+"oneHourPhrases" = "una hora";
+"hourUnitWords" = "horas|hora";
+"minuteUnitWords" = "minutos|minuto";
+
+/* Location */
+"locationPrefixWords" = "en";
+
+/* Date */
+"danglingPrefixWords" = "el|la|los|las|esta|este";
+"mealWords" = "almuerzo|desayuno|cena";
+"explicitTimeWords" = "mediodía|medianoche|tarde|noche";
+"dateTimeConnector" = "a las";
+
+/* Relative-period phrases NSDataDetector doesn't recognize on its own */
+"nextWeekPhrase" = "la próxima semana";
+"nextMonthPhrase" = "el próximo mes";
+"nextYearPhrase" = "el próximo año";
+"relativePeriodPrefixWord" = "en";
+"relativePeriodFromNowSuffix" = "a partir de ahora";
+"weekUnitWords" = "semanas|semana";
+"monthUnitWords" = "meses|mes";
+"yearUnitWords" = "años|año";
+"numberWords" = "uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce";
+
+/* Recurrence phrases, keyed by frequency */
+"recurrencePhrases.every2Weeks" = "cada 2 semanas|cada dos semanas|quincenal";
+"recurrencePhrases.everyDay" = "todos los días|todos los dias|diariamente|diario";
+"recurrencePhrases.everyWeek" = "todas las semanas|semanalmente";
+"recurrencePhrases.everyMonth" = "todos los meses|mensualmente";
+"recurrencePhrases.everyYear" = "todos los años|todos los anos|anualmente";
+
+/* Recurrence display labels, keyed by frequency (matches es.lproj/Localizable.strings) */
+"recurrenceLabel.every2Weeks" = "Cada 2 semanas";
+"recurrenceLabel.everyDay" = "Todos los días";
+"recurrenceLabel.everyWeek" = "Todas las semanas";
+"recurrenceLabel.everyMonth" = "Todos los meses";
+"recurrenceLabel.everyYear" = "Todos los años";
+
+/* Span tooltip category labels */
+"dateSpanLabel" = "Fecha";
+"durationSpanLabel" = "Duración";
+"locationSpanLabel" = "Ubicación";
+"repeatSpanLabel" = "Repetir";
+
+/* Quick-entry field placeholder */
+"placeholderExample" = "Reunión con Bob durante 30 min este viernes";
