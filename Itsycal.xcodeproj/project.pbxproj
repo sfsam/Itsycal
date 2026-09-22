@@ -77,6 +77,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B0C500012F80000000AAA001 /* cs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/MainMenu.strings; sourceTree = "<group>"; };
+		B0C500022F80000000AAA001 /* cs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B0C500032F80000000AAA001 /* cs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6F21F6F31F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.strings"; sourceTree = "<group>"; };
 		6F21F6F41F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		6F21F6F51F0CDA7D00F443BE /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -376,6 +379,7 @@
 			knownRegions = (
 				en,
 				Base,
+				cs,
 				fr,
 				es,
 				it,
@@ -482,6 +486,7 @@
 				922B6BDB1A88667700DEA9CD /* it */,
 				B0A100032F74710000AAA001 /* ko */,
 				6F21F6F51F0CDA7D00F443BE /* zh-Hans */,
+				B0C500032F80000000AAA001 /* cs */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -495,6 +500,7 @@
 				922B6BDC1A886C6900DEA9CD /* it */,
 				B0A100022F74710000AAA001 /* ko */,
 				6F21F6F41F0CDA7D00F443BE /* zh-Hans */,
+				B0C500022F80000000AAA001 /* cs */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -509,6 +515,7 @@
 				922B6BDD1A886C6900DEA9CD /* it */,
 				B0A100012F74710000AAA001 /* ko */,
 				6F21F6F31F0CDA7D00F443BE /* zh-Hans */,
+				B0C500012F80000000AAA001 /* cs */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";

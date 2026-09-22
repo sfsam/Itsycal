@@ -1,0 +1,132 @@
+"1 day" = "1 den";
+"1 day before" = "1 den před";
+"1 day before (9 AM)" = "1 den před (9 AM)";
+"1 hour before" = "1 hodinu před";
+"1 week before" = "1 týden předem";
+"2 days" = "2 dny";
+"2 days before" = "2 dny předem";
+"2 days before (9 AM)" = "2 dny předem (9 AM)";
+"2 hours before" = "2 hodiny předem";
+"3 days" = "3 dny";
+"4 days" = "4 dny";
+"5 days" = "5 dnů";
+"5 minutes before" = "5 minut předem";
+"6 days" = "6 dnů";
+"7 days" = "7 dnů";
+"10 minutes before" = "10 minut předem";
+"14 days" = "14 dnů";
+"15 minutes before" = "15 minut předem";
+"30 minutes before" = "30 minut předem";
+"31 days" = "31 dnů";
+"About Itsycal" = "O aplikaci Itsycal";
+/* About prefs tab label */
+"About" = "O mně";
+"Add Location or Video Call" = "Přidejte místo nebo videohovor";
+"Add Notes" = "Přidat poznámky";
+"Add URL" = "Přidat URL";
+"Alert:" = "Upozornění:";
+"All-day:" = "Celý den:";
+/* Appearance prefs tab label */
+"Appearance" = "Vzhled";
+"Are you sure you want to delete this event?" = "Opravdu chcete tuto událost smazat?";
+"At time of event" = "V čase události";
+"Automatically check for updates" = "Automaticky vyhledávat aktualizace";
+"Beep beep on the hour" = "Zapípat každou hodinu";
+"Calendar" = "Kalendář";
+"Calendar access denied.
+
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Přístup ke kalendáři byl odepřen.
+
+Itsycal je užitečnější, pokud může zobrazovat události z vašich kalendářů. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Soukromí";
+"Calendar access was denied." = "Přístup ke kalendáři byl odepřen.";
+"Cancel" = "Zrušit";
+"Check for Updates…" = "Vyhledat aktualizace…";
+"Copy" = "Kopírovat";
+/* Dark theme name */
+"Dark" = "Tmavé";
+"Date & Time…" = "Datum a čas…";
+"Datetime pattern" = "Formát data a času";
+"Delete…" = "Smazat…";
+"Delete All Future Events" = "Smazat všechny budoucí události";
+"Delete Only This Event" = "Smazat pouze tuto událost";
+"Delete This Event" = "Smazat tuto událost";
+"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Chcete smazat všechny výskyty této události nebo pouze vybranou událost?";
+"Donate" = "Darovat";
+"End Repeat:" = "Konec opakování:";
+"Ends:" = "Končí:";
+"Event list shows:" = "Seznam událostí obsahuje:";
+"Every %zd Days" = "Každých %zd dní";
+"Every %zd Months" = "Každých %zd měsíců";
+"Every %zd Weeks" = "Každých %zd týdnů";
+"Every %zd Years" = "Každých %zd let";
+"Every Day" = "Každý den";
+"Every Month" = "Každý měsíc";
+"Every Week" = "Každý týden";
+"Every Year" = "Každý rok";
+"First day of week:" = "První den týdne:";
+"Follow" = "Sledovat";
+"Friday" = "pátek";
+/* General prefs tab label */
+"General" = "Obecné";
+"Go to Date…" = "Přejít na datum…";
+"Go to date" = "Přejít na datum";
+"Help" = "Nápověda";
+"Help…" = "Nápověda…";
+"Hide icon" = "Skrýt ikonu";
+"Highlight:" = "Zvýraznit:";
+"Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal nemůže vytvořit novou událost, pokud nemáte oprávnění k úpravám alespoň v jednom kalendáři.";
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal je užitečnější, pokud mu povolíte přidávat události do vašich kalendářů. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Soukromí.";
+"Itsycal must be run from the Applications folder in order to work properly.
+
+Please quit Itsycal, move it to the Applications folder, and relaunch." = "Má-li Itsycal fungovat správně, je nutné jej spustit ze složky „Aplikace“.
+
+Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej spusťte.";
+"Keyboard shortcut" = "Klávesová zkratka";
+"Launch at login" = "Otevřít při přihlášení";
+/* Light theme name */
+"Light" = "Světlé";
+"Menu Bar" = "Řádek nabídek";
+"Monday" = "pondělí";
+"Move Itsycal to the Applications folder" = "Přesuňte Itsycal do složky Aplikace";
+/* Repeat ends never */
+"Never" = "Nikdy";
+"New Event" = "Nová událost";
+"New Event   ⌘N" = "Nová událost   ⌘N";
+"No events" = "Žádné události";
+/* Alert none
+   Repeat none */
+"None" = "Žádné";
+"On Date" = "K datu";
+"On day of event (9 AM)" = "V den události (9 AM)";
+"Open Calendar" = "Otevřít kalendář";
+"Open Calendar   ⌘O" = "Otevřít kalendář   ⌘O";
+"Options" = "Volby";
+"or" = "nebo";
+"Pin Itsycal   P" = "Přišpendlit Itsycal   P";
+"Preferences…" = "Nastavení…";
+"Quit Itsycal" = "Ukončit Itsycal";
+"Repeat:" = "Opakovat:";
+"Saturday" = "sobota";
+"Save Event" = "Uložit událost";
+"Settings…" = "Nastavení…";
+"Show calendar weeks" = "Zobrazovat kalendářní týdny";
+"Show day of week in icon" = "Zobrazovat den týdne v ikoně";
+"Show days with no events" = "Zobrazovat dny bez událostí";
+"Show event dots" = "Zobrazovat tečky událostí";
+"Show event location" = "Zobrazovat místo události";
+"Show month in icon" = "Zobrazovat měsíc v ikoně";
+"Starts:" = "Začíná:";
+"Sunday" = "neděle";
+/* System theme name */
+"System" = "Systémové";
+/* Alert box message when we fail to launch the Calendar application */
+"The Calendar application could not be found." = "Aplikaci Kalendář se nepodařilo najít.";
+"Theme:" = "Téma:";
+"There are no modifiable calendars." = "Neexistují žádné kalendáře, které by bylo možné upravovat.";
+"Thursday" = "čtvrtek";
+"Tuesday" = "úterý";
+"Use colored dots" = "Používat barevné tečky";
+"Wednesday" = "středa";
+"You're deleting an event." = "Mažete událost.";
+/* Spanning event ends */
+"ends" = "končí";
