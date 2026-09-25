@@ -260,10 +260,6 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         if (sender != _moCal) return;
     }
     
-    // Was prefs window open in the past and then hidden when
-    // app became inactive? This prevents it from reappearing.
-    [self.prefsWC close];
-    
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
     
     if (_ec.calendarAccessGranted == NO) {
@@ -438,6 +434,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         prefsVC.childViewControllers = @[prefsGeneralVC, prefsAppearanceVC, prefsAboutVC];
         // Create prefs WC.
         NSPanel *panel = [[NSPanel alloc] initWithContentRect:NSZeroRect styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable) backing:NSBackingStoreBuffered defer:NO];
+        panel.hidesOnDeactivate = NO;
         _prefsWC = [[NSWindowController alloc] initWithWindow:panel];
         _prefsWC.contentViewController = prefsVC;
         _prefsWC.window.contentView.wantsLayer = YES;
@@ -1091,10 +1088,6 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 - (void)agendaWantsToDeleteEvent:(EKEvent *)event
 {
-    // Was prefs window open in the past and then hidden when
-    // app became inactive? This prevents it from reappearing.
-    [self.prefsWC close];
-    
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
     
     // Make a string showing the event title and duration.
