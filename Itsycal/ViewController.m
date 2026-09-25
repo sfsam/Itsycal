@@ -51,6 +51,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     BOOL       _clockUsesTime;
     BOOL       _shouldShowMeetingIndicator;
     NSRect     _screenFrame;
+    NSRect     _fallbackAnchor;
+    BOOL       _usesFallbackPosition;
     NSPopover *_newEventPopover;
     NSMutableArray *_notificationTokens;
 }
@@ -526,7 +528,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
     [self clockFormatDidChange];
     [self updateMenubarIcon];
-    [self positionItsycalWindow];
+    [self positionItsycalWindowForInitialPresentation:NO];
 
     // Notification for when status item view moves
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusItemMoved:) name:NSWindowDidMoveNotification object:_statusItem.button.window];
@@ -822,7 +824,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     return iconImage;
 }
 
-- (void)positionItsycalWindow
+- (void)positionItsycalWindowForInitialPresentation:(BOOL)initialPresentation
 {
     NSRect statusItemFrame = [_statusItem.button.window convertRectToScreen:_statusItem.button.frame];
 
@@ -851,7 +853,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     // the system *currently* places the status item just above
     // its screen. This isn't documented behavior and so might
     // not work in the future.
-    NSScreen *statusItemScreen = [NSScreen mainScreen];
+    NSScreen *statusItemScreen = nil;
     NSPoint testPoint = statusItemFrame.origin;
     testPoint.y -= 100;
     for (NSScreen *screen in [NSScreen screens]) {
@@ -860,6 +862,56 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
             break;
         }
     }
+
+    // A status item moved fully offscreen by a menu bar manager is not a
+    // useful anchor. In that case, keep Itsycal onscreen at the top right
+    // of the screen.
+    BOOL useFallbackPosition = statusItemScreen == nil;
+
+    // When first showing Itsycal, don't anchor to an item that isn't
+    // visible, such as one covered by app menus or hidden along with a
+    // fullscreen app's menu bar. The exception is an auto-hiding desktop
+    // menu bar: it moves the item just above its screen, where it reports
+    // itself as not visible, but its x position is still a good anchor.
+    // Skip this check for an already open window, since the menu bar can
+    // auto-hide while Itsycal is open.
+    if (initialPresentation && !useFallbackPosition
+        && NSMinY(statusItemFrame) < NSMaxY(statusItemScreen.frame)) {
+        BOOL itemIsVisible = !!(_statusItem.button.window.occlusionState & NSWindowOcclusionStateVisible);
+        useFallbackPosition = !itemIsVisible;
+    }
+
+    // Once Itsycal is shown in the fallback position, keep it there while
+    // it remains open. Otherwise it would jump under the status item when
+    // the menu bar is revealed or the item moves. Recompute the position
+    // only if the screen Itsycal is on has gone away or changed size.
+    NSScreen *fallbackScreen = nil;
+    if (!initialPresentation && _usesFallbackPosition) {
+        for (NSScreen *screen in [NSScreen screens]) {
+            if (NSEqualRects(screen.frame, _screenFrame)) {
+                fallbackScreen = screen;
+                break;
+            }
+        }
+    }
+
+    if (fallbackScreen != nil) {
+        statusItemScreen = fallbackScreen;
+        statusItemFrame = _fallbackAnchor;
+    }
+    else if (useFallbackPosition) {
+        // A hidden status item can still identify its display. Use the
+        // main screen only when the item is fully offscreen.
+        if (statusItemScreen == nil) {
+            statusItemScreen = [NSScreen mainScreen];
+        }
+        // Anchor to the top right of the screen, below the menu bar so
+        // that the menu bar doesn't cover Itsycal.
+        statusItemFrame = NSMakeRect(NSMaxX(statusItemScreen.frame),
+                                     NSMaxY(statusItemScreen.visibleFrame), 0, 0);
+        _fallbackAnchor = statusItemFrame;
+    }
+    _usesFallbackPosition = fallbackScreen != nil || useFallbackPosition;
     _screenFrame = statusItemScreen.frame;
     CGFloat screenMaxX = NSMaxX(statusItemScreen.frame);
 
@@ -900,7 +952,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     // -statusItemClicked: method. The delay let's -menuItemClicked:
     // handle this scenario first.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self positionItsycalWindow];
+        [self positionItsycalWindowForInitialPresentation:NO];
     });
 }
 
@@ -958,7 +1010,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 - (void)showItsycalWindow
 {
     [[NSApplication sharedApplication] unhideWithoutActivation];
-    [self positionItsycalWindow];
+    [self positionItsycalWindowForInitialPresentation:YES];
     [self.itsycalWindow makeKeyAndOrderFront:self];
     [self.itsycalWindow makeFirstResponder:_moCal];
     _inactiveTime = 0;
@@ -979,7 +1031,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    [self positionItsycalWindow];
+    [self positionItsycalWindowForInitialPresentation:NO];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
