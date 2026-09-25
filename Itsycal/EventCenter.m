@@ -471,10 +471,14 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                      || (hostIs(@"vk.com") && [path hasPrefix:@"/call/"])) {
                 info.zoomURL = url;
             }
-            *stop = info.zoomURL != nil;
+            if (info.zoomURL) {
+                info.meetingURL = result.URL;
+                *stop = YES;
+            }
         }];
     };
     info.zoomURL = nil;
+    info.meetingURL = nil;
     if (info.event.location) GetZoomURL(info.event.location);
     if (info.zoomURL) return;
     if (info.event.URL) GetZoomURL(info.event.URL.absoluteString);

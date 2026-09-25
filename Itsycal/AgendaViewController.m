@@ -183,8 +183,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
         [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
     [menu addItemWithTitle:NSLocalizedString(@"Open Calendar", nil) action:@selector(showCalendarApp:) keyEquivalent:@""];
-    [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
     EventInfo *info = self.events[_tv.clickedRow];
+    [menu addItemWithTitle:NSLocalizedString(@"Copy Event Details", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
+    if (info.meetingURL) {
+        [menu addItemWithTitle:NSLocalizedString(@"Copy Meeting Link", nil) action:@selector(copyMeetingURLToPasteboard:) keyEquivalent:@""];
+    }
     if (info.event.calendar.allowsContentModifications) {
         NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete…", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
         item.tag = _tv.clickedRow;
@@ -223,6 +226,16 @@ static NSString *kEventCellIdentifier = @"EventCell";
                            cell.locationTextField.stringValue.length > 0 ? @"\n" : @""];
     [[NSPasteboard generalPasteboard] clearContents];
     [[NSPasteboard generalPasteboard] writeObjects:@[eventText]];
+}
+
+- (void)copyMeetingURLToPasteboard:(id)sender
+{
+    if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
+        [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
+    EventInfo *info = self.events[_tv.clickedRow];
+    if (info.meetingURL == nil) return;
+    [[NSPasteboard generalPasteboard] clearContents];
+    [[NSPasteboard generalPasteboard] writeObjects:@[info.meetingURL.absoluteString]];
 }
 
 #pragma mark -
