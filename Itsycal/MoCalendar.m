@@ -14,6 +14,8 @@
 #import "MoCalResizeHandle.h"
 #import "Themer.h"
 #import "Sizer.h"
+#import "MoLunarCalculator.h"
+#import "Itsycal.h"
 
 NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
@@ -87,8 +89,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     NSInteger numRows = [[NSUserDefaults standardUserDefaults] integerForKey:kMoCalendarNumRows];
     numRows = MIN(MAX(numRows, 6), 10);
     
-    _dateGrid = [[MoCalGrid alloc] initWithRows:numRows columns:7 horizontalMargin:6 verticalMargin:6];
-    _weekGrid = [[MoCalGrid alloc] initWithRows:numRows columns:1 horizontalMargin:0 verticalMargin:6];
+    _dateGrid = [[MoCalGrid alloc] initWithRows:numRows columns:7 horizontalMargin:6 verticalMargin:0];
+    _weekGrid = [[MoCalGrid alloc] initWithRows:numRows columns:1 horizontalMargin:0 verticalMargin:0];
     _dowGrid  = [[MoCalGrid alloc] initWithRows:1 columns:7 horizontalMargin:6 verticalMargin:0];
 
     for (MoCalCell *cell in _dowGrid.cells) {
@@ -124,6 +126,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     _weekStartDOW = 0;  // 0=Sunday, 1=Monday...
     _highlightedDOWs = DOWMaskNone;
     _showWeeks    = NO;
+    _showLunarCalendar = NO;
     _doNotDrawOutlineAroundCurrentMonth = NO;
     _monthDate    = MakeDate(1583, 0, 1);   // _monthDate must be different from the
     _selectedDate = MakeDate(1583, 0, 1);   // date set in setMonthDate:selectedDate:
@@ -221,6 +224,12 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         [ctx setDuration:0.1];
         [self->_weeksConstraint.animator setConstant:constant];
     } completionHandler:NULL];
+}
+
+- (void)setShowLunarCalendar:(BOOL)showLunarCalendar
+{
+    _showLunarCalendar = showLunarCalendar;
+    [self updateCalendar];
 }
 
 - (void)setShowEventDots:(BOOL)showEventDots
@@ -338,6 +347,22 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         for (NSInteger col = 0; col < 7; col++) {
             MoCalCell *cell = _dateGrid.cells[row * 7 + col];
             cell.textField.integerValue = date.day;
+            
+            // Lunar Calendar Support
+            if (self.showLunarCalendar) {
+                MoLunarDate *lunarDate = [MoLunarCalculator solarToLunarWithDay:date.day month:date.month + 1 year:date.year];
+                NSString *lunarStr = [NSString stringWithFormat:@"%ld", (long)lunarDate.day];
+                if (lunarDate.day == 1 || date.day == 1) {
+                    lunarStr = [NSString stringWithFormat:@"%ld/%ld", (long)lunarDate.day, (long)lunarDate.month];
+                }
+                
+                // Always use light font weight
+                cell.lunarDateLabel.font = [NSFont systemFontOfSize:SizePref.fontSize * 0.75 weight:NSFontWeightLight];
+                cell.lunarDateLabel.stringValue = lunarStr;
+            } else {
+                cell.lunarDateLabel.stringValue = @"";
+            }
+            
             cell.date = date;
             cell.isToday = CompareDates(date, self.todayDate) == 0;
             cell.isHighlighted = [self columnIsMemberOfHighlightedDOWs:col];

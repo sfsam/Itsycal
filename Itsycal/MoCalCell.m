@@ -26,12 +26,23 @@
         [_textField setAlignment:NSTextAlignmentCenter];
         [_textField setTranslatesAutoresizingMaskIntoConstraints:NO];
 
+
         [self addSubview:_textField];
 
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_textField]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_textField)]];
         
         _textFieldVerticalSpace = [NSLayoutConstraint constraintWithItem:_textField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:SizePref.cellTextFieldVerticalSpace];
         [self addConstraint:_textFieldVerticalSpace];
+
+        _lunarDateLabel = [NSTextField labelWithString:@""];
+        [_lunarDateLabel setFont:[NSFont systemFontOfSize:SizePref.fontSize * 0.75 weight:NSFontWeightLight]];
+        [_lunarDateLabel setTextColor:Theme.monthTextColor]; // Use a subtler color
+        [_lunarDateLabel setAlignment:NSTextAlignmentCenter];
+        [_lunarDateLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [self addSubview:_lunarDateLabel];
+        
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[_lunarDateLabel]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_lunarDateLabel)]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:_lunarDateLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_textField attribute:NSLayoutAttributeBottom multiplier:1 constant:-3]]; // Decreased spacing
 
         
         REGISTER_FOR_SIZE_CHANGE;
@@ -47,6 +58,7 @@
 - (void)sizeChanged:(id)sender
 {
     [_textField setFont:[NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightMedium]];
+    [_lunarDateLabel setFont:[NSFont systemFontOfSize:SizePref.fontSize * 0.75 weight:NSFontWeightLight]];
     _textFieldVerticalSpace.constant = SizePref.cellTextFieldVerticalSpace;
 }
 
@@ -89,6 +101,7 @@
 
 - (void)updateTextColor {
     self.textField.textColor = self.isInCurrentMonth ? Theme.currentMonthTextColor : Theme.noncurrentMonthTextColor;
+    self.lunarDateLabel.textColor = self.isInCurrentMonth ? [Theme.currentMonthTextColor colorWithAlphaComponent:0.7] : Theme.noncurrentMonthTextColor;
 }
 
 - (void)drawRect:(NSRect)dirtyRect

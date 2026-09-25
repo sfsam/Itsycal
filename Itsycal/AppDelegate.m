@@ -41,6 +41,7 @@
         kUseColoredDots:       @(YES),
         kThemePreference:      @0, // System=0, Light=1, Dark=2
         kHideIcon:             @(NO),
+        kShowLunarCalendar:    @(NO),
         kShowLocation:         @(NO),
         kEnableTahoeMenuIcons: @(NO),
         kDoNotDrawOutlineAroundCurrentMonth: @(NO)
@@ -119,6 +120,7 @@
     [SizePref bind:@"sizePreference" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     ViewController *vc = [ViewController new];
+    [vc viewWillAppear];
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
     _wc.contentViewController = vc;
     _wc.window.delegate = vc;

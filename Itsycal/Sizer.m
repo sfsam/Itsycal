@@ -2,6 +2,7 @@
 // Copyright (c) 2018 mowglii.com
 
 #import "Sizer.h"
+#import "Itsycal.h"
 
 // NSUserDefaults key
 NSString * const kSizePreference = @"SizePreference";
@@ -27,6 +28,24 @@ Sizer *SizePref = nil;
     return shared;
 }
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kShowLunarCalendar options:NSKeyValueObservingOptionNew context:NULL];
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kShowLunarCalendar];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ([keyPath isEqualToString:kShowLunarCalendar]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:kSizeDidChangeNotification object:nil];
+    }
+}
+
 - (void)setSizePreference:(SizePreference)sizePreference {
     _sizePreference = sizePreference;
     // Post notification on the main thread because the selector,
@@ -48,7 +67,11 @@ Sizer *SizePref = nil;
 }
 
 - (CGFloat)cellSize {
-    return SML_MED_LRG(23, 28, 32);
+    CGFloat size = SML_MED_LRG(23, 28, 32);
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kShowLunarCalendar]) {
+        size += 14;
+    }
+    return size;
 }
 
 - (CGFloat)cellTextFieldVerticalSpace {

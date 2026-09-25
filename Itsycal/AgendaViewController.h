@@ -18,6 +18,7 @@
 @property (nonatomic) NSArray *events;
 @property (nonatomic, weak) id<AgendaDelegate> delegate;
 @property (nonatomic) BOOL showLocation;
+@property (nonatomic) BOOL showLunarCalendar;
 
 - (void)reloadData;
 - (void)dimEventsIfNecessary;

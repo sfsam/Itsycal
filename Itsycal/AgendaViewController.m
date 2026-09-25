@@ -15,6 +15,7 @@
 #import "MoVFLHelper.h"
 #import "Themer.h"
 #import "Sizer.h"
+#import "MoLunarCalculator.h"
 
 static NSString *kColumnIdentifier    = @"Column";
 static NSString *kDateCellIdentifier  = @"DateCell";
@@ -159,6 +160,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     if (_showLocation != showLocation) {
         _showLocation = showLocation;
+        [self reloadData];
+    }
+}
+
+- (void)setShowLunarCalendar:(BOOL)showLunarCalendar
+{
+    if (_showLunarCalendar != showLunarCalendar) {
+        _showLunarCalendar = showLunarCalendar;
         [self reloadData];
     }
 }
@@ -340,6 +349,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
         if (cell == nil) cell = [AgendaDateCell new];
         cell.date = obj;
         cell.dayTextField.stringValue = [self dayStringForDate:obj];
+        if (self.showLunarCalendar) {
+            NSDateComponents *comp = [self.nsCal components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:obj];
+            MoLunarDate *lunarDate = [MoLunarCalculator solarToLunarWithDay:comp.day month:comp.month year:comp.year];
+            NSString *lunarStr = [NSString stringWithFormat:@"%ld/%ld", (long)lunarDate.day, (long)lunarDate.month];
+            cell.dayTextField.stringValue = [NSString stringWithFormat:@"%@ (%@)", cell.dayTextField.stringValue, lunarStr];
+        }
         cell.DOWTextField.stringValue = [self DOWStringForDate:obj];
         cell.dayTextField.textColor = Theme.agendaDayTextColor;
         cell.DOWTextField.textColor = Theme.agendaDOWTextColor;

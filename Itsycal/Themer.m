@@ -128,7 +128,11 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)selectedCellColor {
-    return [self currentMonthOutlineColor];
+    if (@available(macOS 10.14, *)) {
+        return [NSColor controlAccentColor];
+    } else {
+        return [NSColor alternateSelectedControlColor];
+    }
 }
 
 - (NSColor *)todayCellColor {

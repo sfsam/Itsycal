@@ -54,6 +54,9 @@ typedef enum : NSInteger {
 // Is the week of the year column showing?
 @property (nonatomic) BOOL showWeeks;
 
+// Is the lunar calendar showing?
+@property (nonatomic) BOOL showLunarCalendar;
+
 // Should calendar show dots under days with events?
 @property (nonatomic) BOOL showEventDots;
 
