@@ -17,7 +17,8 @@ extern NSString * const kShowWeeks;
 extern NSString * const kWeekStartDOW;
 extern NSString * const kHighlightedDOWs;
 extern NSString * const kKeyboardShortcut;
-extern NSString * const kMenuBarIconType;
+extern NSString * const kMenuBarIconType; // 0 = solid round rect (default), 1 = outlined round rect,
+                                          // 2 = generic calendar icon, 3 = Itsycal icon
 extern NSString * const kShowMonthInIcon;
 extern NSString * const kShowDayOfWeekInIcon;
 extern NSString * const kShowMeetingIndicator;

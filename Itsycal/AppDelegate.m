@@ -94,19 +94,6 @@
         [[NSFileManager defaultManager] createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:NULL];
     }
 
-    // 0.11.1 introduced a new way to highlight columns in the calendar.
-    [self weekendHighlightFixup];
-    
-    // 0.11.11 uses a new theme preference scheme that enables following
-    // the system's appearance.
-    [self themeFixup];
-
-    // 0.13.2 uses an NSDictionary instead of NSData to store the shortcut.
-    [self shortcutFixup];
-
-    // 0.14.1 introduces more menu bar icon types
-    [self menuBarIconTypeFixup];
-
     // Register keyboard shortcut.
     [[MASShortcutBinder sharedBinder] setBindingOptions:@{NSValueTransformerNameBindingOption: MASDictionaryTransformerName}];
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
@@ -193,79 +180,6 @@
     NSURL *url = [NSURL URLWithString:@"https://mowglii.com/itsycal/appfolder.html"];
     [[NSWorkspace sharedWorkspace] openURL:url];
     return YES;
-}
-
-#pragma mark -
-#pragma mark Weekend highlight fixup
-
-// Itsycal 0.11.1 moves away from using a trio of possible defaults
-// (HighlightWeekend, WeekendIsFridaySaturday, WeekendIsSaturdaySunday) and
-// a hardcoded list of countries with Fri/Sat weekends to the method
-// of allowing the user to specify highlighted DOWs. If the user had
-// HighlightWeekend == YES, migrate their highlight settings. In either
-// case, remove the old default keys.
-- (void)weekendHighlightFixup
-{
-    NSArray *countriesWithFridaySaturdayWeekend = @[
-        @"AF", @"DZ", @"BH", @"BD", @"EG", @"IQ", @"JO", @"KW", @"LY",
-        @"MV", @"OM", @"PS", @"QA", @"SA", @"SD", @"SY", @"AE", @"YE"];
-    NSString *countryCode = [NSLocale currentLocale].countryCode;
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if ([defaults boolForKey:@"HighlightWeekend"]) {
-        if ([defaults boolForKey:@"WeekendIsFridaySaturday"] ||
-            [countriesWithFridaySaturdayWeekend containsObject:countryCode]) {
-            // Fri + Sat = (1<<5) + (1<<6) = 32 + 64 = 96
-            [defaults setInteger:96 forKey:kHighlightedDOWs];
-        }
-        else {
-            // Sat + Sun = (1<<6) + (1<<0) = 64 + 1 = 65
-            [defaults setInteger:65 forKey:kHighlightedDOWs];
-        }
-    }
-    [defaults removeObjectForKey:@"HighlightWeekend"];
-    [defaults removeObjectForKey:@"WeekendIsFridaySaturday"];
-    [defaults removeObjectForKey:@"WeekendIsSaturdaySunday"];
-}
-
-// Itsycal 0.11.11 uses ThemePreference instead of ThemeIndex to
-// express the user's theme preference. ThemePreference can be
-// System in addition to explicitly Light or Dark.
-- (void)themeFixup
-{
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"ThemeIndex"];
-}
-
-// 0.13.2 uses an NSDictionary instead of NSData to store the shortcut.
-// Apple deprecated NSKeyedUnarchiveFromDataTransformer so now we use
-// MASDictionaryTransformer instead. This conversion also has the nice
-// effect of making the stored value human-readable.
-- (void)shortcutFixup
-{
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSData *data = [defaults dataForKey:@"KeyboardShortcut"];
-    [defaults removeObjectForKey:@"KeyboardShortcut"];
-    if (!data) return;
-    MASShortcut *shortcut = [NSKeyedUnarchiver unarchivedObjectOfClass:[MASShortcut class] fromData:data error:NULL];
-    if (!shortcut) return;
-    MASDictionaryTransformer *transformer = [MASDictionaryTransformer new];
-    [defaults setObject:[transformer reverseTransformedValue:shortcut] forKey:kKeyboardShortcut];
-}
-
-// 0.14.1 introduces a couple new menu bar icon types
-// represented by kMenuBarIconType:
-//   0 == solid round rect (default)
-//   1 == outlined round rect (formerly kUseOutlineIcon == YES)
-//   2 == generic calendar icon (new)
-//   3 == Itsycal icon (new)
-// As a result, kUseOutlineIcon is no longer used.
-- (void)menuBarIconTypeFixup
-{
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    BOOL useOutlineIcon = [defaults boolForKey:@"UseOutlineIcon"];
-    [defaults removeObjectForKey:@"UseOutlineIcon"];
-    if (useOutlineIcon) {
-        [defaults setInteger:1 forKey:kMenuBarIconType];
-    }
 }
 
 @end
