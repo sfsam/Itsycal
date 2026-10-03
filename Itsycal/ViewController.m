@@ -476,6 +476,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
     datePickerPopover.contentViewController = vc;
     datePickerPopover.behavior = NSPopoverBehaviorTransient;
+    // Enable coloring the full background. See DatePickerVC -loadView.
+    datePickerPopover.hasFullSizeContent = YES;
     datePickerPopover.appearance = NSApp.effectiveAppearance;
     [datePickerPopover showRelativeToRect:positionView.bounds ofView:positionView preferredEdge:NSRectEdgeMinY];
 
