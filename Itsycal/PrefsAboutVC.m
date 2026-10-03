@@ -51,9 +51,6 @@
     MoTextField *donate = label(NSLocalizedString(@"Donate", nil), YES);
     donate.urlString = @"https://mowglii.com/donate/";
 
-    NSTextField *smile = label(@"(๑˃̵ᴗ˂̵)و", NO);
-    smile.font = [NSFont systemFontOfSize:16 weight:NSFontWeightLight];
-
     NSTextField *emojiHelp    = label(@"🛟", NO);
     NSTextField *emojiTwitter = label(@"🙅‍♂️", NO);
     NSTextField *emojiDonate  = label(@"♥️", NO);
@@ -61,16 +58,13 @@
     NSTextField *copyright1 = label(@"© 2012—2026", NO);
     MoTextField *copyright2 = label(@"mowglii.com", YES);
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:box metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(appName, version, help, emojiHelp, follow, emojiTwitter, donate, emojiDonate, smile, copyright1, copyright2)];
-    [vfl :@"V:|[appName]-m-[help]-10-[follow]-10-[donate]-m-[smile]-m-[copyright1]|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:box metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(appName, version, help, emojiHelp, follow, emojiTwitter, donate, emojiDonate, copyright1, copyright2)];
+    [vfl :@"V:|[appName]-m-[help]-10-[follow]-10-[donate]-m-[copyright1]|"];
     [vfl :@"H:|[appName]-4-[version]-(>=0)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|[emojiHelp]-6-[help]-(>=0)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|[emojiTwitter]-6-[follow]-(>=0)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|[emojiDonate]-6-[donate]-(>=0)-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|[copyright1]-4-[copyright2]-(>=0)-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-(>=0)-[smile]-(>=0)-|"];
-
-    [smile.centerXAnchor constraintEqualToAnchor:box.centerXAnchor].active = YES;
 
     MoVFLHelper *outer = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(box)];
     [outer :@"V:|-m-[box]-m-|"];
