@@ -8,6 +8,7 @@
 
 #import <os/log.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import "ViewController.h"
 #import "Itsycal.h"
 #import "ItsycalWindow.h"
@@ -306,9 +307,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     // Determine the default calendar app.
     // See: support.busymac.com/help/21535-busycal-url-handler
     
-    CFStringRef strRef = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, CFSTR("ics"), kUTTypeData);
-    CFStringRef bundleID = LSCopyDefaultRoleHandlerForContentType(strRef, kLSRolesEditor);
-    CFRelease(strRef);
+    UTType *icsType = [UTType typeWithFilenameExtension:@"ics"];
+    CFStringRef bundleID = icsType ? LSCopyDefaultRoleHandlerForContentType((__bridge CFStringRef)icsType.identifier, kLSRolesEditor) : NULL;
     NSString *defaultCalendarAppBundleID = CFBridgingRelease(bundleID);
     
     // Use URL scheme to open BusyCal or Fantastical2 on the
@@ -1276,7 +1276,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     AudioObjectPropertyAddress propertyAddress;
     propertyAddress.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
     propertyAddress.mScope    = kAudioObjectPropertyScopeGlobal;
-    propertyAddress.mElement  = kAudioObjectPropertyElementMaster;
+    propertyAddress.mElement  = kAudioObjectPropertyElementMain;
 
     OSStatus result = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &dataSize, &deviceID);
 
@@ -1284,7 +1284,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     
     propertyAddress.mSelector = kAudioDevicePropertyVolumeScalar;
     propertyAddress.mScope    = kAudioDevicePropertyScopeOutput;
-    propertyAddress.mElement  = 1; // Channel 0  is master, if available
+    propertyAddress.mElement  = 1; // Channel 0  is main, if available
 
     if (!AudioObjectHasProperty(deviceID, &propertyAddress)) return cap;
 
