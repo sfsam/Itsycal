@@ -17,6 +17,12 @@
 {
     NSView *v = [NSView new];
 
+    // The content goes in a box that hugs it. The box is centered
+    // so the content stays centered when the Settings window is
+    // wider than the content (see PrefsVC).
+    NSView *box = [NSView new];
+    [v addSubview:box];
+
     // Convenience function for making labels.
     MoTextField* (^label)(NSString*, BOOL) = ^MoTextField* (NSString *stringValue, BOOL isLink) {
         MoTextField *txt = [MoTextField labelWithString:stringValue];
@@ -24,7 +30,7 @@
             txt.font = [NSFont systemFontOfSize:13 weight:NSFontWeightMedium];
             txt.linkEnabled = YES;
         }
-        [v addSubview:txt];
+        [box addSubview:txt];
         return txt;
     };
 
@@ -55,15 +61,26 @@
     NSTextField *copyright1 = label(@"© 2012—2026", NO);
     MoTextField *copyright2 = label(@"mowglii.com", YES);
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(appName, version, help, emojiHelp, follow, emojiTwitter, donate, emojiDonate, smile, copyright1, copyright2)];
-    [vfl :@"V:|-m-[appName]-m-[help]-10-[follow]-10-[donate]-m-[smile]-m-[copyright1]-m-|"];
-    [vfl :@"H:|-m-[appName]-4-[version]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-m-[emojiHelp]-6-[help]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-m-[emojiTwitter]-6-[follow]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-m-[emojiDonate]-6-[donate]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-m-[copyright1]-4-[copyright2]-(>=m)-|" :NSLayoutFormatAlignAllBaseline];
-    
-    [smile.centerXAnchor constraintEqualToAnchor:v.centerXAnchor].active = YES;
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:box metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(appName, version, help, emojiHelp, follow, emojiTwitter, donate, emojiDonate, smile, copyright1, copyright2)];
+    [vfl :@"V:|[appName]-m-[help]-10-[follow]-10-[donate]-m-[smile]-m-[copyright1]|"];
+    [vfl :@"H:|[appName]-4-[version]-(>=0)-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|[emojiHelp]-6-[help]-(>=0)-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|[emojiTwitter]-6-[follow]-(>=0)-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|[emojiDonate]-6-[donate]-(>=0)-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|[copyright1]-4-[copyright2]-(>=0)-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-(>=0)-[smile]-(>=0)-|"];
+
+    [smile.centerXAnchor constraintEqualToAnchor:box.centerXAnchor].active = YES;
+
+    MoVFLHelper *outer = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @25} views:NSDictionaryOfVariableBindings(box)];
+    [outer :@"V:|-m-[box]-m-|"];
+    [outer :@"H:|-(>=m)-[box]-(>=m)-|"];
+    [box.centerXAnchor constraintEqualToAnchor:v.centerXAnchor].active = YES;
+
+    // Make the box as narrow as its content allows.
+    NSLayoutConstraint *hug = [box.widthAnchor constraintEqualToConstant:0];
+    hug.priority = 1;
+    hug.active = YES;
 
     self.view = v;
 }
