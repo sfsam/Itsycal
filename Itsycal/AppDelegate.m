@@ -176,7 +176,7 @@
         }
     }
     // Itsycal is not being run from /Applications.
-    [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+    [NSApp activate];
     NSAlert *alert = [NSAlert new];
     alert.messageText = NSLocalizedString(@"Move Itsycal to the Applications folder", nil);
     alert.informativeText = [NSLocalizedString(@"Itsycal must be run from the Applications folder in order to work properly.\n\nPlease quit Itsycal, move it to the Applications folder, and relaunch.", nil) stringByAppendingString:[NSString stringWithFormat:@"\n\n%@", bundlePath]];

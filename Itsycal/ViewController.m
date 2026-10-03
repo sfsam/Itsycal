@@ -250,7 +250,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         if (sender != _moCal) return;
     }
     
-    [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+    [NSApp activate];
     
     if (_ec.calendarAccessGranted == NO) {
         NSAlert *alert = [NSAlert new];
@@ -433,7 +433,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 - (void)showAbout:(id)sender
 {
-    [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+    [NSApp activate];
     [_newEventPopover close];
     [self.prefsVC showAbout];
     [self.prefsWC showWindow:self];
@@ -441,7 +441,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 - (void)showPrefs:(id)sender
 {
-    [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+    [NSApp activate];
     [_newEventPopover close];
     [self.prefsVC showPrefs];
     [self.prefsWC showWindow:self];
@@ -1061,7 +1061,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 - (void)agendaWantsToDeleteEvent:(EKEvent *)event
 {
-    [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+    [NSApp activate];
     
     // Make a string showing the event title and duration.
     static NSDateIntervalFormatter *durationFormatter = nil;
