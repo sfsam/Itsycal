@@ -196,17 +196,6 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 }
 
 #pragma mark -
-#pragma mark Utility
-
-- (NSString *)settingsString
-{
-    if (@available(macOS 13.0, *)) {
-        return NSLocalizedString(@"Settings…", @"");
-    }
-    return NSLocalizedString(@"Preferences…", @"");
-}
-
-#pragma mark -
 #pragma mark Keyboard & button actions
 
 - (void)keyDown:(NSEvent *)theEvent
@@ -291,13 +280,9 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         _newEventPopover = [NSPopover new];
         _newEventPopover.animates = NO;
         _newEventPopover.delegate = self;
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
-        if (@available(macOS 26.0, *)) {
-            // Enable coloring the full background including the arrow.
-            // See EventViewController -loadView.
-            _newEventPopover.hasFullSizeContent = YES;
-        }
-#endif
+        // Enable coloring the full background including the arrow.
+        // See EventViewController -loadView.
+        _newEventPopover.hasFullSizeContent = YES;
     }
     EventViewController *eventVC = [EventViewController new];
     eventVC.ec = _ec;
@@ -383,29 +368,27 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Go to Date…", @"") action:@selector(showDatePickerPopover:) keyEquivalent:@"T" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
-    [optMenu insertItemWithTitle:[self settingsString] action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
+    [optMenu insertItemWithTitle:NSLocalizedString(@"Settings…", @"") action:@selector(showPrefs:) keyEquivalent:@"," atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Date & Time…", @"") action:@selector(openDateAndTimePrefs:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Help…", @"") action:@selector(navigateToHelp:) keyEquivalent:@"" atIndex:i++];
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
 
-    if (@available(macOS 26, *)) {
-        // The menu item glyphs introduced in macOS 26 Tahoe.
-        NSInteger index = 0;
-        NSArray *symbolNames = @[
-            @"info.circle",
-            @"arrow.trianglehead.2.clockwise",
-            @"21.calendar",
-            @"gear",
-            @"calendar.badge.clock",
-            @"questionmark.circle",
-            @"xmark.rectangle"
-        ];
-        for (NSMenuItem *item in optMenu.itemArray) {
-            if (item.isSeparatorItem) continue;
-            item.image = [NSImage imageWithSystemSymbolName:symbolNames[index++] accessibilityDescription:nil];
-        }
+    // The menu item glyphs introduced in macOS 26 Tahoe.
+    NSInteger index = 0;
+    NSArray *symbolNames = @[
+        @"info.circle",
+        @"arrow.trianglehead.2.clockwise",
+        @"21.calendar",
+        @"gear",
+        @"calendar.badge.clock",
+        @"questionmark.circle",
+        @"xmark.rectangle"
+    ];
+    for (NSMenuItem *item in optMenu.itemArray) {
+        if (item.isSeparatorItem) continue;
+        item.image = [NSImage imageWithSystemSymbolName:symbolNames[index++] accessibilityDescription:nil];
     }
 
     NSPoint pt = NSOffsetRect(_btnOpt.frame, -5, -10).origin;
@@ -471,15 +454,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 - (void)openDateAndTimePrefs:(id)sender
 {
-    NSURL *url = nil;
-    
-    if (@available(macOS 13, *)) {
-        url = [NSURL URLWithString:@"x-apple.systempreferences:com.apple.Date-Time-Settings.extension"];
-    } else {
-        NSString *path = @"/System/Library/PreferencePanes/DateAndTime.prefPane";
-        url = [NSURL fileURLWithPath:path];
-    }
-    
+    NSURL *url = [NSURL URLWithString:@"x-apple.systempreferences:com.apple.Date-Time-Settings.extension"];
     [NSWorkspace.sharedWorkspace openURL:url];
 }
 
@@ -551,7 +526,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     NSMenu *menu = [[NSMenu alloc] init];
     menu.delegate = self;
 
-    NSMenuItem *item = [menu addItemWithTitle:[self settingsString] action:@selector(showPrefs:) keyEquivalent:@""];
+    NSMenuItem *item = [menu addItemWithTitle:NSLocalizedString(@"Settings…", @"") action:@selector(showPrefs:) keyEquivalent:@""];
     item.target = self;
     item = [menu addItemWithTitle:NSLocalizedString(@"Date & Time…", @"") action:@selector(openDateAndTimePrefs:) keyEquivalent:@""];
     item.target = self;
@@ -559,18 +534,16 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     item = [menu addItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@""];
     item.target = NSApp;
 
-    if (@available(macOS 26, *)) {
-        // The menu item glyphs introduced in macOS 26 Tahoe.
-        NSArray<NSString *> *symbolNames = @[@"gear",
-                                             @"calendar.badge.clock",
-                                             @"xmark.rectangle"];
-        NSUInteger index = 0;
-        for (NSMenuItem *item in menu.itemArray) {
-            if (item.isSeparatorItem) continue;
-            if (index >= symbolNames.count) break;
-            item.image = [NSImage imageWithSystemSymbolName:symbolNames[index] accessibilityDescription:nil];
-            index++;
-        }
+    // The menu item glyphs introduced in macOS 26 Tahoe.
+    NSArray<NSString *> *symbolNames = @[@"gear",
+                                         @"calendar.badge.clock",
+                                         @"xmark.rectangle"];
+    NSUInteger index = 0;
+    for (NSMenuItem *item in menu.itemArray) {
+        if (item.isSeparatorItem) continue;
+        if (index >= symbolNames.count) break;
+        item.image = [NSImage imageWithSystemSymbolName:symbolNames[index] accessibilityDescription:nil];
+        index++;
     }
 
     return menu;
@@ -1097,10 +1070,9 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         durationFormatter = [NSDateIntervalFormatter new];
         durationFormatter.dateStyle = NSDateIntervalFormatterMediumStyle;
     });
-    NSDate *endDate = AdjustedEventEndDate(event, _nsCal);
     durationFormatter.timeStyle = event.isAllDay ? NSDateIntervalFormatterNoStyle : NSDateIntervalFormatterShortStyle;
     NSString *title = event.title == nil ? @"" : event.title;
-    NSString *duration = [durationFormatter stringFromDate:event.startDate toDate:endDate];
+    NSString *duration = [durationFormatter stringFromDate:event.startDate toDate:event.endDate];
     NSString *eventString = [NSString stringWithFormat:@"%@\n%@", title, duration];
 
     BOOL eventRepeats = event.hasRecurrenceRules;

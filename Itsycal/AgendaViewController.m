@@ -212,9 +212,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     intervalFormatter.timeStyle = cell.eventInfo.event.isAllDay
         ? NSDateIntervalFormatterNoStyle
         : NSDateIntervalFormatterShortStyle;
-    NSDate *endDate = AdjustedEventEndDate(cell.eventInfo.event, self.nsCal);
     // Interval formatter just prints single date when from == to.
-    NSString *duration = [intervalFormatter stringFromDate:cell.eventInfo.event.startDate toDate:endDate];
+    NSString *duration = [intervalFormatter stringFromDate:cell.eventInfo.event.startDate toDate:cell.eventInfo.event.endDate];
     duration = StringByStrippingZeroMinutes(duration);
     NSString *eventText = [NSString stringWithFormat:@"%@\n%@\n%@%@",
                            cell.titleTextField.stringValue,
@@ -239,13 +238,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
         self->_popover.contentViewController = [AgendaPopoverVC new];
         self->_popover.behavior = NSPopoverBehaviorTransient;
         self->_popover.animates = NO;
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
-        if (@available(macOS 26.0, *)) {
-            // Enable coloring the full background including the arrow.
-            // See AgendaPopoverVC -loadView.
-            self->_popover.hasFullSizeContent = YES;
-        }
-#endif
+        // Enable coloring the full background including the arrow.
+        // See AgendaPopoverVC -loadView.
+        self->_popover.hasFullSizeContent = YES;
     });
     
     AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
@@ -1028,61 +1023,30 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [vfl :@"H:|[_scrollView]|"];
     [vfl :@"V:|-8-[_scrollView]-8-|"];
 
-    if (@available(macOS 26.0, *)) {
-        // On macOS 26 the trick we use in -viewDidAppear to paint
-        // the popover's full background no longer works. Now we
-        // set the popover's hasFullContentSize=YES and use the
-        // safeAreaLayoutGuide of a view that paints its background
-        // according to the Theme to inset our content.
-        view.translatesAutoresizingMaskIntoConstraints = NO;
-        MoThemeView *v = [MoThemeView new];
-        [v addSubview:view];
-        [NSLayoutConstraint activateConstraints:@[
-            [view.topAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.topAnchor],
-            [view.bottomAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.bottomAnchor],
-            [view.leftAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.leftAnchor],
-            [view.rightAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.rightAnchor],
-        ]];
-        self.view = v;
-        return;
-    }
-
-    self.view = view;
-}
-
-- (void)viewDidAppear
-{
-    // macOS 26 uses MoThemeView and fullSizeContent on the popover
-    // to paint the whole background so we can just return early.
-    if (@available(macOS 26.0, *)) return;
-
-    // Add a colored subview at the bottom the of popover's
-    // window's frameView's view hierarchy. This should color
-    // the popover including the arrow.
-    NSView *frameView = self.view.window.contentView.superview;
-    if (!frameView) return;
-    if (frameView.subviews.count > 0
-        && [frameView.subviews[0].identifier isEqualToString:@"popoverBackgroundBox"]) return;
-    NSBox *backgroundColorView = [[NSBox alloc] initWithFrame:frameView.bounds];
-    backgroundColorView.identifier = @"popoverBackgroundBox";
-    backgroundColorView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-    backgroundColorView.boxType = NSBoxCustom;
-    backgroundColorView.borderWidth = 0;
-    backgroundColorView.fillColor = Theme.mainBackgroundColor;
-    [frameView addSubview:backgroundColorView positioned:NSWindowBelow relativeTo:nil];
+    // The popover has hasFullSizeContent=YES. Use the
+    // safeAreaLayoutGuide of a view that paints its background
+    // according to the Theme to inset our content. This paints
+    // the popover's full background, including the arrow.
+    view.translatesAutoresizingMaskIntoConstraints = NO;
+    MoThemeView *v = [MoThemeView new];
+    [v addSubview:view];
+    [NSLayoutConstraint activateConstraints:@[
+        [view.topAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.topAnchor],
+        [view.bottomAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.bottomAnchor],
+        [view.leftAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.leftAnchor],
+        [view.rightAnchor constraintEqualToAnchor:v.safeAreaLayoutGuide.rightAnchor],
+    ]];
+    self.view = v;
 }
 
 - (NSSize)size
 {
     // See -loadView. Vertial padding top+bottom = 16.
-    if (@available(macOS 26.0, *)) {
-        // On macOS 26 we need to additionally take into account safe area.
-        CGFloat h = self.view.safeAreaInsets.left + self.view.safeAreaInsets.right;
-        CGFloat v = self.view.safeAreaInsets.top + self.view.safeAreaInsets.bottom;
-        return NSMakeSize(_grid.fittingSize.width + h,
-                          _grid.fittingSize.height + v + 16);
-    }
-    return NSMakeSize(_grid.fittingSize.width, _grid.fittingSize.height + 16);
+    // Also take into account the safe area.
+    CGFloat h = self.view.safeAreaInsets.left + self.view.safeAreaInsets.right;
+    CGFloat v = self.view.safeAreaInsets.top + self.view.safeAreaInsets.bottom;
+    return NSMakeSize(_grid.fittingSize.width + h,
+                      _grid.fittingSize.height + v + 16);
 }
 
 - (void)scrollToTopAndFlashScrollers
@@ -1132,9 +1096,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     intervalFormatter.timeStyle = info.event.isAllDay
         ? NSDateIntervalFormatterNoStyle
         : NSDateIntervalFormatterShortStyle;
-    NSDate *endDate = AdjustedEventEndDate(info.event, self.nsCal);
     // Interval formatter just prints single date when from == to.
-    duration = [intervalFormatter stringFromDate:info.event.startDate toDate:endDate];
+    duration = [intervalFormatter stringFromDate:info.event.startDate toDate:info.event.endDate];
     duration = StringByStrippingZeroMinutes(duration);
     // If the event is not All-day and the start and end dates are
     // different, put them on different lines.

@@ -27,16 +27,6 @@ NSString *StringByStrippingZeroMinutes(NSString *duration)
     return duration;
 }
 
-NSDate *AdjustedEventEndDate(EKEvent *event, NSCalendar *calendar)
-{
-    if (@available(macOS 13.0, *)) {
-        return event.endDate;
-    }
-    return event.isAllDay
-        ? [calendar dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:event.endDate options:0]
-        : event.endDate;
-}
-
 NSDate *MeetingJoinableThreshold(EKEvent *event, NSCalendar *calendar)
 {
     return [calendar dateByAddingUnit:NSCalendarUnitSecond value:-(15 * 60 + 30) toDate:event.startDate options:0];
