@@ -14,7 +14,6 @@
 #import "Sizer.h"
 #import "MoUtils.h"
 #import "MASShortcut/Shortcut.h"
-#import "NSMenuItem+NoImages.h"
 
 @implementation AppDelegate
 {
@@ -42,7 +41,6 @@
         kThemePreference:      @0, // System=0, Light=1, Dark=2
         kHideIcon:             @(NO),
         kShowLocation:         @(NO),
-        kEnableTahoeMenuIcons: @(NO),
         kDoNotDrawOutlineAroundCurrentMonth: @(NO)
     }];
     
@@ -54,16 +52,6 @@
     NSInteger themePref = [defaults integerForKey:kThemePreference];
     if (themePref < 0 || themePref > 2) {
         [defaults setInteger:0 forKey:kThemePreference];
-    }
-}
-
-- (void)applicationWillFinishLaunching:(NSNotification *)aNotification
-{
-    // macOS 26 Tahoe pollutes menus with superflous icons. Disable them
-    // unless the user explicitly opts-in.
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if (![defaults boolForKey:kEnableTahoeMenuIcons]) {
-        [NSMenuItem rs_disableImages];
     }
 }
 

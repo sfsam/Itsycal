@@ -375,20 +375,9 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     [optMenu insertItem:[NSMenuItem separatorItem] atIndex:i++];
     [optMenu insertItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@"q" atIndex:i++];
 
-    // The menu item glyphs introduced in macOS 26 Tahoe.
-    NSInteger index = 0;
-    NSArray *symbolNames = @[
-        @"info.circle",
-        @"arrow.trianglehead.2.clockwise",
-        @"21.calendar",
-        @"gear",
-        @"calendar.badge.clock",
-        @"questionmark.circle",
-        @"xmark.rectangle"
-    ];
+    // Never show menu item images, whatever the system configuration.
     for (NSMenuItem *item in optMenu.itemArray) {
-        if (item.isSeparatorItem) continue;
-        item.image = [NSImage imageWithSystemSymbolName:symbolNames[index++] accessibilityDescription:nil];
+        item.preferredImageVisibility = NSMenuItemImageVisibilityHidden;
     }
 
     NSPoint pt = NSOffsetRect(_btnOpt.frame, -5, -10).origin;
@@ -535,16 +524,9 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     item = [menu addItemWithTitle:NSLocalizedString(@"Quit Itsycal", @"") action:@selector(terminate:) keyEquivalent:@""];
     item.target = NSApp;
 
-    // The menu item glyphs introduced in macOS 26 Tahoe.
-    NSArray<NSString *> *symbolNames = @[@"gear",
-                                         @"calendar.badge.clock",
-                                         @"xmark.rectangle"];
-    NSUInteger index = 0;
+    // Never show menu item images, whatever the system configuration.
     for (NSMenuItem *item in menu.itemArray) {
-        if (item.isSeparatorItem) continue;
-        if (index >= symbolNames.count) break;
-        item.image = [NSImage imageWithSystemSymbolName:symbolNames[index] accessibilityDescription:nil];
-        index++;
+        item.preferredImageVisibility = NSMenuItemImageVisibilityHidden;
     }
 
     return menu;

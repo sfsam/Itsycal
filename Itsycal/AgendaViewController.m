@@ -190,6 +190,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
         NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete…", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
         item.tag = _tv.clickedRow;
     }
+    // Never show menu item images, whatever the system configuration.
+    for (NSMenuItem *item in menu.itemArray) {
+        item.preferredImageVisibility = NSMenuItemImageVisibilityHidden;
+    }
 }
 
 #pragma mark -
