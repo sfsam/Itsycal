@@ -20,6 +20,7 @@
 #import "PrefsAppearanceVC.h"
 #import "PrefsAboutVC.h"
 #import "MoButton.h"
+#import "MoPopover.h"
 #import "MoVFLHelper.h"
 #import "MoUtils.h"
 #import "Sparkle/SUUpdater.h"
@@ -278,7 +279,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     }
 
     if (!_newEventPopover) {
-        _newEventPopover = [NSPopover new];
+        _newEventPopover = [MoPopover new];
         _newEventPopover.animates = NO;
         _newEventPopover.delegate = self;
         // Enable coloring the full background including the arrow.
@@ -293,7 +294,6 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     eventVC.calSelectedDate = MakeNSDateWithDate(_moCal.selectedDate, _nsCal);
     
     _newEventPopover.contentViewController = eventVC;
-    _newEventPopover.appearance = NSApp.effectiveAppearance;
     [_newEventPopover showRelativeToRect:_btnAdd.bounds ofView:_btnAdd preferredEdge:NSRectEdgeMinX];
 }
 
@@ -469,7 +469,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     NSView *positionView = [[NSView alloc] initWithFrame:NSMakeRect(NSWidth(self.view.frame)/2 - 5, NSHeight(self.view.frame) - 70, 10, 10)];
     [self.view addSubview:positionView positioned:NSWindowBelow relativeTo:nil];
 
-    NSPopover *datePickerPopover = [NSPopover new];
+    NSPopover *datePickerPopover = [MoPopover new];
 
     DatePickerVC *vc = [[DatePickerVC alloc] initWithMoCal:_moCal nsCal:_nsCal];
     vc.enclosingPopover = datePickerPopover;
@@ -478,7 +478,6 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     datePickerPopover.behavior = NSPopoverBehaviorTransient;
     // Enable coloring the full background. See DatePickerVC -loadView.
     datePickerPopover.hasFullSizeContent = YES;
-    datePickerPopover.appearance = NSApp.effectiveAppearance;
     [datePickerPopover showRelativeToRect:positionView.bounds ofView:positionView preferredEdge:NSRectEdgeMinY];
 
     // Move the positioning view to trick the popover to hide it's arrow.

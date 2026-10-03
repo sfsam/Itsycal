@@ -10,6 +10,7 @@
 #import "AgendaViewController.h"
 #import "EventCenter.h"
 #import "MoButton.h"
+#import "MoPopover.h"
 #import "MoThemeView.h"
 #import "MoUtils.h"
 #import "MoVFLHelper.h"
@@ -234,7 +235,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        self->_popover = [NSPopover new];
+        self->_popover = [MoPopover new];
         self->_popover.contentViewController = [AgendaPopoverVC new];
         self->_popover.behavior = NSPopoverBehaviorTransient;
         self->_popover.animates = NO;
@@ -260,7 +261,6 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
     
     NSRect positionRect = NSInsetRect([_tv rectOfRow:row], 8, 0);
-    [_popover setAppearance:NSApp.effectiveAppearance];
     [_popover showRelativeToRect:positionRect ofView:_tv preferredEdge:NSRectEdgeMinX];
     // Force a layout pass now that the view is in a window. This ensures
     // preferredMaxLayoutWidth is set on wrapping NSTextField labels before
