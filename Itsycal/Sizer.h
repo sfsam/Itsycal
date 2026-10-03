@@ -20,11 +20,11 @@ extern NSString * const kSizeDidChangeNotification;
                                    name:kSizeDidChangeNotification \
                                    object:nil]
 
-typedef enum : NSInteger {
+typedef NS_ENUM(NSInteger, SizePreference) {
     SizePreferenceSmall = 0,
     SizePreferenceMedium = 1,
     SizePreferenceLarge = 2
-} SizePreference;
+};
 
 @interface Sizer : NSObject
 

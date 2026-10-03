@@ -12,7 +12,7 @@
 
 // A bit mask for days-of-the-week.
 // Used to select columns to highlight.
-typedef enum : NSInteger {
+typedef NS_OPTIONS(NSInteger, DOWMask) {
     DOWMaskNone = 0,
     DOWMaskSun  = 1 << 0,
     DOWMaskMon  = 1 << 1,
@@ -21,7 +21,7 @@ typedef enum : NSInteger {
     DOWMaskThu  = 1 << 4,
     DOWMaskFri  = 1 << 5,
     DOWMaskSat  = 1 << 6,
-} DOWMask;
+};
 
 @protocol MoCalendarDelegate;
 

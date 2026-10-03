@@ -8,11 +8,11 @@
 // NSUserDefaults key
 extern NSString * const kThemePreference;
 
-typedef enum : NSInteger {
+typedef NS_ENUM(NSInteger, ThemePreference) {
     ThemePreferenceSystem = 0,
     ThemePreferenceLight = 1,
     ThemePreferenceDark  = 2
-} ThemePreference;
+};
 
 @interface Themer : NSObject
 
