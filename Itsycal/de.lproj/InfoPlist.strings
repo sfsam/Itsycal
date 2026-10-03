@@ -1,5 +1,3 @@
-"NSAppleEventsUsageDescription" = "Itsycal verwendet AppleEvents, um Ihre Kalenderanwendung für den ausgewählten Tag zu öffnen. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.";
+"NSAppleEventsUsageDescription" = "Itsycal verwendet AppleEvents, um Ihre Kalenderanwendung für den ausgewählten Tag zu öffnen. Sie können diese Einstellung in den Systemeinstellungen › Datenschutz & Sicherheit › Automation ändern.";
 
-"NSCalendarsUsageDescription" = "Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden können. Sie können diese Einstellung in den Systemeinstellungen › Sicherheit › Privatsphäre.";
-
-"NSCalendarsFullAccessUsageDescription" = "Itsycal ist nützlich, wenn es Ereignisse aus Ihrem Kalender angezeigt werden können. Sie können diese Einstellung in den Systemeinstellungen › Datenschutz & Sicherheit › Kalender.";
+"NSCalendarsFullAccessUsageDescription" = "Itsycal ist nützlicher, wenn es Ereignisse aus Ihren Kalendern anzeigen kann. Sie können diese Einstellung in den Systemeinstellungen › Datenschutz & Sicherheit › Kalender ändern.";

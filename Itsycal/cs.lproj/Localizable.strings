@@ -20,7 +20,7 @@
 "31 days" = "31 dnů";
 "About Itsycal" = "O aplikaci Itsycal";
 /* About prefs tab label */
-"About" = "O mně";
+"About" = "O aplikaci";
 "Add Location or Video Call" = "Přidejte místo nebo videohovor";
 "Add Notes" = "Přidat poznámky";
 "Add URL" = "Přidat URL";
@@ -35,9 +35,9 @@
 "Calendar" = "Kalendář";
 "Calendar access denied.
 
-Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Přístup ke kalendáři byl odepřen.
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Settings › Privacy & Security › Calendars" = "Přístup ke kalendáři byl odepřen.
 
-Itsycal je užitečnější, pokud může zobrazovat události z vašich kalendářů. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Soukromí";
+Itsycal je užitečnější, pokud může zobrazovat události z vašich kalendářů. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Kalendáře";
 "Calendar access was denied." = "Přístup ke kalendáři byl odepřen.";
 "Cancel" = "Zrušit";
 "Check for Updates…" = "Vyhledat aktualizace…";
@@ -45,7 +45,7 @@ Itsycal je užitečnější, pokud může zobrazovat události z vašich kalend�
 /* Dark theme name */
 "Dark" = "Tmavé";
 "Date & Time…" = "Datum a čas…";
-"Datetime pattern" = "Formát data a času";
+"Datetime pattern" = "Formát data a času";
 "Delete…" = "Smazat…";
 "Delete All Future Events" = "Smazat všechny budoucí události";
 "Delete Only This Event" = "Smazat pouze tuto událost";
@@ -75,12 +75,12 @@ Itsycal je užitečnější, pokud může zobrazovat události z vašich kalend�
 "Hide icon" = "Skrýt ikonu";
 "Highlight:" = "Zvýraznit:";
 "Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal nemůže vytvořit novou událost, pokud nemáte oprávnění k úpravám alespoň v jednom kalendáři.";
-"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal je užitečnější, pokud mu povolíte přidávat události do vašich kalendářů. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Soukromí.";
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Settings › Privacy & Security › Calendars." = "Itsycal je užitečnější, pokud mu povolíte přidávat události do vašich kalendářů. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Kalendáře.";
 "Itsycal must be run from the Applications folder in order to work properly.
 
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "Má-li Itsycal fungovat správně, je nutné jej spustit ze složky „Aplikace“.
 
-Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej spusťte.";
+Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej spusťte.";
 "Keyboard shortcut" = "Klávesová zkratka";
 "Launch at login" = "Otevřít při přihlášení";
 /* Light theme name */
@@ -96,25 +96,24 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej 
 /* Alert none
    Repeat none */
 "None" = "Žádné";
-"On Date" = "K datu";
-"On day of event (9 AM)" = "V den události (9 AM)";
+"On Date" = "K datu";
+"On day of event (9 AM)" = "V den události (9 AM)";
 "Open Calendar" = "Otevřít kalendář";
 "Open Calendar   ⌘O" = "Otevřít kalendář   ⌘O";
 "Options" = "Volby";
 "or" = "nebo";
 "Pin Itsycal   P" = "Přišpendlit Itsycal   P";
-"Preferences…" = "Nastavení…";
 "Quit Itsycal" = "Ukončit Itsycal";
 "Repeat:" = "Opakovat:";
 "Saturday" = "sobota";
 "Save Event" = "Uložit událost";
 "Settings…" = "Nastavení…";
 "Show calendar weeks" = "Zobrazovat kalendářní týdny";
-"Show day of week in icon" = "Zobrazovat den týdne v ikoně";
+"Show day of week in icon" = "Zobrazovat den týdne v ikoně";
 "Show days with no events" = "Zobrazovat dny bez událostí";
 "Show event dots" = "Zobrazovat tečky událostí";
 "Show event location" = "Zobrazovat místo události";
-"Show month in icon" = "Zobrazovat měsíc v ikoně";
+"Show month in icon" = "Zobrazovat měsíc v ikoně";
 "Starts:" = "Začíná:";
 "Sunday" = "neděle";
 /* System theme name */

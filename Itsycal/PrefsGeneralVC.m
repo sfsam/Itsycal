@@ -259,7 +259,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
         if (!message) message = [SourceCellView new];
         message.textField.lineBreakMode = NSLineBreakByWordWrapping;
         message.textField.font = [NSFont systemFontOfSize:12];
-        message.textField.stringValue = NSLocalizedString(@"Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy", @"");
+        message.textField.stringValue = NSLocalizedString(@"Calendar access denied.\n\nItsycal is more useful when it can display events from your calendars. You can change this setting in System Settings › Privacy & Security › Calendars", @"");
         return message;
     }
     

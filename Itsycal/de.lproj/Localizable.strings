@@ -35,18 +35,18 @@
 "Calendar" = "Kalender";
 "Calendar access denied.
 
-Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Kalenderzugriff verweigert.
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Settings › Privacy & Security › Calendars" = "Kalenderzugriff verweigert.
 
-Itsycal ist nützlicher, wenn es Ereignisse aus Ihrem Kalender angezeigt werden können. Sie können diese Einstellung unter Systemeinstellungen › Sicherheit › Privatsphäre anpassen.";
+Itsycal ist nützlicher, wenn es Ereignisse aus Ihren Kalendern anzeigen kann. Sie können diese Einstellung unter Systemeinstellungen › Datenschutz & Sicherheit › Kalender anpassen.";
 "Calendar access was denied." = "Kalenderzugriff verweigert.";
 "Cancel" = "Abbrechen";
-"Check for Updates…" = "Nach Updates suchen …";
+"Check for Updates…" = "Nach Updates suchen …";
 "Copy" = "Kopieren";
 /* Dark theme name */
 "Dark" = "Dunkles Design";
-"Date & Time…" = "Datum & Uhrzeit …";
+"Date & Time…" = "Datum & Uhrzeit …";
 "Datetime pattern" = "Datum & Zeit Muster";
-"Delete…" = "Löschen …";
+"Delete…" = "Löschen …";
 "Delete All Future Events" = "Alle zukünftigen Ereignisse löschen";
 "Delete Only This Event" = "Nur dieses Ereignis löschen";
 "Delete This Event" = "Löschen";
@@ -68,14 +68,14 @@ Itsycal ist nützlicher, wenn es Ereignisse aus Ihrem Kalender angezeigt werden 
 "Friday" = "Freitag";
 /* General prefs tab label */
 "General" = "Allgemein";
-"Go to Date…" = "Datum anzeigen …";
+"Go to Date…" = "Datum anzeigen …";
 "Go to date" = "Datum anzeigen";
 "Help" = "Hilfe";
-"Help…" = "Hilfe …";
+"Help…" = "Hilfe …";
 "Hide icon" = "Menüleistensymbol verbergen";
 "Highlight:" = "Hervorheben:";
-"Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal kann kein neues Ereignis erstellen, wenn es mindestens ein Kalender erlaubt ist modifiziert werden.";
-"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal ist nützlicher, wenn es Veranstaltungen zu Ihrem Kalender hinzuzufügen kann. Sie können diese Einstellung unter Systemeinstellungen › Sicherheit › Privatsphäre anpassen.";
+"Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal kann kein neues Ereignis erstellen, wenn es keinen Kalender gibt, den Sie bearbeiten dürfen.";
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Settings › Privacy & Security › Calendars." = "Itsycal ist nützlicher, wenn Sie ihm erlauben, Ereignisse zu Ihren Kalendern hinzuzufügen. Sie können diese Einstellung unter Systemeinstellungen › Datenschutz & Sicherheit › Kalender anpassen.";
 "Itsycal must be run from the Applications folder in order to work properly.
 
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsycal muss aus dem Programme-Ordner laufen, um ordnungsgemäß zu funktionieren.
@@ -103,12 +103,11 @@ Bitte beenden Sie Itsycal, es in den Programme-Ordner zu verschieben, und erneut
 "Options" = "Optionen";
 "or" = "oder";
 "Pin Itsycal   P" = "Itsycal soll sichtbar bleiben   P";
-"Preferences…" = "Einstellungen …";
 "Quit Itsycal" = "Itsycal beenden";
 "Repeat:" = "Wiederholen:";
 "Saturday" = "Samstag";
 "Save Event" = "Ereignis sichern";
-"Settings…" = "Einstellungen …";
+"Settings…" = "Einstellungen …";
 "Show calendar weeks" = "Kalenderwoche anzeigen";
 "Show day of week in icon" = "Menüleistensymbol zeigt Wochentag";
 "Show days with no events" = "Tage ohne Veranstaltungen anzeigen";

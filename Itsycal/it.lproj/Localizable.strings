@@ -35,10 +35,10 @@
 "Calendar" = "Calendario";
 "Calendar access denied.
 
-Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "L'accesso al calendario negato.
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Settings › Privacy & Security › Calendars" = "Accesso al calendario negato.
 
-Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. È possibile modificare questa impostazione in Preferenze di Sistema › Sicurezza e Privacy › Privacy.";
-"Calendar access was denied." = "L'accesso al calendario negato.";
+Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. È possibile modificare questa impostazione in Impostazioni di Sistema › Privacy e sicurezza › Calendari.";
+"Calendar access was denied." = "Accesso al calendario negato.";
 "Cancel" = "Annulla";
 "Check for Updates…" = "Controlla aggiornamenti…";
 "Copy" = "Copia";
@@ -74,8 +74,8 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 "Help…" = "Aiuto…";
 "Hide icon" = "Nascondi l'icona";
 "Highlight:" = "Evidenzia:";
-"Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal non possono creare un nuovo evento se c'è almeno un permessi di calendario da modificare.";
-"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal è più utile quando si permettono di aggiungere eventi dai calendari. È possibile modificare questa impostazione in Preferenze di Sistema › Sicurezza e Privacy › Privacy.";
+"Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal non può creare un nuovo evento se non c'è almeno un calendario che hai il permesso di modificare.";
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Settings › Privacy & Security › Calendars." = "Itsycal è più utile quando gli si permette di aggiungere eventi ai calendari. È possibile modificare questa impostazione in Impostazioni di Sistema › Privacy e sicurezza › Calendari.";
 "Itsycal must be run from the Applications folder in order to work properly.
 
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsycal deve essere eseguito dalla cartella Applicazioni per poter funzionare correttamente.
@@ -103,7 +103,6 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "Options" = "Opzioni";
 "or" = "o";
 "Pin Itsycal   P" = "Mantieni Itsycal visibile   P";
-"Preferences…" = "Preferenze…";
 "Quit Itsycal" = "Esci da Itsycal";
 "Repeat:" = "Ripetizione:";
 "Saturday" = "Sabato";

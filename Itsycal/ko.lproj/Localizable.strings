@@ -35,7 +35,7 @@
 "Calendar" = "캘린더";
 "Calendar access denied.
 
-Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "시스템 설정 › 개인정보 보호 및 보안 › 개인 정보 보호에서 캘린더 접근을 허용해 주세요.
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Settings › Privacy & Security › Calendars" = "시스템 설정 › 개인정보 보호 및 보안 › 캘린더에서 캘린더 접근을 허용해 주세요.
 
 Itsycal은 캘린더 이벤트를 보여줄 수 있을 때 더 유용해요.";
 "Calendar access was denied." = "캘린더 접근을 허용해 주세요.";
@@ -75,7 +75,7 @@ Itsycal은 캘린더 이벤트를 보여줄 수 있을 때 더 유용해요.";
 "Hide icon" = "아이콘 숨기기";
 "Highlight:" = "강조:";
 "Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "새 이벤트를 만들려면 수정할 수 있는 캘린더가 하나 이상 필요해요.";
-"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "캘린더 접근을 허용해 주세요. Itsycal이 캘린더에 이벤트를 추가할 수 있으면 더 편하게 쓸 수 있어요.";
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Settings › Privacy & Security › Calendars." = "캘린더 접근을 허용해 주세요. Itsycal이 캘린더에 이벤트를 추가할 수 있으면 더 편하게 쓸 수 있어요.";
 "Itsycal must be run from the Applications folder in order to work properly.
 
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsycal을 제대로 쓰려면 응용 프로그램 폴더로 옮겨 주세요.
@@ -103,7 +103,6 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Options" = "옵션";
 "or" = "또는";
 "Pin Itsycal   P" = "Itsycal 고정하기   P";
-"Preferences…" = "설정…";
 "Quit Itsycal" = "Itsycal 종료";
 "Repeat:" = "반복:";
 "Saturday" = "토요일";

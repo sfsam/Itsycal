@@ -35,9 +35,9 @@
 "Calendar" = "日历";
 "Calendar access denied.
 
-Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "日历访问被拒绝。
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Settings › Privacy & Security › Calendars" = "日历访问被拒绝。
 
-当 Itsycal 可以显示你的日历事件时会更好用。你可以在 “系统偏好设置>安全隐私>隐私” 中更改此设置。";
+当 Itsycal 可以显示你的日历事件时会更好用。你可以在 “系统设置 › 隐私与安全 › 日历” 中更改此设置。";
 "Calendar access was denied." = "日历访问被拒绝。";
 "Cancel" = "取消";
 "Check for Updates…" = "检查更新…";
@@ -75,7 +75,7 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Hide icon" = "隐藏图标";
 "Highlight:" = "高亮：";
 "Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "除非有至少一个有权限修改的日历，否则 Itsycal 无法创建新事件。";
-"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "当你允许 Itsycal 将事件添加到你的日历中时会更好用。 你可以在 “系统偏好设置>安全隐私>隐私” 中更改此设置。";
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Settings › Privacy & Security › Calendars." = "当你允许 Itsycal 将事件添加到你的日历中时会更好用。你可以在 “系统设置 › 隐私与安全 › 日历” 中更改此设置。";
 "Itsycal must be run from the Applications folder in order to work properly.
 
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "必须从应用程序文件夹运行 Itsycal 才能正常工作。
@@ -103,7 +103,6 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Options" = "选项";
 "or" = "or";
 "Pin Itsycal   P" = "固定 Itsycal   P";
-"Preferences…" = "偏好设置…";
 "Quit Itsycal" = "退出 Itsycal";
 "Repeat:" = "重复：";
 "Saturday" = "星期六";
