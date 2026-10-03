@@ -41,8 +41,8 @@ typedef NS_OPTIONS(NSInteger, DOWMask) {
 @property (nonatomic) MoDate selectedDate;
 
 // The first and last dates displayed by the calendar.
-@property (nonatomic) MoDate firstDate;
-@property (nonatomic) MoDate lastDate;
+@property (nonatomic, readonly) MoDate firstDate;
+@property (nonatomic, readonly) MoDate lastDate;
 
 // Today's date.
 @property (nonatomic) MoDate todayDate;
@@ -77,8 +77,6 @@ typedef NS_OPTIONS(NSInteger, DOWMask) {
 
 - (IBAction)showPreviousMonth:(id)sender;
 - (IBAction)showNextMonth:(id)sender;
-- (IBAction)showPreviousYear:(id)sender;
-- (IBAction)showNextYear:(id)sender;
 - (IBAction)showTodayMonth:(id)sender;
 - (void)reloadData;
 - (void)highlightCellsFromDate:(MoDate)startDate toDate:(MoDate)endDate withColor:(NSColor *)color;

@@ -277,16 +277,6 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     self.monthDate = AddMonthsToMonth(1, self.monthDate);
 }
 
-- (IBAction)showPreviousYear:(id)sender
-{
-    self.monthDate = AddMonthsToMonth(-12, self.monthDate);
-}
-
-- (IBAction)showNextYear:(id)sender
-{
-    self.monthDate = AddMonthsToMonth(12, self.monthDate);
-}
-
 - (IBAction)showTodayMonth:(id)sender
 {
     [self setMonthDate:self.todayDate selectedDate:self.todayDate];

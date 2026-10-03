@@ -12,6 +12,6 @@
 
 @property (nonatomic, copy) NSString *urlString;
 @property (nonatomic) BOOL linkEnabled;
-@property (nonatomic) NSColor *linkColor;
+@property (nonatomic, readonly) NSColor *linkColor;
 
 @end

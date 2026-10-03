@@ -55,14 +55,6 @@
     }
 }
 
-- (void)setLinkColor:(NSColor *)linkColor
-{
-    _linkColor = linkColor;
-    if (self.linkEnabled) {
-        [super setTextColor:linkColor];
-    }
-}
-
 - (void)resetCursorRects
 {
     if (self.linkEnabled) {

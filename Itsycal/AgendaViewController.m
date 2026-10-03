@@ -498,7 +498,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (!info.event) {
         cell.eventInfo = nil;
         cell.dim = YES;
-        cell.titleTextField.stringValue = NSLocalizedString(@"", @"");
+        cell.titleTextField.stringValue = @"";
         cell.titleTextField.textColor = NSColor.tertiaryLabelColor;
         [cell.grid rowAtIndex:1].hidden = YES; // hide location row
         [cell.grid rowAtIndex:2].hidden = YES; // hide duration row
