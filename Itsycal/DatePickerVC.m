@@ -69,8 +69,18 @@
 
 - (void)buttonAction:(id)sender
 {
-    _moCal.selectedDate = MakeDateWithNSDate(_picker.dateValue, _nsCal);
-    [self.enclosingPopover close];
+    // Close the popover before changing the date, and without animation
+    // so it detaches from Itsycal's window right away. Changing the date
+    // resizes and then moves Itsycal's window, and while the popover is
+    // attached, the move can't happen in the same screen update as the
+    // resize, so the window visibly resizes and then jumps.
+    // Closing can deallocate us, so get what we need first.
+    MoCalendar *moCal = _moCal;
+    MoDate date = MakeDateWithNSDate(_picker.dateValue, _nsCal);
+    NSPopover *popover = self.enclosingPopover;
+    popover.animates = NO;
+    [popover close];
+    moCal.selectedDate = date;
 }
 
 @end
