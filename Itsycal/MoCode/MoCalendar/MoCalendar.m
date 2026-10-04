@@ -289,10 +289,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 - (void)updateCalendar
 {
     // Month/year and DOW labels
-    NSArray *months = [_formatter shortMonthSymbols];
     NSArray *dows = [_formatter veryShortWeekdaySymbols];
-    NSString *month = [NSString stringWithFormat:@"%@ %zd", months[self.monthDate.month], self.monthDate.year];
-    [_monthLabel setStringValue:month];
+    [_monthLabel setStringValue:[self monthTitle]];
     // Make French dow strings lowercase because that is the convention
     // in France. -veryShortWeekdaySymbols should have done this for us.
     if ([[NSLocale currentLocale].localeIdentifier hasPrefix:@"fr"]) {
@@ -671,14 +669,22 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
 - (void)clearDateInfo
 {
-    // This should match month code in -updateCalendar
-    NSArray *months = [_formatter shortMonthSymbols];
-    NSString *month = [NSString stringWithFormat:@"%@ %zd", months[self.monthDate.month], self.monthDate.year];
-    [_monthLabel setStringValue:month];
+    [_monthLabel setStringValue:[self monthTitle]];
 }
 
 #pragma mark
 #pragma mark Utilities
+
+- (NSString *)monthTitle
+{
+    NSArray *months = [_formatter shortMonthSymbols];
+    NSString *title = [NSString stringWithFormat:@"%@ %zd", months[self.monthDate.month], self.monthDate.year];
+#ifdef DEBUG
+    // Mark debug builds so they're easy to tell apart from release builds.
+    title = [title stringByAppendingString:@" ✱"];
+#endif
+    return title;
+}
 
 - (void)setMonthDate:(MoDate)monthDate selectedDate:(MoDate)selectedDate
 {
