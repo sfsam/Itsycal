@@ -14,6 +14,7 @@
 #import "Sizer.h"
 #import "MoUtils.h"
 #import "MASShortcut/Shortcut.h"
+#import "Sparkle/SUUpdater.h"
 
 @implementation AppDelegate
 {
@@ -53,6 +54,14 @@
     if (themePref < 0 || themePref > 2) {
         [defaults setInteger:0 forKey:kThemePreference];
     }
+}
+
+- (void)applicationWillFinishLaunching:(NSNotification *)aNotification
+{
+    NSApp.mainMenu = [self mainMenu];
+
+    // Create Sparkle's updater. This starts its update cycle.
+    [SUUpdater sharedUpdater];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -161,6 +170,34 @@
     [alert addButtonWithTitle:NSLocalizedString(@"Quit Itsycal", @"")];
     [alert runModal];
     [NSApp terminate:nil];
+}
+
+#pragma mark -
+#pragma mark Main menu
+
+// Itsycal is a menu bar app, so its main menu is never shown. But
+// AppKit uses the main menu to handle standard keyboard shortcuts
+// like ⌘C, ⌘V, ⌘Z, ⌘A, ⌘W, and ⌘Q. Since it's never shown, all the
+// items go in a single submenu, and the titles aren't localized.
+- (NSMenu *)mainMenu
+{
+    NSMenu *menu = [NSMenu new];
+    [menu addItemWithTitle:@"Quit Itsycal" action:@selector(terminate:) keyEquivalent:@"q"];
+    [menu addItemWithTitle:@"Close" action:@selector(performClose:) keyEquivalent:@"w"];
+    // AppKit implements undo: and redo: (in NSWindow and NSTextView),
+    // but no public header declares them, so look them up by name.
+    [menu addItemWithTitle:@"Undo" action:NSSelectorFromString(@"undo:") keyEquivalent:@"z"];
+    [menu addItemWithTitle:@"Redo" action:NSSelectorFromString(@"redo:") keyEquivalent:@"Z"];
+    [menu addItemWithTitle:@"Cut" action:@selector(cut:) keyEquivalent:@"x"];
+    [menu addItemWithTitle:@"Copy" action:@selector(copy:) keyEquivalent:@"c"];
+    [menu addItemWithTitle:@"Paste" action:@selector(paste:) keyEquivalent:@"v"];
+    NSMenuItem *pasteAsPlainText = [menu addItemWithTitle:@"Paste and Match Style" action:@selector(pasteAsPlainText:) keyEquivalent:@"v"];
+    pasteAsPlainText.keyEquivalentModifierMask = NSEventModifierFlagOption | NSEventModifierFlagShift | NSEventModifierFlagCommand;
+    [menu addItemWithTitle:@"Select All" action:@selector(selectAll:) keyEquivalent:@"a"];
+
+    NSMenu *mainMenu = [NSMenu new];
+    [mainMenu addItemWithTitle:@"" action:NULL keyEquivalent:@""].submenu = menu;
+    return mainMenu;
 }
 
 - (BOOL)alertShowHelp:(NSAlert *)alert
