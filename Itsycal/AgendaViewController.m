@@ -127,7 +127,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
     // 😭😭😭 Hack alert!
     // On macOS Sonoma 14.3.1, window drawing (specifically the drawing done
-    // in `ItsycalWindow` `-drawRect:`) is corrupted when:
+    // by `ItsycalWindow`) is corrupted when:
     //   1. There are many events making the agenda too big to fit on-screen.
     //   2. The user has 2 monitors and switches to the smaller one.
     // I have no idea why setting `preferredContentSize` via a call to
