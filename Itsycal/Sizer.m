@@ -60,7 +60,7 @@ Sizer *SizePref = nil;
 }
 
 - (CGFloat)cellRadius {
-    return SML_MED_LRG(2, 3, 4);
+    return SML_MED_LRG(3, 4, 5);
 }
 
 - (CGFloat)tooltipWidth {
