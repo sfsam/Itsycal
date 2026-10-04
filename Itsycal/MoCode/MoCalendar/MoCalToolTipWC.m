@@ -7,6 +7,7 @@
 //
 
 #import "MoCalToolTipWC.h"
+#import <QuartzCore/QuartzCore.h>
 #import "Themer.h"
 #import "Sizer.h"
 
@@ -158,16 +159,28 @@
 
 @implementation MoCalTooltipContentView
 
-- (void)drawRect:(NSRect)dirtyRect
+- (instancetype)initWithFrame:(NSRect)frameRect
 {
-    // A rounded rect with a light gray border.
-    NSRect r = NSInsetRect(self.bounds, 1, 1);
-    NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:r xRadius:5 yRadius:5];
-    [Theme.windowBorderColor setStroke];
-    [p setLineWidth:2];
-    [p stroke];
-    [Theme.tooltipBackgroundColor setFill];
-    [p fill];
+    self = [super initWithFrame:frameRect];
+    if (self) {
+        // A rounded rect like ItsycalWindow, but with a smaller radius
+        // to suit the tooltip's size. The system draws the shadow.
+        self.wantsLayer = YES;
+        self.layer.cornerRadius = 12;
+        self.layer.cornerCurve = kCACornerCurveContinuous;
+        self.layer.masksToBounds = YES;
+    }
+    return self;
+}
+
+- (BOOL)wantsUpdateLayer
+{
+    return YES;
+}
+
+- (void)updateLayer
+{
+    self.layer.backgroundColor = Theme.tooltipBackgroundColor.CGColor;
 }
 
 @end

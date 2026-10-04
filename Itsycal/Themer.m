@@ -143,8 +143,4 @@ Themer *Theme = nil;
     return NSColor.secondaryLabelColor;
 }
 
-- (NSColor *)windowBorderColor {
-    return [NSColor colorNamed:@"WindowBorderColor"];
-}
-
 @end
