@@ -30,9 +30,6 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
 // =========================================================================
 
 @implementation ItsycalWindow
-{
-    NSView *_childContentView;
-}
 
 - (id)init
 {
@@ -45,6 +42,10 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
         [self setCollectionBehavior:NSWindowCollectionBehaviorMoveToActiveSpace];
         // Fade out when -[NSWindow orderOut:] is called.
         [self setAnimationBehavior:NSWindowAnimationBehaviorUtilityWindow];
+        // The frame view draws the window. Its safe area excludes
+        // the border and arrow, so views placed in the window should
+        // be constrained to its safeAreaLayoutGuide.
+        [self setContentView:[ItsycalWindowFrameView new]];
     }
     return self;
 }
@@ -57,62 +58,6 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
 - (BOOL)canBecomeKeyWindow
 {
     return YES;
-}
-
-- (void)setContentView:(NSView *)aView
-{
-    // Instead of setting aView as the contentView, we set
-    // our own frame view (which draws the window) as the
-    // contentView and then set aView as its subview.
-    // We keep a reference to aView called _childContentView.
-    // So...
-    // [self  contentView] returns _childContentView
-    // [super contentView] returns our frame view
-    
-    if ([_childContentView isEqualTo:aView]) {
-        return;
-    }
-    ItsycalWindowFrameView *frameView = [super contentView];
-    if (!frameView) {
-        frameView = [[ItsycalWindowFrameView alloc] initWithFrame:NSZeroRect];
-        frameView.translatesAutoresizingMaskIntoConstraints = YES;
-        frameView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-        [super setContentView:frameView];
-    }
-    if (_childContentView) {
-        [_childContentView removeFromSuperview];
-        _childContentView = nil;
-    }
-    if (aView == nil) {
-        return;
-    }
-    _childContentView = aView;
-    _childContentView.translatesAutoresizingMaskIntoConstraints = NO;
-    [frameView addSubview:_childContentView];
-    [frameView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(m)-[_childContentView]-(m)-|" options:0 metrics:@{ @"m" : @(kWindowSideMargin) } views:NSDictionaryOfVariableBindings(_childContentView)]];
-    [frameView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(tm)-[_childContentView]-(bm)-|" options:0 metrics:@{ @"tm" : @(kWindowTopMargin), @"bm" : @(kWindowBottomMargin) } views:NSDictionaryOfVariableBindings(_childContentView)]];
-}
-
-- (NSView *)contentView
-{
-    return _childContentView;
-}
-
-- (NSRect)convertRectToScreen:(NSRect)aRect
-{
-    NSRect rect = [super convertRectToScreen:aRect];
-    // Right now, rect is the answer for our frame view.
-    // What we want is the answer for _childContentView.
-    // So, we offset by the amount _childContentView is
-    // offset within our frame view.
-    return NSOffsetRect(rect, kWindowSideMargin, kWindowBottomMargin);
-}
-
-- (NSRect)convertRectFromScreen:(NSRect)aRect
-{
-    // See comment for -convertRectToScreen:.
-    NSRect rect = [super convertRectFromScreen:aRect];
-    return NSOffsetRect(rect, kWindowSideMargin, kWindowBottomMargin);
 }
 
 - (void)positionRelativeToRect:(NSRect)rect screenMaxX:(CGFloat)screenMaxX
@@ -133,11 +78,8 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
     [self setFrameTopLeftPoint:NSMakePoint(x, y)];
 
     // Tell the frame view where to draw the arrow.
-    ItsycalWindowFrameView *frameView = [super contentView];
-    // We call super because we want the midX for the frame view,
-    // not the _childContentView, since we use the midX to draw
-    // the frame view.
-    frameView.arrowMidX = NSMidX([super convertRectFromScreen:rect]);
+    ItsycalWindowFrameView *frameView = (ItsycalWindowFrameView *)self.contentView;
+    frameView.arrowMidX = NSMidX([self convertRectFromScreen:rect]);
     [frameView setNeedsDisplay:YES];
     
     [self invalidateShadow];
@@ -153,6 +95,15 @@ static const CGFloat kWindowBottomMargin = kCornerRadius + kBorderWidth;
 // =========================================================================
 
 @implementation ItsycalWindowFrameView
+
+- (instancetype)initWithFrame:(NSRect)frameRect
+{
+    self = [super initWithFrame:frameRect];
+    if (self) {
+        self.additionalSafeAreaInsets = NSEdgeInsetsMake(kWindowTopMargin, kWindowSideMargin, kWindowBottomMargin, kWindowSideMargin);
+    }
+    return self;
+}
 
 - (void)drawRect:(NSRect)dirtyRect
 {

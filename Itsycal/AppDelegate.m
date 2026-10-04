@@ -19,6 +19,7 @@
 @implementation AppDelegate
 {
     NSWindowController *_wc;
+    ViewController *_vc;
 }
 
 + (void)initialize
@@ -94,7 +95,7 @@
     // Register keyboard shortcut.
     [[MASShortcutBinder sharedBinder] setBindingOptions:@{NSValueTransformerNameBindingOption: MASDictionaryTransformerName}];
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
-         [(ViewController *)self->_wc.contentViewController keyboardShortcutActivated];
+         [self->_vc keyboardShortcutActivated];
      }];
 
     // Establish the binding to NSUserDefaultsController. This call
@@ -102,10 +103,21 @@
     // used when initializing views.
     [SizePref bind:@"sizePreference" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
-    ViewController *vc = [ViewController new];
+    // The window's contentView draws the window, so put the view
+    // controller's view inside it rather than setting the window's
+    // contentViewController (which would replace the contentView).
+    _vc = [ViewController new];
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
-    _wc.contentViewController = vc;
-    _wc.window.delegate = vc;
+    NSView *contentView = _wc.window.contentView;
+    NSLayoutGuide *safeArea = contentView.safeAreaLayoutGuide;
+    [contentView addSubview:_vc.view];
+    [NSLayoutConstraint activateConstraints:@[
+        [_vc.view.topAnchor constraintEqualToAnchor:safeArea.topAnchor],
+        [_vc.view.leadingAnchor constraintEqualToAnchor:safeArea.leadingAnchor],
+        [_vc.view.trailingAnchor constraintEqualToAnchor:safeArea.trailingAnchor],
+        [_vc.view.bottomAnchor constraintEqualToAnchor:safeArea.bottomAnchor],
+    ]];
+    _wc.window.delegate = _vc;
     
     // Establish the binding to NSUserDefaultsController. On macOS
     // 10.14+, it is crucial for this call to be made AFTER the window
@@ -116,7 +128,7 @@
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
-    [(ViewController *)_wc.contentViewController removeStatusItem];
+    [_vc removeStatusItem];
     [[MASShortcutMonitor sharedMonitor] unregisterAllShortcuts];
 }
 
@@ -129,14 +141,14 @@
             NSString *dateString = url.pathComponents[1];
             
             if ([dateString isEqualToString:@"now"]) {
-                [(ViewController *)_wc.contentViewController dateURLReceived:[NSDate new]];
+                [_vc dateURLReceived:[NSDate new]];
             } else {
                 NSDateFormatter *format = [NSDateFormatter new];
                 format.dateFormat = @"yyyy-MM-dd";
                 NSDate *date = [format dateFromString:dateString];
                 
                 if (date) {
-                    [(ViewController *)_wc.contentViewController dateURLReceived:date];
+                    [_vc dateURLReceived:date];
                 }
             }
         }

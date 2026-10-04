@@ -546,8 +546,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         _hoveredCell.isHovered = YES;
         
         if (_tooltipWC.vc != nil) {
-            NSRect rect = [self convertRect:_hoveredCell.frame fromView:_dateGrid];
-            rect = NSOffsetRect(rect, self.frame.origin.x, self.frame.origin.y);
+            NSRect rect = [_dateGrid convertRect:_hoveredCell.frame toView:nil];
             rect = [self.window convertRectToScreen:rect];
             [_tooltipWC showTooltipForDate:_hoveredCell.date relativeToRect:rect screenFrame:[[NSScreen mainScreen] frame]];
         }
