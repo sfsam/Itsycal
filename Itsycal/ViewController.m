@@ -766,8 +766,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         [NSColor.blackColor set];
         [NSGraphicsContext saveGraphicsState];
         [NSGraphicsContext.currentContext setCompositingOperation:NSCompositingOperationXOR];
-        [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:3 yRadius:3] fill];
-        if (outline) [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 1, 1) xRadius:2 yRadius:2] fill];
+        [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:4 yRadius:4] fill];
+        if (outline) [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, 1, 1) xRadius:3 yRadius:3] fill];
         [NSGraphicsContext restoreGraphicsState];
 
         return YES;
