@@ -116,8 +116,8 @@
 		922D9B251DC7A1C90050AB2F /* MoUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoUtils.m; sourceTree = "<group>"; };
 		923E634F2AB7FAD7007935A7 /* IconIsConfigurableTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IconIsConfigurableTransformer.h; sourceTree = "<group>"; };
 		923E63502AB7FAD7007935A7 /* IconIsConfigurableTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IconIsConfigurableTransformer.m; sourceTree = "<group>"; };
-		923E78DC1D385CF60012979B /* MASShortcut.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MASShortcut.framework; path = _frameworks/MASShortcut.framework; sourceTree = "<group>"; };
-		923E78DD1D385CF60012979B /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = _frameworks/Sparkle.framework; sourceTree = "<group>"; };
+		923E78DC1D385CF60012979B /* MASShortcut.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MASShortcut.framework; path = Frameworks/MASShortcut.framework; sourceTree = "<group>"; };
+		923E78DD1D385CF60012979B /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = Frameworks/Sparkle.framework; sourceTree = "<group>"; };
 		9242A55C1A82A136005AA4B3 /* Itsycal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Itsycal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9242A5601A82A136005AA4B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9242A5611A82A136005AA4B3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -152,10 +152,10 @@
 		92658E611A9DBD8E002AE86C /* EventViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventViewController.m; sourceTree = "<group>"; };
 		926A6D8D1E3EC89100AAA991 /* PrefsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsVC.h; sourceTree = "<group>"; };
 		926A6D8E1E3EC89100AAA991 /* PrefsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsVC.m; sourceTree = "<group>"; };
-		9276915F27E17C74007E7978 /* beep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = beep.mp3; sourceTree = "<group>"; };
+		9276915F27E17C74007E7978 /* beep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = beep.mp3; path = Sounds/beep.mp3; sourceTree = "<group>"; };
 		9278CAD91A990462004B6BB9 /* MoTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoTableView.h; sourceTree = "<group>"; };
 		9278CADA1A990462004B6BB9 /* MoTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoTableView.m; sourceTree = "<group>"; };
-		9291F8AD2AE22AED00E80F14 /* Mow.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Mow.otf; path = _fonts/Mow.otf; sourceTree = "<group>"; };
+		9291F8AD2AE22AED00E80F14 /* Mow.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Mow.otf; path = Fonts/Mow.otf; sourceTree = "<group>"; };
 		929223E91E2D6E0800F1A119 /* HighlightPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightPicker.h; sourceTree = "<group>"; };
 		929223EA1E2D6E0800F1A119 /* HighlightPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightPicker.m; sourceTree = "<group>"; };
 		92B28CCD210BD17500485AE2 /* Sizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sizer.h; sourceTree = "<group>"; };
@@ -196,7 +196,7 @@
 				923E634F2AB7FAD7007935A7 /* IconIsConfigurableTransformer.h */,
 				923E63502AB7FAD7007935A7 /* IconIsConfigurableTransformer.m */,
 			);
-			name = Prefs;
+			path = Prefs;
 			sourceTree = "<group>";
 		};
 		923E78DB1D385CD80012979B /* Frameworks */ = {
@@ -295,7 +295,7 @@
 				924C518A1E5F721C0049E3A9 /* MoCalResizeHandle.h */,
 				924C518B1E5F721C0049E3A9 /* MoCalResizeHandle.m */,
 			);
-			name = MoCalendar;
+			path = MoCalendar;
 			sourceTree = "<group>";
 		};
 		92CDDE7C1A97FFE700D7675C /* MoCode */ = {
@@ -319,7 +319,7 @@
 				0F19012BDA6E5F6F9DBAC441 /* MoPopover.h */,
 				9474E09445AF441EBDAA1EA2 /* MoPopover.m */,
 			);
-			name = MoCode;
+			path = MoCode;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -624,7 +624,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Itsycal/_frameworks",
+					"$(PROJECT_DIR)/Itsycal/Frameworks",
 				);
 				INFOPLIST_FILE = Itsycal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -650,7 +650,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Itsycal/_frameworks",
+					"$(PROJECT_DIR)/Itsycal/Frameworks",
 				);
 				INFOPLIST_FILE = Itsycal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
