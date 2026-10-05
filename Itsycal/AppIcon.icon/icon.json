@@ -1,21 +1,26 @@
 {
   "fill-specializations" : [
     {
-      "value" : "system-light"
+      "value" : {
+        "solid" : "extended-gray:1.00000,1.00000"
+      }
     },
     {
       "appearance" : "dark",
-      "value" : "system-dark"
+      "value" : {
+        "solid" : "extended-gray:0.00000,1.00000"
+      }
     }
   ],
   "groups" : [
     {
       "layers" : [
         {
-          "image-name" : "itsycal.svg",
-          "name" : "itsycal",
+          "glass" : false,
+          "image-name" : "AppIcon512@2x.png",
+          "name" : "AppIcon512@2x",
           "position" : {
-            "scale" : 1.67,
+            "scale" : 1,
             "translation-in-points" : [
               0,
               0
@@ -24,12 +29,11 @@
         }
       ],
       "shadow" : {
-        "kind" : "layer-color",
-        "opacity" : 1
+        "kind" : "neutral",
+        "opacity" : 0.5
       },
-      "specular" : false,
       "translucency" : {
-        "enabled" : false,
+        "enabled" : true,
         "value" : 0.3
       }
     }
