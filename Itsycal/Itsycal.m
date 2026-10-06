@@ -31,6 +31,7 @@ NSString * const kEnableMeetingButtonIndefinitely = @"EnableMeetingButtonIndefin
 NSString * const kDoNotDrawOutlineAroundCurrentMonth = @"DoNotDrawOutlineAroundCurrentMonth";
 NSString * const kShowDaysWithNoEventsInAgenda = @"ShowDaysWithNoEventsInAgenda";
 NSString * const kShowEventPopoverOnHover = @"ShowEventPopoverOnHover";
+NSString * const kDoNotCheckLoginItemStatus = @"DoNotCheckLoginItemStatus";
 
 @implementation NSDate (HasNoEvents)
 

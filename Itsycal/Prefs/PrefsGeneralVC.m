@@ -165,7 +165,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     // errors for users who have network drives but are not connected to their
     // network (github.com/sfsam/Itsycal/issues/15). Give them an option to
     // disable this check.
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"DoNotCheckLoginItemStatus"] == NO) {
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kDoNotCheckLoginItemStatus] == NO) {
         _login.hidden = NO;
         _login.state = MOIsLoginItemEnabled() ? NSControlStateValueOn : NSControlStateValueOff;
     }

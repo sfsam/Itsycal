@@ -651,11 +651,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         // on Mojave and slightly lower than it should on Catalina.
         // As a workaround, instead of setting the title with an NSString,
         // provide an NSAttributedString with a baseline offset.
-        CGFloat baselineOffset = 0;
-        if ([defaults objectForKey:kBaselineOffset]) {
-            baselineOffset = [defaults floatForKey:kBaselineOffset];
-            baselineOffset = MIN(2.0, MAX(-2.0, baselineOffset));
-        }
+        CGFloat baselineOffset = [defaults floatForKey:kBaselineOffset];
+        baselineOffset = MIN(2.0, MAX(-2.0, baselineOffset));
         NSString *buttonText = [_iconDateFormatter stringFromDate:[NSDate new]];
         accessibilityTitle = [accessibilityTitle stringByAppendingFormat:@", %@", buttonText];
         if (!hideIcon) {

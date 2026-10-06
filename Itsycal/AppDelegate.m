@@ -43,7 +43,15 @@
         kThemePreference:      @0, // System=0, Light=1, Dark=2
         kHideIcon:             @(NO),
         kShowLocation:         @(NO),
-        kDoNotDrawOutlineAroundCurrentMonth: @(NO)
+        kSizePreference:       @0, // Small=0, Medium=1, Large=2
+        kShowDaysWithNoEventsInAgenda: @(NO),
+        kDoNotDrawOutlineAroundCurrentMonth: @(NO),
+        kShowMeetingIndicator: @(NO),
+        kBaselineOffset:       @0,  // Clamped to -2.0...2.0
+        kEnableMeetingButtonIndefinitely: @(NO),
+        kShowEventPopoverOnHover: @(NO),
+        kAllowOutsideApplicationsFolder: @(NO),
+        kDoNotCheckLoginItemStatus: @(NO),
     }];
     
     // Constrain kShowEventDays to values 0...9 in (unlikely) case it is invalid.
