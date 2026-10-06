@@ -58,10 +58,16 @@
     NSInteger validDays = MIN(MAX([defaults integerForKey:kShowEventDays], 0), 9);
     [defaults setInteger:validDays forKey:kShowEventDays];
     
-    // Set kThemePreference to defaultThemePref in the unlikely case it's invalid.
+    // Set kThemePreference to system in the unlikely case it's invalid.
     NSInteger themePref = [defaults integerForKey:kThemePreference];
-    if (themePref < 0 || themePref > 2) {
-        [defaults setInteger:0 forKey:kThemePreference];
+    if (themePref < ThemePreferenceSystem || themePref > ThemePreferenceDark) {
+        [defaults setInteger:ThemePreferenceSystem forKey:kThemePreference];
+    }
+
+    // Set kSizePreference to small in the unlikely case it's invalid.
+    NSInteger sizePref = [defaults integerForKey:kSizePreference];
+    if (sizePref < SizePreferenceSmall || sizePref > SizePreferenceLarge) {
+        [defaults setInteger:SizePreferenceSmall forKey:kSizePreference];
     }
 }
 

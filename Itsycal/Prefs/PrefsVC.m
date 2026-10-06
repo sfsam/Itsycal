@@ -4,6 +4,7 @@
 //
 
 #import "PrefsVC.h"
+#import "PrefsAboutVC.h"
 
 @implementation PrefsVC
 {
@@ -66,22 +67,30 @@
 
 - (void)showAbout
 {
-    NSString *identifier = NSLocalizedString(@"About", @"About prefs tab label");
-    NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:identifier];
-    item.tag = 2; // 2 == index of About panel
-    _toolbar.selectedItemIdentifier = identifier;
-    [self switchToTabForToolbarItem:item animated:NO];
+    [self selectTabAtIndex:[self aboutTabIndex]];
 }
 
 - (void)showPrefs
 {
-    if (_selectedItemTag == 2) { // 2 == index of About panel
-        NSString *identifier = NSLocalizedString(@"General", @"General prefs tab label");
-        NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:identifier];
-        item.tag = 0; // 0 == index of General panel.
-        _toolbar.selectedItemIdentifier = identifier;
-        [self switchToTabForToolbarItem:item animated:NO];
+    if (_selectedItemTag == [self aboutTabIndex]) {
+        [self selectTabAtIndex:0]; // General is the first tab.
     }
+}
+
+- (NSInteger)aboutTabIndex
+{
+    return [self.childViewControllers indexOfObjectPassingTest:^BOOL(NSViewController *vc, NSUInteger idx, BOOL *stop) {
+        return [vc isKindOfClass:[PrefsAboutVC class]];
+    }];
+}
+
+- (void)selectTabAtIndex:(NSInteger)index
+{
+    NSString *identifier = _toolbarIdentifiers[index];
+    NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:identifier];
+    item.tag = index;
+    _toolbar.selectedItemIdentifier = identifier;
+    [self switchToTabForToolbarItem:item animated:NO];
 }
 
 - (void)setChildViewControllers:(NSArray<__kindof NSViewController *> *)childViewControllers
@@ -109,33 +118,35 @@
 {
     if (_selectedItemTag == item.tag) return;
 
+    NSViewController *toVC = [self viewControllerForItemIdentifier:item.itemIdentifier];
+    if (toVC == nil) return;
+
     _selectedItemTag = item.tag;
 
-    NSViewController *toVC = [self viewControllerForItemIdentifier:item.itemIdentifier];
-    if (toVC) {
+    NSWindow *window = self.view.window;
+    NSRect contentRect = NSMakeRect(0, 0, _contentWidth, toVC.view.fittingSize.height);
+    NSRect contentFrame = [window frameRectForContentRect:contentRect];
+    CGFloat windowHeightDelta = window.frame.size.height - contentFrame.size.height;
+    NSPoint newOrigin = NSMakePoint(window.frame.origin.x, window.frame.origin.y + windowHeightDelta);
+    NSRect newFrame = (NSRect){newOrigin, contentFrame.size};
 
-        if (self.view.subviews[0] == toVC.view) return;
-
-        NSWindow *window = self.view.window;
-        NSRect contentRect = NSMakeRect(0, 0, _contentWidth, toVC.view.fittingSize.height);
-        NSRect contentFrame = [window frameRectForContentRect:contentRect];
-        CGFloat windowHeightDelta = window.frame.size.height - contentFrame.size.height;
-        NSPoint newOrigin = NSMakePoint(window.frame.origin.x, window.frame.origin.y + windowHeightDelta);
-        NSRect newFrame = (NSRect){newOrigin, contentFrame.size};
-
-        [toVC.view setAlphaValue: 0];
-        [toVC.view setFrame:contentRect];
-        [self.view addSubview:toVC.view];
-
-        [NSAnimationContext runAnimationGroup:^(NSAnimationContext * _Nonnull context) {
-            [context setDuration:animated ? 0.2 : 0];
-            [window.animator setFrame:newFrame display:NO];
-            [toVC.view.animator setAlphaValue:1];
-            [self.view.subviews[0].animator setAlphaValue:0];
-        } completionHandler:^{
-            [self.view.subviews[0] removeFromSuperview];
-        }];
+    // Only the selected tab's view is ever in self.view. The old tab's
+    // view disappears at once (only the new one fades in), so remove it
+    // now instead of when the animation ends. That way switching again
+    // before the animation ends needs no special handling.
+    for (NSView *view in [self.view.subviews copy]) {
+        if (view != toVC.view) [view removeFromSuperview];
     }
+
+    [toVC.view setAlphaValue:0];
+    [toVC.view setFrame:contentRect];
+    [self.view addSubview:toVC.view];
+
+    [NSAnimationContext runAnimationGroup:^(NSAnimationContext * _Nonnull context) {
+        [context setDuration:animated ? 0.2 : 0];
+        [window.animator setFrame:newFrame display:NO];
+        [toVC.view.animator setAlphaValue:1];
+    }];
 }
 
 - (NSViewController *)viewControllerForItemIdentifier:(NSString *)itemIdentifier

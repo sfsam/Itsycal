@@ -54,7 +54,9 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Donate" = "捐";
 "End Repeat:" = "结束重复：";
 "Ends:" = "结束时间：";
-"Event list shows:" = "显示事件列表：";
+"Event List" = "事件列表";
+/* Events prefs tab label */
+"Events" = "事件";
 "Every %zd Days" = "每 %zd 天";
 "Every %zd Months" = "每 %zd 月";
 "Every %zd Weeks" = "每 %zd 周";
@@ -82,9 +84,13 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 
 请退出 Itsycal，将其移动到应用程序文件夹，然后重新启动。";
 "Keyboard shortcut" = "键盘快捷键";
+/* Large text size */
+"Large" = "大";
 "Launch at login" = "登录时启动";
 /* Light theme name */
 "Light" = "浅色";
+/* Medium text size */
+"Medium" = "中";
 "Menu Bar" = "菜单栏";
 "Monday" = "星期一";
 "Move Itsycal to the Applications folder" = "将 Itsycal 移动到应用程序文件夹";
@@ -113,6 +119,12 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Show event dots" = "显示事件圆点";
 "Show event location" = "显示事件位置";
 "Show month in icon" = "在图标中显示月份";
+/* Label for how many days the event list shows */
+"Show:" = "显示：";
+/* Text size label */
+"Size:" = "大小：";
+/* Small text size */
+"Small" = "小";
 "Starts:" = "开始：";
 "Sunday" = "星期天";
 /* System theme name */

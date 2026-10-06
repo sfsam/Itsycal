@@ -43,7 +43,7 @@ Itsycal es más útil cuando puede mostrar los eventos de sus calendarios. Puede
 "Check for Updates…" = "Buscar actualizaciones…";
 "Copy" = "Copiar";
 /* Dark theme name */
-"Dark" = "Tema oscuro";
+"Dark" = "Oscuro";
 "Date & Time…" = "Fecha y hora…";
 "Datetime pattern" = "Patrón de fecha y hora";
 "Delete…" = "Eliminar…";
@@ -54,7 +54,9 @@ Itsycal es más útil cuando puede mostrar los eventos de sus calendarios. Puede
 "Donate" = "Donar";
 "End Repeat:" = "Terminar:";
 "Ends:" = "Termina:";
-"Event list shows:" = "La lista de eventos muestra:";
+"Event List" = "Lista de eventos";
+/* Events prefs tab label */
+"Events" = "Eventos";
 "Every %zd Days" = "Cada %zd días";
 "Every %zd Months" = "Cada %zd meses";
 "Every %zd Weeks" = "Cada %zd semanas";
@@ -82,9 +84,13 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsyc
 
 Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arrancar.";
 "Keyboard shortcut" = "Atajo de teclado";
+/* Large text size */
+"Large" = "Grande";
 "Launch at login" = "Abrir automáticamente al iniciar sesión";
 /* Light theme name */
-"Light" = "Tema claro";
+"Light" = "Claro";
+/* Medium text size */
+"Medium" = "Mediano";
 "Menu Bar" = "Barra de Menús";
 "Monday" = "Lunes";
 "Move Itsycal to the Applications folder" = "Trasladar Itsycal a la carpeta Aplicaciones";
@@ -113,6 +119,12 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "Show event dots" = "Mostrar puntos para eventos";
 "Show event location" = "Mostrar ubicación del evento";
 "Show month in icon" = "El icono muestra mes";
+/* Label for how many days the event list shows */
+"Show:" = "Mostrar:";
+/* Text size label */
+"Size:" = "Tamaño:";
+/* Small text size */
+"Small" = "Pequeño";
 "Starts:" = "Empieza:";
 "Sunday" = "Domingo";
 /* System theme name */

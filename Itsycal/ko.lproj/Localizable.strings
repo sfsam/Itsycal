@@ -54,7 +54,9 @@ Itsycal은 캘린더 이벤트를 보여줄 수 있을 때 더 유용해요.";
 "Donate" = "후원";
 "End Repeat:" = "반복 종료:";
 "Ends:" = "종료:";
-"Event list shows:" = "이벤트 목록:";
+"Event List" = "이벤트 목록";
+/* Events prefs tab label */
+"Events" = "이벤트";
 "Every %zd Days" = "%zd일마다";
 "Every %zd Months" = "%zd개월마다";
 "Every %zd Weeks" = "%zd주마다";
@@ -82,9 +84,13 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsyc
 
 Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 주세요.";
 "Keyboard shortcut" = "키보드 단축키";
+/* Large text size */
+"Large" = "크게";
 "Launch at login" = "로그인할 때 열기";
 /* Light theme name */
 "Light" = "밝게";
+/* Medium text size */
+"Medium" = "중간";
 "Menu Bar" = "메뉴 막대";
 "Monday" = "월요일";
 "Move Itsycal to the Applications folder" = "Itsycal을 응용 프로그램 폴더로 옮겨 주세요";
@@ -113,6 +119,12 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Show event dots" = "이벤트 점 표시";
 "Show event location" = "이벤트 위치 표시";
 "Show month in icon" = "아이콘에 월 표시";
+/* Label for how many days the event list shows */
+"Show:" = "표시:";
+/* Text size label */
+"Size:" = "크기:";
+/* Small text size */
+"Small" = "작게";
 "Starts:" = "시작:";
 "Sunday" = "일요일";
 /* System theme name */

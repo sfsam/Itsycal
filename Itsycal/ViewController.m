@@ -18,6 +18,7 @@
 #import "PrefsVC.h"
 #import "PrefsGeneralVC.h"
 #import "PrefsAppearanceVC.h"
+#import "PrefsEventsVC.h"
 #import "PrefsAboutVC.h"
 #import "MoButton.h"
 #import "MoPopover.h"
@@ -395,15 +396,17 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     if (!_prefsWC) {
         // VCs for each tab in prefs panel.
         PrefsGeneralVC *prefsGeneralVC = [PrefsGeneralVC new];
+        PrefsEventsVC *prefsEventsVC = [PrefsEventsVC new];
         PrefsAppearanceVC *prefsAppearanceVC = [PrefsAppearanceVC new];
         PrefsAboutVC *prefsAboutVC = [PrefsAboutVC new];
-        prefsGeneralVC.ec = _ec;
+        prefsEventsVC.ec = _ec;
         prefsGeneralVC.title = NSLocalizedString(@"General", @"General prefs tab label");
+        prefsEventsVC.title = NSLocalizedString(@"Events", @"Events prefs tab label");
         prefsAppearanceVC.title = NSLocalizedString(@"Appearance", @"Appearance prefs tab label");
         prefsAboutVC.title = NSLocalizedString(@"About", @"About prefs tab label");
         // prefsVC is the container VC the tab VCs.
         PrefsVC *prefsVC = [PrefsVC new];
-        prefsVC.childViewControllers = @[prefsGeneralVC, prefsAppearanceVC, prefsAboutVC];
+        prefsVC.childViewControllers = @[prefsGeneralVC, prefsEventsVC, prefsAppearanceVC, prefsAboutVC];
         // Create prefs WC.
         NSPanel *panel = [[NSPanel alloc] initWithContentRect:NSZeroRect styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable) backing:NSBackingStoreBuffered defer:NO];
         panel.hidesOnDeactivate = NO;

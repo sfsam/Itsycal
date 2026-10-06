@@ -54,7 +54,9 @@ Itsycal je užitečnější, pokud může zobrazovat události z vašich kalend
 "Donate" = "Darovat";
 "End Repeat:" = "Konec opakování:";
 "Ends:" = "Končí:";
-"Event list shows:" = "Seznam událostí obsahuje:";
+"Event List" = "Seznam událostí";
+/* Events prefs tab label */
+"Events" = "Události";
 "Every %zd Days" = "Každých %zd dní";
 "Every %zd Months" = "Každých %zd měsíců";
 "Every %zd Weeks" = "Každých %zd týdnů";
@@ -82,9 +84,13 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "Má-l
 
 Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej spusťte.";
 "Keyboard shortcut" = "Klávesová zkratka";
+/* Large text size */
+"Large" = "Velká";
 "Launch at login" = "Otevřít při přihlášení";
 /* Light theme name */
 "Light" = "Světlé";
+/* Medium text size */
+"Medium" = "Střední";
 "Menu Bar" = "Řádek nabídek";
 "Monday" = "pondělí";
 "Move Itsycal to the Applications folder" = "Přesuňte Itsycal do složky Aplikace";
@@ -113,6 +119,12 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Show event dots" = "Zobrazovat tečky událostí";
 "Show event location" = "Zobrazovat místo události";
 "Show month in icon" = "Zobrazovat měsíc v ikoně";
+/* Label for how many days the event list shows */
+"Show:" = "Zobrazit:";
+/* Text size label */
+"Size:" = "Velikost:";
+/* Small text size */
+"Small" = "Malá";
 "Starts:" = "Začíná:";
 "Sunday" = "neděle";
 /* System theme name */
