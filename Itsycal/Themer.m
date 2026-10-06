@@ -10,6 +10,16 @@
 // NSUserDefaults key
 NSString * const kThemePreference = @"ThemePreference";
 
+// Returns a color that resolves to light in Light Mode
+// and dark in Dark Mode.
+static NSColor *LightDarkColor(NSColor *light, NSColor *dark)
+{
+    return [NSColor colorWithName:nil dynamicProvider:^NSColor *(NSAppearance *appearance) {
+        BOOL isDark = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua;
+        return isDark ? dark : light;
+    }];
+}
+
 @implementation Themer
 
 Themer *Theme = nil;
@@ -80,7 +90,7 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)currentMonthOutlineColor {
-    return [self monthTextColor];
+    return LightDarkColor(NSColor.labelColor, NSColor.secondaryLabelColor);
 }
 
 - (NSColor *)currentMonthTextColor {
@@ -92,7 +102,7 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)highlightedDOWBackgroundColor {
-    return [NSColor colorNamed:@"HighlightedDOWBackgroundColor"];
+    return NSColor.secondarySystemFillColor;
 }
 
 - (NSColor *)highlightedDOWTextColor {
@@ -104,7 +114,10 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)mainBackgroundColor {
-    return [NSColor colorNamed:@"MainBackgroundColor"];
+    // windowBackgroundColor is white in Light Mode. In Dark
+    // Mode, use a gray halfway between windowBackgroundColor
+    // (0.118) and underPageBackgroundColor (0.157).
+    return LightDarkColor(NSColor.windowBackgroundColor, [NSColor colorWithWhite:0.137 alpha:1]);
 }
 
 - (NSColor *)monthTextColor {
@@ -116,7 +129,7 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)pendingBackgroundColor {
-    return [NSColor colorNamed:@"PendingBackgroundColor"];
+    return NSColor.secondarySystemFillColor;
 }
 
 - (NSColor *)resizeHandleBackgroundColor {
@@ -124,7 +137,7 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)resizeHandleForegroundColor {
-    return [NSColor colorNamed:@"ResizeHandleForegroundColor"];
+    return NSColor.secondaryLabelColor;
 }
 
 - (NSColor *)selectedCellColor {
@@ -132,7 +145,7 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)todayCellColor {
-    return [NSColor colorNamed:@"TodayCellColor"];
+    return NSColor.systemBlueColor;
 }
 
 - (NSColor *)tooltipBackgroundColor {
