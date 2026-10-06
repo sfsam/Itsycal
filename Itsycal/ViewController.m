@@ -32,7 +32,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 {
     return @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon,
               kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon,
-              kBaselineOffset, kClockFormat];
+              kBaselineOffset, kClockFormat, kWindowPosition];
 }
 
 @implementation ViewController
@@ -818,8 +818,9 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
     // A status item moved fully offscreen by a menu bar manager is not a
     // useful anchor. In that case, keep Itsycal onscreen at the top right
-    // of the screen.
-    BOOL useFallbackPosition = statusItemScreen == nil;
+    // of the screen. The user can also choose to always show Itsycal there.
+    BOOL useFallbackPosition = statusItemScreen == nil
+        || [[NSUserDefaults standardUserDefaults] integerForKey:kWindowPosition] == WindowPositionTopRightOfScreen;
 
     // When first showing Itsycal, don't anchor to an item that isn't
     // visible, such as one covered by app menus or hidden along with a
@@ -1498,6 +1499,12 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     }
     else if ([keyPath isEqualToString:kClockFormat]) {
         [self clockFormatDidChange];
+    }
+    else if ([keyPath isEqualToString:kWindowPosition]) {
+        // Move Itsycal now if it is showing (e.g., when pinned).
+        if (self.itsycalWindow.isVisible) {
+            [self positionItsycalWindowForInitialPresentation:YES];
+        }
     }
 }
 

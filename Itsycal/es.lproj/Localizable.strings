@@ -32,6 +32,7 @@
 "At time of event" = "A la hora del evento";
 "Automatically check for updates" = "Buscar actualizaciones automáticamente";
 "Beep beep on the hour" = "Emita zumbidos a cada hora";
+"Below menu bar icon" = "Debajo del icono de la barra de menús";
 "Calendar" = "Calendario";
 "Calendar access denied.
 
@@ -107,6 +108,7 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "Open Calendar" = "Abrir La aplicación del calendario";
 "Open Calendar   ⌘O" = "Abrir La aplicación del calendario   ⌘O";
 "Options" = "Opciones";
+"Outline current month" = "Delinear el mes actual";
 "Pin Itsycal   P" = "Mantener Itsycal   P";
 "Quit Itsycal" = "Salir de Itsycal";
 "Repeat:" = "Repetir:";
@@ -134,9 +136,11 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "Theme:" = "Tema:";
 "There are no modifiable calendars." = "No hay calendarios modificables.";
 "Thursday" = "Jueves";
+"Top right of screen" = "Arriba a la derecha de la pantalla";
 "Tuesday" = "Martes";
 "Use colored dots" = "Usar puntos de colores";
 "Wednesday" = "Miércoles";
+"Window position:" = "Posición de la ventana:";
 "You're deleting an event." = "Está eliminando un evento.";
 /* Spanning event ends */
 "ends" = "finaliza a las";

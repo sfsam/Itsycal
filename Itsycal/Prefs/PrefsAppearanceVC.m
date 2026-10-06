@@ -134,12 +134,13 @@
     [v addSubview:highlight];
 
     // Calendar checkboxes
+    NSButton *outlineMonth = chkbx(NSLocalizedString(@"Outline current month", @""));
     NSButton *showEventDots = chkbx(NSLocalizedString(@"Show event dots", @""));
     NSButton *useColoredDots = chkbx(NSLocalizedString(@"Use colored dots", @""));
     NSButton *showWeeks = chkbx(NSLocalizedString(@"Show calendar weeks", @""));
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(themeLabel, themePopup, sizeLabel, sizePopup, menubarLabel, calendarLabel, separator0, separator1, iconPicker, showMonth, showDayOfWeek, _dateTimeFormat, helpButton, _hideIcon, firstDayLabel, firstDayPopup, highlight, showWeeks, showEventDots, useColoredDots)];
-    [vfl :@"V:|-m-[themePopup]-m-[menubarLabel]-10-[iconPicker]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[firstDayPopup]-m-[highlight]-m-[showEventDots]-[useColoredDots]-[showWeeks]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(themeLabel, themePopup, sizeLabel, sizePopup, menubarLabel, calendarLabel, separator0, separator1, iconPicker, showMonth, showDayOfWeek, _dateTimeFormat, helpButton, _hideIcon, firstDayLabel, firstDayPopup, highlight, showWeeks, outlineMonth, showEventDots, useColoredDots)];
+    [vfl :@"V:|-m-[themePopup]-m-[menubarLabel]-10-[iconPicker]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[firstDayPopup]-m-[highlight]-m-[outlineMonth]-[showEventDots]-[useColoredDots]-[showWeeks]-m-|"];
     [vfl :@"H:|-m-[themeLabel]-[themePopup]-m-[sizeLabel]-[sizePopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
     [vfl :@"H:|-m-[menubarLabel]-[separator0]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[calendarLabel]-[separator1]-m-|" :NSLayoutFormatAlignAllCenterY];
@@ -150,6 +151,7 @@
     [vfl :@"H:|-m-[_hideIcon]-(>=m)-|"];
     [vfl :@"H:|-m-[firstDayLabel]-[firstDayPopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
     [vfl :@"H:|-m-[highlight]-(>=m)-|"];
+    [vfl :@"H:|-m-[outlineMonth]-(>=m)-|"];
     [vfl :@"H:|-m-[showEventDots]-(>=m)-|"];
     [vfl :@"H:|-mm-[useColoredDots]-(>=m)-|"];
     [vfl :@"H:|-m-[showWeeks]-(>=m)-|"];
@@ -179,6 +181,10 @@
     // Bindings for highlight picker
     [highlight bind:@"weekStartDOW" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kWeekStartDOW] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     [highlight bind:@"selectedDOWs" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kHighlightedDOWs] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+
+    // Bindings for outline current month preference. The checkbox
+    // shows the opposite of kDoNotDrawOutlineAroundCurrentMonth.
+    [outlineMonth bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kDoNotDrawOutlineAroundCurrentMonth] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSValueTransformerNameBindingOption: NSNegateBooleanTransformerName}];
 
     // Bindings for showEventDots preference
     [showEventDots bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDots] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];

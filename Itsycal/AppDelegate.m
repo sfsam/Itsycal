@@ -52,6 +52,7 @@
         kShowEventPopoverOnHover: @(NO),
         kAllowOutsideApplicationsFolder: @(NO),
         kDoNotCheckLoginItemStatus: @(NO),
+        kWindowPosition:       @(WindowPositionBelowMenuBarIcon),
     }];
     
     // Constrain kShowEventDays to values 0...9 in (unlikely) case it is invalid.
@@ -68,6 +69,12 @@
     NSInteger sizePref = [defaults integerForKey:kSizePreference];
     if (sizePref < SizePreferenceSmall || sizePref > SizePreferenceLarge) {
         [defaults setInteger:SizePreferenceSmall forKey:kSizePreference];
+    }
+
+    // Set kWindowPosition to below menu bar icon in the unlikely case it's invalid.
+    NSInteger windowPosition = [defaults integerForKey:kWindowPosition];
+    if (windowPosition != WindowPositionBelowMenuBarIcon && windowPosition != WindowPositionTopRightOfScreen) {
+        [defaults setInteger:WindowPositionBelowMenuBarIcon forKey:kWindowPosition];
     }
 }
 

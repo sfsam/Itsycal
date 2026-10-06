@@ -51,13 +51,27 @@
     [shortcutView setAssociatedUserDefaultsKey:kKeyboardShortcut withTransformerName:MASDictionaryTransformerName];
     [v addSubview:shortcutView];
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_login, checkUpdates, beepBeep, shortcutLabel, shortcutView)];
-    [vfl :@"V:|-m-[_login]-[checkUpdates]-[beepBeep]-m-[shortcutLabel]-3-[shortcutView(25)]-m-|"];
+    // Window position label
+    NSTextField *positionLabel = label(NSLocalizedString(@"Window position:", @""));
+
+    // Window position popup
+    NSPopUpButton *positionPopup = [NSPopUpButton new];
+    [positionPopup addItemsWithTitles:@[NSLocalizedString(@"Below menu bar icon", @""),
+                                        NSLocalizedString(@"Top right of screen", @"")]];
+    // The tags will be used to bind the selected window
+    // position preference to NSUserDefaults.
+    [positionPopup itemAtIndex:0].tag = WindowPositionBelowMenuBarIcon;
+    [positionPopup itemAtIndex:1].tag = WindowPositionTopRightOfScreen;
+    [v addSubview:positionPopup];
+
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_login, checkUpdates, beepBeep, shortcutLabel, shortcutView, positionLabel, positionPopup)];
+    [vfl :@"V:|-m-[_login]-[checkUpdates]-[beepBeep]-m-[shortcutLabel]-3-[shortcutView(25)]-30-[positionPopup]-m-|"];
     [vfl :@"H:|-m-[_login]-(>=m)-|"];
     [vfl :@"H:|-m-[checkUpdates]-(>=m)-|"];
     [vfl :@"H:|-m-[beepBeep]-(>=m)-|"];
     [vfl :@"H:|-(>=m)-[shortcutLabel]-(>=m)-|"];
     [vfl :@"H:|-m-[shortcutView(>=220)]-m-|"];
+    [vfl :@"H:|-m-[positionLabel]-[positionPopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
 
     // Center shortcutLabel
     [v addConstraint:[NSLayoutConstraint constraintWithItem:shortcutLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:v attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
@@ -67,6 +81,9 @@
 
     // Binding for hourly beep
     [beepBeep bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kBeepBeepOnTheHour] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+
+    // Bindings for window position
+    [positionPopup bind:@"selectedTag" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kWindowPosition] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     self.view = v;
 }

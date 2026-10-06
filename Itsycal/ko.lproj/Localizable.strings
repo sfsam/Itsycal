@@ -32,6 +32,7 @@
 "At time of event" = "이벤트 시작 시";
 "Automatically check for updates" = "업데이트 자동 확인하기";
 "Beep beep on the hour" = "정각 알림음 재생";
+"Below menu bar icon" = "메뉴 막대 아이콘 아래";
 "Calendar" = "캘린더";
 "Calendar access denied.
 
@@ -107,6 +108,7 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Open Calendar" = "캘린더 열기";
 "Open Calendar   ⌘O" = "캘린더 열기   ⌘O";
 "Options" = "옵션";
+"Outline current month" = "현재 월 외곽선 표시";
 "Pin Itsycal   P" = "Itsycal 고정하기   P";
 "Quit Itsycal" = "Itsycal 종료";
 "Repeat:" = "반복:";
@@ -134,9 +136,11 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Theme:" = "테마:";
 "There are no modifiable calendars." = "수정할 수 있는 캘린더가 없어요.";
 "Thursday" = "목요일";
+"Top right of screen" = "화면 오른쪽 상단";
 "Tuesday" = "화요일";
 "Use colored dots" = "색상 있는 점 사용";
 "Wednesday" = "수요일";
+"Window position:" = "창 위치:";
 "You're deleting an event." = "이벤트를 삭제할까요?";
 /* Spanning event ends */
 "ends" = "종료";

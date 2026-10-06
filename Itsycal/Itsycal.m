@@ -32,6 +32,7 @@ NSString * const kDoNotDrawOutlineAroundCurrentMonth = @"DoNotDrawOutlineAroundC
 NSString * const kShowDaysWithNoEventsInAgenda = @"ShowDaysWithNoEventsInAgenda";
 NSString * const kShowEventPopoverOnHover = @"ShowEventPopoverOnHover";
 NSString * const kDoNotCheckLoginItemStatus = @"DoNotCheckLoginItemStatus";
+NSString * const kWindowPosition = @"WindowPosition";
 
 @implementation NSDate (HasNoEvents)
 

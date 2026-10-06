@@ -32,6 +32,7 @@
 "At time of event" = "V čase události";
 "Automatically check for updates" = "Automaticky vyhledávat aktualizace";
 "Beep beep on the hour" = "Zapípat každou hodinu";
+"Below menu bar icon" = "Pod ikonou v řádku nabídek";
 "Calendar" = "Kalendář";
 "Calendar access denied.
 
@@ -107,6 +108,7 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Open Calendar" = "Otevřít kalendář";
 "Open Calendar   ⌘O" = "Otevřít kalendář   ⌘O";
 "Options" = "Volby";
+"Outline current month" = "Ohraničit aktuální měsíc";
 "Pin Itsycal   P" = "Přišpendlit Itsycal   P";
 "Quit Itsycal" = "Ukončit Itsycal";
 "Repeat:" = "Opakovat:";
@@ -134,9 +136,11 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Theme:" = "Téma:";
 "There are no modifiable calendars." = "Neexistují žádné kalendáře, které by bylo možné upravovat.";
 "Thursday" = "čtvrtek";
+"Top right of screen" = "Vpravo nahoře na obrazovce";
 "Tuesday" = "úterý";
 "Use colored dots" = "Používat barevné tečky";
 "Wednesday" = "středa";
+"Window position:" = "Umístění okna:";
 "You're deleting an event." = "Mažete událost.";
 /* Spanning event ends */
 "ends" = "končí";

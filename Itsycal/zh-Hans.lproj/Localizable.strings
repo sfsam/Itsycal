@@ -32,6 +32,7 @@
 "At time of event" = "在事件开始时";
 "Automatically check for updates" = "自动检查更新";
 "Beep beep on the hour" = "整点报时";
+"Below menu bar icon" = "菜单栏图标下方";
 "Calendar" = "日历";
 "Calendar access denied.
 
@@ -107,6 +108,7 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Open Calendar" = "打开日历";
 "Open Calendar   ⌘O" = "打开日历   ⌘O";
 "Options" = "选项";
+"Outline current month" = "为当前月份显示轮廓";
 "Pin Itsycal   P" = "固定 Itsycal   P";
 "Quit Itsycal" = "退出 Itsycal";
 "Repeat:" = "重复：";
@@ -134,9 +136,11 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Theme:" = "主题：";
 "There are no modifiable calendars." = "没有可修改的日历。";
 "Thursday" = "星期四";
+"Top right of screen" = "屏幕右上角";
 "Tuesday" = "星期二";
 "Use colored dots" = "使用彩色圆点";
 "Wednesday" = "星期三";
+"Window position:" = "窗口位置：";
 "You're deleting an event." = "你正在删除事件。";
 /* Spanning event ends */
 "ends" = "结束时间";

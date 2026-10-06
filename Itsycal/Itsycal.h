@@ -35,6 +35,12 @@ extern NSString * const kDoNotDrawOutlineAroundCurrentMonth;
 extern NSString * const kShowDaysWithNoEventsInAgenda;
 extern NSString * const kShowEventPopoverOnHover;
 extern NSString * const kDoNotCheckLoginItemStatus;
+extern NSString * const kWindowPosition;
+
+typedef NS_ENUM(NSInteger, WindowPosition) {
+    WindowPositionBelowMenuBarIcon = 0,
+    WindowPositionTopRightOfScreen = 1
+};
 
 // Set an associated object on NSDate to indicate
 // whether of not this date has events.
