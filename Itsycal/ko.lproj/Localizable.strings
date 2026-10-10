@@ -123,8 +123,8 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Show month in icon" = "아이콘에 월 표시";
 /* Label for how many days the event list shows */
 "Show:" = "표시:";
-/* Text size label */
-"Size:" = "크기:";
+/* Accessibility label for text size control */
+"Size" = "크기";
 /* Small text size */
 "Small" = "작게";
 "Starts:" = "시작:";

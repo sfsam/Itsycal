@@ -123,8 +123,8 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "Show month in icon" = "El icono muestra mes";
 /* Label for how many days the event list shows */
 "Show:" = "Mostrar:";
-/* Text size label */
-"Size:" = "Tamaño:";
+/* Accessibility label for text size control */
+"Size" = "Tamaño";
 /* Small text size */
 "Small" = "Pequeño";
 "Starts:" = "Empieza:";

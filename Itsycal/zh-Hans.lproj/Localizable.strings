@@ -123,8 +123,8 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Show month in icon" = "在图标中显示月份";
 /* Label for how many days the event list shows */
 "Show:" = "显示：";
-/* Text size label */
-"Size:" = "大小：";
+/* Accessibility label for text size control */
+"Size" = "大小";
 /* Small text size */
 "Small" = "小";
 "Starts:" = "开始：";

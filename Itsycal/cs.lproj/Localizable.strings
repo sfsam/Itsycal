@@ -123,8 +123,8 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Show month in icon" = "Zobrazovat měsíc v ikoně";
 /* Label for how many days the event list shows */
 "Show:" = "Zobrazit:";
-/* Text size label */
-"Size:" = "Velikost:";
+/* Accessibility label for text size control */
+"Size" = "Velikost";
 /* Small text size */
 "Small" = "Malá";
 "Starts:" = "Začíná:";

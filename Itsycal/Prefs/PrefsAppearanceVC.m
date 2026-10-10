@@ -63,15 +63,31 @@
                                       @[@(ThemePreferenceSystem), @(ThemePreferenceLight), @(ThemePreferenceDark)],
                                       kThemePreference);
 
-    // Size label
-    NSTextField *sizeLabel = label(NSLocalizedString(@"Size:", @"Text size label"));
-
-    // Size popup
-    NSPopUpButton *sizePopup = popup(@[NSLocalizedString(@"Small", @"Small text size"),
+    // Size segmented control. Each segment shows "Aa" at the font
+    // size it selects. All images are as tall as the large font's
+    // cap height so the three "Aa"s share a baseline.
+    CGFloat fontSizes[] = {FONT_SIZE_SMALL, FONT_SIZE_MEDIUM, FONT_SIZE_LARGE};
+    NSArray<NSString *> *sizeNames = @[NSLocalizedString(@"Small", @"Small text size"),
                                        NSLocalizedString(@"Medium", @"Medium text size"),
-                                       NSLocalizedString(@"Large", @"Large text size")],
-                                     @[@(SizePreferenceSmall), @(SizePreferenceMedium), @(SizePreferenceLarge)],
-                                     kSizePreference);
+                                       NSLocalizedString(@"Large", @"Large text size")];
+    CGFloat sizeImageHeight = ceil([NSFont systemFontOfSize:FONT_SIZE_LARGE].capHeight) + 2;
+    NSMutableArray<NSImage *> *sizeImages = [NSMutableArray new];
+    for (NSInteger i = 0; i < 3; i++) {
+        NSDictionary *attrs = @{NSFontAttributeName: [NSFont systemFontOfSize:fontSizes[i]]};
+        NSSize textSize = [@"Aa" sizeWithAttributes:attrs];
+        NSImage *image = [NSImage imageWithSize:NSMakeSize(ceil(textSize.width), sizeImageHeight) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+            // Put the baseline 1pt above the bottom to leave room for overshoot.
+            [@"Aa" drawAtPoint:NSMakePoint(0, 1 + [attrs[NSFontAttributeName] descender]) withAttributes:attrs];
+            return YES;
+        }];
+        image.template = YES;
+        image.accessibilityDescription = sizeNames[i];
+        [sizeImages addObject:image];
+    }
+    NSSegmentedControl *sizePicker = [NSSegmentedControl segmentedControlWithImages:sizeImages trackingMode:NSSegmentSwitchTrackingSelectOne target:nil action:nil];
+    for (NSInteger i = 0; i < 3; i++) [sizePicker setWidth:32 forSegment:i];
+    sizePicker.accessibilityLabel = NSLocalizedString(@"Size", @"Accessibility label for text size control");
+    [v addSubview:sizePicker];
 
     NSTextField *menubarLabel = label(NSLocalizedString(@"Menu Bar", @""));
     NSTextField *calendarLabel = label(NSLocalizedString(@"Calendar", @""));
@@ -139,9 +155,10 @@
     NSButton *useColoredDots = chkbx(NSLocalizedString(@"Use colored dots", @""));
     NSButton *showWeeks = chkbx(NSLocalizedString(@"Show calendar weeks", @""));
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(themeLabel, themePopup, sizeLabel, sizePopup, menubarLabel, calendarLabel, separator0, separator1, iconPicker, showMonth, showDayOfWeek, _dateTimeFormat, helpButton, _hideIcon, firstDayLabel, firstDayPopup, highlight, showWeeks, outlineMonth, showEventDots, useColoredDots)];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(themeLabel, themePopup, sizePicker, menubarLabel, calendarLabel, separator0, separator1, iconPicker, showMonth, showDayOfWeek, _dateTimeFormat, helpButton, _hideIcon, firstDayLabel, firstDayPopup, highlight, showWeeks, outlineMonth, showEventDots, useColoredDots)];
     [vfl :@"V:|-m-[themePopup]-m-[menubarLabel]-10-[iconPicker]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[firstDayPopup]-m-[highlight]-m-[outlineMonth]-[showEventDots]-[useColoredDots]-[showWeeks]-m-|"];
-    [vfl :@"H:|-m-[themeLabel]-[themePopup]-m-[sizeLabel]-[sizePopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
+    [vfl :@"H:|-m-[themeLabel]-[themePopup]" :NSLayoutFormatAlignAllFirstBaseline];
+    [vfl :@"H:[themePopup]-mm-[sizePicker]-(>=m)-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[menubarLabel]-[separator0]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[calendarLabel]-[separator1]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[iconPicker]-m-|"];
@@ -155,6 +172,9 @@
     [vfl :@"H:|-m-[showEventDots]-(>=m)-|"];
     [vfl :@"H:|-mm-[useColoredDots]-(>=m)-|"];
     [vfl :@"H:|-m-[showWeeks]-(>=m)-|"];
+
+    // Binding for size preference. SizePreference values match segment indexes.
+    [sizePicker bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     // Bindings for icon preferences
     [iconPicker bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kMenuBarIconType] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES), NSNoSelectionPlaceholderBindingOption: @0}];
