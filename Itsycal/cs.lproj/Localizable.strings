@@ -40,6 +40,8 @@ Itsycal is more useful when it can display events from your calendars. You can c
 
 Itsycal je užitečnější, pokud může zobrazovat události z vašich kalendářů. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Kalendáře";
 "Calendar access was denied." = "Přístup ke kalendáři byl odepřen.";
+/* Accessibility description for menu bar icon showing a grid of days */
+"Calendar grid" = "Mřížka kalendáře";
 "Cancel" = "Zrušit";
 "Check for Updates…" = "Vyhledat aktualizace…";
 "Copy" = "Kopírovat";
@@ -66,6 +68,8 @@ Itsycal je užitečnější, pokud může zobrazovat události z vašich kalend
 "Every Month" = "Každý měsíc";
 "Every Week" = "Každý týden";
 "Every Year" = "Každý rok";
+/* Accessibility description for menu bar icon with the date in a filled square */
+"Filled date" = "Datum s výplní";
 "First day of week:" = "První den týdne:";
 "Follow" = "Sledovat";
 "Friday" = "pátek";
@@ -78,6 +82,8 @@ Itsycal je užitečnější, pokud může zobrazovat události z vašich kalend
 "Hide icon" = "Skrýt ikonu";
 "Highlight:" = "Zvýraznit:";
 "Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal nemůže vytvořit novou událost, pokud nemáte oprávnění k úpravám alespoň v jednom kalendáři.";
+/* Accessibility description for menu bar icon showing the Itsycal face */
+"Itsycal face" = "Obličej Itsycal";
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Settings › Privacy & Security › Calendars." = "Itsycal je užitečnější, pokud mu povolíte přidávat události do vašich kalendářů. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Kalendáře.";
 "Itsycal must be run from the Applications folder in order to work properly.
 
@@ -93,6 +99,10 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 /* Medium text size */
 "Medium" = "Střední";
 "Menu Bar" = "Řádek nabídek";
+/* Accessibility label for menu bar datetime pattern text field */
+"Menu bar date and time pattern" = "Formát data a času v řádku nabídek";
+/* Accessibility label for menu bar icon picker */
+"Menu bar icon" = "Ikona v řádku nabídek";
 "Monday" = "pondělí";
 "Move Itsycal to the Applications folder" = "Přesuňte Itsycal do složky Aplikace";
 /* Repeat ends never */
@@ -109,6 +119,8 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Open Calendar   ⌘O" = "Otevřít kalendář   ⌘O";
 "Options" = "Volby";
 "Outline current month" = "Ohraničit aktuální měsíc";
+/* Accessibility description for menu bar icon with the date in an outlined square */
+"Outlined date" = "Datum s obrysem";
 "Pin Itsycal   P" = "Přišpendlit Itsycal   P";
 "Quit Itsycal" = "Ukončit Itsycal";
 "Repeat:" = "Opakovat:";

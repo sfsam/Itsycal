@@ -93,6 +93,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
                                      NSLocalizedString(@"7 days", @""),
                                      NSLocalizedString(@"14 days", @""),
                                      NSLocalizedString(@"31 days", @"")]];
+    [_agendaDaysPopup.cell setAccessibilityTitleUIElement:_agendaDaysLabel.cell];
     [v addSubview:_agendaDaysPopup];
 
     // Checkboxes

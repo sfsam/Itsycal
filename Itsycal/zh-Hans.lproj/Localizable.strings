@@ -40,6 +40,8 @@ Itsycal is more useful when it can display events from your calendars. You can c
 
 当 Itsycal 可以显示你的日历事件时会更好用。你可以在 “系统设置 › 隐私与安全 › 日历” 中更改此设置。";
 "Calendar access was denied." = "日历访问被拒绝。";
+/* Accessibility description for menu bar icon showing a grid of days */
+"Calendar grid" = "日历网格";
 "Cancel" = "取消";
 "Check for Updates…" = "检查更新…";
 "Copy" = "复制";
@@ -66,6 +68,8 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Every Month" = "每月";
 "Every Week" = "每周";
 "Every Year" = "每年";
+/* Accessibility description for menu bar icon with the date in a filled square */
+"Filled date" = "实心日期";
 "First day of week:" = "星期开始于：";
 "Follow" = "Follow";
 "Friday" = "星期五";
@@ -78,6 +82,8 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Hide icon" = "隐藏图标";
 "Highlight:" = "高亮：";
 "Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "除非有至少一个有权限修改的日历，否则 Itsycal 无法创建新事件。";
+/* Accessibility description for menu bar icon showing the Itsycal face */
+"Itsycal face" = "Itsycal 笑脸";
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Settings › Privacy & Security › Calendars." = "当你允许 Itsycal 将事件添加到你的日历中时会更好用。你可以在 “系统设置 › 隐私与安全 › 日历” 中更改此设置。";
 "Itsycal must be run from the Applications folder in order to work properly.
 
@@ -93,6 +99,10 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 /* Medium text size */
 "Medium" = "中";
 "Menu Bar" = "菜单栏";
+/* Accessibility label for menu bar datetime pattern text field */
+"Menu bar date and time pattern" = "菜单栏日期时间模式";
+/* Accessibility label for menu bar icon picker */
+"Menu bar icon" = "菜单栏图标";
 "Monday" = "星期一";
 "Move Itsycal to the Applications folder" = "将 Itsycal 移动到应用程序文件夹";
 /* Repeat ends never */
@@ -109,6 +119,8 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Open Calendar   ⌘O" = "打开日历   ⌘O";
 "Options" = "选项";
 "Outline current month" = "为当前月份显示轮廓";
+/* Accessibility description for menu bar icon with the date in an outlined square */
+"Outlined date" = "空心日期";
 "Pin Itsycal   P" = "固定 Itsycal   P";
 "Quit Itsycal" = "退出 Itsycal";
 "Repeat:" = "重复：";

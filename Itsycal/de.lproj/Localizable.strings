@@ -40,6 +40,8 @@ Itsycal is more useful when it can display events from your calendars. You can c
 
 Itsycal ist nützlicher, wenn es Ereignisse aus Ihren Kalendern anzeigen kann. Sie können diese Einstellung unter Systemeinstellungen › Datenschutz & Sicherheit › Kalender anpassen.";
 "Calendar access was denied." = "Kalenderzugriff verweigert.";
+/* Accessibility description for menu bar icon showing a grid of days */
+"Calendar grid" = "Kalenderraster";
 "Cancel" = "Abbrechen";
 "Check for Updates…" = "Nach Updates suchen …";
 "Copy" = "Kopieren";
@@ -66,6 +68,8 @@ Itsycal ist nützlicher, wenn es Ereignisse aus Ihren Kalendern anzeigen kann. S
 "Every Month" = "Monatlich";
 "Every Week" = "Wöchentlich";
 "Every Year" = "Jährlich";
+/* Accessibility description for menu bar icon with the date in a filled square */
+"Filled date" = "Datum, gefüllt";
 "First day of week:" = "Erster Wochentag:";
 "Follow" = "Folgen Sie";
 "Friday" = "Freitag";
@@ -78,6 +82,8 @@ Itsycal ist nützlicher, wenn es Ereignisse aus Ihren Kalendern anzeigen kann. S
 "Hide icon" = "Menüleistensymbol verbergen";
 "Highlight:" = "Hervorheben:";
 "Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal kann kein neues Ereignis erstellen, wenn es keinen Kalender gibt, den Sie bearbeiten dürfen.";
+/* Accessibility description for menu bar icon showing the Itsycal face */
+"Itsycal face" = "Itsycal-Gesicht";
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Settings › Privacy & Security › Calendars." = "Itsycal ist nützlicher, wenn Sie ihm erlauben, Ereignisse zu Ihren Kalendern hinzuzufügen. Sie können diese Einstellung unter Systemeinstellungen › Datenschutz & Sicherheit › Kalender anpassen.";
 "Itsycal must be run from the Applications folder in order to work properly.
 
@@ -93,6 +99,10 @@ Bitte beenden Sie Itsycal, es in den Programme-Ordner zu verschieben, und erneut
 /* Medium text size */
 "Medium" = "Mittel";
 "Menu Bar" = "Menüleiste";
+/* Accessibility label for menu bar datetime pattern text field */
+"Menu bar date and time pattern" = "Datum & Zeit Muster der Menüleiste";
+/* Accessibility label for menu bar icon picker */
+"Menu bar icon" = "Menüleistensymbol";
 "Monday" = "Montag";
 "Move Itsycal to the Applications folder" = "In den Programme-Ordner Itsycal verschieben";
 /* Repeat ends never */
@@ -109,6 +119,8 @@ Bitte beenden Sie Itsycal, es in den Programme-Ordner zu verschieben, und erneut
 "Open Calendar   ⌘O" = "Kalender öffnen   ⌘O";
 "Options" = "Optionen";
 "Outline current month" = "Aktuellen Monat umranden";
+/* Accessibility description for menu bar icon with the date in an outlined square */
+"Outlined date" = "Datum, umrandet";
 "Pin Itsycal   P" = "Itsycal soll sichtbar bleiben   P";
 "Quit Itsycal" = "Itsycal beenden";
 "Repeat:" = "Wiederholen:";

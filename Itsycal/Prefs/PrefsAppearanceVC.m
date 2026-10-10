@@ -83,7 +83,7 @@
     }
     NSSegmentedControl *sizePicker = [NSSegmentedControl segmentedControlWithImages:sizeImages trackingMode:NSSegmentSwitchTrackingSelectOne target:nil action:nil];
     for (NSInteger i = 0; i < 3; i++) [sizePicker setWidth:32 forSegment:i];
-    sizePicker.accessibilityLabel = NSLocalizedString(@"Size", @"Accessibility label for text size control");
+    [sizePicker.cell setAccessibilityLabel:NSLocalizedString(@"Size", @"Accessibility label for text size control")];
     [v addSubview:sizePicker];
 
     NSTextField *menubarLabel = label(NSLocalizedString(@"Menu Bar", @""));
@@ -97,13 +97,21 @@
     [v addSubview:separator0];
     [v addSubview:separator1];
 
-    // Icon picker segmented control
-    NSSegmentedControl *iconPicker = [NSSegmentedControl segmentedControlWithImages:@[
-        [NSImage imageNamed:@"menubaricon0"],
-        [NSImage imageNamed:@"menubaricon1"],
-        [NSImage imageNamed:@"menubaricon2"],
-        [NSImage imageNamed:@"menubaricon3"]
-    ] trackingMode:NSSegmentSwitchTrackingSelectOne target:nil action:nil];
+    // Icon picker segmented control. The images are copies so the
+    // accessibility descriptions don't change the shared images that
+    // the menu bar also uses.
+    NSArray<NSString *> *iconNames = @[NSLocalizedString(@"Filled date", @"Accessibility description for menu bar icon with the date in a filled square"),
+                                       NSLocalizedString(@"Outlined date", @"Accessibility description for menu bar icon with the date in an outlined square"),
+                                       NSLocalizedString(@"Calendar grid", @"Accessibility description for menu bar icon showing a grid of days"),
+                                       NSLocalizedString(@"Itsycal face", @"Accessibility description for menu bar icon showing the Itsycal face")];
+    NSMutableArray<NSImage *> *iconImages = [NSMutableArray new];
+    for (NSInteger i = 0; i < iconNames.count; i++) {
+        NSImage *image = [[NSImage imageNamed:[NSString stringWithFormat:@"menubaricon%ld", i]] copy];
+        image.accessibilityDescription = iconNames[i];
+        [iconImages addObject:image];
+    }
+    NSSegmentedControl *iconPicker = [NSSegmentedControl segmentedControlWithImages:iconImages trackingMode:NSSegmentSwitchTrackingSelectOne target:nil action:nil];
+    [iconPicker.cell setAccessibilityLabel:NSLocalizedString(@"Menu bar icon", @"Accessibility label for menu bar icon picker")];
     [iconPicker setSelectedSegment:0]; // will be set by binding below.
     [v addSubview:iconPicker];
 
@@ -119,6 +127,7 @@
     _dateTimeFormat.bezelStyle = NSTextFieldRoundedBezel;
     _dateTimeFormat.usesSingleLineMode = YES;
     _dateTimeFormat.delegate = self;
+    [_dateTimeFormat.cell setAccessibilityLabel:NSLocalizedString(@"Menu bar date and time pattern", @"Accessibility label for menu bar datetime pattern text field")];
     [v addSubview:_dateTimeFormat];
 
     // Datetime help button
@@ -138,6 +147,7 @@
                                         NSLocalizedString(@"Thursday", @""),
                                         NSLocalizedString(@"Friday", @""),
                                         NSLocalizedString(@"Saturday", @"")]];
+    [firstDayPopup.cell setAccessibilityTitleUIElement:firstDayLabel.cell];
     [v addSubview:firstDayPopup];
 
     // Highlight control

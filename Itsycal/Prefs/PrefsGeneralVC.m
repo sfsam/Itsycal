@@ -62,6 +62,7 @@
     // position preference to NSUserDefaults.
     [positionPopup itemAtIndex:0].tag = WindowPositionBelowMenuBarIcon;
     [positionPopup itemAtIndex:1].tag = WindowPositionTopRightOfScreen;
+    [positionPopup.cell setAccessibilityTitleUIElement:positionLabel.cell];
     [v addSubview:positionPopup];
 
     MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(_login, checkUpdates, beepBeep, shortcutLabel, shortcutView, positionLabel, positionPopup)];

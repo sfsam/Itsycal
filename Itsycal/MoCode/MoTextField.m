@@ -8,9 +8,54 @@
 
 #import "MoTextField.h"
 
+@interface MoTextField ()
+- (void)openLink;
+@end
+
+// VoiceOver sees the cell, not the text field, so the
+// cell reports links and opens them when pressed.
+@interface MoTextFieldCell : NSTextFieldCell
+@end
+
+@implementation MoTextFieldCell
+
+- (NSAccessibilityRole)accessibilityRole
+{
+    MoTextField *field = (MoTextField *)self.controlView;
+    return field.linkEnabled ? NSAccessibilityLinkRole : [super accessibilityRole];
+}
+
+- (NSString *)accessibilityLabel
+{
+    MoTextField *field = (MoTextField *)self.controlView;
+    return field.linkEnabled ? field.stringValue : [super accessibilityLabel];
+}
+
+- (BOOL)isAccessibilitySelectorAllowed:(SEL)selector
+{
+    // Only links can be pressed.
+    if (selector == @selector(accessibilityPerformPress)) {
+        return ((MoTextField *)self.controlView).linkEnabled;
+    }
+    return [super isAccessibilitySelectorAllowed:selector];
+}
+
+- (BOOL)accessibilityPerformPress
+{
+    [(MoTextField *)self.controlView openLink];
+    return YES;
+}
+
+@end
+
 @implementation MoTextField
 {
     NSColor *_originalColor;
+}
+
++ (Class)cellClass
+{
+    return [MoTextFieldCell class];
 }
 
 - (id)initWithFrame:(NSRect)frameRect
@@ -71,15 +116,7 @@
         NSPoint pointInWindow = [theEvent locationInWindow];
         NSPoint pointInView   = [self convertPoint:pointInWindow fromView:nil];
         if (NSPointInRect(pointInView, self.bounds)) {
-            NSString *urlString = (self.urlString) ? self.urlString : self.stringValue;
-            NSURL *url;
-            if ([urlString hasPrefix:@"http://"] || [urlString hasPrefix:@"https://"]) {
-                url = [NSURL URLWithString:urlString];
-            }
-            else {
-                url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", urlString]];
-            }
-            [[NSWorkspace sharedWorkspace] openURL:url];
+            [self openLink];
         }
     }
     else {
@@ -88,6 +125,19 @@
         }
         [super mouseUp:theEvent];
     }
+}
+
+- (void)openLink
+{
+    NSString *urlString = (self.urlString) ? self.urlString : self.stringValue;
+    NSURL *url;
+    if ([urlString hasPrefix:@"http://"] || [urlString hasPrefix:@"https://"]) {
+        url = [NSURL URLWithString:urlString];
+    }
+    else {
+        url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", urlString]];
+    }
+    [[NSWorkspace sharedWorkspace] openURL:url];
 }
 
 @end

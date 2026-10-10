@@ -40,6 +40,8 @@ Itsycal is more useful when it can display events from your calendars. You can c
 
 Itsycal은 캘린더 이벤트를 보여줄 수 있을 때 더 유용해요.";
 "Calendar access was denied." = "캘린더 접근을 허용해 주세요.";
+/* Accessibility description for menu bar icon showing a grid of days */
+"Calendar grid" = "캘린더 격자";
 "Cancel" = "취소";
 "Check for Updates…" = "업데이트 확인…";
 "Copy" = "복사";
@@ -66,6 +68,8 @@ Itsycal은 캘린더 이벤트를 보여줄 수 있을 때 더 유용해요.";
 "Every Month" = "매월";
 "Every Week" = "매주";
 "Every Year" = "매년";
+/* Accessibility description for menu bar icon with the date in a filled square */
+"Filled date" = "채워진 날짜";
 "First day of week:" = "한 주의 시작:";
 "Follow" = "팔로우";
 "Friday" = "금요일";
@@ -78,6 +82,8 @@ Itsycal은 캘린더 이벤트를 보여줄 수 있을 때 더 유용해요.";
 "Hide icon" = "아이콘 숨기기";
 "Highlight:" = "강조:";
 "Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "새 이벤트를 만들려면 수정할 수 있는 캘린더가 하나 이상 필요해요.";
+/* Accessibility description for menu bar icon showing the Itsycal face */
+"Itsycal face" = "Itsycal 얼굴";
 "Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Settings › Privacy & Security › Calendars." = "캘린더 접근을 허용해 주세요. Itsycal이 캘린더에 이벤트를 추가할 수 있으면 더 편하게 쓸 수 있어요.";
 "Itsycal must be run from the Applications folder in order to work properly.
 
@@ -93,6 +99,10 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 /* Medium text size */
 "Medium" = "중간";
 "Menu Bar" = "메뉴 막대";
+/* Accessibility label for menu bar datetime pattern text field */
+"Menu bar date and time pattern" = "메뉴 막대 날짜/시간 형식";
+/* Accessibility label for menu bar icon picker */
+"Menu bar icon" = "메뉴 막대 아이콘";
 "Monday" = "월요일";
 "Move Itsycal to the Applications folder" = "Itsycal을 응용 프로그램 폴더로 옮겨 주세요";
 /* Repeat ends never */
@@ -109,6 +119,8 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Open Calendar   ⌘O" = "캘린더 열기   ⌘O";
 "Options" = "옵션";
 "Outline current month" = "현재 월 외곽선 표시";
+/* Accessibility description for menu bar icon with the date in an outlined square */
+"Outlined date" = "윤곽선 날짜";
 "Pin Itsycal   P" = "Itsycal 고정하기   P";
 "Quit Itsycal" = "Itsycal 종료";
 "Repeat:" = "반복:";

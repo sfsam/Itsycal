@@ -55,6 +55,11 @@
     NSTextField *emojiTwitter = label(@"🙅‍♂️", NO);
     NSTextField *emojiDonate  = label(@"♥️", NO);
 
+    // The emoji are decorative, so VoiceOver skips them.
+    [emojiHelp.cell setAccessibilityElement:NO];
+    [emojiTwitter.cell setAccessibilityElement:NO];
+    [emojiDonate.cell setAccessibilityElement:NO];
+
     NSTextField *copyright1 = label(@"© 2012—2026", NO);
     MoTextField *copyright2 = label(@"mowglii.com", YES);
 

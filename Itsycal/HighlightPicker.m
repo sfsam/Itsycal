@@ -8,6 +8,7 @@
 @implementation HighlightPicker
 {
     NSGridView *_grid;
+    NSTextField *_label;
     NSArray<NSButton *> *_checkboxes;
 }
 
@@ -21,7 +22,9 @@
         // Make the _checkboxes array. Each checkbox has a
         // title that is the localized veryShortSymbol for a
         // day-of-the-week (dow). In English: S M T W T F S.
-        NSArray *dows = [[NSDateFormatter new] veryShortWeekdaySymbols];
+        NSDateFormatter *formatter = [NSDateFormatter new];
+        NSArray *dows = [formatter veryShortWeekdaySymbols];
+        NSArray *dowNames = [formatter standaloneWeekdaySymbols];
         NSMutableArray *checkboxes = [NSMutableArray new];
         for (NSInteger i = 0; i < 7; i++) {
             NSString *dow = [dows objectAtIndex:i];
@@ -32,22 +35,43 @@
             }
             NSButton *checkbox = [NSButton checkboxWithTitle:dow target:self action:@selector(didClickCheckbox:)];
             checkbox.imagePosition = NSImageBelow;
+            // VoiceOver reads the full day name since the
+            // one-letter titles repeat (S M T W T F S).
+            [checkbox.cell setAccessibilityLabel:[dowNames objectAtIndex:i]];
             [checkboxes addObject:checkbox];
         }
         _checkboxes = [NSArray arrayWithArray:checkboxes];
 
         // The _grid is a single row with the control's title (Highlight:)
         // and then seven checkboxes representing each day-of-the-week.
+        _label = [NSTextField labelWithString:NSLocalizedString(@"Highlight:", @"")];
         _grid = [NSGridView gridViewWithViews:@[
-            @[[NSTextField labelWithString:NSLocalizedString(@"Highlight:", @"")],
+            @[_label,
               _checkboxes[0], _checkboxes[1], _checkboxes[2], _checkboxes[3],
               _checkboxes[4], _checkboxes[5], _checkboxes[6]]]];
         _grid.rowAlignment = NSGridRowAlignmentFirstBaseline;
         _grid.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
         _grid.frame = self.bounds;
         [self addSubview:_grid];
+
+        // Expose the checkboxes to VoiceOver as a group titled by the label.
+        self.accessibilityElement = YES;
+        self.accessibilityRole = NSAccessibilityGroupRole;
+        self.accessibilityTitleUIElement = _label.cell;
     }
     return self;
+}
+
+- (NSArray *)accessibilityChildren
+{
+    // NSControl looks for accessibility children in its cell, and
+    // this control has no cell, so list them here. Use the grid's
+    // column order so VoiceOver reads the days as they are shown.
+    NSMutableArray *children = [NSMutableArray new];
+    for (NSInteger i = 0; i < _grid.numberOfColumns; i++) {
+        [children addObject:[_grid cellAtColumnIndex:i rowIndex:0].contentView];
+    }
+    return NSAccessibilityUnignoredChildren(children);
 }
 
 - (void)setWeekStartDOW:(NSInteger)weekStartDOW
