@@ -44,7 +44,7 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Check for Updates…" = "检查更新…";
 "Copy" = "复制";
 /* Dark theme name */
-"Dark" = "深色";
+"Dark Theme" = "深色主题";
 "Date & Time…" = "日期与时间…";
 "Datetime pattern" = "日期时间模式";
 "Delete…" = "删除…";
@@ -89,7 +89,7 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Large" = "大";
 "Launch at login" = "登录时启动";
 /* Light theme name */
-"Light" = "浅色";
+"Light Theme" = "浅色主题";
 /* Medium text size */
 "Medium" = "中";
 "Menu Bar" = "菜单栏";
@@ -130,10 +130,9 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Starts:" = "开始：";
 "Sunday" = "星期天";
 /* System theme name */
-"System" = "系统";
+"System Theme" = "系统主题";
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "找不到日历应用程序。";
-"Theme:" = "主题：";
 "There are no modifiable calendars." = "没有可修改的日历。";
 "Thursday" = "星期四";
 "Top right of screen" = "屏幕右上角";

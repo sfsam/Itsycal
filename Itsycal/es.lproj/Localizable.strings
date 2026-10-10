@@ -44,7 +44,7 @@ Itsycal es más útil cuando puede mostrar los eventos de sus calendarios. Puede
 "Check for Updates…" = "Buscar actualizaciones…";
 "Copy" = "Copiar";
 /* Dark theme name */
-"Dark" = "Oscuro";
+"Dark Theme" = "Tema oscuro";
 "Date & Time…" = "Fecha y hora…";
 "Datetime pattern" = "Patrón de fecha y hora";
 "Delete…" = "Eliminar…";
@@ -89,7 +89,7 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "Large" = "Grande";
 "Launch at login" = "Abrir automáticamente al iniciar sesión";
 /* Light theme name */
-"Light" = "Claro";
+"Light Theme" = "Tema claro";
 /* Medium text size */
 "Medium" = "Mediano";
 "Menu Bar" = "Barra de Menús";
@@ -130,10 +130,9 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "Starts:" = "Empieza:";
 "Sunday" = "Domingo";
 /* System theme name */
-"System" = "Sistema";
+"System Theme" = "Tema del sistema";
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "La aplicación del calendario no se pudo encontrar.";
-"Theme:" = "Tema:";
 "There are no modifiable calendars." = "No hay calendarios modificables.";
 "Thursday" = "Jueves";
 "Top right of screen" = "Arriba a la derecha de la pantalla";

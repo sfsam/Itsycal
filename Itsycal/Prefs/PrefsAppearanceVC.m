@@ -53,13 +53,10 @@
         return popup;
     };
 
-    // Theme label
-    NSTextField *themeLabel = label(NSLocalizedString(@"Theme:", @""));
-
-    // Theme popup
-    NSPopUpButton *themePopup = popup(@[NSLocalizedString(@"System", @"System theme name"),
-                                        NSLocalizedString(@"Light", @"Light theme name"),
-                                        NSLocalizedString(@"Dark", @"Dark theme name")],
+    // Theme popup. Each name includes "Theme" so the popup needs no label.
+    NSPopUpButton *themePopup = popup(@[NSLocalizedString(@"System Theme", @"System theme name"),
+                                        NSLocalizedString(@"Light Theme", @"Light theme name"),
+                                        NSLocalizedString(@"Dark Theme", @"Dark theme name")],
                                       @[@(ThemePreferenceSystem), @(ThemePreferenceLight), @(ThemePreferenceDark)],
                                       kThemePreference);
 
@@ -155,10 +152,9 @@
     NSButton *useColoredDots = chkbx(NSLocalizedString(@"Use colored dots", @""));
     NSButton *showWeeks = chkbx(NSLocalizedString(@"Show calendar weeks", @""));
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(themeLabel, themePopup, sizePicker, menubarLabel, calendarLabel, separator0, separator1, iconPicker, showMonth, showDayOfWeek, _dateTimeFormat, helpButton, _hideIcon, firstDayLabel, firstDayPopup, highlight, showWeeks, outlineMonth, showEventDots, useColoredDots)];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(themePopup, sizePicker, menubarLabel, calendarLabel, separator0, separator1, iconPicker, showMonth, showDayOfWeek, _dateTimeFormat, helpButton, _hideIcon, firstDayLabel, firstDayPopup, highlight, showWeeks, outlineMonth, showEventDots, useColoredDots)];
     [vfl :@"V:|-m-[themePopup]-m-[menubarLabel]-10-[iconPicker]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[firstDayPopup]-m-[highlight]-m-[outlineMonth]-[showEventDots]-[useColoredDots]-[showWeeks]-m-|"];
-    [vfl :@"H:|-m-[themeLabel]-[themePopup]" :NSLayoutFormatAlignAllFirstBaseline];
-    [vfl :@"H:[themePopup]-mm-[sizePicker]-(>=m)-|" :NSLayoutFormatAlignAllCenterY];
+    [vfl :@"H:|-m-[themePopup]-(>=mm)-[sizePicker]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[menubarLabel]-[separator0]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[calendarLabel]-[separator1]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[iconPicker]-m-|"];

@@ -44,7 +44,7 @@ Itsycal은 캘린더 이벤트를 보여줄 수 있을 때 더 유용해요.";
 "Check for Updates…" = "업데이트 확인…";
 "Copy" = "복사";
 /* Dark theme name */
-"Dark" = "어둡게";
+"Dark Theme" = "어두운 테마";
 "Date & Time…" = "날짜 및 시간…";
 "Datetime pattern" = "날짜/시간 형식";
 "Delete…" = "삭제…";
@@ -89,7 +89,7 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Large" = "크게";
 "Launch at login" = "로그인할 때 열기";
 /* Light theme name */
-"Light" = "밝게";
+"Light Theme" = "밝은 테마";
 /* Medium text size */
 "Medium" = "중간";
 "Menu Bar" = "메뉴 막대";
@@ -130,10 +130,9 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Starts:" = "시작:";
 "Sunday" = "일요일";
 /* System theme name */
-"System" = "시스템";
+"System Theme" = "시스템 테마";
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "캘린더 앱을 찾을 수 없어요.";
-"Theme:" = "테마:";
 "There are no modifiable calendars." = "수정할 수 있는 캘린더가 없어요.";
 "Thursday" = "목요일";
 "Top right of screen" = "화면 오른쪽 상단";

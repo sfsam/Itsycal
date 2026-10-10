@@ -44,7 +44,7 @@ Itsycal je užitečnější, pokud může zobrazovat události z vašich kalend
 "Check for Updates…" = "Vyhledat aktualizace…";
 "Copy" = "Kopírovat";
 /* Dark theme name */
-"Dark" = "Tmavé";
+"Dark Theme" = "Tmavé téma";
 "Date & Time…" = "Datum a čas…";
 "Datetime pattern" = "Formát data a času";
 "Delete…" = "Smazat…";
@@ -89,7 +89,7 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Large" = "Velká";
 "Launch at login" = "Otevřít při přihlášení";
 /* Light theme name */
-"Light" = "Světlé";
+"Light Theme" = "Světlé téma";
 /* Medium text size */
 "Medium" = "Střední";
 "Menu Bar" = "Řádek nabídek";
@@ -130,10 +130,9 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Starts:" = "Začíná:";
 "Sunday" = "neděle";
 /* System theme name */
-"System" = "Systémové";
+"System Theme" = "Systémové téma";
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "Aplikaci Kalendář se nepodařilo najít.";
-"Theme:" = "Téma:";
 "There are no modifiable calendars." = "Neexistují žádné kalendáře, které by bylo možné upravovat.";
 "Thursday" = "čtvrtek";
 "Top right of screen" = "Vpravo nahoře na obrazovce";
