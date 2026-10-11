@@ -414,6 +414,16 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         _prefsWC.contentViewController = prefsVC;
         _prefsWC.window.contentView.wantsLayer = YES;
         [_prefsWC.window center];
+        // -center runs before the toolbar is added, and taller tabs
+        // grow the window downward, so nudge it up by an empirical
+        // amount. Keep the top edge below the menu bar.
+        NSRect frame = _prefsWC.window.frame;
+        frame.origin.y += 40;
+        NSScreen *screen = _prefsWC.window.screen;
+        if (screen != nil) {
+            frame.origin.y = MIN(frame.origin.y, NSMaxY(screen.visibleFrame) - NSHeight(frame));
+        }
+        [_prefsWC.window setFrameOrigin:frame.origin];
     }
     return _prefsWC;
 }
