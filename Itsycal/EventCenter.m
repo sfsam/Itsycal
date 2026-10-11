@@ -10,8 +10,46 @@
 #import <AppKit/NSWorkspace.h>
 #import "EventCenter.h"
 
-// NSUserDefaults key for array of selected calendar IDs.
+// NSUserDefaults keys for selected calendars.
 static NSString *kSelectedCalendars = @"SelectedCalendars";
+// Calendar identifiers are local to EventKit and can change after an account
+// is removed and added again. Keep enough metadata to restore the selection.
+static NSString * const kSelectedCalendarDescriptors = @"SelectedCalendarDescriptors";
+static const NSTimeInterval kSelectedCalendarDescriptorTTL = 7.0 * 24.0 * 60.0 * 60.0;
+
+static NSDictionary *CalendarDescriptor(EKCalendar *calendar)
+{
+    EKSource *source = calendar.source;
+    return @{
+        @"sourceIdentifier": source.sourceIdentifier ?: @"",
+        @"sourceTitle": source.title ?: @"",
+        @"calendarTitle": calendar.title ?: @"",
+        @"calendarType": @(calendar.type),
+        @"lastSeen": NSDate.date,
+    };
+}
+
+static BOOL CalendarMatchesDescriptor(EKCalendar *calendar, NSDictionary *descriptor)
+{
+    if (![descriptor isKindOfClass:[NSDictionary class]]) return NO;
+
+    NSString *calendarTitle = descriptor[@"calendarTitle"];
+    NSNumber *calendarType = descriptor[@"calendarType"];
+    if (![calendarTitle isEqualToString:calendar.title]
+        || calendarType.integerValue != calendar.type) {
+        return NO;
+    }
+
+    NSString *sourceIdentifier = descriptor[@"sourceIdentifier"];
+    NSString *currentSourceIdentifier = calendar.source.sourceIdentifier;
+    if (sourceIdentifier.length > 0 && currentSourceIdentifier.length > 0
+        && [sourceIdentifier isEqualToString:currentSourceIdentifier]) {
+        return YES;
+    }
+
+    NSString *sourceTitle = descriptor[@"sourceTitle"];
+    return sourceTitle.length > 0 && [sourceTitle isEqualToString:calendar.source.title];
+}
 
 // Properties auto-synthesized.
 @implementation CalendarInfo @end
@@ -118,12 +156,17 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     // The user has selected/unselected a calendar in Prefs.
     // Update the kSelectedCalendars array in NSUserDefaults.
     __block NSMutableArray *selectedCalendars = [NSMutableArray new];
+    __block EKCalendar *changedCalendar = nil;
+    NSMutableArray *selectedDescriptors = [[[NSUserDefaults standardUserDefaults]
+                                             arrayForKey:kSelectedCalendarDescriptors] mutableCopy];
+    if (!selectedDescriptors) selectedDescriptors = [NSMutableArray new];
     dispatch_sync(_queueIsol2, ^{
         for (id obj in self->_sourcesAndCalendars) {
             if ([obj isKindOfClass:[CalendarInfo class]]) {
                 CalendarInfo *info = obj;
                 if ([info.calendar.calendarIdentifier isEqualToString:identifier]) {
                     info.selected = selected;
+                    changedCalendar = info.calendar;
                 }
                 if (info.selected) {
                     [selectedCalendars addObject:info.calendar.calendarIdentifier];
@@ -131,7 +174,15 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
             }
         }
     });
+
+    // Replace this calendar's descriptor, preserving unavailable calendars.
+    NSIndexSet *matchingIndexes = [selectedDescriptors indexesOfObjectsPassingTest:^BOOL(NSDictionary *descriptor, NSUInteger idx, BOOL *stop) {
+        return changedCalendar && CalendarMatchesDescriptor(changedCalendar, descriptor);
+    }];
+    if (matchingIndexes.count > 0) [selectedDescriptors removeObjectsAtIndexes:matchingIndexes];
+    if (selected && changedCalendar) [selectedDescriptors addObject:CalendarDescriptor(changedCalendar)];
     [[NSUserDefaults standardUserDefaults] setObject:selectedCalendars forKey:kSelectedCalendars];
+    [[NSUserDefaults standardUserDefaults] setObject:selectedDescriptors forKey:kSelectedCalendarDescriptors];
     
     // Filter events based on new calendar selection.
     dispatch_async(_queueWork, ^{
@@ -207,6 +258,18 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSSet *selectedCalendars = [NSSet setWithArray:[defaults arrayForKey:kSelectedCalendars]];
+    NSArray *storedDescriptors = [defaults arrayForKey:kSelectedCalendarDescriptors];
+    NSDate *descriptorCutoff = [NSDate dateWithTimeIntervalSinceNow:-kSelectedCalendarDescriptorTTL];
+    NSMutableArray *selectedDescriptors = [NSMutableArray new];
+    for (NSDictionary *descriptor in storedDescriptors) {
+        NSDate *lastSeen = descriptor[@"lastSeen"];
+        // Keep legacy descriptors until their calendar is seen and refreshed.
+        if (!lastSeen || [lastSeen compare:descriptorCutoff] != NSOrderedAscending) {
+            [selectedDescriptors addObject:descriptor];
+        }
+    }
+    NSMutableArray *updatedSelectedCalendars = [NSMutableArray arrayWithArray:selectedCalendars.allObjects ?: @[]];
+    NSMutableArray *updatedSelectedDescriptors = [selectedDescriptors mutableCopy];
     
     // Make an array of source titles and calendar info.
     NSMutableArray *sourcesAndCalendars = [NSMutableArray new];
@@ -229,9 +292,34 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
         }
         CalendarInfo *calInfo = [CalendarInfo new];
         calInfo.calendar = calendar;
-        calInfo.selected = selectedCalendars ? [selectedCalendars containsObject:calendar.calendarIdentifier] : NO;
+        BOOL selectedByIdentifier = [selectedCalendars containsObject:calendar.calendarIdentifier];
+        calInfo.selected = selectedByIdentifier;
+        if (!calInfo.selected) {
+            for (NSDictionary *descriptor in selectedDescriptors) {
+                if (CalendarMatchesDescriptor(calendar, descriptor)) {
+                    calInfo.selected = YES;
+                    break;
+                }
+            }
+        }
+        if (calInfo.selected) {
+            if (![updatedSelectedCalendars containsObject:calendar.calendarIdentifier]) {
+                [updatedSelectedCalendars addObject:calendar.calendarIdentifier];
+            }
+            NSDictionary *descriptor = CalendarDescriptor(calendar);
+            NSUInteger descriptorIndex = [updatedSelectedDescriptors indexOfObjectPassingTest:^BOOL(NSDictionary *existing, NSUInteger idx, BOOL *stop) {
+                return CalendarMatchesDescriptor(calendar, existing);
+            }];
+            if (descriptorIndex == NSNotFound) {
+                [updatedSelectedDescriptors addObject:descriptor];
+            } else {
+                [updatedSelectedDescriptors replaceObjectAtIndex:descriptorIndex withObject:descriptor];
+            }
+        }
         [sourcesAndCalendars addObject:calInfo];
     }
+    [defaults setObject:updatedSelectedCalendars forKey:kSelectedCalendars];
+    [defaults setObject:updatedSelectedDescriptors forKey:kSelectedCalendarDescriptors];
     dispatch_async(_queueIsol2, ^{
         self->_sourcesAndCalendars = [NSArray arrayWithArray:sourcesAndCalendars];
     });
