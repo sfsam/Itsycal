@@ -59,6 +59,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 @implementation AgendaViewController
 {
     NSPopover *_popover;
+    EventInfo *_popoverEventInfo; // event shown in _popover
 }
 
 - (void)loadView
@@ -181,42 +182,57 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Invoked just before menu is to be displayed.
     // Show a context menu ONLY for non-group rows.
     [menu removeAllItems];
-    if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
-        [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
-    [menu addItemWithTitle:NSLocalizedString(@"Open Calendar", nil) action:@selector(showCalendarApp:) keyEquivalent:@""];
-    [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
-    EventInfo *info = self.events[_tv.clickedRow];
+    NSInteger row = _tv.clickedRow;
+    if (row < 0 || [self tableView:_tv isGroupRow:row] ||
+        [self tableView:_tv isEmptyEventRow:row]) return;
+    // Capture what each item acts on now, in representedObject.
+    // self.events can be replaced (e.g. after a calendar change) while
+    // the menu is open, so the actions must not look up the row again.
+    EventInfo *info = self.events[row];
+    NSMenuItem *item;
+    item = [menu addItemWithTitle:NSLocalizedString(@"Open Calendar", nil) action:@selector(showCalendarApp:) keyEquivalent:@""];
+    item.representedObject = [self dateForEventRow:row];
+    item = [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
+    item.representedObject = [self pasteboardTextForEventRow:row];
     // Only offer links that can be shared, not app links like zoommtg://.
     NSString *scheme = info.meetingURL.scheme.lowercaseString;
     if ([scheme isEqualToString:@"https"] || [scheme isEqualToString:@"http"]) {
-        NSMenuItem *item = [menu addItemWithTitle:NSLocalizedString(@"Copy Meeting Link", nil) action:@selector(copyMeetingURLToPasteboard:) keyEquivalent:@""];
+        item = [menu addItemWithTitle:NSLocalizedString(@"Copy Meeting Link", nil) action:@selector(copyMeetingURLToPasteboard:) keyEquivalent:@""];
         item.representedObject = info.meetingURL;
     }
     if (info.event.calendar.allowsContentModifications) {
-        NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete…", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
-        item.tag = _tv.clickedRow;
+        item = [menu addItemWithTitle:NSLocalizedString(@"Delete…", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
+        item.representedObject = info;
     }
     // Never show menu item images, whatever the system configuration.
-    for (NSMenuItem *item in menu.itemArray) {
-        item.preferredImageVisibility = NSMenuItemImageVisibilityHidden;
+    for (NSMenuItem *menuItem in menu.itemArray) {
+        menuItem.preferredImageVisibility = NSMenuItemImageVisibilityHidden;
     }
 }
 
 #pragma mark -
 #pragma mark Copy
 
-- (void)copyEventToPasteboard:(id)sender
+- (void)copyEventToPasteboard:(NSMenuItem *)sender
 {
-    if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
+    // Text was captured when the menu was built. See -menuNeedsUpdate:.
+    NSString *eventText = sender.representedObject;
+    if (eventText == nil) return;
+    [[NSPasteboard generalPasteboard] clearContents];
+    [[NSPasteboard generalPasteboard] writeObjects:@[eventText]];
+}
+
+- (NSString *)pasteboardTextForEventRow:(NSInteger)row
+{
     static NSDateIntervalFormatter *intervalFormatter = nil;
     if (intervalFormatter == nil) {
         intervalFormatter = [NSDateIntervalFormatter new];
         intervalFormatter.dateStyle = NSDateIntervalFormatterMediumStyle;
     }
     
-    AgendaEventCell *cell = [_tv viewAtColumn:0 row:_tv.clickedRow makeIfNecessary:NO];
+    AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
     
-    if (cell == nil) return; // should not happen
+    if (cell == nil) return nil; // should not happen
     
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
     // All-day events don't show time.
@@ -231,14 +247,12 @@ static NSString *kEventCellIdentifier = @"EventCell";
                            duration,
                            cell.locationTextField.stringValue,
                            cell.locationTextField.stringValue.length > 0 ? @"\n" : @""];
-    [[NSPasteboard generalPasteboard] clearContents];
-    [[NSPasteboard generalPasteboard] writeObjects:@[eventText]];
+    return eventText;
 }
 
 - (void)copyMeetingURLToPasteboard:(NSMenuItem *)sender
 {
-    // URL was captured when the menu was built, so a reload of
-    // self.events while the menu is open can't change what's copied.
+    // URL was captured when the menu was built. See -menuNeedsUpdate:.
     NSURL *url = sender.representedObject;
     if (url == nil) return;
     // Provide both URL and plain-text types. Writing the NSURL alone
@@ -276,9 +290,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     AgendaPopoverVC *popoverVC = (AgendaPopoverVC *)_popover.contentViewController;
     [popoverVC setNsCal:self.nsCal];
     [popoverVC populateWithEventInfo:cell.eventInfo];
+    // Keep the event itself, not its row. self.events can be replaced
+    // while the popover is open. See -deleteEvent:.
+    _popoverEventInfo = cell.eventInfo;
     
     if (cell.eventInfo.event.calendar.allowsContentModifications) {
-        popoverVC.btnDelete.tag = row;
         popoverVC.btnDelete.target = self;
         popoverVC.btnDelete.action = @selector(deleteEvent:);
         unichar backspaceKey = NSBackspaceCharacter;
@@ -309,26 +325,35 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)showCalendarApp:(id)sender
 {
-    if (_tv.clickedRow == -1 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
-
-    // Work backwards from the clicked row (which is an EventInfo row)
-    // to find the parent NSDate row. We do this instead of just getting
-    // the clicked event's startDate because spanning events might start
-    // on a different date from the one that was clicked.
     NSDate *clickedDate = nil;
-    NSInteger row = _tv.clickedRow;
-    while (row > 0) {
-        row = row - 1;
-        id obj = self.events[row];
-        if ([obj isKindOfClass:[NSDate class]]) {
-            clickedDate = obj;
-            break;
-        }
+    if ([sender isKindOfClass:[NSMenuItem class]]) {
+        // Date was captured when the menu was built. See -menuNeedsUpdate:.
+        clickedDate = [(NSMenuItem *)sender representedObject];
+    } else {
+        // Double click; clickedRow is current.
+        if (_tv.clickedRow == -1 || [self tableView:_tv isGroupRow:_tv.clickedRow]) return;
+        clickedDate = [self dateForEventRow:_tv.clickedRow];
     }
     if (!clickedDate) return; // should never happen
     if (self.delegate && [self.delegate respondsToSelector:@selector(agendaShowCalendarAppAtDate:)]) {
         [self.delegate agendaShowCalendarAppAtDate:clickedDate];
     }
+}
+
+- (NSDate *)dateForEventRow:(NSInteger)row
+{
+    // Work backwards from the event row (which is an EventInfo row)
+    // to find the parent NSDate row. We do this instead of just getting
+    // the event's startDate because spanning events might start
+    // on a different date from the one that was clicked.
+    while (row > 0) {
+        row = row - 1;
+        id obj = self.events[row];
+        if ([obj isKindOfClass:[NSDate class]]) {
+            return obj;
+        }
+    }
+    return nil;
 }
 
 #pragma mark -
@@ -451,7 +476,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
 - (void)deleteEvent:(id)sender
 {
-    NSInteger row = -1;
+    // Act on a captured EventInfo, not a row index. self.events can be
+    // replaced while the menu or popover is open.
+    EventInfo *info = nil;
     if ([sender isKindOfClass:[NSButton class]]) {
         NSButton *button = (NSButton *)sender;
         // The delete button disappears(?!?!) after being clicked (macOS 11).
@@ -460,13 +487,15 @@ static NSString *kEventCellIdentifier = @"EventCell";
         // So we insanely toggle bordered on/off to make sure the button shows.
         button.bordered = YES;
         button.bordered = NO;
-        row = button.tag;
+        info = _popoverEventInfo;
     } else if ([sender isKindOfClass:[NSMenuItem class]]) {
-        row = [(NSMenuItem *)sender tag];
+        info = [(NSMenuItem *)sender representedObject];
     }
-    if (row < 0) return;
+    if (info.event == nil || !info.event.calendar.allowsContentModifications) return;
+    // The event may have changed or been deleted elsewhere since the menu
+    // or popover opened. Refresh it; NO means it no longer exists.
+    if (![info.event refresh]) return;
     if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToDeleteEvent:)]) {
-        EventInfo *info = self.events[row];
         [self.delegate agendaWantsToDeleteEvent:info.event];
     }
 }
