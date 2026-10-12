@@ -44,7 +44,7 @@ Itsycal은 캘린더 이벤트를 보여줄 수 있을 때 더 유용해요.";
 "Calendar grid" = "캘린더 격자";
 "Cancel" = "취소";
 "Check for Updates…" = "업데이트 확인…";
-"Copy Event Details" = "이벤트 세부 정보 복사";
+"Copy" = "복사";
 "Copy Meeting Link" = "미팅 링크 복사";
 /* Dark theme name */
 "Dark Theme" = "어두운 테마";

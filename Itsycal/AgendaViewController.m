@@ -184,10 +184,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
         [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
     [menu addItemWithTitle:NSLocalizedString(@"Open Calendar", nil) action:@selector(showCalendarApp:) keyEquivalent:@""];
+    [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
     EventInfo *info = self.events[_tv.clickedRow];
-    [menu addItemWithTitle:NSLocalizedString(@"Copy Event Details", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
     if (info.meetingURL) {
-        [menu addItemWithTitle:NSLocalizedString(@"Copy Meeting Link", nil) action:@selector(copyMeetingURLToPasteboard:) keyEquivalent:@""];
+        NSMenuItem *item = [menu addItemWithTitle:NSLocalizedString(@"Copy Meeting Link", nil) action:@selector(copyMeetingURLToPasteboard:) keyEquivalent:@""];
+        item.representedObject = info.meetingURL;
     }
     if (info.event.calendar.allowsContentModifications) {
         NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete…", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
@@ -232,14 +233,19 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [[NSPasteboard generalPasteboard] writeObjects:@[eventText]];
 }
 
-- (void)copyMeetingURLToPasteboard:(id)sender
+- (void)copyMeetingURLToPasteboard:(NSMenuItem *)sender
 {
-    if (_tv.clickedRow < 0 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
-        [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
-    EventInfo *info = self.events[_tv.clickedRow];
-    if (info.meetingURL == nil) return;
+    // URL was captured when the menu was built, so a reload of
+    // self.events while the menu is open can't change what's copied.
+    NSURL *url = sender.representedObject;
+    if (url == nil) return;
+    // Provide both URL and plain-text types. Writing the NSURL alone
+    // omits plain text, so it won't paste into plain-text fields.
+    NSPasteboardItem *item = [NSPasteboardItem new];
+    [item setString:url.absoluteString forType:NSPasteboardTypeURL];
+    [item setString:url.absoluteString forType:NSPasteboardTypeString];
     [[NSPasteboard generalPasteboard] clearContents];
-    [[NSPasteboard generalPasteboard] writeObjects:@[info.meetingURL.absoluteString]];
+    [[NSPasteboard generalPasteboard] writeObjects:@[item]];
 }
 
 #pragma mark -

@@ -456,7 +456,7 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                 info.zoomURL = url;
             }
             if (info.zoomURL) {
-                info.meetingURL = result.URL;
+                info.meetingURL = url;
                 *stop = YES;
             }
         }];
