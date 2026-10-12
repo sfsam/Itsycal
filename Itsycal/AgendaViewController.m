@@ -186,7 +186,9 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [menu addItemWithTitle:NSLocalizedString(@"Open Calendar", nil) action:@selector(showCalendarApp:) keyEquivalent:@""];
     [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
     EventInfo *info = self.events[_tv.clickedRow];
-    if (info.meetingURL) {
+    // Only offer links that can be shared, not app links like zoommtg://.
+    NSString *scheme = info.meetingURL.scheme.lowercaseString;
+    if ([scheme isEqualToString:@"https"] || [scheme isEqualToString:@"http"]) {
         NSMenuItem *item = [menu addItemWithTitle:NSLocalizedString(@"Copy Meeting Link", nil) action:@selector(copyMeetingURLToPasteboard:) keyEquivalent:@""];
         item.representedObject = info.meetingURL;
     }
@@ -578,7 +580,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
     // Virtual meeting button.
     cell.btnVideo.enabled = NO;
-    cell.btnVideo.hidden = info.zoomURL ? NO : YES;
+    cell.btnVideo.hidden = info.meetingURL ? NO : YES;
     cell.btnVideo.actionBlock = nil;
     cell.btnVideo.contentTintColor = nil;
 
@@ -601,14 +603,14 @@ static NSString *kEventCellIdentifier = @"EventCell";
     // Enable the zoom button 15 minutes prior to event start until end.
     // If the user prefers, button can remain enabled indefinitely.
     NSDate *fifteenMinutesPrior = MeetingJoinableThreshold(info.event, self.nsCal);
-    if (info.zoomURL && !info.event.isAllDay
+    if (info.meetingURL && !info.event.isAllDay
         && [fifteenMinutesPrior compare:NSDate.date] == NSOrderedAscending
         && ([NSDate.date compare:info.event.endDate] == NSOrderedAscending
             || [NSUserDefaults.standardUserDefaults boolForKey:kEnableMeetingButtonIndefinitely])) {
         cell.btnVideo.enabled = YES;
         cell.btnVideo.contentTintColor = Theme.todayCellColor;
         cell.btnVideo.actionBlock = ^{
-            [NSWorkspace.sharedWorkspace openURL:info.zoomURL];
+            [NSWorkspace.sharedWorkspace openURL:AppLinkForMeetingURL(info.meetingURL)];
         };
     }
 }

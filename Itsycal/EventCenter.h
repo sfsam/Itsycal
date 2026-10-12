@@ -93,6 +93,12 @@
 @property (nonatomic) BOOL isStartDate; // event starts, but doesn't end, on this date
 @property (nonatomic) BOOL isEndDate;   // event ends, but doesn't start, on this date
 @property (nonatomic) BOOL isAllDay;    // event is all-day, or spans across this date
-@property (nonatomic) NSURL *zoomURL;   // Zoom, Google Meet, Microsoft Teams, etc. URL
-@property (nonatomic) NSURL *meetingURL; // Original meeting URL, before app-specific conversion
+// Zoom, Google Meet, Microsoft Teams, etc. URL found in the event's
+// location, URL or notes, or nil. Set by EventCenter on its background
+// queue before the EventInfo is published, and never changed after that.
+@property (nonatomic, readonly) NSURL *meetingURL;
 @end
+
+// meetingURL converted to an app link (zoommtg://, msteams://, chime://)
+// if the meeting's app is installed; otherwise meetingURL unchanged.
+NSURL *AppLinkForMeetingURL(NSURL *meetingURL);

@@ -13,9 +13,17 @@
 // NSUserDefaults key for array of selected calendar IDs.
 static NSString *kSelectedCalendars = @"SelectedCalendars";
 
+// meetingURL is readonly in the header; only EventCenter sets it.
+@interface EventInfo ()
+@property (nonatomic, readwrite) NSURL *meetingURL;
+@property (nonatomic) BOOL didCheckMeetingURL; // _queueWork only
+@end
+
 // Properties auto-synthesized.
 @implementation CalendarInfo @end
 @implementation EventInfo    @end
+
+static NSURL *MeetingURLForEvent(EKEvent *event); // see below
 
 @implementation EventCenter {                      // Accessed on:
     EKEventStore         *_store;
@@ -365,7 +373,14 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
                 // Check if there is a virtual meeting (e.g. Zoom) link.
                 // We limit this check to filtered events in an
                 // attempt to limit how much text processing we do.
-                [self checkForZoomURL:info];
+                // Check each EventInfo only once, before it is first
+                // published below. After that the main thread may be
+                // reading it, so it must not be written again. Store
+                // changes trigger a refetch, which creates new EventInfos.
+                if (!info.didCheckMeetingURL) {
+                    info.meetingURL = MeetingURLForEvent(info.event);
+                    info.didCheckMeetingURL = YES;
+                }
                 [filteredEventsForDate[date] addObject:info];
             }
         }
@@ -381,93 +396,112 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
     });
 }
 
-- (void)checkForZoomURL:(EventInfo *)info {
-    static NSDataDetector *linkDetector = nil;
-    if (linkDetector == nil) {
-        linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
-    }
-    void (^GetZoomURL)(NSString*) = ^(NSString *text) {
-        [linkDetector enumerateMatchesInString:text options:kNilOptions range:NSMakeRange(0, text.length) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
-            NSURL *url = result.URL;
-            NSString *link = url.absoluteString;
-            // Match on the URL's host (and scheme, for app-link URIs), not on
-            // the raw URL string. A substring check like
-            // [link containsString:@"zoom.us/j/"] would also match a hostile
-            // link such as https://evil.example/zoom.us/j/123.
-            NSString *host   = url.host.lowercaseString ?: @"";
-            NSString *path   = url.path ?: @"";
-            NSString *scheme = url.scheme.lowercaseString ?: @"";
-            BOOL (^hostIs)(NSString *) = ^BOOL(NSString *domain) {
-                return [host isEqualToString:domain] || [host hasSuffix:[@"." stringByAppendingString:domain]];
-            };
-            BOOL (^hostHasPrefix)(NSString *) = ^BOOL(NSString *prefix) {
-                return [host hasPrefix:prefix];
-            };
-            if (   (hostIs(@"zoom.us") || hostIs(@"zoomgov.com"))
-                && ([path hasPrefix:@"/j/"] || [path hasPrefix:@"/s/"]
-                    || [path hasPrefix:@"/w/"] || [path hasPrefix:@"/my/"])) {
-                info.zoomURL = url;
-                // Test if user has the Zoom app and, if so, create a Zoom app link.
-                if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"zoommtg://"]]) {
-                    link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"zoommtg://"];
-                    link = [link stringByReplacingOccurrencesOfString:@"?" withString:@"&"];
-                    link = [link stringByReplacingOccurrencesOfString:@"/j/" withString:@"/join?confno="];
-                    link = [link stringByReplacingOccurrencesOfString:@"/s/" withString:@"/join?confno="];
-                    link = [link stringByReplacingOccurrencesOfString:@"/w/" withString:@"/join?confno="];
-                    NSURL *appLink = [NSURL URLWithString:link];
-                    if (appLink) info.zoomURL = appLink;
-                }
-            }
-            else if (hostIs(@"teams.microsoft.com") && [path hasPrefix:@"/l/meetup-join/"]) {
-                info.zoomURL = url;
-                // Test if user has the Teams app and, if so, create a Teams app link.
-                if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"msteams://"]]) {
-                    link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"msteams://"];
-                    NSURL *appLink = [NSURL URLWithString:link];
-                    if (appLink) info.zoomURL = appLink;
-                }
-            }
-            else if (hostIs(@"chime.aws")) {
-                info.zoomURL = url;
-                // Test if user has the Chime app, and if so, create a Chime app link.
-                if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"chime://"]]) {
-                    link = [link stringByReplacingOccurrencesOfString:@"https://chime.aws/" withString:@"chime://meeting?pin="];
-                    NSURL *appLink = [NSURL URLWithString:link];
-                    if (appLink) info.zoomURL = appLink;
-                }
-            }
-            else if (   [scheme isEqualToString:@"zoommtg"]
-                     || [scheme isEqualToString:@"msteams"]
-                     || [scheme isEqualToString:@"chime"]
-                     || hostIs(@"meet.google.com")
-                     || hostIs(@"hangouts.google.com")
-                     || hostIs(@"webex.com")
-                     || (hostIs(@"gotomeeting.com") && [path hasPrefix:@"/join"])
-                     || (hostIs(@"ringcentral.com") && [path hasPrefix:@"/j"])
-                     || (hostIs(@"bigbluebutton.org") && [path hasPrefix:@"/gl"])
-                     || ([scheme isEqualToString:@"https"] && (hostHasPrefix(@"bigbluebutton.") || hostHasPrefix(@"bbb.")))
-                     || hostIs(@"meet.jit.si")
-                     || hostIs(@"indigo.collocall.de")
-                     || hostIs(@"public.senfcall.de")
-                     || (hostIs(@"facetime.apple.com") && [path hasPrefix:@"/join"])
-                     || (hostIs(@"workplace.com") && [path hasPrefix:@"/meet"])
-                     || (hostIs(@"youcanbook.me") && [path hasPrefix:@"/zoom/"])
-                     || (hostIs(@"vk.com") && [path hasPrefix:@"/call/"])) {
-                info.zoomURL = url;
-            }
-            if (info.zoomURL) {
-                info.meetingURL = url;
-                *stop = YES;
-            }
-        }];
-    };
-    info.zoomURL = nil;
-    info.meetingURL = nil;
-    if (info.event.location) GetZoomURL(info.event.location);
-    if (info.zoomURL) return;
-    if (info.event.URL) GetZoomURL(info.event.URL.absoluteString);
-    if (info.zoomURL) return;
-    if (info.event.hasNotes && info.event.notes) GetZoomURL(info.event.notes);
+@end
+
+// =========================================================================
+// Meeting links
+// =========================================================================
+
+static BOOL HostIs(NSString *host, NSString *domain)
+{
+    return [host isEqualToString:domain] || [host hasSuffix:[@"." stringByAppendingString:domain]];
 }
 
-@end
+// Return the first virtual meeting (e.g. Zoom) link in text, or nil.
+static NSURL *MeetingURLInText(NSString *text)
+{
+    static NSDataDetector *linkDetector = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
+    });
+    __block NSURL *meetingURL = nil;
+    [linkDetector enumerateMatchesInString:text options:kNilOptions range:NSMakeRange(0, text.length) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
+        NSURL *url = result.URL;
+        // Match on the URL's host (and scheme, for app-link URIs), not on
+        // the raw URL string. A substring check like
+        // [link containsString:@"zoom.us/j/"] would also match a hostile
+        // link such as https://evil.example/zoom.us/j/123.
+        NSString *host   = url.host.lowercaseString ?: @"";
+        NSString *path   = url.path ?: @"";
+        NSString *scheme = url.scheme.lowercaseString ?: @"";
+        BOOL (^hostIs)(NSString *) = ^BOOL(NSString *domain) {
+            return HostIs(host, domain);
+        };
+        BOOL (^hostHasPrefix)(NSString *) = ^BOOL(NSString *prefix) {
+            return [host hasPrefix:prefix];
+        };
+        if (   (   (hostIs(@"zoom.us") || hostIs(@"zoomgov.com"))
+                && ([path hasPrefix:@"/j/"] || [path hasPrefix:@"/s/"]
+                    || [path hasPrefix:@"/w/"] || [path hasPrefix:@"/my/"]))
+            || (hostIs(@"teams.microsoft.com") && [path hasPrefix:@"/l/meetup-join/"])
+            || hostIs(@"chime.aws")
+            || [scheme isEqualToString:@"zoommtg"]
+            || [scheme isEqualToString:@"msteams"]
+            || [scheme isEqualToString:@"chime"]
+            || hostIs(@"meet.google.com")
+            || hostIs(@"hangouts.google.com")
+            || hostIs(@"webex.com")
+            || (hostIs(@"gotomeeting.com") && [path hasPrefix:@"/join"])
+            || (hostIs(@"ringcentral.com") && [path hasPrefix:@"/j"])
+            || (hostIs(@"bigbluebutton.org") && [path hasPrefix:@"/gl"])
+            || ([scheme isEqualToString:@"https"] && (hostHasPrefix(@"bigbluebutton.") || hostHasPrefix(@"bbb.")))
+            || hostIs(@"meet.jit.si")
+            || hostIs(@"indigo.collocall.de")
+            || hostIs(@"public.senfcall.de")
+            || (hostIs(@"facetime.apple.com") && [path hasPrefix:@"/join"])
+            || (hostIs(@"workplace.com") && [path hasPrefix:@"/meet"])
+            || (hostIs(@"youcanbook.me") && [path hasPrefix:@"/zoom/"])
+            || (hostIs(@"vk.com") && [path hasPrefix:@"/call/"])) {
+            meetingURL = url;
+            *stop = YES;
+        }
+    }];
+    return meetingURL;
+}
+
+NSURL *AppLinkForMeetingURL(NSURL *meetingURL)
+{
+    NSString *link = meetingURL.absoluteString;
+    NSString *host = meetingURL.host.lowercaseString ?: @"";
+    NSString *path = meetingURL.path ?: @"";
+    NSURL *appLink = nil;
+    // Personal Zoom links (/my/) are left as is; the rewrite below
+    // doesn't handle them and would produce a broken app link.
+    if (   (HostIs(host, @"zoom.us") || HostIs(host, @"zoomgov.com"))
+        && ([path hasPrefix:@"/j/"] || [path hasPrefix:@"/s/"] || [path hasPrefix:@"/w/"])) {
+        // Test if user has the Zoom app and, if so, create a Zoom app link.
+        if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"zoommtg://"]]) {
+            link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"zoommtg://"];
+            link = [link stringByReplacingOccurrencesOfString:@"?" withString:@"&"];
+            link = [link stringByReplacingOccurrencesOfString:@"/j/" withString:@"/join?confno="];
+            link = [link stringByReplacingOccurrencesOfString:@"/s/" withString:@"/join?confno="];
+            link = [link stringByReplacingOccurrencesOfString:@"/w/" withString:@"/join?confno="];
+            appLink = [NSURL URLWithString:link];
+        }
+    }
+    else if (HostIs(host, @"teams.microsoft.com") && [path hasPrefix:@"/l/meetup-join/"]) {
+        // Test if user has the Teams app and, if so, create a Teams app link.
+        if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"msteams://"]]) {
+            link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"msteams://"];
+            appLink = [NSURL URLWithString:link];
+        }
+    }
+    else if (HostIs(host, @"chime.aws")) {
+        // Test if user has the Chime app, and if so, create a Chime app link.
+        if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"chime://"]]) {
+            link = [link stringByReplacingOccurrencesOfString:@"https://chime.aws/" withString:@"chime://meeting?pin="];
+            appLink = [NSURL URLWithString:link];
+        }
+    }
+    return appLink ?: meetingURL;
+}
+
+static NSURL *MeetingURLForEvent(EKEvent *event)
+{
+    NSURL *meetingURL = nil;
+    if (event.location) meetingURL = MeetingURLInText(event.location);
+    if (!meetingURL && event.URL) meetingURL = MeetingURLInText(event.URL.absoluteString);
+    if (!meetingURL && event.hasNotes && event.notes) meetingURL = MeetingURLInText(event.notes);
+    return meetingURL;
+}

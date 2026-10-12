@@ -1249,7 +1249,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     for (EventInfo *info in todayEvents) {
         // Show meeting indicator 15 minutes prior to event start until end.
         NSDate *fifteenMinutesPrior = MeetingJoinableThreshold(info.event, _nsCal);
-        if (info.zoomURL && !info.event.isAllDay
+        if (info.meetingURL && !info.event.isAllDay
             && [fifteenMinutesPrior compare:NSDate.date] == NSOrderedAscending
             && [NSDate.date compare:info.event.endDate] == NSOrderedAscending) {
             show = YES;
