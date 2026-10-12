@@ -45,6 +45,7 @@ Itsycal es más útil cuando puede mostrar los eventos de sus calendarios. Puede
 "Cancel" = "Cancelar";
 "Check for Updates…" = "Buscar actualizaciones…";
 "Copy" = "Copiar";
+"Copy Meeting Link" = "Copiar enlace de la reunión";
 /* Dark theme name */
 "Dark Theme" = "Tema oscuro";
 "Date & Time…" = "Fecha y hora…";
