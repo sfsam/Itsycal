@@ -25,6 +25,16 @@ NSTimeInterval MonotonicClockTime(void);
 NSString *StringByStrippingZeroMinutes(NSString *duration);
 
 /**
+ * The locale to use for NSDateIntervalFormatter. Usually the current locale.
+ * On macOS 27, NSDateIntervalFormatter returns empty strings for some
+ * settings, e.g. language English (US), region Croatia and List sort order
+ * Croatian. In that case, return an equivalent locale without the sort
+ * order. Call on the main thread.
+ * Workaround for a macOS 27 bug; can be removed once Apple fixes it.
+ */
+NSLocale *DateIntervalFormatterLocale(void);
+
+/**
  * The date at which a virtual meeting becomes joinable: 15 minutes prior
  * to an event's start.
  */

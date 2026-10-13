@@ -235,6 +235,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     if (cell == nil) return nil; // should not happen
     
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
+    intervalFormatter.locale = DateIntervalFormatterLocale();
     // All-day events don't show time.
     intervalFormatter.timeStyle = cell.eventInfo.event.isAllDay
         ? NSDateIntervalFormatterNoStyle
@@ -568,7 +569,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     intervalFormatter.timeZone = nil; // Force tz update on macOS 10.13
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
     // Needed to pick up 12/24 hr time system preference change:
-    intervalFormatter.locale = [NSLocale currentLocale];
+    intervalFormatter.locale = DateIntervalFormatterLocale();
     
     cell.eventInfo = info;
 
@@ -1121,6 +1122,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSString *duration = @"";
     NSString *recurrence = @"";
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
+    intervalFormatter.locale = DateIntervalFormatterLocale();
     
     if (info && info.event) {
         if (info.event.title) title = info.event.title;

@@ -1064,6 +1064,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         durationFormatter = [NSDateIntervalFormatter new];
         durationFormatter.dateStyle = NSDateIntervalFormatterMediumStyle;
     });
+    durationFormatter.locale = DateIntervalFormatterLocale();
     durationFormatter.timeStyle = event.isAllDay ? NSDateIntervalFormatterNoStyle : NSDateIntervalFormatterShortStyle;
     NSString *title = event.title == nil ? @"" : event.title;
     NSString *duration = [durationFormatter stringFromDate:event.startDate toDate:event.endDate];
