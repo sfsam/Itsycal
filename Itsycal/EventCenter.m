@@ -32,6 +32,21 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 
 static NSURL *MeetingURLForEvent(EKEvent *event); // see below
 static NSDate *DueDateForReminder(EKReminder *reminder, BOOL *hasTime); // see below
+static NSArray<NSDictionary *> *AlarmValuesOfReminder(EKReminder *reminder); // see below
+
+// The parts of a reminder that checking it off can change, kept as
+// plain values (not EventKit objects, which -[EKEventStore reset]
+// can invalidate) so undo can put them back.
+@interface ReminderState : NSObject
+@property (nonatomic) NSDateComponents *dueDateComponents;
+@property (nonatomic) NSDateComponents *startDateComponents;
+@property (nonatomic) NSDate *dueDate;
+@property (nonatomic) NSDate *completionDate;
+// See AlarmValuesOfReminder().
+@property (nonatomic) NSArray<NSDictionary *> *alarmValues;
++ (instancetype)stateOfReminder:(EKReminder *)reminder;
+- (void)restoreDatesAndAlarmsOfReminder:(EKReminder *)reminder;
+@end
 typedef EKEvent *(^EventMaker)(EKEventStore *store);
 static EventMaker EventMakerForEvent(EKEvent *event); // see below
 
@@ -265,6 +280,164 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
             [ec _registerUndoForNewEvent:copy maker:maker undoManager:weakUndoManager];
         }];
     }];
+}
+
+- (BOOL)setReminder:(EKReminder *)reminder completed:(BOOL)completed undoManager:(NSUndoManager *)undoManager error:(NSError **)error {
+    return [self _setReminder:reminder completed:completed completionDate:nil undoManager:undoManager error:error];
+}
+
+// completionDate is the date to record when checking off, or nil
+// for now. Undoing an uncheck uses it to restore the original date.
+- (BOOL)_setReminder:(EKReminder *)reminder completed:(BOOL)completed completionDate:(NSDate *)completionDate undoManager:(NSUndoManager *)undoManager error:(NSError **)error {
+    ReminderState *before = [ReminderState stateOfReminder:reminder];
+    BOOL wasCompleted = reminder.isCompleted;
+    NSDate *savedAt = [NSDate date];
+    reminder.completed = completed;
+    if (completed && completionDate) reminder.completionDate = completionDate;
+    if (![_store saveReminder:reminder commit:YES error:error]) {
+        reminder.completed = wasCompleted;
+        if (wasCompleted) reminder.completionDate = before.completionDate;
+        return NO;
+    }
+    // When EventKit checks off a repeating reminder that has a next
+    // occurrence, it saves a completed copy and moves this reminder,
+    // still incomplete, to its next due date. Go by what it did, not
+    // by hasRecurrenceRules: the last occurrence of a series that
+    // ends is just completed in place.
+    BOOL advanced = completed && !reminder.isCompleted;
+    if (advanced) {
+        [self _registerUndoForAdvancedReminder:reminder before:before savedAt:savedAt undoManager:undoManager];
+    }
+    else {
+        [self _registerUndoForReminder:reminder completed:completed before:before undoManager:undoManager];
+    }
+    return YES;
+}
+
+// Undo for checking off a reminder that doesn't repeat, or for
+// unchecking one: set it back. That registers its own undo, which
+// goes on the redo stack.
+- (void)_registerUndoForReminder:(EKReminder *)reminder completed:(BOOL)completed before:(ReminderState *)before undoManager:(NSUndoManager *)undoManager {
+    NSString *identifier = reminder.calendarItemIdentifier;
+    __weak NSUndoManager *weakUndoManager = undoManager;
+    [undoManager registerUndoWithTarget:self handler:^(EventCenter *ec) {
+        EKReminder *current = [ec _reminderWithIdentifier:identifier];
+        if (current == nil || current.isCompleted != completed || !ReminderIsDue(current, before.dueDate)) {
+            NSBeep();
+            return;
+        }
+        NSError *error = nil;
+        if (![ec _setReminder:current completed:!completed completionDate:before.completionDate undoManager:weakUndoManager error:&error]) {
+            if (error != nil) [[NSAlert alertWithError:error] runModal];
+        }
+    }];
+}
+
+// Undo for checking off a repeating reminder. EventKit saved a
+// completed copy at the old due date and moved the reminder to its
+// next due date. Undo removes the copy and moves the reminder back.
+- (void)_registerUndoForAdvancedReminder:(EKReminder *)reminder before:(ReminderState *)before savedAt:(NSDate *)savedAt undoManager:(NSUndoManager *)undoManager {
+    NSString *identifier = reminder.calendarItemIdentifier;
+    NSString *title = reminder.title;
+    NSString *calendarIdentifier = reminder.calendar.calendarIdentifier;
+    BOOL hasTime;
+    NSDate *nextDueDate = DueDateForReminder(reminder, &hasTime);
+    __weak NSUndoManager *weakUndoManager = undoManager;
+
+    // Find the copy now, so it's usually known by the time the user
+    // undoes. If it isn't, undo looks for it then.
+    __block NSString *copyIdentifier = nil;
+    void (^findCopy)(void (^)(NSString *)) = ^(void (^completion)(NSString *)) {
+        [self _findCompletedCopyOfReminder:identifier title:title calendar:calendarIdentifier dueDate:before.dueDate completedSince:[savedAt dateByAddingTimeInterval:-1] completion:completion];
+    };
+    findCopy(^(NSString *found) {
+        copyIdentifier = found;
+    });
+
+    [undoManager registerUndoWithTarget:self handler:^(EventCenter *ec) {
+        // Redo: check it off again. Register it now, while undoing, so
+        // it goes on the redo stack even if the undo finishes later. If
+        // the undo fails, the reminder is still advanced, so redo beeps.
+        [weakUndoManager registerUndoWithTarget:ec handler:^(EventCenter *ec) {
+            EKReminder *current = [ec _reminderWithIdentifier:identifier];
+            if (current == nil || current.isCompleted || !ReminderIsDue(current, before.dueDate)) {
+                NSBeep();
+                return;
+            }
+            NSError *error = nil;
+            if (![ec _setReminder:current completed:YES completionDate:nil undoManager:weakUndoManager error:&error]) {
+                if (error != nil) [[NSAlert alertWithError:error] runModal];
+            }
+        }];
+        if (copyIdentifier) {
+            [ec _moveBackReminder:identifier from:nextDueDate removingCopy:copyIdentifier before:before];
+        }
+        else {
+            findCopy(^(NSString *found) {
+                copyIdentifier = found;
+                [ec _moveBackReminder:identifier from:nextDueDate removingCopy:found before:before];
+            });
+        }
+    }];
+}
+
+// Undo checking off a repeating reminder: remove its completed copy
+// and move it back from nextDueDate to its old due date, together.
+// Beep if either has changed since.
+- (void)_moveBackReminder:(NSString *)identifier from:(NSDate *)nextDueDate removingCopy:(NSString *)copyIdentifier before:(ReminderState *)before {
+    EKReminder *current = [self _reminderWithIdentifier:identifier];
+    EKReminder *copy = copyIdentifier ? [self _reminderWithIdentifier:copyIdentifier] : nil;
+    if (current == nil || current.isCompleted || !ReminderIsDue(current, nextDueDate) ||
+        copy == nil || !copy.isCompleted || !ReminderIsDue(copy, before.dueDate)) {
+        NSBeep();
+        return;
+    }
+    NSError *error = nil;
+    [before restoreDatesAndAlarmsOfReminder:current];
+    if (![_store removeReminder:copy commit:NO error:&error] ||
+        ![_store saveReminder:current commit:NO error:&error] ||
+        ![_store commit:&error]) {
+        // Discard the uncommitted changes now, so a later save can't
+        // commit them. Reset on _queueWork, which fetches with the
+        // store, and wait: _queueWork never waits on the main thread.
+        dispatch_sync(_queueWork, ^{
+            [self->_store reset];
+        });
+        [self refetchAll];
+        if (error != nil) [[NSAlert alertWithError:error] runModal];
+    }
+}
+
+// Find the completed copy EventKit saved when it checked off a
+// repeating reminder: a completed reminder in the same list, with
+// the same title and the old due date, completed since we saved.
+// Call completion on the main thread with its identifier, or nil.
+- (void)_findCompletedCopyOfReminder:(NSString *)identifier title:(NSString *)title calendar:(NSString *)calendarIdentifier dueDate:(NSDate *)dueDate completedSince:(NSDate *)completedSince completion:(void (^)(NSString *copyIdentifier))completion {
+    EKCalendar *calendar = [_store calendarWithIdentifier:calendarIdentifier];
+    if (calendar == nil) {
+        completion(nil);
+        return;
+    }
+    NSPredicate *predicate = [_store predicateForCompletedRemindersWithCompletionDateStarting:completedSince ending:nil calendars:@[calendar]];
+    [_store fetchRemindersMatchingPredicate:predicate completion:^(NSArray<EKReminder *> *reminders) {
+        NSString *found = nil;
+        for (EKReminder *r in reminders) {
+            if (![r.calendarItemIdentifier isEqualToString:identifier] && !r.hasRecurrenceRules
+                && (r.title == title || [r.title isEqualToString:title])
+                && ReminderIsDue(r, dueDate)) {
+                found = r.calendarItemIdentifier;
+                break;
+            }
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion(found);
+        });
+    }];
+}
+
+- (EKReminder *)_reminderWithIdentifier:(NSString *)identifier {
+    EKCalendarItem *item = [_store calendarItemWithIdentifier:identifier];
+    return [item isKindOfClass:[EKReminder class]] ? (EKReminder *)item : nil;
 }
 
 // The fields of an event that undo checks to tell whether it changed
@@ -619,6 +792,73 @@ static NSDate *DueDateForReminder(EKReminder *reminder, BOOL *hasTime)
     components.timeZone = nil;
     return [calendar dateFromComponents:components];
 }
+
+// Is reminder due at dueDate (which may be nil, for no due date)?
+BOOL ReminderIsDue(EKReminder *reminder, NSDate *dueDate)
+{
+    BOOL hasTime;
+    NSDate *date = DueDateForReminder(reminder, &hasTime);
+    return date == dueDate || [date isEqualToDate:dueDate];
+}
+
+@implementation ReminderState
+
++ (instancetype)stateOfReminder:(EKReminder *)reminder
+{
+    ReminderState *state = [ReminderState new];
+    BOOL hasTime;
+    state.dueDateComponents   = [reminder.dueDateComponents copy];
+    state.startDateComponents = [reminder.startDateComponents copy];
+    state.dueDate             = DueDateForReminder(reminder, &hasTime);
+    state.completionDate      = reminder.completionDate;
+    state.alarmValues         = AlarmValuesOfReminder(reminder);
+    return state;
+}
+
+- (void)restoreDatesAndAlarmsOfReminder:(EKReminder *)reminder
+{
+    reminder.startDateComponents = self.startDateComponents;
+    reminder.dueDateComponents   = self.dueDateComponents;
+    // Rebuild the alarms only if they changed, so alarms we don't
+    // need to touch keep everything about them. The store may return
+    // them in a different order, so ignore order.
+    NSArray *currentValues = AlarmValuesOfReminder(reminder);
+    if (self.alarmValues == nil ||
+        (currentValues && [[NSCountedSet setWithArray:currentValues] isEqual:[NSCountedSet setWithArray:self.alarmValues]])) {
+        return;
+    }
+    for (EKAlarm *alarm in reminder.alarms) {
+        [reminder removeAlarm:alarm];
+    }
+    for (NSDictionary *value in self.alarmValues) {
+        EKAlarm *alarm = value[@"absoluteDate"]
+            ? [EKAlarm alarmWithAbsoluteDate:value[@"absoluteDate"]]
+            : [EKAlarm alarmWithRelativeOffset:[value[@"relativeOffset"] doubleValue]];
+        alarm.emailAddress = value[@"emailAddress"];
+        alarm.soundName    = value[@"soundName"];
+        [reminder addAlarm:alarm];
+    }
+}
+
+// Each alarm's time and action as a dictionary, or nil if the
+// reminder has an alarm that can't be copied (e.g. location).
+// An alarm's type follows from its emailAddress and soundName.
+static NSArray<NSDictionary *> *AlarmValuesOfReminder(EKReminder *reminder)
+{
+    NSMutableArray *values = [NSMutableArray new];
+    for (EKAlarm *alarm in reminder.alarms) {
+        if (alarm.structuredLocation != nil) return nil;
+        NSMutableDictionary *value = [NSMutableDictionary new];
+        if (alarm.absoluteDate) value[@"absoluteDate"] = alarm.absoluteDate;
+        else value[@"relativeOffset"] = @(alarm.relativeOffset);
+        if (alarm.emailAddress) value[@"emailAddress"] = alarm.emailAddress;
+        if (alarm.soundName) value[@"soundName"] = alarm.soundName;
+        [values addObject:value];
+    }
+    return values;
+}
+
+@end
 
 // =========================================================================
 // Undo

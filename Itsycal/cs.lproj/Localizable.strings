@@ -46,6 +46,8 @@ Itsycal je užitečnější, pokud může zobrazovat události z vašich kalend
 "Calendar grid" = "Mřížka kalendáře";
 "Cancel" = "Zrušit";
 "Check for Updates…" = "Vyhledat aktualizace…";
+/* Accessibility label for a reminder's checkbox in the event list */
+"Completed" = "Vyřízeno";
 "Copy" = "Kopírovat";
 "Copy Meeting Link" = "Kopírovat odkaz na schůzku";
 /* Dark theme name */
@@ -99,6 +101,8 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Launch at login" = "Otevřít při přihlášení";
 /* Light theme name */
 "Light Theme" = "Světlé téma";
+"Mark as Completed" = "Označit jako vyřízené";
+"Mark as Incomplete" = "Označit jako nevyřízené";
 /* Medium text size */
 "Medium" = "Střední";
 "Menu Bar" = "Řádek nabídek";

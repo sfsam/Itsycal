@@ -25,13 +25,14 @@
 
 @end
 
-@class EKEvent;
+@class EKEvent, EKReminder;
 
 @protocol AgendaDelegate <NSObject>
 
 @optional
 - (void)agendaHoveredOverRow:(NSInteger)row;
 - (void)agendaWantsToDeleteEvent:(EKEvent *)event;
+- (void)agendaWantsToSetReminder:(EKReminder *)reminder completed:(BOOL)completed;
 - (void)agendaShowCalendarAppAtDate:(NSDate *)date;
 - (CGFloat)agendaMaxPossibleHeight;
 

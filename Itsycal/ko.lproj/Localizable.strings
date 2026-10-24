@@ -46,6 +46,8 @@ Itsycal은 캘린더 이벤트를 보여줄 수 있을 때 더 유용해요.";
 "Calendar grid" = "캘린더 격자";
 "Cancel" = "취소";
 "Check for Updates…" = "업데이트 확인…";
+/* Accessibility label for a reminder's checkbox in the event list */
+"Completed" = "완료됨";
 "Copy" = "복사";
 "Copy Meeting Link" = "미팅 링크 복사";
 /* Dark theme name */
@@ -99,6 +101,8 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Launch at login" = "로그인할 때 열기";
 /* Light theme name */
 "Light Theme" = "밝은 테마";
+"Mark as Completed" = "완료됨으로 표시";
+"Mark as Incomplete" = "완료되지 않음으로 표시";
 /* Medium text size */
 "Medium" = "중간";
 "Menu Bar" = "메뉴 막대";

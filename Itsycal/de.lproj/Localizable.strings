@@ -46,6 +46,8 @@ Itsycal ist nützlicher, wenn es Ereignisse aus Ihren Kalendern anzeigen kann. S
 "Calendar grid" = "Kalenderraster";
 "Cancel" = "Abbrechen";
 "Check for Updates…" = "Nach Updates suchen …";
+/* Accessibility label for a reminder's checkbox in the event list */
+"Completed" = "Erledigt";
 "Copy" = "Kopieren";
 "Copy Meeting Link" = "Meeting-Link kopieren";
 /* Dark theme name */
@@ -99,6 +101,8 @@ Bitte beenden Sie Itsycal, es in den Programme-Ordner zu verschieben, und erneut
 "Launch at login" = "Starte Itsycal bei der Anmeldung";
 /* Light theme name */
 "Light Theme" = "Helles Design";
+"Mark as Completed" = "Als „Erledigt“ markieren";
+"Mark as Incomplete" = "Als „Nicht erledigt“ markieren";
 /* Medium text size */
 "Medium" = "Mittel";
 "Menu Bar" = "Menüleiste";

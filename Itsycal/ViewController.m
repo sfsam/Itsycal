@@ -1111,6 +1111,17 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     }
 }
 
+- (void)agendaWantsToSetReminder:(EKReminder *)reminder completed:(BOOL)completed
+{
+    // Check off or uncheck. Undo is registered with the window's
+    // undo manager, like new events, so ⌘Z works.
+    NSError *error = nil;
+    BOOL result = [_ec setReminder:reminder completed:completed undoManager:self.itsycalWindow.undoManager error:&error];
+    if (result == NO && error != nil) {
+        [[NSAlert alertWithError:error] runModal];
+    }
+}
+
 - (void)agendaShowCalendarAppAtDate:(NSDate *)date
 {
     [self showCalendarAppAtDate:date dayView:YES];

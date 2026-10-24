@@ -44,6 +44,14 @@
 
 - (BOOL)removeEvent:(EKEvent *)event span:(EKSpan)span error:(NSError **)error;
 
+// Check off or uncheck a reminder and register its undo and redo
+// with undoManager, as Calendar does. Checking off a repeating
+// reminder makes EventKit save a completed copy at its due date and
+// move the reminder to its next due date. Undoing that removes the
+// copy and moves the reminder back. Undo and redo do nothing but
+// beep if the reminder has changed since.
+- (BOOL)setReminder:(EKReminder *)reminder completed:(BOOL)completed undoManager:(NSUndoManager *)undoManager error:(NSError **)error;
+
 // Ask for reminders access. If it is granted, refetch so reminder
 // lists are in -sourcesAndCalendars, then call completion on the
 // main thread.
@@ -133,3 +141,7 @@
 // meetingURL converted to an app link (zoommtg://, msteams://, chime://)
 // if the meeting's app is installed; otherwise meetingURL unchanged.
 NSURL *AppLinkForMeetingURL(NSURL *meetingURL);
+
+// Is reminder due at dueDate (which may be nil, for no due date)?
+// dueDate is as in EventInfo: the start of the day if no time.
+BOOL ReminderIsDue(EKReminder *reminder, NSDate *dueDate);

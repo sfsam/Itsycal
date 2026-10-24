@@ -20,6 +20,7 @@
 static NSString *kColumnIdentifier    = @"Column";
 static NSString *kDateCellIdentifier  = @"DateCell";
 static NSString *kEventCellIdentifier = @"EventCell";
+static const CGFloat kCompleteButtonSize = 18;
 // A reminder's square sits this much lower than an event's dot,
 // which looks better centered on the title.
 static const CGFloat kReminderSquareNudge = 0.5;
@@ -42,6 +43,7 @@ static const CGFloat kReminderFillGap = 1;
 @property (nonatomic) NSTextField *locationTextField;
 @property (nonatomic) NSTextField *durationTextField;
 @property (nonatomic) MoButton *btnVideo;
+@property (nonatomic) NSButton *btnComplete; // clear, over a reminder's square
 @property (nonatomic, weak) EventInfo *eventInfo;
 @property (nonatomic) BOOL dim;
 @end
@@ -195,6 +197,16 @@ static const CGFloat kReminderFillGap = 1;
     // the menu is open, so the actions must not look up the row again.
     EventInfo *info = self.events[row];
     NSMenuItem *item;
+    // Like Calendar, a reminder can be checked off or unchecked
+    // here, as well as by clicking its square.
+    if (info.reminder.calendar.allowsContentModifications) {
+        NSString *title = info.reminder.isCompleted
+            ? NSLocalizedString(@"Mark as Incomplete", nil)
+            : NSLocalizedString(@"Mark as Completed", nil);
+        item = [menu addItemWithTitle:title action:@selector(toggleReminderCompleted:) keyEquivalent:@""];
+        item.representedObject = info;
+        item.tag = !info.reminder.isCompleted; // what to set it to
+    }
     item = [menu addItemWithTitle:NSLocalizedString(@"Open Calendar", nil) action:@selector(showCalendarApp:) keyEquivalent:@""];
     item.representedObject = [self dateForEventRow:row];
     item = [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
@@ -509,6 +521,38 @@ static const CGFloat kReminderFillGap = 1;
 }
 
 #pragma mark -
+#pragma mark Complete reminder
+
+- (void)toggleReminderCompleted:(id)sender
+{
+    // Act on a captured EventInfo, not a row index. See -deleteEvent:.
+    // The sender is a reminder's square (a button in its cell) or a
+    // context menu item. Its tag is what to set the reminder to,
+    // decided from what the user saw: 1 to check off, 0 to uncheck.
+    EventInfo *info = nil;
+    if ([sender isKindOfClass:[NSMenuItem class]]) {
+        info = [(NSMenuItem *)sender representedObject];
+    } else if ([[sender superview] isKindOfClass:[AgendaEventCell class]]) {
+        info = ((AgendaEventCell *)[sender superview]).eventInfo;
+    }
+    BOOL completed = [sender tag] != 0;
+    EKReminder *reminder = info.reminder;
+    if (reminder == nil || !reminder.calendar.allowsContentModifications) return;
+    // The reminder may have changed or been deleted elsewhere since
+    // the agenda loaded. Refresh it; NO means it no longer exists.
+    if (![reminder refresh]) return;
+    // If it was already changed elsewhere to what the user wants,
+    // there's nothing to do. Don't flip it the other way. Also do
+    // nothing if it's no longer due on the date the user saw: checking
+    // off a repeating reminder moves it, still incomplete, to its next
+    // due date, so a quick second click would check that one off too.
+    if (reminder.isCompleted == completed || !ReminderIsDue(reminder, info.dueDate)) return;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToSetReminder:completed:)]) {
+        [self.delegate agendaWantsToSetReminder:reminder completed:completed];
+    }
+}
+
+#pragma mark -
 #pragma mark Format Agenda Strings
 
 - (NSString *)dayStringForDate:(NSDate *)date
@@ -566,8 +610,18 @@ static const CGFloat kReminderFillGap = 1;
         [cell.grid rowAtIndex:2].hidden = YES; // hide duration row
         cell.btnVideo.enabled = NO;
         cell.btnVideo.hidden = YES;
+        cell.btnComplete.hidden = YES;
         return;
     }
+
+    // Clicking a reminder's square checks it off (or unchecks it), in
+    // the agenda but not in tooltips, if its list can be changed.
+    cell.btnComplete.hidden = !(info.reminder.calendar.allowsContentModifications &&
+                                [self.identifier isEqualToString:@"AgendaVC"]);
+    cell.btnComplete.target = self;
+    cell.btnComplete.action = @selector(toggleReminderCompleted:);
+    cell.btnComplete.tag = !info.reminder.isCompleted; // what to set it to
+    cell.btnComplete.accessibilityValue = @(info.reminder.isCompleted);
 
     NSString *title = @"";
     NSString *location = @"";
@@ -793,6 +847,8 @@ static const CGFloat kReminderFillGap = 1;
 
 @implementation AgendaEventCell {
     NSLayoutConstraint *_gridLeadingConstraint;
+    NSLayoutConstraint *_btnCompleteLeadingConstraint;
+    NSLayoutConstraint *_btnCompleteTopConstraint;
 }
 
 - (instancetype)init
@@ -862,6 +918,25 @@ static const CGFloat kReminderFillGap = 1;
         
         [_btnVideo.centerYAnchor constraintEqualToAnchor:_durationTextField.centerYAnchor].active = YES;
         
+        // A clear button over a reminder's square, which -drawRect:
+        // draws. It's bigger than the square so it's easier to hit.
+        _btnComplete = [NSButton new];
+        _btnComplete.title = @"";
+        _btnComplete.bordered = NO;
+        _btnComplete.transparent = YES;
+        _btnComplete.translatesAutoresizingMaskIntoConstraints = NO;
+        _btnComplete.accessibilityElement = YES;
+        _btnComplete.accessibilityRole = NSAccessibilityCheckBoxRole;
+        _btnComplete.accessibilityLabel = NSLocalizedString(@"Completed", @"Accessibility label for a reminder's checkbox in the event list");
+        [self addSubview:_btnComplete];
+        [_btnComplete.widthAnchor constraintEqualToConstant:kCompleteButtonSize].active = YES;
+        [_btnComplete.heightAnchor constraintEqualToConstant:kCompleteButtonSize].active = YES;
+        _btnCompleteLeadingConstraint = [_btnComplete.leadingAnchor constraintEqualToAnchor:self.leadingAnchor];
+        _btnCompleteTopConstraint = [_btnComplete.topAnchor constraintEqualToAnchor:self.topAnchor];
+        _btnCompleteLeadingConstraint.active = YES;
+        _btnCompleteTopConstraint.active = YES;
+        [self positionCompleteButton];
+
         REGISTER_FOR_SIZE_CHANGE;
     }
     return self;
@@ -872,8 +947,20 @@ static const CGFloat kReminderFillGap = 1;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)positionCompleteButton
+{
+    // Center the button on the square. See -drawRect: for where the
+    // square is: x = 11, and its top is fontSize + 2 - side, plus
+    // the nudge, from the top of the cell.
+    CGFloat side = SizePref.agendaDotWidth;
+    CGFloat squareTop = SizePref.fontSize + 2 - side + kReminderSquareNudge;
+    _btnCompleteLeadingConstraint.constant = 11 + side/2 - kCompleteButtonSize/2;
+    _btnCompleteTopConstraint.constant = squareTop + side/2 - kCompleteButtonSize/2;
+}
+
 - (void)sizeChanged:(id)sender
 {
+    [self positionCompleteButton];
     _gridLeadingConstraint.constant = SizePref.agendaEventLeadingMargin;
     _btnVideo.image = [NSImage imageNamed:SizePref.videoImageName];
     _btnVideo.image.template = YES;
