@@ -16,5 +16,8 @@
 @property (nonatomic, weak) NSPopover *enclosingPopover;
 @property (nonatomic, weak) NSCalendar *cal;
 @property (nonatomic) NSDate *calSelectedDate;
+// The Itsycal window's undo manager. Saving registers undo here
+// so ⌘Z works after the popover closes.
+@property (nonatomic, weak) NSUndoManager *eventUndoManager;
 
 @end

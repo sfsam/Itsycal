@@ -8,6 +8,8 @@
 
 #import <os/log.h>
 #import <AppKit/NSWorkspace.h>
+#import <AppKit/NSAlert.h>
+#import <AppKit/NSGraphics.h>
 #import "EventCenter.h"
 
 // NSUserDefaults key for array of selected calendar IDs.
@@ -24,6 +26,8 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 @implementation EventInfo    @end
 
 static NSURL *MeetingURLForEvent(EKEvent *event); // see below
+typedef EKEvent *(^EventMaker)(EKEventStore *store);
+static EventMaker EventMakerForEvent(EKEvent *event); // see below
 
 @implementation EventCenter {                      // Accessed on:
     EKEventStore         *_store;
@@ -97,8 +101,14 @@ static NSURL *MeetingURLForEvent(EKEvent *event); // see below
     return [EKEvent eventWithEventStore:_store];
 }
 
-- (BOOL)saveEvent:(EKEvent *)event error:(NSError **)error {
-    return [_store saveEvent:event span:EKSpanThisEvent commit:YES error:error];
+- (BOOL)saveNewEvent:(EKEvent *)event undoManager:(NSUndoManager *)undoManager error:(NSError **)error {
+    if (![_store saveEvent:event span:EKSpanThisEvent commit:YES error:error]) {
+        return NO;
+    }
+    // Redo saves a fresh copy, since an event that has been
+    // removed can't be saved again.
+    [self _registerUndoForNewEvent:event maker:EventMakerForEvent(event) undoManager:undoManager];
+    return YES;
 }
 
 - (BOOL)removeEvent:(EKEvent *)event span:(EKSpan)span error:(NSError **)error {
@@ -180,6 +190,60 @@ static NSURL *MeetingURLForEvent(EKEvent *event); // see below
         [self->_store reset];
         [self->_store refreshSourcesIfNecessary];
     });
+}
+
+#pragma mark - Undo (main thread)
+
+- (void)_registerUndoForNewEvent:(EKEvent *)event maker:(EventMaker)maker undoManager:(NSUndoManager *)undoManager {
+    NSString *identifier = event.eventIdentifier;
+    NSArray *fingerprint = [self _undoFingerprintForEvent:event];
+    __weak NSUndoManager *weakUndoManager = undoManager;
+    [undoManager registerUndoWithTarget:self handler:^(EventCenter *ec) {
+        // Undo: remove the event, unless it is gone or has
+        // changed since we saved it.
+        EKEvent *saved = [ec->_store eventWithIdentifier:identifier];
+        if (saved == nil || ![[ec _undoFingerprintForEvent:saved] isEqual:fingerprint]) {
+            NSBeep();
+            return;
+        }
+        // For a repeating event, saved is the first occurrence,
+        // so EKSpanFutureEvents removes the whole series.
+        NSError *error = nil;
+        EKSpan span = saved.hasRecurrenceRules ? EKSpanFutureEvents : EKSpanThisEvent;
+        if (![ec->_store removeEvent:saved span:span commit:YES error:&error]) {
+            if (error != nil) [[NSAlert alertWithError:error] runModal];
+            return;
+        }
+        // Redo: save a fresh copy, then register undo for it.
+        [weakUndoManager registerUndoWithTarget:ec handler:^(EventCenter *ec) {
+            EKEvent *copy = maker(ec->_store);
+            NSError *error = nil;
+            if (![ec->_store saveEvent:copy span:EKSpanThisEvent commit:YES error:&error]) {
+                if (error != nil) [[NSAlert alertWithError:error] runModal];
+                return;
+            }
+            [ec _registerUndoForNewEvent:copy maker:maker undoManager:weakUndoManager];
+        }];
+    }];
+}
+
+// The fields of an event that undo checks to tell whether it changed
+// after Itsycal saved it. The store may normalize saved dates, so
+// times are compared to the minute (the date pickers' precision),
+// and all-day events by start day only.
+- (NSArray *)_undoFingerprintForEvent:(EKEvent *)event {
+    id start, end;
+    if (event.isAllDay) {
+        start = [_cal startOfDayForDate:event.startDate];
+        end   = NSNull.null;
+    }
+    else {
+        start = @(floor(event.startDate.timeIntervalSinceReferenceDate / 60));
+        end   = @(floor(event.endDate.timeIntervalSinceReferenceDate / 60));
+    }
+    return @[event.title ?: @"",
+             event.calendar.calendarIdentifier ?: @"",
+             @(event.isAllDay), start, end];
 }
 
 #pragma mark - Private (GCD thread pool)
@@ -397,6 +461,61 @@ static NSURL *MeetingURLForEvent(EKEvent *event); // see below
 }
 
 @end
+
+// =========================================================================
+// Undo
+// =========================================================================
+
+// Return a block that makes a new, unsaved copy of event, with the
+// fields Itsycal's new-event popover sets (see -[EventViewController
+// saveEvent:]). The block captures plain values, not EventKit
+// objects, because -[EKEventStore reset] discards unsaved objects.
+static EventMaker EventMakerForEvent(EKEvent *event)
+{
+    NSString *title      = event.title;
+    NSString *location   = event.location;
+    NSURL *URL           = event.URL;
+    BOOL allDay          = event.isAllDay;
+    NSDate *startDate    = event.startDate;
+    NSDate *endDate      = event.endDate;
+    NSString *calendarID = event.calendar.calendarIdentifier;
+    NSString *notes      = event.notes;
+    NSTimeZone *timeZone = event.timeZone;
+    EKRecurrenceRule *rule = event.recurrenceRules.firstObject;
+    BOOL hasRule = rule != nil;
+    EKRecurrenceFrequency frequency = rule.frequency;
+    NSInteger interval   = rule.interval;
+    NSDate *ruleEndDate  = rule.recurrenceEnd.endDate;
+    NSMutableArray<NSNumber *> *alarmOffsets = [NSMutableArray new];
+    for (EKAlarm *alarm in event.alarms) {
+        [alarmOffsets addObject:@(alarm.relativeOffset)];
+    }
+    return ^EKEvent *(EKEventStore *store) {
+        EKEvent *copy  = [EKEvent eventWithEventStore:store];
+        copy.title     = title;
+        copy.location  = location;
+        copy.URL       = URL;
+        copy.allDay    = allDay;
+        copy.startDate = startDate;
+        copy.endDate   = endDate;
+        copy.calendar  = [store calendarWithIdentifier:calendarID];
+        copy.notes     = notes;
+        // timeZone MUST be nil for an all-day event, and set after allDay.
+        copy.timeZone  = timeZone;
+        if (hasRule) {
+            EKRecurrenceEnd *end = ruleEndDate ? [EKRecurrenceEnd recurrenceEndWithEndDate:ruleEndDate] : nil;
+            copy.recurrenceRules = @[[[EKRecurrenceRule alloc] initRecurrenceWithFrequency:frequency interval:interval end:end]];
+        }
+        // Replace any default alarms with the event's own.
+        for (EKAlarm *alarm in copy.alarms) {
+            [copy removeAlarm:alarm];
+        }
+        for (NSNumber *offset in alarmOffsets) {
+            [copy addAlarm:[EKAlarm alarmWithRelativeOffset:offset.doubleValue]];
+        }
+        return copy;
+    };
+}
 
 // =========================================================================
 // Meeting links

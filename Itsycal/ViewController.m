@@ -293,6 +293,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     eventVC.cal = _nsCal;
     eventVC.title = @"";
     eventVC.calSelectedDate = MakeNSDateWithDate(_moCal.selectedDate, _nsCal);
+    eventVC.eventUndoManager = self.itsycalWindow.undoManager;
     
     _newEventPopover.contentViewController = eventVC;
     [_newEventPopover showRelativeToRect:_btnAdd.bounds ofView:_btnAdd preferredEdge:NSRectEdgeMinX];

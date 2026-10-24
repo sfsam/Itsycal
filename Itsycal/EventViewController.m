@@ -609,7 +609,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     
     // Commit the event.
     NSError *error = NULL;
-    BOOL saved = [self.ec saveEvent:event error:&error];
+    BOOL saved = [self.ec saveNewEvent:event undoManager:self.eventUndoManager error:&error];
     if (saved == NO && error != nil) {
         [[NSAlert alertWithError:error] runModal];
     }

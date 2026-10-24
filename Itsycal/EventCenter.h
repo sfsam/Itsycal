@@ -31,7 +31,11 @@
 
 - (EKEvent *)newEvent;
 
-- (BOOL)saveEvent:(EKEvent *)event error:(NSError **)error;
+// Save a new event and register its undo (remove it) and
+// redo (save it again) with undoManager. Undo and redo do
+// nothing but beep if the event has changed since, e.g. in
+// Calendar or on another device.
+- (BOOL)saveNewEvent:(EKEvent *)event undoManager:(NSUndoManager *)undoManager error:(NSError **)error;
 
 - (BOOL)removeEvent:(EKEvent *)event span:(EKSpan)span error:(NSError **)error;
 
