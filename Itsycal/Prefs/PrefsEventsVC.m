@@ -10,6 +10,7 @@
 
 static NSString * const kSourceCellId = @"SourceCell";
 static NSString * const kCalendarCellId = @"CalendarCell";
+static NSString * const kButtonCellId = @"ButtonCell";
 
 // Cell views for the Sources and Calendars table view.
 @interface SourceCellView : NSView
@@ -17,6 +18,9 @@ static NSString * const kCalendarCellId = @"CalendarCell";
 @end
 @interface CalendarCellView : NSView
 @property (nonatomic) NSButton *checkbox;
+@end
+@interface ButtonCellView : NSView
+@property (nonatomic) NSButton *button;
 @end
 
 #pragma mark -
@@ -34,6 +38,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     NSButton *_showLocation;
     NSButton *_showDaysWithoutEvents;
     NSArray *_sourcesAndCalendars;
+    EKAuthorizationStatus _remindersStatus;
 }
 
 #pragma mark -
@@ -125,6 +130,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [super viewWillAppear];
 
     _sourcesAndCalendars = [self.ec sourcesAndCalendars];
+    _remindersStatus = self.ec.remindersAuthorizationStatus;
 
     _calendarsTV.enabled = self.ec.calendarAccessGranted;
     _agendaDaysLabel.textColor = self.ec.calendarAccessGranted ? NSColor.labelColor : NSColor.disabledControlTextColor;
@@ -159,11 +165,52 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     [_calendarsTV reloadData];
 }
 
+#pragma mark -
+#pragma mark Reminders access
+
+// Until the user grants reminders access, two rows follow the
+// calendars: a Reminders heading, then a Show Reminders button
+// (not asked yet) or a message (access denied). Once access is
+// granted, reminder lists are in _sourcesAndCalendars instead.
+- (BOOL)showsRemindersAccessRows
+{
+    return _remindersStatus != EKAuthorizationStatusFullAccess;
+}
+
+- (BOOL)isRemindersHeadingRow:(NSInteger)row
+{
+    return self.showsRemindersAccessRows && row == _sourcesAndCalendars.count;
+}
+
+- (BOOL)isRemindersAccessRow:(NSInteger)row
+{
+    return self.showsRemindersAccessRows && row == _sourcesAndCalendars.count + 1;
+}
+
+- (NSString *)remindersDeniedMessage
+{
+    return NSLocalizedString(@"Reminders access denied. You can change this setting in System Settings › Privacy & Security › Reminders", @"");
+}
+
+- (void)showRemindersClicked:(id)sender
+{
+    [self.ec requestRemindersAccessWithCompletion:^{
+        self->_remindersStatus = self.ec.remindersAuthorizationStatus;
+        self->_sourcesAndCalendars = [self.ec sourcesAndCalendars];
+        [self->_calendarsTV reloadData];
+        // Show the reminder lists (or the denied message) at the end.
+        [self->_calendarsTV scrollRowToVisible:self->_calendarsTV.numberOfRows - 1];
+    }];
+}
+
+#pragma mark -
+#pragma mark TableView delegate/datasource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
     // If access is denied, return 1 row for a message about granting access.
-    return self.ec.calendarAccessGranted ? [_sourcesAndCalendars count] : 1;
+    if (!self.ec.calendarAccessGranted) return 1;
+    return [_sourcesAndCalendars count] + (self.showsRemindersAccessRows ? 2 : 0);
 }
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
@@ -172,6 +219,14 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     // show some helpful message text.
     if (!self.ec.calendarAccessGranted) return 170.0;
 
+    // The Show Reminders button is a regular push button. Measure
+    // its cell once.
+    if ([self isRemindersAccessRow:row] && _remindersStatus == EKAuthorizationStatusNotDetermined) {
+        static CGFloat buttonRowHeight = 0;
+        if (buttonRowHeight == 0) buttonRowHeight = [ButtonCellView new].fittingSize.height;
+        return buttonRowHeight;
+    }
+
     // Calculate the height of either the source title or the calendar title.
     // In the case of the source title, the available width is the full width
     // of the tablie view minus the left and right margins. In the case of the
@@ -179,18 +234,23 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     // occupied by the checkbox. We also add room for top and bottom margins
     // after the text height has been calculated.
 
-    id obj = _sourcesAndCalendars[row];
     CGFloat tvWidth = NSWidth(_calendarsTV.frame);
     CGFloat textWidth = tvWidth - 4 - 4; // minus left & right margins
     NSString *str;
+    NSFont *font = [NSFont boldSystemFontOfSize:12];
 
-    if ([obj isKindOfClass:[CalendarInfo class]]) {
-        str = ((CalendarInfo *)obj).calendar.title;
+    if ([self isRemindersHeadingRow:row]) {
+        str = NSLocalizedString(@"Reminders", @"Heading in Settings before reminders access is granted");
+    } else if ([self isRemindersAccessRow:row]) {
+        str = [self remindersDeniedMessage];
+        font = [NSFont systemFontOfSize:12];
+    } else if ([_sourcesAndCalendars[row] isKindOfClass:[CalendarInfo class]]) {
+        str = ((CalendarInfo *)_sourcesAndCalendars[row]).calendar.title;
         textWidth -= 20.0; // account for checkbox
     } else {
-        str = (NSString *)obj; // source title
+        str = (NSString *)_sourcesAndCalendars[row]; // source title
     }
-    NSAttributedString *attrStr = [[NSAttributedString alloc] initWithString:str attributes:@{NSFontAttributeName: [NSFont boldSystemFontOfSize:12]}];
+    NSAttributedString *attrStr = [[NSAttributedString alloc] initWithString:str attributes:@{NSFontAttributeName: font}];
     CGRect attrStrRect = [attrStr boundingRectWithSize:CGSizeMake(textWidth, 10000) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil];
     return NSHeight(attrStrRect) + 4 + 4; // plus top & bottom margins
 }
@@ -213,6 +273,31 @@ static NSString * const kCalendarCellId = @"CalendarCell";
         return message;
     }
     
+    // Before reminders access is granted, show a heading and then
+    // a Show Reminders button, or a message if access was denied.
+    if ([self isRemindersHeadingRow:row]) {
+        SourceCellView *heading = [tableView makeViewWithIdentifier:kSourceCellId owner:self];
+        if (!heading) heading = [SourceCellView new];
+        heading.textField.font = [NSFont boldSystemFontOfSize:12];
+        heading.textField.stringValue = NSLocalizedString(@"Reminders", @"Heading in Settings before reminders access is granted");
+        return heading;
+    }
+    if ([self isRemindersAccessRow:row]) {
+        if (_remindersStatus == EKAuthorizationStatusNotDetermined) {
+            ButtonCellView *cell = [tableView makeViewWithIdentifier:kButtonCellId owner:self];
+            if (!cell) cell = [ButtonCellView new];
+            cell.button.title = NSLocalizedString(@"Show Reminders…", @"");
+            cell.button.target = self;
+            cell.button.action = @selector(showRemindersClicked:);
+            return cell;
+        }
+        SourceCellView *message = [tableView makeViewWithIdentifier:kSourceCellId owner:self];
+        if (!message) message = [SourceCellView new];
+        message.textField.font = [NSFont systemFontOfSize:12];
+        message.textField.stringValue = [self remindersDeniedMessage];
+        return message;
+    }
+
     // Show a list of sources and calendars with checkboxes.
     
     NSView *v = nil;
@@ -221,6 +306,7 @@ static NSString * const kCalendarCellId = @"CalendarCell";
     if ([obj isKindOfClass:[NSString class]]) {
         SourceCellView *source = [tableView makeViewWithIdentifier:kSourceCellId owner:self];
         if (!source) source = [SourceCellView new];
+        source.textField.font = [NSFont boldSystemFontOfSize:12];
         source.textField.stringValue = (NSString *)obj;
         v = source;
     }
@@ -286,6 +372,28 @@ static NSString * const kCalendarCellId = @"CalendarCell";
         [self addSubview:_checkbox];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-4-[_checkbox]-4-|" options:0 metrics:nil views:@{@"_checkbox": _checkbox}]];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-4-[_checkbox]" options:0 metrics:nil views:@{@"_checkbox": _checkbox}]];
+    }
+    return self;
+}
+
+@end
+
+// =========================================================================
+// ButtonCellView
+// =========================================================================
+
+@implementation ButtonCellView
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.identifier = kButtonCellId;
+        _button = [NSButton buttonWithTitle:NSLocalizedString(@"Show Reminders…", @"") target:nil action:nil];
+        _button.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addSubview:_button];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-4-[_button]-(>=4)-|" options:0 metrics:nil views:@{@"_button": _button}]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-4-[_button]-4-|" options:0 metrics:nil views:@{@"_button": _button}]];
     }
     return self;
 }

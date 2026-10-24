@@ -23,9 +23,15 @@ static NSString *kSelectedCalendars = @"SelectedCalendars";
 
 // Properties auto-synthesized.
 @implementation CalendarInfo @end
-@implementation EventInfo    @end
+@implementation EventInfo
+- (EKCalendarItem *)item { return _event ?: _reminder; }
+- (NSDate *)startDate { return _reminder ? _dueDate : _event.startDate; }
+- (NSDate *)endDate { return _reminder ? _dueDate : _event.endDate; }
+- (BOOL)isRealAllDay { return _reminder ? _isAllDay : _event.isAllDay; }
+@end
 
 static NSURL *MeetingURLForEvent(EKEvent *event); // see below
+static NSDate *DueDateForReminder(EKReminder *reminder, BOOL *hasTime); // see below
 typedef EKEvent *(^EventMaker)(EKEventStore *store);
 static EventMaker EventMakerForEvent(EKEvent *event); // see below
 
@@ -35,6 +41,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     NSMutableDictionary  *_eventsForDate;          // _queueWork
     NSDictionary         *_filteredEventsForDate;  // _queueIsol
     NSMutableIndexSet    *_previouslyFetchedDates; // _queueWork
+    NSArray<EKReminder *> *_completedReminders;    // _queueWork; nil until fetched
     NSArray              *_sourcesAndCalendars;    // _queueIsol2
     dispatch_queue_t      _queueWork;
     dispatch_queue_t      _queueIsol;
@@ -92,6 +99,30 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     return [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent] == EKAuthorizationStatusFullAccess;
 }
 
+- (EKAuthorizationStatus)remindersAuthorizationStatus {
+    return [EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder];
+}
+
+- (void)requestRemindersAccessWithCompletion:(void (^)(void))completion {
+    [_store requestFullAccessToRemindersWithCompletion:^(BOOL granted, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (granted) {
+                // Reset on _queueWork, which fetches with the store,
+                // so it can't happen in the middle of a fetch.
+                dispatch_async(self->_queueWork, ^{
+                    [self->_store reset];
+                });
+                [self refetchAll];
+            }
+            // -refetchAll does its work on _queueWork, which is serial,
+            // so this runs after the reminder lists have been fetched.
+            dispatch_async(self->_queueWork, ^{
+                dispatch_async(dispatch_get_main_queue(), completion);
+            });
+        });
+    }];
+}
+
 - (NSString *)defaultCalendarIdentifier {
     EKCalendar *cal = [_store defaultCalendarForNewEvents];
     return cal.calendarIdentifier;
@@ -120,12 +151,14 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     // The user has selected/unselected a calendar in Prefs.
     // Update the kSelectedCalendars array in NSUserDefaults.
     __block NSMutableArray *selectedCalendars = [NSMutableArray new];
+    __block BOOL isReminderList = NO;
     dispatch_sync(_queueIsol2, ^{
         for (id obj in self->_sourcesAndCalendars) {
             if ([obj isKindOfClass:[CalendarInfo class]]) {
                 CalendarInfo *info = obj;
                 if ([info.calendar.calendarIdentifier isEqualToString:identifier]) {
                     info.selected = selected;
+                    isReminderList = (info.calendar.allowedEntityTypes & EKEntityMaskReminder) != 0;
                 }
                 if (info.selected) {
                     [selectedCalendars addObject:info.calendar.calendarIdentifier];
@@ -135,6 +168,13 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     });
     [[NSUserDefaults standardUserDefaults] setObject:selectedCalendars forKey:kSelectedCalendars];
     
+    // Reminders are only fetched from selected lists (see
+    // -_fetchRemindersWithStartDate:endDate:), so refetch.
+    if (isReminderList) {
+        [self refetchAll];
+        return;
+    }
+
     // Filter events based on new calendar selection.
     dispatch_async(_queueWork, ^{
         [self _filterEvents];
@@ -250,9 +290,25 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
 
 - (void)_fetchSourcesAndCalendars {
     //os_log(OS_LOG_DEFAULT, " %s", __FUNCTION__);
-    // Get an array of the user's calendars sorted first by
-    // source title and then by calendar title.
-    NSArray *calendars = [[_store calendarsForEntityType:EKEntityTypeEvent] sortedArrayUsingComparator:^NSComparisonResult(EKCalendar *cal1, EKCalendar *cal2) {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSSet *selectedCalendars = [NSSet setWithArray:[defaults arrayForKey:kSelectedCalendars]];
+
+    // Make an array of source titles and calendar info. Calendars
+    // first, then reminder lists if the user has granted access.
+    NSMutableArray *sourcesAndCalendars = [NSMutableArray new];
+    [self _addCalendarsForEntityType:EKEntityTypeEvent toSourcesAndCalendars:sourcesAndCalendars selectedCalendars:selectedCalendars];
+    if (self.remindersAuthorizationStatus == EKAuthorizationStatusFullAccess) {
+        [self _addCalendarsForEntityType:EKEntityTypeReminder toSourcesAndCalendars:sourcesAndCalendars selectedCalendars:selectedCalendars];
+    }
+    dispatch_async(_queueIsol2, ^{
+        self->_sourcesAndCalendars = [NSArray arrayWithArray:sourcesAndCalendars];
+    });
+}
+
+- (void)_addCalendarsForEntityType:(EKEntityType)entityType toSourcesAndCalendars:(NSMutableArray *)sourcesAndCalendars selectedCalendars:(NSSet *)selectedCalendars {
+    // Get an array of the user's calendars (or reminder lists)
+    // sorted first by source title and then by calendar title.
+    NSArray *calendars = [[_store calendarsForEntityType:entityType] sortedArrayUsingComparator:^NSComparisonResult(EKCalendar *cal1, EKCalendar *cal2) {
         if ([cal1.source.sourceIdentifier isEqualToString:cal2.source.sourceIdentifier]) {
             return [cal1.title compare:cal2.title];
         }
@@ -261,17 +317,26 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
         }
     }];
     
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSSet *selectedCalendars = [NSSet setWithArray:[defaults arrayForKey:kSelectedCalendars]];
+    // Some calendars (e.g. some CalDAV and Exchange ones) hold both
+    // events and reminders. List each calendar once: its checkbox
+    // shows both, since fetches go by entity type.
+    NSMutableSet *listed = [NSMutableSet new];
+    for (id obj in sourcesAndCalendars) {
+        if ([obj isKindOfClass:[CalendarInfo class]]) {
+            [listed addObject:((CalendarInfo *)obj).calendar.calendarIdentifier];
+        }
+    }
     
-    // Make an array of source titles and calendar info.
-    NSMutableArray *sourcesAndCalendars = [NSMutableArray new];
     NSString *currentSourceTitle = @"";
     for (EKCalendar *calendar in calendars) {
+        if ([listed containsObject:calendar.calendarIdentifier]) continue;
         NSString *calendarSourceTitle = calendar.source.title;
         // (!) Should never hit this case, but MacOS 13 sometimes returns
         // nil for non-iCloud source titles. Use a dummy title instead.
         if (!calendar.source.title) calendarSourceTitle = @"???";
+        if (entityType == EKEntityTypeReminder) {
+            calendarSourceTitle = [NSString stringWithFormat:NSLocalizedString(@"%@ Reminders", @"Heading for a source's reminder lists in Settings, e.g. iCloud Reminders"), calendarSourceTitle];
+        }
         if (!calendar.color) {
             // Skip calendars where the color is nil.
             // This normally doesn't happen, but there are some
@@ -288,22 +353,22 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
         calInfo.selected = selectedCalendars ? [selectedCalendars containsObject:calendar.calendarIdentifier] : NO;
         [sourcesAndCalendars addObject:calInfo];
     }
-    dispatch_async(_queueIsol2, ^{
-        self->_sourcesAndCalendars = [NSArray arrayWithArray:sourcesAndCalendars];
-    });
 }
 
-- (NSArray *)_validCalendars
+- (NSArray *)_validCalendarsForEntityMask:(EKEntityMask)entityMask
 {
-    // Valid calendars are calendars in _sourcesAndCalendars.
-    // They have been filtered to remove calendars where the color is nil.
+    // Valid calendars are calendars (or reminder lists) in
+    // _sourcesAndCalendars. They have been filtered to remove
+    // calendars where the color is nil.
     // See -_fetchSourcesAndCalendars
     __block NSMutableArray *calendars = [NSMutableArray new];
     dispatch_sync(_queueIsol2, ^{
         for (id obj in self->_sourcesAndCalendars) {
             if ([obj isKindOfClass:[CalendarInfo class]]) {
                 CalendarInfo *calInfo = obj;
-                [calendars addObject:calInfo.calendar];
+                if (calInfo.calendar.allowedEntityTypes & entityMask) {
+                    [calendars addObject:calInfo.calendar];
+                }
             }
         }
     });
@@ -316,6 +381,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     if (refetch) {
         _previouslyFetchedDates = [NSMutableIndexSet new];
         _eventsForDate = [NSMutableDictionary new];
+        _completedReminders = nil;
     }
     // Return immediately if we've already fetched for this date range.
     NSRange dateRange = NSMakeRange(startMoDate.julian, endMoDate.julian - startMoDate.julian);
@@ -341,7 +407,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     
     NSDate *startDate = MakeNSDateWithDate(startMoDate, _cal);
     NSDate *endDate   = MakeNSDateWithDate(endMoDate,   _cal);
-    NSArray *cals = [self _validCalendars];
+    NSArray *cals = [self _validCalendarsForEntityMask:EKEntityMaskEvent];
     NSPredicate *predicate = [_store predicateForEventsWithStartDate:startDate endDate:endDate calendars:cals];
     NSArray *events = [_store eventsMatchingPredicate:predicate];
     NSMutableDictionary *eventsForDate = [NSMutableDictionary new];
@@ -404,24 +470,93 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
         }
     }
     
+    // Add reminders that are due between startDate and endDate.
+    for (EKReminder *reminder in [self _fetchRemindersWithStartDate:startDate endDate:endDate]) {
+        BOOL hasTime;
+        NSDate *dueDate = DueDateForReminder(reminder, &hasTime);
+        if (dueDate == nil) continue;
+        NSDate *date = [_cal startOfDayForDate:dueDate];
+        if ([date compare:startDate] == NSOrderedAscending ||
+            [date compare:endDate] != NSOrderedAscending) {
+            continue;
+        }
+        EventInfo *info = [EventInfo new];
+        info.reminder = reminder;
+        info.dueDate  = hasTime ? dueDate : date;
+        // A reminder without a time goes with the all-day events,
+        // as in Calendar.
+        info.isAllDay = !hasTime;
+        if (eventsForDate[date] == nil) {
+            eventsForDate[date] = [NSMutableArray new];
+        }
+        [eventsForDate[date] addObject:info];
+    }
+
     // eventsForDate is a dict that maps dates to an array of EventInfo objects.
     // Sort those arrays so that AllDay events are first, the sort by startTime.
     // All-day events are sorted by calendar title with real all-day events before
-    // spanning all-day events.
+    // spanning all-day events. Reminders without a time sort like real all-day
+    // events, and reminders with a time sort by their due date.
     for (NSDate *date in eventsForDate) {
         [eventsForDate[date] sortUsingComparator:^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
-            if (e1.event.isAllDay && e2.event.isAllDay)  { return [e1.event.calendar.title compare:e2.event.calendar.title];}
-            else if (e1.event.isAllDay && !e2.event.isAllDay) { return NSOrderedAscending; }
-            else if (!e1.event.isAllDay && e2.event.isAllDay) { return NSOrderedDescending; }
-            else if (e1.isAllDay && e2.isAllDay) { return [e1.event.calendar.title compare:e2.event.calendar.title];}
+            if (e1.isRealAllDay && e2.isRealAllDay)  { return [e1.item.calendar.title compare:e2.item.calendar.title];}
+            else if (e1.isRealAllDay && !e2.isRealAllDay) { return NSOrderedAscending; }
+            else if (!e1.isRealAllDay && e2.isRealAllDay) { return NSOrderedDescending; }
+            else if (e1.isAllDay && e2.isAllDay) { return [e1.item.calendar.title compare:e2.item.calendar.title];}
             else if (e1.isAllDay) { return NSOrderedAscending;  }
             else if (e2.isAllDay) { return NSOrderedDescending; }
-            else { return [e1.event.startDate compare:e2.event.startDate]; }
+            else { return [e1.startDate compare:e2.startDate]; }
         }];
     }
     
     [_eventsForDate addEntriesFromDictionary:eventsForDate];
     [self _filterEvents];
+}
+
+- (NSArray<EKReminder *> *)_fetchRemindersWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate
+{
+    // A calendar that holds events and reminders allows reminders
+    // even when the user hasn't granted reminders access.
+    if (self.remindersAuthorizationStatus != EKAuthorizationStatusFullAccess) return @[];
+
+    // Unlike events, fetch only from selected lists, since we fetch
+    // every completed reminder (see below). Selecting or unselecting
+    // a list refetches. See -updateSelectedCalendarsForIdentifier:selected:.
+    NSSet *selectedCalendars = [NSSet setWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:kSelectedCalendars]];
+    NSMutableArray *lists = [NSMutableArray new];
+    for (EKCalendar *list in [self _validCalendarsForEntityMask:EKEntityMaskReminder]) {
+        if ([selectedCalendars containsObject:list.calendarIdentifier]) {
+            [lists addObject:list];
+        }
+    }
+    if (lists.count == 0) return @[];
+
+    // Incomplete reminders due in the range, and completed reminders.
+    // EventKit can only fetch completed reminders by completion date,
+    // not due date, so fetch them all, once per refetch, and reuse
+    // them for the other dates the user moves to. The caller filters
+    // by due date.
+    NSMutableArray<EKReminder *> *reminders = [NSMutableArray arrayWithArray:[self _fetchRemindersMatchingPredicate:[_store predicateForIncompleteRemindersWithDueDateStarting:startDate ending:endDate calendars:lists]]];
+    if (_completedReminders == nil) {
+        _completedReminders = [self _fetchRemindersMatchingPredicate:[_store predicateForCompletedRemindersWithCompletionDateStarting:nil ending:nil calendars:lists]];
+    }
+    [reminders addObjectsFromArray:_completedReminders];
+    // Only reminders with a due date belong on the calendar.
+    return [reminders filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"dueDateComponents != nil"]];
+}
+
+- (NSArray<EKReminder *> *)_fetchRemindersMatchingPredicate:(NSPredicate *)predicate
+{
+    // We're on _queueWork, which can wait. EventKit calls
+    // completion on a queue of its own.
+    __block NSArray<EKReminder *> *reminders = @[];
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    [_store fetchRemindersMatchingPredicate:predicate completion:^(NSArray<EKReminder *> *fetched) {
+        if (fetched) reminders = fetched;
+        dispatch_semaphore_signal(semaphore);
+    }];
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    return reminders;
 }
 
 - (void)_filterEvents {
@@ -430,7 +565,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     NSArray *selectedCalendars = [[NSUserDefaults standardUserDefaults] arrayForKey:kSelectedCalendars];
     for (NSDate *date in _eventsForDate) {
         for (EventInfo *info in _eventsForDate[date]) {
-            if ([selectedCalendars containsObject:info.event.calendar.calendarIdentifier]) {
+            if ([selectedCalendars containsObject:info.item.calendar.calendarIdentifier]) {
                 if (filteredEventsForDate[date] == nil) {
                     filteredEventsForDate[date] = [NSMutableArray new];
                 }
@@ -441,7 +576,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
                 // published below. After that the main thread may be
                 // reading it, so it must not be written again. Store
                 // changes trigger a refetch, which creates new EventInfos.
-                if (!info.didCheckMeetingURL) {
+                if (!info.didCheckMeetingURL && info.event) {
                     info.meetingURL = MeetingURLForEvent(info.event);
                     info.didCheckMeetingURL = YES;
                 }
@@ -461,6 +596,29 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
 }
 
 @end
+
+// =========================================================================
+// Reminders
+// =========================================================================
+
+// Return the date a reminder is due. A reminder may be due on a
+// day without a time. Then *hasTime is NO, and the date is the
+// start of that day in the local time zone, like an all-day event.
+static NSDate *DueDateForReminder(EKReminder *reminder, BOOL *hasTime)
+{
+    *hasTime = NO;
+    if (reminder.dueDateComponents == nil) return nil;
+    NSDateComponents *components = [reminder.dueDateComponents copy];
+    *hasTime = components.hour != NSDateComponentUndefined;
+    // The components carry their own calendar (usually Gregorian),
+    // which may differ from the user's. A time is in the components'
+    // time zone, if any. A day without a time is in the local one.
+    NSCalendar *calendar = [components.calendar ?: [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian] copy];
+    calendar.timeZone = (*hasTime && components.timeZone) ? components.timeZone : [NSTimeZone localTimeZone];
+    components.calendar = nil;
+    components.timeZone = nil;
+    return [calendar dateFromComponents:components];
+}
 
 // =========================================================================
 // Undo

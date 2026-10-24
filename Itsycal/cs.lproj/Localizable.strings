@@ -1,3 +1,5 @@
+/* Heading for a source's reminder lists in Settings, e.g. iCloud Reminders */
+"%@ Reminders" = "%@ – připomínky";
 "1 day" = "1 den";
 "1 day before" = "1 den před";
 "1 day before (9 AM)" = "1 den před (9 AM)";
@@ -124,6 +126,9 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Outlined date" = "Datum s obrysem";
 "Pin Itsycal   P" = "Přišpendlit Itsycal   P";
 "Quit Itsycal" = "Ukončit Itsycal";
+/* Heading in Settings before reminders access is granted */
+"Reminders" = "Připomínky";
+"Reminders access denied. You can change this setting in System Settings › Privacy & Security › Reminders" = "Přístup k připomínkám byl odepřen. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Připomínky";
 "Repeat:" = "Opakovat:";
 "Saturday" = "sobota";
 "Save Event" = "Uložit událost";
@@ -134,6 +139,7 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Show event dots" = "Zobrazovat tečky událostí";
 "Show event location" = "Zobrazovat místo události";
 "Show month in icon" = "Zobrazovat měsíc v ikoně";
+"Show Reminders…" = "Zobrazit připomínky…";
 /* Label for how many days the event list shows */
 "Show:" = "Zobrazit:";
 /* Accessibility label for text size control */

@@ -262,11 +262,13 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         return;
     }
     
-    // Confirm that there are calendars which can be modified.
+    // Confirm that there are calendars which can be modified
+    // and hold events (not just reminder lists).
     BOOL atLeastOneModifiableCalendar = NO;
     for (id obj in [_ec sourcesAndCalendars]) {
         if ([obj isKindOfClass:[CalendarInfo class]] && 
-            ((CalendarInfo *)obj).calendar.allowsContentModifications) {
+            ((CalendarInfo *)obj).calendar.allowsContentModifications &&
+            (((CalendarInfo *)obj).calendar.allowedEntityTypes & EKEntityMaskEvent)) {
             atLeastOneModifiableCalendar = YES;
             break;
         }
@@ -1044,6 +1046,11 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     }
     else {
         EventInfo *info = _agendaVC.events[row];
+        if (info.reminder) {
+            MoDate dueDate = MakeDateWithNSDate(info.dueDate, _nsCal);
+            [_moCal highlightCellsFromDate:dueDate toDate:dueDate withColor:info.reminder.calendar.color];
+            return;
+        }
         MoDate startDate = MakeDateWithNSDate(info.event.startDate, _nsCal);
         MoDate endDate   = MakeDateWithNSDate(info.event.endDate,   _nsCal);
         // Fixup for endDates that are at midnight
@@ -1137,7 +1144,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     if (!useColor) return @[];
     NSMutableOrderedSet *colors = [NSMutableOrderedSet new];
     for (EventInfo *eventInfo in events) {
-        [colors addObject:eventInfo.event.calendar.color];
+        [colors addObject:eventInfo.item.calendar.color];
         if (colors.count == 3) break;
     }
     switch (colors.count) {
@@ -1175,8 +1182,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
                 // annotated so AgendaViewController can handle them
                 // appropriately. For the date, we set an associated object.
                 // For the event we give it a new EventInfo. Importantly, the
-                // EventInfo's `event` property will be nil and we will use
-                // this fact in AgendaViewController.
+                // EventInfo's `event` and `reminder` properties will be nil
+                // and we will use this fact in AgendaViewController.
                 [nsDate setHasNoEvents:YES];
                 [datesAndEvents addObject:nsDate];
                 [datesAndEvents addObject:[EventInfo new]];
@@ -1249,6 +1256,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     BOOL show = NO;
     NSArray *todayEvents = [self eventsForDate:[self todayDate]];
     for (EventInfo *info in todayEvents) {
+        // Only events have meetings.
+        if (info.event == nil) continue;
         // Show meeting indicator 15 minutes prior to event start until end.
         NSDate *fifteenMinutesPrior = MeetingJoinableThreshold(info.event, _nsCal);
         if (info.meetingURL && !info.event.isAllDay

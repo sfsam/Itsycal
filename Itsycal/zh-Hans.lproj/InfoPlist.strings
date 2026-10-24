@@ -1,3 +1,5 @@
 "NSAppleEventsUsageDescription" = "Itsycal 使用 AppleEvents 打开你的日历应用程序到选定日期。你可以在 “系统设置 › 隐私与安全 › 自动化” 中更改此设置。";
 
 "NSCalendarsFullAccessUsageDescription" = "当 Itsycal 可以显示你的日历中的事件时会更好用。你可以在 “系统设置 › 隐私与安全 › 日历” 中更改此设置。";
+
+"NSRemindersFullAccessUsageDescription" = "Itsycal 可以将你的提醒事项与日历事件一起显示。你可以在 “系统设置 › 隐私与安全 › 提醒事项” 中更改此设置。";

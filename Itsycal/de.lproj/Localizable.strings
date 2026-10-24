@@ -1,3 +1,5 @@
+/* Heading for a source's reminder lists in Settings, e.g. iCloud Reminders */
+"%@ Reminders" = "%@ – Erinnerungen";
 "1 day" = "1 Tag";
 "1 day before" = "1 Tag vorher";
 "1 day before (9 AM)" = "1 Tag vorher (9 Uhr)";
@@ -124,6 +126,9 @@ Bitte beenden Sie Itsycal, es in den Programme-Ordner zu verschieben, und erneut
 "Outlined date" = "Datum, umrandet";
 "Pin Itsycal   P" = "Itsycal soll sichtbar bleiben   P";
 "Quit Itsycal" = "Itsycal beenden";
+/* Heading in Settings before reminders access is granted */
+"Reminders" = "Erinnerungen";
+"Reminders access denied. You can change this setting in System Settings › Privacy & Security › Reminders" = "Zugriff auf Erinnerungen verweigert. Sie können diese Einstellung unter Systemeinstellungen › Datenschutz & Sicherheit › Erinnerungen anpassen.";
 "Repeat:" = "Wiederholen:";
 "Saturday" = "Samstag";
 "Save Event" = "Ereignis sichern";
@@ -134,6 +139,7 @@ Bitte beenden Sie Itsycal, es in den Programme-Ordner zu verschieben, und erneut
 "Show event dots" = "Punkte unter Tagen mit Ereignis anzeigen";
 "Show event location" = "Veranstaltungsort anzeigen";
 "Show month in icon" = "Menüleistensymbol zeigt Monat";
+"Show Reminders…" = "Erinnerungen anzeigen …";
 /* Label for how many days the event list shows */
 "Show:" = "Anzeigen:";
 /* Accessibility label for text size control */

@@ -1,3 +1,5 @@
+/* Heading for a source's reminder lists in Settings, e.g. iCloud Reminders */
+"%@ Reminders" = "%@ 提醒事项";
 "1 day" = "1 天";
 "1 day before" = "1 天前";
 "1 day before (9 AM)" = "1 天前（上午9时）";
@@ -124,6 +126,9 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Outlined date" = "空心日期";
 "Pin Itsycal   P" = "固定 Itsycal   P";
 "Quit Itsycal" = "退出 Itsycal";
+/* Heading in Settings before reminders access is granted */
+"Reminders" = "提醒事项";
+"Reminders access denied. You can change this setting in System Settings › Privacy & Security › Reminders" = "提醒事项访问被拒绝。你可以在 “系统设置 › 隐私与安全 › 提醒事项” 中更改此设置。";
 "Repeat:" = "重复：";
 "Saturday" = "星期六";
 "Settings…" = "设置…";
@@ -134,6 +139,7 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Show event dots" = "显示事件圆点";
 "Show event location" = "显示事件位置";
 "Show month in icon" = "在图标中显示月份";
+"Show Reminders…" = "显示提醒事项…";
 /* Label for how many days the event list shows */
 "Show:" = "显示：";
 /* Accessibility label for text size control */

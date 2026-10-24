@@ -1,3 +1,5 @@
+/* Heading for a source's reminder lists in Settings, e.g. iCloud Reminders */
+"%@ Reminders" = "%@ 미리 알림";
 "1 day" = "1일";
 "1 day before" = "1일 전";
 "1 day before (9 AM)" = "1일 전 (오전 9시)";
@@ -124,6 +126,9 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Outlined date" = "윤곽선 날짜";
 "Pin Itsycal   P" = "Itsycal 고정하기   P";
 "Quit Itsycal" = "Itsycal 종료";
+/* Heading in Settings before reminders access is granted */
+"Reminders" = "미리 알림";
+"Reminders access denied. You can change this setting in System Settings › Privacy & Security › Reminders" = "미리 알림 접근이 거부되었어요. 이 설정은 시스템 설정 › 개인정보 보호 및 보안 › 미리 알림에서 변경할 수 있어요.";
 "Repeat:" = "반복:";
 "Saturday" = "토요일";
 "Save Event" = "이벤트 저장하기";
@@ -134,6 +139,7 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Show event dots" = "이벤트 점 표시";
 "Show event location" = "이벤트 위치 표시";
 "Show month in icon" = "아이콘에 월 표시";
+"Show Reminders…" = "미리 알림 보기…";
 /* Label for how many days the event list shows */
 "Show:" = "표시:";
 /* Accessibility label for text size control */

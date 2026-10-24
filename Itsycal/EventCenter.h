@@ -22,6 +22,11 @@
 // Did the user grant calendar access?
 @property (nonatomic, readonly) BOOL calendarAccessGranted;
 
+// Has the user granted, denied or not yet been asked for
+// reminders access? Itsycal only asks when the user clicks
+// Show Reminders in Prefs, never at launch.
+@property (nonatomic, readonly) EKAuthorizationStatus remindersAuthorizationStatus;
+
 @property (nonatomic, readonly) NSString *defaultCalendarIdentifier;
 
 // Delegate is responsible for...
@@ -39,13 +44,20 @@
 
 - (BOOL)removeEvent:(EKEvent *)event span:(EKSpan)span error:(NSError **)error;
 
+// Ask for reminders access. If it is granted, refetch so reminder
+// lists are in -sourcesAndCalendars, then call completion on the
+// main thread.
+- (void)requestRemindersAccessWithCompletion:(void (^)(void))completion;
+
 - (void)fetchEvents;
 
 // Sorted array of 2 types: NSStrings and CalendarInfo objects.
 // The NSStrings are the names of calendar sources.
 // The CalendarInfo objects describe the calendars in those sources.
 // Alphabetical by source, then calendar title. Each source is
-// followed by its calendars. Datasource for Prefs tableview.
+// followed by its calendars. Reminder lists come after all the
+// calendars, sorted the same way, under source names like
+// "iCloud Reminders". Datasource for Prefs tableview.
 - (NSArray *)sourcesAndCalendars;
 
 // A dict that maps dates to an array of EventInfo objects.
@@ -91,12 +103,27 @@
 // EventInfo
 // =========================================================================
 
+// An EventInfo describes either an event or a reminder on a date.
+// If both event and reminder are nil, there are no events on that
+// date (the agenda shows an empty row).
 @interface EventInfo : NSObject
 
 @property (nonatomic) EKEvent *event;   // nil if there's no event on this date
+@property (nonatomic) EKReminder *reminder; // nil if this isn't a reminder
+@property (nonatomic) NSDate *dueDate;  // reminder's due date; start of day if it has no time
+// event or reminder, for the properties they share
+// (title, calendar, location, notes, URL, recurrence rules).
+@property (nonatomic, readonly) EKCalendarItem *item;
+// The event's start and end dates, or the reminder's due date.
+@property (nonatomic, readonly) NSDate *startDate;
+@property (nonatomic, readonly) NSDate *endDate;
+// The event is an all-day event, or the reminder is due without a
+// time. Unlike isAllDay, NO for a timed event spanning this date.
+@property (nonatomic, readonly) BOOL isRealAllDay;
 @property (nonatomic) BOOL isStartDate; // event starts, but doesn't end, on this date
 @property (nonatomic) BOOL isEndDate;   // event ends, but doesn't start, on this date
-@property (nonatomic) BOOL isAllDay;    // event is all-day, or spans across this date
+@property (nonatomic) BOOL isAllDay;    // event is all-day, or spans across this date,
+                                        // or reminder is due without a time
 // Zoom, Google Meet, Microsoft Teams, etc. URL found in the event's
 // location, URL or notes, or nil. Set by EventCenter on its background
 // queue before the EventInfo is published, and never changed after that.

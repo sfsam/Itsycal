@@ -363,8 +363,10 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     for (id obj in sourcesAndCalendars) {
         if ([obj isKindOfClass:[NSString class]]) continue; // Skip Sources
         CalendarInfo *calInfo = obj;
-        // Only add menu items for calendars that can be modified.
-        if (calInfo.calendar.allowsContentModifications) {
+        // Only add menu items for calendars that can be modified
+        // and hold events (not reminder lists).
+        if (calInfo.calendar.allowsContentModifications &&
+            (calInfo.calendar.allowedEntityTypes & EKEntityMaskEvent)) {
             // Add a Source item to the menu if necessary.
             if (![calInfo.calendar.source isEqualTo:currentSource]) {
                 if (_calPopup.menu.itemArray.count != 0) {

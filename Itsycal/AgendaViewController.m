@@ -20,6 +20,11 @@
 static NSString *kColumnIdentifier    = @"Column";
 static NSString *kDateCellIdentifier  = @"DateCell";
 static NSString *kEventCellIdentifier = @"EventCell";
+// A reminder's square sits this much lower than an event's dot,
+// which looks better centered on the title.
+static const CGFloat kReminderSquareNudge = 0.5;
+// The gap between a completed reminder's outline and its fill.
+static const CGFloat kReminderFillGap = 1;
 
 @interface AgendaRowView : NSTableRowView
 @property (nonatomic) BOOL isHovered;
@@ -237,11 +242,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
     intervalFormatter.locale = DateIntervalFormatterLocale();
     // All-day events don't show time.
-    intervalFormatter.timeStyle = cell.eventInfo.event.isAllDay
+    EventInfo *info = cell.eventInfo;
+    intervalFormatter.timeStyle = info.isRealAllDay
         ? NSDateIntervalFormatterNoStyle
         : NSDateIntervalFormatterShortStyle;
-    // Interval formatter just prints single date when from == to.
-    NSString *duration = [intervalFormatter stringFromDate:cell.eventInfo.event.startDate toDate:cell.eventInfo.event.endDate];
+    // Interval formatter just prints single date when from == to,
+    // as for a reminder, which has just a due date.
+    NSString *duration = [intervalFormatter stringFromDate:info.startDate toDate:info.endDate];
     duration = StringByStrippingZeroMinutes(duration);
     NSString *eventText = [NSString stringWithFormat:@"%@\n%@\n%@%@",
                            cell.titleTextField.stringValue,
@@ -438,7 +445,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
 {
     id obj = self.events[row];
     return ([obj isKindOfClass:[EventInfo class]] &&
-            ((EventInfo *)obj).event == nil);
+            ((EventInfo *)obj).item == nil);
 }
 
 - (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
@@ -550,7 +557,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
 
     // There are no events on this date.
-    if (!info.event) {
+    if (!info.item) {
         cell.eventInfo = nil;
         cell.dim = YES;
         cell.titleTextField.stringValue = @"";
@@ -573,13 +580,13 @@ static NSString *kEventCellIdentifier = @"EventCell";
     
     cell.eventInfo = info;
 
-    if (info && info.event) {
-        if (info.event.title) {
+    if (info && info.item) {
+        if (info.item.title) {
             // If title has newlines or stretches of whitespace, compress
             // them into a single space.
-            title = [[info.event.title componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] componentsJoinedByString:@" "];
+            title = [[info.item.title componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] componentsJoinedByString:@" "];
         }
-        if (info.event.location) location = info.event.location;
+        if (info.item.location) location = info.item.location;
     }
     
     // Hide location row IF !self.showLocation OR there's no location string.
@@ -589,7 +596,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [cell.grid rowAtIndex:2].hidden = info.isAllDay;
     
     if (info.isAllDay == NO) {
-        if (info.isStartDate == YES) {
+        if (info.reminder) {
+            // A reminder with a time shows when it's due.
+            duration = [timeFormatter stringFromDate:info.dueDate];
+        }
+        else if (info.isStartDate == YES) {
             if (info.event.startDate != nil) {
                 duration = [timeFormatter stringFromDate:info.event.startDate];
             }
@@ -623,16 +634,28 @@ static NSString *kEventCellIdentifier = @"EventCell";
 
     // If event's endDate is today and is past, dim event.
     cell.dim = NO;
-    if (!info.isStartDate && !info.isAllDay
+    if (info.event && !info.isStartDate && !info.isAllDay
         && [self.nsCal isDateInToday:info.event.endDate]
         && [NSDate.date compare:info.event.endDate] == NSOrderedDescending) {
         cell.titleTextField.textColor = Theme.agendaEventDateTextColor;
         cell.dim = YES;
     }
+
+    // An incomplete reminder is overdue once its due time has
+    // passed or, if it has no time, once its day has passed.
+    // Show its title in red, as Reminders shows its due date.
+    if (info.reminder && !info.reminder.isCompleted) {
+        NSDate *now = NSDate.date;
+        NSDate *deadline = info.isAllDay ? [self.nsCal startOfDayForDate:now] : now;
+        if ([info.dueDate compare:deadline] == NSOrderedAscending) {
+            cell.titleTextField.textColor = Theme.agendaOverdueTextColor;
+        }
+    }
     
     // Enable the zoom button 15 minutes prior to event start until end.
     // If the user prefers, button can remain enabled indefinitely.
-    NSDate *fifteenMinutesPrior = MeetingJoinableThreshold(info.event, self.nsCal);
+    // Only events have meetings (and a meetingURL).
+    NSDate *fifteenMinutesPrior = info.event ? MeetingJoinableThreshold(info.event, self.nsCal) : nil;
     if (info.meetingURL && !info.event.isAllDay
         && [fifteenMinutesPrior compare:NSDate.date] == NSOrderedAscending
         && ([NSDate.date compare:info.event.endDate] == NSOrderedAscending
@@ -912,6 +935,32 @@ static NSString *kEventCellIdentifier = @"EventCell";
         return;
     }
 
+    // Draw a reminder as a rounded square in its list's color, like
+    // a checkbox. It's open when incomplete and filled when completed.
+    // (An open circle is a tentative or pending event; see below.)
+    // The square is stroked on the dot's outline, like those circles,
+    // so it's as wide as they are: the dot's width plus the line width.
+    // A completed reminder's square also has a smaller filled square
+    // inset inside it, with a gap of kReminderFillGap.
+    if (self.eventInfo.reminder) {
+        CGFloat side = SizePref.agendaDotWidth;
+        CGFloat radius = side / 4.0;
+        CGFloat lineWidth = 1.5;
+        NSRect rect = NSMakeRect(11, NSHeight(self.bounds) - (SizePref.fontSize + 2) - kReminderSquareNudge, side, side);
+        CGFloat alpha = self.dim ? 0.5 : 1;
+        [[self.eventInfo.reminder.calendar.color colorWithAlphaComponent:alpha] set];
+        NSBezierPath *box = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:radius yRadius:radius];
+        box.lineWidth = lineWidth;
+        [box stroke];
+        if (self.eventInfo.reminder.isCompleted) {
+            // The stroke's inner edge is half the line width inside rect.
+            CGFloat inset = lineWidth / 2.0 + kReminderFillGap;
+            CGFloat fillRadius = MAX(radius - inset, 0.5);
+            [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(rect, inset, inset) xRadius:fillRadius yRadius:fillRadius] fill];
+        }
+        return;
+    }
+
     // Draw a pattern background for events that are pending
     // participation acceptance. Inset and radius match the
     // hover values in AgendaRowView -drawBackgroundInRect:.
@@ -1124,51 +1173,59 @@ static NSString *kEventCellIdentifier = @"EventCell";
     intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
     intervalFormatter.locale = DateIntervalFormatterLocale();
     
-    if (info && info.event) {
-        if (info.event.title) title = info.event.title;
+    // info.item is the event or the reminder. Only events have
+    // attendees and can be deleted here. A reminder has just a
+    // due date, which may have no time, like an all-day event.
+    EKCalendarItem *item = info.item;
+    BOOL isAllDay = info.isRealAllDay;
+    NSDate *startDate = info.startDate;
+    NSDate *endDate   = info.endDate;
+
+    if (info && item) {
+        if (item.title) title = item.title;
     }
     
     // Hide location row IF there's no location string.
-    [_grid rowAtIndex:1].hidden = !info.event.location;
+    [_grid rowAtIndex:1].hidden = !item.location;
     
     // Hide recurrence row IF there's no recurrence rule.
-    [_grid rowAtIndex:4].hidden = !info.event.hasRecurrenceRules;
+    [_grid rowAtIndex:4].hidden = !item.hasRecurrenceRules;
     
     // Hide attendees row and separator above it IF there are no attendees.
     [_grid rowAtIndex:5].hidden = !info.event.hasAttendees;
     [_grid rowAtIndex:6].hidden = !info.event.hasAttendees;
 
     // Hide note row and separator row above it IF there's no note AND no URL.
-    [_grid rowAtIndex:7].hidden = !info.event.hasNotes && !info.event.URL;
-    [_grid rowAtIndex:8].hidden = !info.event.hasNotes;
+    [_grid rowAtIndex:7].hidden = !item.hasNotes && !item.URL;
+    [_grid rowAtIndex:8].hidden = !item.hasNotes;
     
     // Hide URL row IF there's no URL.
-    [_grid rowAtIndex:9].hidden = !info.event.URL;
+    [_grid rowAtIndex:9].hidden = !item.URL;
 
     // Hide delete button IF event doesn't allow modification.
     _btnDelete.hidden = !info.event.calendar.allowsContentModifications;
 
     // All-day events don't show time.
-    intervalFormatter.timeStyle = info.event.isAllDay
+    intervalFormatter.timeStyle = isAllDay
         ? NSDateIntervalFormatterNoStyle
         : NSDateIntervalFormatterShortStyle;
     // Interval formatter just prints single date when from == to.
-    duration = [intervalFormatter stringFromDate:info.event.startDate toDate:info.event.endDate];
+    duration = [intervalFormatter stringFromDate:startDate toDate:endDate];
     duration = StringByStrippingZeroMinutes(duration);
     // If the event is not All-day and the start and end dates are
     // different, put them on different lines.
     // The – is U+2013 (en-dash) and the space is U+2009 (thin space)
-    if (!info.event.isAllDay) {
-        NSDateComponents *start = [intervalFormatter.calendar components:NSCalendarUnitMonth | NSCalendarUnitDay fromDate:info.event.startDate];
-        NSDateComponents *end = [intervalFormatter.calendar components:NSCalendarUnitMonth | NSCalendarUnitDay fromDate:info.event.endDate];
+    if (!isAllDay) {
+        NSDateComponents *start = [intervalFormatter.calendar components:NSCalendarUnitMonth | NSCalendarUnitDay fromDate:startDate];
+        NSDateComponents *end = [intervalFormatter.calendar components:NSCalendarUnitMonth | NSCalendarUnitDay fromDate:endDate];
         if (start.day != end.day || start.month != end.month) {
             duration = [duration stringByReplacingOccurrencesOfString:@"– " withString:@"–\n"];
         }
     }
     // Recurrence.
-    if (info.event.hasRecurrenceRules) {
+    if (item.hasRecurrenceRules) {
         recurrence = [NSString stringWithFormat:@"%@ ", NSLocalizedString(@"Repeat:", nil)];
-        EKRecurrenceRule *rule = info.event.recurrenceRules.firstObject;
+        EKRecurrenceRule *rule = item.recurrenceRules.firstObject;
         NSString *frequency = @"✓";
         switch (rule.frequency) {
             case EKRecurrenceFrequencyDaily:
@@ -1209,8 +1266,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
     
     // Location
-    if (info.event.location) {
-        NSString *trimmedLoc = [info.event.location stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (item.location) {
+        NSString *trimmedLoc = [item.location stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if ([trimmedLoc isEqualToString:@""]) {
             [_grid rowAtIndex:1].hidden = YES;
         }
@@ -1308,11 +1365,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
 
     // Notes
-    if (info.event.hasNotes) {
-        NSString *trimmedNotes = [info.event.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (item.hasNotes) {
+        NSString *trimmedNotes = [item.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if ([trimmedNotes isEqualToString:@""]) {
             // Hide note row and separator row above it, provided no URL.
-            [_grid rowAtIndex:7].hidden = !info.event.URL;
+            [_grid rowAtIndex:7].hidden = !item.URL;
             [_grid rowAtIndex:8].hidden = YES;
         }
         else {
@@ -1323,10 +1380,10 @@ static NSString *kEventCellIdentifier = @"EventCell";
     }
 
     // URL
-    if (info.event.URL) {
+    if (item.URL) {
         // HACK: append a space at end of URL to force correct height calc. Without
         // this, height is sometimes wrong on first display.
-        NSString *absURL = [NSString stringWithFormat:@"%@ ", info.event.URL.absoluteString];
+        NSString *absURL = [NSString stringWithFormat:@"%@ ", item.URL.absoluteString];
         [self populateTextView:_URL withString:absURL heightConstraint:_URLHeight];
     }
     

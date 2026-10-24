@@ -89,6 +89,11 @@ Themer *Theme = nil;
     return [self highlightedDOWBackgroundColor];
 }
 
+- (NSColor *)agendaOverdueTextColor {
+    // Reminders shows overdue due dates in system red.
+    return NSColor.systemRedColor;
+}
+
 - (NSColor *)currentMonthOutlineColor {
     return LightDarkColor(NSColor.labelColor, NSColor.secondaryLabelColor);
 }
