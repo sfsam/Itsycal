@@ -138,6 +138,7 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "Save Event" = "Salvare Evento";
 "Settings…" = "Impostazioni…";
 "Show calendar weeks" = "Mostra le settimane del calendario";
+"Show completed reminders" = "Mostra promemoria completati";
 "Show day of week in icon" = "L'icona mostra giorno della settimana";
 "Show days with no events" = "Mostra giorni senza eventi";
 "Show event dots" = "Mostra punti per gli eventi";

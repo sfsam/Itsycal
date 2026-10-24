@@ -32,7 +32,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 {
     return @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon,
               kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon,
-              kBaselineOffset, kClockFormat, kWindowPosition];
+              kBaselineOffset, kClockFormat, kWindowPosition, kShowCompletedReminders];
 }
 
 @implementation ViewController
@@ -1531,6 +1531,10 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     }
     else if ([keyPath isEqualToString:kClockFormat]) {
         [self clockFormatDidChange];
+    }
+    else if ([keyPath isEqualToString:kShowCompletedReminders]) {
+        // Completed reminders are only fetched when shown.
+        [_ec refetchAll];
     }
     else if ([keyPath isEqualToString:kWindowPosition]) {
         // Move Itsycal now if it is showing (e.g., when pinned).

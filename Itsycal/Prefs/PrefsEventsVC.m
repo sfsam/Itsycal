@@ -37,6 +37,7 @@ static NSString * const kButtonCellId = @"ButtonCell";
     NSPopUpButton *_agendaDaysPopup;
     NSButton *_showLocation;
     NSButton *_showDaysWithoutEvents;
+    NSButton *_showCompletedReminders;
     NSArray *_sourcesAndCalendars;
     EKAuthorizationStatus _remindersStatus;
 }
@@ -104,14 +105,16 @@ static NSString * const kButtonCellId = @"ButtonCell";
     // Checkboxes
     _showLocation = chkbx(NSLocalizedString(@"Show event location", @""));
     _showDaysWithoutEvents = chkbx(NSLocalizedString(@"Show days with no events", @""));
+    _showCompletedReminders = chkbx(NSLocalizedString(@"Show completed reminders", @""));
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(eventListLabel, separator, tvContainer, _agendaDaysLabel, _agendaDaysPopup, _showLocation, _showDaysWithoutEvents)];
-    [vfl :@"V:|-m-[tvContainer(170)]-m-[eventListLabel]-10-[_agendaDaysPopup]-m-[_showLocation]-[_showDaysWithoutEvents]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20} views:NSDictionaryOfVariableBindings(eventListLabel, separator, tvContainer, _agendaDaysLabel, _agendaDaysPopup, _showLocation, _showDaysWithoutEvents, _showCompletedReminders)];
+    [vfl :@"V:|-m-[tvContainer(170)]-m-[eventListLabel]-10-[_agendaDaysPopup]-m-[_showLocation]-[_showDaysWithoutEvents]-[_showCompletedReminders]-m-|"];
     [vfl :@"H:|-m-[eventListLabel]-[separator]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[tvContainer]-m-|"];
     [vfl :@"H:|-m-[_agendaDaysLabel]-[_agendaDaysPopup]-(>=m)-|" :NSLayoutFormatAlignAllFirstBaseline];
     [vfl :@"H:|-m-[_showLocation]-(>=m)-|"];
     [vfl :@"H:|-m-[_showDaysWithoutEvents]-(>=m)-|"];
+    [vfl :@"H:|-m-[_showCompletedReminders]-(>=m)-|"];
 
     // Bindings for agenda days
     [_agendaDaysPopup bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowEventDays] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
@@ -121,6 +124,9 @@ static NSString * const kButtonCellId = @"ButtonCell";
 
     // Bindings for showDaysWithoutEvents preference
     [_showDaysWithoutEvents bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowDaysWithNoEventsInAgenda] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+
+    // Bindings for showCompletedReminders preference
+    [_showCompletedReminders bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowCompletedReminders] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     self.view = v;
 }
@@ -137,6 +143,7 @@ static NSString * const kButtonCellId = @"ButtonCell";
     _agendaDaysPopup.enabled = self.ec.calendarAccessGranted;
     _showLocation.enabled = self.ec.calendarAccessGranted;
     _showDaysWithoutEvents.enabled = self.ec.calendarAccessGranted;
+    _showCompletedReminders.enabled = _remindersStatus == EKAuthorizationStatusFullAccess;
 }
 
 - (void)viewDidAppear
@@ -196,6 +203,7 @@ static NSString * const kButtonCellId = @"ButtonCell";
 {
     [self.ec requestRemindersAccessWithCompletion:^{
         self->_remindersStatus = self.ec.remindersAuthorizationStatus;
+        self->_showCompletedReminders.enabled = self->_remindersStatus == EKAuthorizationStatusFullAccess;
         self->_sourcesAndCalendars = [self.ec sourcesAndCalendars];
         [self->_calendarsTV reloadData];
         // Show the reminder lists (or the denied message) at the end.

@@ -30,6 +30,7 @@ NSString * const kBaselineOffset = @"BaselineOffset";
 NSString * const kEnableMeetingButtonIndefinitely = @"EnableMeetingButtonIndefinitely";
 NSString * const kDoNotDrawOutlineAroundCurrentMonth = @"DoNotDrawOutlineAroundCurrentMonth";
 NSString * const kShowDaysWithNoEventsInAgenda = @"ShowDaysWithNoEventsInAgenda";
+NSString * const kShowCompletedReminders = @"ShowCompletedReminders";
 NSString * const kShowEventPopoverOnHover = @"ShowEventPopoverOnHover";
 NSString * const kDoNotCheckLoginItemStatus = @"DoNotCheckLoginItemStatus";
 NSString * const kWindowPosition = @"WindowPosition";

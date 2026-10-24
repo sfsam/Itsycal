@@ -11,9 +11,14 @@
 #import <AppKit/NSAlert.h>
 #import <AppKit/NSGraphics.h>
 #import "EventCenter.h"
+#import "Itsycal.h"
 
 // NSUserDefaults key for array of selected calendar IDs.
 static NSString *kSelectedCalendars = @"SelectedCalendars";
+
+// When completed reminders are hidden, a reminder stays this many
+// seconds after it's checked off, so the user sees it happen.
+static const NSTimeInterval kCompletedReminderLinger = 1;
 
 // meetingURL is readonly in the header; only EventCenter sets it.
 @interface EventInfo ()
@@ -56,7 +61,9 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     NSMutableDictionary  *_eventsForDate;          // _queueWork
     NSDictionary         *_filteredEventsForDate;  // _queueIsol
     NSMutableIndexSet    *_previouslyFetchedDates; // _queueWork
+    NSMutableDictionary<NSString *, NSDate *> *_completedRemindersFirstSeen; // _queueWork
     NSArray<EKReminder *> *_completedReminders;    // _queueWork; nil until fetched
+    NSUInteger            _lingerRefetchGeneration; // main thread
     NSArray              *_sourcesAndCalendars;    // _queueIsol2
     dispatch_queue_t      _queueWork;
     dispatch_queue_t      _queueIsol;
@@ -89,6 +96,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
         _eventsForDate  = [NSMutableDictionary new];
         _filteredEventsForDate = [NSDictionary new];
         _previouslyFetchedDates = [NSMutableIndexSet new];
+        _completedRemindersFirstSeen = [NSMutableDictionary new];
         _queueWork = dispatch_queue_create("com.mowglii.Itsycal.queueWork", DISPATCH_QUEUE_SERIAL);
         _queueIsol = dispatch_queue_create("com.mowglii.Itsycal.queueIsol", DISPATCH_QUEUE_SERIAL);
         _queueIsol2 = dispatch_queue_create("com.mowglii.Itsycal.queueIsol2", DISPATCH_QUEUE_SERIAL);
@@ -709,11 +717,79 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     // not due date, so fetch them all, once per refetch, and reuse
     // them for the other dates the user moves to. The caller filters
     // by due date.
+    // If the user hides completed reminders, fetch only those completed
+    // in the last few seconds, so a reminder the user just checked off
+    // stays a moment before it goes (see below). The store keeps
+    // completion dates to the second, and the change takes a moment
+    // to arrive, so look back further than kCompletedReminderLinger.
+    BOOL showCompleted = [[NSUserDefaults standardUserDefaults] boolForKey:kShowCompletedReminders];
     NSMutableArray<EKReminder *> *reminders = [NSMutableArray arrayWithArray:[self _fetchRemindersMatchingPredicate:[_store predicateForIncompleteRemindersWithDueDateStarting:startDate ending:endDate calendars:lists]]];
-    if (_completedReminders == nil) {
-        _completedReminders = [self _fetchRemindersMatchingPredicate:[_store predicateForCompletedRemindersWithCompletionDateStarting:nil ending:nil calendars:lists]];
+    if (showCompleted) {
+        if (_completedReminders == nil) {
+            _completedReminders = [self _fetchRemindersMatchingPredicate:[_store predicateForCompletedRemindersWithCompletionDateStarting:nil ending:nil calendars:lists]];
+        }
+        [reminders addObjectsFromArray:_completedReminders];
     }
-    [reminders addObjectsFromArray:_completedReminders];
+    else {
+        NSDate *completedSince = [NSDate dateWithTimeIntervalSinceNow:-(kCompletedReminderLinger + 5)];
+        [reminders addObjectsFromArray:[self _fetchRemindersMatchingPredicate:[_store predicateForCompletedRemindersWithCompletionDateStarting:completedSince ending:nil calendars:lists]]];
+    }
+    // A just-completed reminder lingers for kCompletedReminderLinger
+    // seconds from when we first see it completed, which is right after
+    // it's checked off (here or elsewhere). Drop it after that, and
+    // refetch when the next one is due to go.
+    if (!showCompleted) {
+        NSDate *now = [NSDate date];
+        NSDate *nextExpiry = nil;
+        NSMutableArray<EKReminder *> *lingering = [NSMutableArray new];
+        for (EKReminder *reminder in reminders) {
+            if (!reminder.isCompleted) {
+                // Unchecked (e.g. by undo), so it lingers
+                // again if it's checked off again.
+                [_completedRemindersFirstSeen removeObjectForKey:reminder.calendarItemIdentifier];
+                [lingering addObject:reminder];
+                continue;
+            }
+            NSString *identifier = reminder.calendarItemIdentifier;
+            NSDate *firstSeen = _completedRemindersFirstSeen[identifier];
+            if (firstSeen == nil) {
+                firstSeen = now;
+                _completedRemindersFirstSeen[identifier] = now;
+            }
+            NSDate *expiry = [firstSeen dateByAddingTimeInterval:kCompletedReminderLinger];
+            if ([expiry compare:now] == NSOrderedDescending) {
+                [lingering addObject:reminder];
+                if (nextExpiry == nil || [expiry compare:nextExpiry] == NSOrderedAscending) {
+                    nextExpiry = expiry;
+                }
+            }
+        }
+        reminders = lingering;
+        // Forget reminders long gone from the fetch window. Keep them
+        // an hour, not just until they leave it: a completion date set
+        // by a device whose clock runs fast can be in the future, so
+        // the reminder stays in the window longer and mustn't linger
+        // (and trigger a refetch) again.
+        for (NSString *identifier in _completedRemindersFirstSeen.allKeys) {
+            if ([now timeIntervalSinceDate:_completedRemindersFirstSeen[identifier]] > 60 * 60) {
+                [_completedRemindersFirstSeen removeObjectForKey:identifier];
+            }
+        }
+        // Keep only the latest scheduled refetch. Fetches can come in
+        // bursts (a save posts several store-change notifications), and
+        // the latest one knows the earliest expiry that's still pending.
+        if (nextExpiry) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSUInteger generation = ++self->_lingerRefetchGeneration;
+                NSTimeInterval delay = MAX(nextExpiry.timeIntervalSinceNow, 0) + 0.05;
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    if (generation == self->_lingerRefetchGeneration) {
+                        [self refetchAll];
+                    }
+                });
+            });
+        }
+    }
     // Only reminders with a due date belong on the calendar.
     return [reminders filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"dueDateComponents != nil"]];
 }

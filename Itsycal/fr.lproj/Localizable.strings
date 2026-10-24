@@ -138,6 +138,7 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Save Event" = "Enregistrer l'événement";
 "Settings…" = "Réglages…";
 "Show calendar weeks" = "Afficher les numéros de semaine";
+"Show completed reminders" = "Afficher les rappels terminés";
 "Show day of week in icon" = "L'icône affiche le jour de la semaine";
 "Show days with no events" = "Afficher les jours sans événements";
 "Show event dots" = "Afficher les indicateurs d'évènements";

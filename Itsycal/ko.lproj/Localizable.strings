@@ -138,6 +138,7 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Save Event" = "이벤트 저장하기";
 "Settings…" = "설정…";
 "Show calendar weeks" = "캘린더 주차 표시";
+"Show completed reminders" = "완료된 미리 알림 표시";
 "Show day of week in icon" = "아이콘에 요일 표시";
 "Show days with no events" = "이벤트 없는 날 표시";
 "Show event dots" = "이벤트 점 표시";

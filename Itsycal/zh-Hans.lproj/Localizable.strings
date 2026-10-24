@@ -138,6 +138,7 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Settings…" = "设置…";
 "Save Event" = "保存事件";
 "Show calendar weeks" = "显示日历周";
+"Show completed reminders" = "显示已完成的提醒事项";
 "Show day of week in icon" = "在图标中显示星期几";
 "Show days with no events" = "显示没有活动的日子";
 "Show event dots" = "显示事件圆点";
