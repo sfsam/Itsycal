@@ -198,8 +198,9 @@ static const CGFloat kReminderFillGap = 1;
     EventInfo *info = self.events[row];
     NSMenuItem *item;
     // Like Calendar, a reminder can be checked off or unchecked
-    // here, as well as by clicking its square.
-    if (info.reminder.calendar.allowsContentModifications) {
+    // here, as well as by clicking its square, but not a future
+    // occurrence of a repeating reminder.
+    if (info.reminder.calendar.allowsContentModifications && !info.isFutureOccurrence) {
         NSString *title = info.reminder.isCompleted
             ? NSLocalizedString(@"Mark as Incomplete", nil)
             : NSLocalizedString(@"Mark as Completed", nil);
@@ -615,8 +616,10 @@ static const CGFloat kReminderFillGap = 1;
     }
 
     // Clicking a reminder's square checks it off (or unchecks it), in
-    // the agenda but not in tooltips, if its list can be changed.
+    // the agenda but not in tooltips, if its list can be changed. Only
+    // a repeating reminder's current occurrence can be checked off.
     cell.btnComplete.hidden = !(info.reminder.calendar.allowsContentModifications &&
+                                !info.isFutureOccurrence &&
                                 [self.identifier isEqualToString:@"AgendaVC"]);
     cell.btnComplete.target = self;
     cell.btnComplete.action = @selector(toggleReminderCompleted:);
@@ -695,10 +698,17 @@ static const CGFloat kReminderFillGap = 1;
         cell.dim = YES;
     }
 
+    // Dim a repeating reminder's later occurrences, as Calendar does.
+    // Only the current occurrence can be overdue, even if a later one
+    // is already in the past (when the current one is overdue).
+    if (info.isFutureOccurrence) {
+        cell.titleTextField.textColor = Theme.agendaEventDateTextColor;
+        cell.dim = YES;
+    }
     // An incomplete reminder is overdue once its due time has
     // passed or, if it has no time, once its day has passed.
     // Show its title in red, as Reminders shows its due date.
-    if (info.reminder && !info.reminder.isCompleted) {
+    else if (info.reminder && !info.reminder.isCompleted) {
         NSDate *now = NSDate.date;
         NSDate *deadline = info.isAllDay ? [self.nsCal startOfDayForDate:now] : now;
         if ([info.dueDate compare:deadline] == NSOrderedAscending) {

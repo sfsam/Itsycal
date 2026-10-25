@@ -119,6 +119,10 @@
 @property (nonatomic) EKEvent *event;   // nil if there's no event on this date
 @property (nonatomic) EKReminder *reminder; // nil if this isn't a reminder
 @property (nonatomic) NSDate *dueDate;  // reminder's due date; start of day if it has no time
+// A later occurrence of a repeating reminder, which is due on its
+// current occurrence. Its dueDate is this occurrence's date. Calendar
+// shows these dimmed, and they can't be checked off.
+@property (nonatomic) BOOL isFutureOccurrence;
 // event or reminder, for the properties they share
 // (title, calendar, location, notes, URL, recurrence rules).
 @property (nonatomic, readonly) EKCalendarItem *item;

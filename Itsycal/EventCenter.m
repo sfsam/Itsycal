@@ -12,6 +12,7 @@
 #import <AppKit/NSGraphics.h>
 #import "EventCenter.h"
 #import "Itsycal.h"
+#import "ReminderRecurrence.h"
 
 // NSUserDefaults key for array of selected calendar IDs.
 static NSString *kSelectedCalendars = @"SelectedCalendars";
@@ -36,7 +37,7 @@ static const NSTimeInterval kCompletedReminderLinger = 1;
 @end
 
 static NSURL *MeetingURLForEvent(EKEvent *event); // see below
-static NSDate *DueDateForReminder(EKReminder *reminder, BOOL *hasTime); // see below
+static NSDate *DueDateForReminder(EKReminder *reminder, BOOL *hasTime, NSCalendar **calendar); // see below
 static NSArray<NSDictionary *> *AlarmValuesOfReminder(EKReminder *reminder); // see below
 
 // The parts of a reminder that checking it off can change, kept as
@@ -67,6 +68,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     NSDictionary         *_filteredEventsForDate;  // _queueIsol
     NSMutableIndexSet    *_previouslyFetchedDates; // _queueWork
     NSMutableDictionary<NSString *, NSDate *> *_completedRemindersFirstSeen; // _queueWork
+    NSArray<EKReminder *> *_incompleteReminders;   // _queueWork; nil until fetched
     NSArray<EKReminder *> *_completedReminders;    // _queueWork; nil until fetched
     NSUInteger            _lingerRefetchGeneration; // main thread
     NSArray              *_sourcesAndCalendars;    // _queueIsol2
@@ -354,7 +356,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     NSString *title = reminder.title;
     NSString *calendarIdentifier = reminder.calendar.calendarIdentifier;
     BOOL hasTime;
-    NSDate *nextDueDate = DueDateForReminder(reminder, &hasTime);
+    NSDate *nextDueDate = DueDateForReminder(reminder, &hasTime, NULL);
     __weak NSUndoManager *weakUndoManager = undoManager;
 
     // Find the copy now, so it's usually known by the time the user
@@ -567,6 +569,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     if (refetch) {
         _previouslyFetchedDates = [NSMutableIndexSet new];
         _eventsForDate = [NSMutableDictionary new];
+        _incompleteReminders = nil;
         _completedReminders = nil;
     }
     // Return immediately if we've already fetched for this date range.
@@ -656,26 +659,36 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
         }
     }
     
-    // Add reminders that are due between startDate and endDate.
+    // Add reminders that are due between startDate and endDate, and
+    // the later occurrences of repeating reminders that fall there.
     for (EKReminder *reminder in [self _fetchRemindersWithStartDate:startDate endDate:endDate]) {
         BOOL hasTime;
-        NSDate *dueDate = DueDateForReminder(reminder, &hasTime);
+        NSCalendar *dueCalendar;
+        NSDate *dueDate = DueDateForReminder(reminder, &hasTime, &dueCalendar);
         if (dueDate == nil) continue;
-        NSDate *date = [_cal startOfDayForDate:dueDate];
-        if ([date compare:startDate] == NSOrderedAscending ||
-            [date compare:endDate] != NSOrderedAscending) {
-            continue;
+        NSMutableArray<NSDate *> *occurrences = [NSMutableArray arrayWithObject:dueDate];
+        if (!reminder.isCompleted && reminder.hasRecurrenceRules) {
+            NSArray *later = RecurrenceDates(reminder.recurrenceRules.firstObject, dueDate, dueCalendar, startDate, endDate);
+            if (later) [occurrences addObjectsFromArray:later];
         }
-        EventInfo *info = [EventInfo new];
-        info.reminder = reminder;
-        info.dueDate  = hasTime ? dueDate : date;
-        // A reminder without a time goes with the all-day events,
-        // as in Calendar.
-        info.isAllDay = !hasTime;
-        if (eventsForDate[date] == nil) {
-            eventsForDate[date] = [NSMutableArray new];
+        for (NSDate *occurrence in occurrences) {
+            NSDate *date = [_cal startOfDayForDate:occurrence];
+            if ([date compare:startDate] == NSOrderedAscending ||
+                [date compare:endDate] != NSOrderedAscending) {
+                continue;
+            }
+            EventInfo *info = [EventInfo new];
+            info.reminder = reminder;
+            info.dueDate  = hasTime ? occurrence : date;
+            info.isFutureOccurrence = occurrence != dueDate;
+            // A reminder without a time goes with the all-day events,
+            // as in Calendar.
+            info.isAllDay = !hasTime;
+            if (eventsForDate[date] == nil) {
+                eventsForDate[date] = [NSMutableArray new];
+            }
+            [eventsForDate[date] addObject:info];
         }
-        [eventsForDate[date] addObject:info];
     }
 
     // eventsForDate is a dict that maps dates to an array of EventInfo objects.
@@ -683,15 +696,34 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     // All-day events are sorted by calendar title with real all-day events before
     // spanning all-day events. Reminders without a time sort like real all-day
     // events, and reminders with a time sort by their due date.
+    // As in Calendar, a completed reminder goes after the incomplete items at
+    // the same time (or among the all-day items), but never after a later item.
+    // Remaining ties go by title, so the order doesn't change between fetches.
+    NSComparisonResult (^completedLast)(EventInfo *, EventInfo *) = ^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
+        BOOL c1 = e1.reminder.isCompleted, c2 = e2.reminder.isCompleted;
+        if (c1 == c2) return NSOrderedSame;
+        return c1 ? NSOrderedDescending : NSOrderedAscending;
+    };
+    NSComparisonResult (^byTitle)(EventInfo *, EventInfo *) = ^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
+        return [e1.item.title ?: @"" localizedStandardCompare:e2.item.title ?: @""];
+    };
     for (NSDate *date in eventsForDate) {
         [eventsForDate[date] sortUsingComparator:^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
-            if (e1.isRealAllDay && e2.isRealAllDay)  { return [e1.item.calendar.title compare:e2.item.calendar.title];}
+            NSComparisonResult result;
+            if (e1.isRealAllDay && e2.isRealAllDay) {
+                result = completedLast(e1, e2);
+                if (result == NSOrderedSame) result = [e1.item.calendar.title compare:e2.item.calendar.title];
+            }
             else if (e1.isRealAllDay && !e2.isRealAllDay) { return NSOrderedAscending; }
             else if (!e1.isRealAllDay && e2.isRealAllDay) { return NSOrderedDescending; }
-            else if (e1.isAllDay && e2.isAllDay) { return [e1.item.calendar.title compare:e2.item.calendar.title];}
+            else if (e1.isAllDay && e2.isAllDay) { result = [e1.item.calendar.title compare:e2.item.calendar.title];}
             else if (e1.isAllDay) { return NSOrderedAscending;  }
             else if (e2.isAllDay) { return NSOrderedDescending; }
-            else { return [e1.startDate compare:e2.startDate]; }
+            else {
+                result = [e1.startDate compare:e2.startDate];
+                if (result == NSOrderedSame) result = completedLast(e1, e2);
+            }
+            return result != NSOrderedSame ? result : byTitle(e1, e2);
         }];
     }
     
@@ -717,18 +749,23 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     }
     if (lists.count == 0) return @[];
 
-    // Incomplete reminders due in the range, and completed reminders.
+    // Incomplete reminders and completed reminders. Fetch all the
+    // incomplete ones, once per refetch, and reuse them for the other
+    // dates the user moves to: ones due before the range are needed for
+    // repeating reminders, whose later occurrences can fall in it.
     // EventKit can only fetch completed reminders by completion date,
-    // not due date, so fetch them all, once per refetch, and reuse
-    // them for the other dates the user moves to. The caller filters
-    // by due date.
+    // not due date, so fetch them all, also once per refetch. The
+    // caller filters by due date.
     // If the user hides completed reminders, fetch only those completed
     // in the last few seconds, so a reminder the user just checked off
     // stays a moment before it goes (see below). The store keeps
     // completion dates to the second, and the change takes a moment
     // to arrive, so look back further than kCompletedReminderLinger.
     BOOL showCompleted = [[NSUserDefaults standardUserDefaults] boolForKey:kShowCompletedReminders];
-    NSMutableArray<EKReminder *> *reminders = [NSMutableArray arrayWithArray:[self _fetchRemindersMatchingPredicate:[_store predicateForIncompleteRemindersWithDueDateStarting:startDate ending:endDate calendars:lists]]];
+    if (_incompleteReminders == nil) {
+        _incompleteReminders = [self _fetchRemindersMatchingPredicate:[_store predicateForIncompleteRemindersWithDueDateStarting:nil ending:nil calendars:lists]];
+    }
+    NSMutableArray<EKReminder *> *reminders = [NSMutableArray arrayWithArray:_incompleteReminders];
     if (showCompleted) {
         if (_completedReminders == nil) {
             _completedReminders = [self _fetchRemindersMatchingPredicate:[_store predicateForCompletedRemindersWithCompletionDateStarting:nil ending:nil calendars:lists]];
@@ -858,7 +895,9 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
 // Return the date a reminder is due. A reminder may be due on a
 // day without a time. Then *hasTime is NO, and the date is the
 // start of that day in the local time zone, like an all-day event.
-static NSDate *DueDateForReminder(EKReminder *reminder, BOOL *hasTime)
+// If calendar isn't NULL, set it to the calendar the due date is in,
+// for expanding a repeating reminder's later occurrences.
+static NSDate *DueDateForReminder(EKReminder *reminder, BOOL *hasTime, NSCalendar **calendar)
 {
     *hasTime = NO;
     if (reminder.dueDateComponents == nil) return nil;
@@ -867,18 +906,19 @@ static NSDate *DueDateForReminder(EKReminder *reminder, BOOL *hasTime)
     // The components carry their own calendar (usually Gregorian),
     // which may differ from the user's. A time is in the components'
     // time zone, if any. A day without a time is in the local one.
-    NSCalendar *calendar = [components.calendar ?: [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian] copy];
-    calendar.timeZone = (*hasTime && components.timeZone) ? components.timeZone : [NSTimeZone localTimeZone];
+    NSCalendar *dueCalendar = [components.calendar ?: [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian] copy];
+    dueCalendar.timeZone = (*hasTime && components.timeZone) ? components.timeZone : [NSTimeZone localTimeZone];
+    if (calendar) *calendar = dueCalendar;
     components.calendar = nil;
     components.timeZone = nil;
-    return [calendar dateFromComponents:components];
+    return [dueCalendar dateFromComponents:components];
 }
 
 // Is reminder due at dueDate (which may be nil, for no due date)?
 BOOL ReminderIsDue(EKReminder *reminder, NSDate *dueDate)
 {
     BOOL hasTime;
-    NSDate *date = DueDateForReminder(reminder, &hasTime);
+    NSDate *date = DueDateForReminder(reminder, &hasTime, NULL);
     return date == dueDate || [date isEqualToDate:dueDate];
 }
 
@@ -890,7 +930,7 @@ BOOL ReminderIsDue(EKReminder *reminder, NSDate *dueDate)
     BOOL hasTime;
     state.dueDateComponents   = [reminder.dueDateComponents copy];
     state.startDateComponents = [reminder.startDateComponents copy];
-    state.dueDate             = DueDateForReminder(reminder, &hasTime);
+    state.dueDate             = DueDateForReminder(reminder, &hasTime, NULL);
     state.completionDate      = reminder.completionDate;
     state.alarmValues         = AlarmValuesOfReminder(reminder);
     state.occurrenceCount     = reminder.recurrenceRules.firstObject.recurrenceEnd.occurrenceCount;
