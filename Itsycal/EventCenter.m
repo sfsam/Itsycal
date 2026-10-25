@@ -49,8 +49,13 @@ static NSArray<NSDictionary *> *AlarmValuesOfReminder(EKReminder *reminder); // 
 @property (nonatomic) NSDate *completionDate;
 // See AlarmValuesOfReminder().
 @property (nonatomic) NSArray<NSDictionary *> *alarmValues;
+// The remaining count of a repeating reminder that ends after a number
+// of times, or 0. EventKit lowers it when the reminder is checked off.
+@property (nonatomic) NSUInteger occurrenceCount;
 + (instancetype)stateOfReminder:(EKReminder *)reminder;
-- (void)restoreDatesAndAlarmsOfReminder:(EKReminder *)reminder;
+// Put back what checking off a repeating reminder changes: its dates,
+// alarms and remaining count.
+- (void)restoreReminder:(EKReminder *)reminder;
 @end
 typedef EKEvent *(^EventMaker)(EKEventStore *store);
 static EventMaker EventMakerForEvent(EKEvent *event); // see below
@@ -401,7 +406,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
         return;
     }
     NSError *error = nil;
-    [before restoreDatesAndAlarmsOfReminder:current];
+    [before restoreReminder:current];
     if (![_store removeReminder:copy commit:NO error:&error] ||
         ![_store saveReminder:current commit:NO error:&error] ||
         ![_store commit:&error]) {
@@ -888,13 +893,26 @@ BOOL ReminderIsDue(EKReminder *reminder, NSDate *dueDate)
     state.dueDate             = DueDateForReminder(reminder, &hasTime);
     state.completionDate      = reminder.completionDate;
     state.alarmValues         = AlarmValuesOfReminder(reminder);
+    state.occurrenceCount     = reminder.recurrenceRules.firstObject.recurrenceEnd.occurrenceCount;
     return state;
 }
 
-- (void)restoreDatesAndAlarmsOfReminder:(EKReminder *)reminder
+- (void)restoreReminder:(EKReminder *)reminder
 {
     reminder.startDateComponents = self.startDateComponents;
     reminder.dueDateComponents   = self.dueDateComponents;
+    // Put back the remaining count, which EventKit lowered. Otherwise
+    // each check-off and undo would lose an occurrence. It must be a new
+    // rule: EventKit doesn't save a changed end on a copy of the old one.
+    // (The rule's first day of the week can't be set; it's only not the
+    // default if another app set it.) Only for a single rule, which is
+    // all Reminders makes, so another app's extra rules aren't lost.
+    EKRecurrenceRule *rule = reminder.recurrenceRules.firstObject;
+    if (reminder.recurrenceRules.count == 1 && self.occurrenceCount > 0 &&
+        rule.recurrenceEnd.occurrenceCount != self.occurrenceCount) {
+        EKRecurrenceEnd *end = [EKRecurrenceEnd recurrenceEndWithOccurrenceCount:self.occurrenceCount];
+        reminder.recurrenceRules = @[[[EKRecurrenceRule alloc] initRecurrenceWithFrequency:rule.frequency interval:rule.interval daysOfTheWeek:rule.daysOfTheWeek daysOfTheMonth:rule.daysOfTheMonth monthsOfTheYear:rule.monthsOfTheYear weeksOfTheYear:rule.weeksOfTheYear daysOfTheYear:rule.daysOfTheYear setPositions:rule.setPositions end:end]];
+    }
     // Rebuild the alarms only if they changed, so alarms we don't
     // need to touch keep everything about them. The store may return
     // them in a different order, so ignore order.
