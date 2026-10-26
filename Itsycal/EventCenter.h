@@ -117,6 +117,10 @@
 @interface EventInfo : NSObject
 
 @property (nonatomic) EKEvent *event;   // nil if there's no event on this date
+// The day this is listed under in the agenda (its key in
+// -filteredEventsForDate). An event that spans several days has an
+// EventInfo for each, so this can be after the event's start date.
+@property (nonatomic) NSDate *date;
 @property (nonatomic) EKReminder *reminder; // nil if this isn't a reminder
 @property (nonatomic) NSDate *dueDate;  // reminder's due date; start of day if it has no time
 // A later occurrence of a repeating reminder, which is due on its

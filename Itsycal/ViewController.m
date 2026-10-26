@@ -1194,10 +1194,13 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
                 // appropriately. For the date, we set an associated object.
                 // For the event we give it a new EventInfo. Importantly, the
                 // EventInfo's `event` and `reminder` properties will be nil
-                // and we will use this fact in AgendaViewController.
+                // and we will use this fact in AgendaViewController. Its
+                // `date` is set so double-clicking it opens this day.
                 [nsDate setHasNoEvents:YES];
                 [datesAndEvents addObject:nsDate];
-                [datesAndEvents addObject:[EventInfo new]];
+                EventInfo *noEvents = [EventInfo new];
+                noEvents.date = nsDate;
+                [datesAndEvents addObject:noEvents];
             }
         }
         date = AddDaysToDate(1, date);

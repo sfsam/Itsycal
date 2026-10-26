@@ -363,18 +363,11 @@ static const CGFloat kReminderFillGap = 1;
 
 - (NSDate *)dateForEventRow:(NSInteger)row
 {
-    // Work backwards from the event row (which is an EventInfo row)
-    // to find the parent NSDate row. We do this instead of just getting
-    // the event's startDate because spanning events might start
-    // on a different date from the one that was clicked.
-    while (row > 0) {
-        row = row - 1;
-        id obj = self.events[row];
-        if ([obj isKindOfClass:[NSDate class]]) {
-            return obj;
-        }
-    }
-    return nil;
+    // The day the event row (an EventInfo row) is listed under. We use
+    // this instead of the event's startDate because spanning events
+    // might start on a different date from the one that was clicked.
+    id obj = self.events[row];
+    return [obj isKindOfClass:[EventInfo class]] ? ((EventInfo *)obj).date : nil;
 }
 
 #pragma mark -

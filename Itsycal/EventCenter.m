@@ -638,6 +638,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
             // Make an EventInfo object...
             EventInfo *info = [EventInfo new];
             info.event       = event;
+            info.date        = date;
             //   isStartDate = (it starts on `date` AND ends not before `nextDate`)
             info.isStartDate = ([_cal isDate:date inSameDayAsDate:event.startDate] &&
                                 [event.endDate compare:nextDate] != NSOrderedAscending);
@@ -679,6 +680,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
             }
             EventInfo *info = [EventInfo new];
             info.reminder = reminder;
+            info.date     = date;
             info.dueDate  = hasTime ? occurrence : date;
             info.isFutureOccurrence = occurrence != dueDate;
             // A reminder without a time goes with the all-day events,
