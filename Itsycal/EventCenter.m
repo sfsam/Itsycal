@@ -95,6 +95,13 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
             // that would happen every time the user launches Itsycal
             // (including when the system launches it at startup) and
             // seeing the same modal alert would get old fast.
+            // Reminders don't need calendar access, so fetch them
+            // (and their lists) if the user granted reminders access.
+            if ([EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder] == EKAuthorizationStatusFullAccess) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self refetchAll];
+                });
+            }
         }
     };
     
