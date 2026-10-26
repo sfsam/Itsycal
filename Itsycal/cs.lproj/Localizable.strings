@@ -1,5 +1,7 @@
 /* Heading for a source's reminder lists in Settings, e.g. iCloud Reminders */
 "%@ Reminders" = "%@ – připomínky";
+/* VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders */
+"%@, %@" = "%@, %@";
 "1 day" = "1 den";
 "1 day before" = "1 den před";
 "1 day before (9 AM)" = "1 den před (9 AM)";
@@ -128,6 +130,8 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Outline current month" = "Ohraničit aktuální měsíc";
 /* Accessibility description for menu bar icon with the date in an outlined square */
 "Outlined date" = "Datum s obrysem";
+/* Heading of the agenda's section of overdue reminders */
+"Overdue" = "Po termínu";
 "Pin Itsycal   P" = "Přišpendlit Itsycal   P";
 "Quit Itsycal" = "Ukončit Itsycal";
 /* Heading in Settings before reminders access is granted */
@@ -144,6 +148,8 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Show event dots" = "Zobrazovat tečky událostí";
 "Show event location" = "Zobrazovat místo události";
 "Show month in icon" = "Zobrazovat měsíc v ikoně";
+/* Settings checkbox for the agenda's Overdue section */
+"Show overdue reminders at the top" = "Zobrazovat připomínky po termínu nahoře";
 "Show Reminders…" = "Zobrazit připomínky…";
 /* Label for how many days the event list shows */
 "Show:" = "Zobrazit:";

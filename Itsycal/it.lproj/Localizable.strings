@@ -1,5 +1,7 @@
 /* Heading for a source's reminder lists in Settings, e.g. iCloud Reminders */
 "%@ Reminders" = "Promemoria %@";
+/* VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders */
+"%@, %@" = "%@, %@";
 "1 day" = "1 giorno";
 "1 day before" = "1 giorno prima";
 "1 day before (9 AM)" = "1 giorno prima (9:00)";
@@ -128,6 +130,8 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "Outline current month" = "Contorna il mese corrente";
 /* Accessibility description for menu bar icon with the date in an outlined square */
 "Outlined date" = "Data con contorno";
+/* Heading of the agenda's section of overdue reminders */
+"Overdue" = "Scaduti";
 "Pin Itsycal   P" = "Mantieni Itsycal visibile   P";
 "Quit Itsycal" = "Esci da Itsycal";
 /* Heading in Settings before reminders access is granted */
@@ -144,6 +148,8 @@ Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
 "Show event dots" = "Mostra punti per gli eventi";
 "Show event location" = "Mostra la posizione dell'evento";
 "Show month in icon" = "L'icona mostra Mese";
+/* Settings checkbox for the agenda's Overdue section */
+"Show overdue reminders at the top" = "Mostra promemoria scaduti in alto";
 "Show Reminders…" = "Mostra promemoria…";
 /* Label for how many days the event list shows */
 "Show:" = "Mostra:";

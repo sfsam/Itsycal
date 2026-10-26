@@ -20,6 +20,7 @@
 static NSString *kColumnIdentifier    = @"Column";
 static NSString *kDateCellIdentifier  = @"DateCell";
 static NSString *kEventCellIdentifier = @"EventCell";
+static NSString *kOverdueHeadingCellIdentifier = @"OverdueHeadingCell";
 static const CGFloat kCompleteButtonSize = 18;
 // A reminder's square sits this much lower than an event's dot,
 // which looks better centered on the title.
@@ -35,6 +36,18 @@ static const CGFloat kReminderFillGap = 1;
 @property (nonatomic) NSTextField *dayTextField;
 @property (nonatomic) NSTextField *DOWTextField;
 @property (nonatomic, weak) NSDate *date;
+- (void)sizeChanged:(id)sender;
+@end
+
+// The Overdue section's heading: a date cell with a disclosure chevron
+// and "Overdue" in place of the day of the week, and the number of
+// overdue reminders in place of the date. Clicking it toggles the
+// section; to VoiceOver it's a disclosure triangle.
+@interface AgendaOverdueHeadingCell : AgendaDateCell
+@property (nonatomic) NSImageView *chevron;
+@property (nonatomic) NSTextField *titleTextField;
+@property (nonatomic) BOOL expanded;
+@property (nonatomic, copy) void (^toggleBlock)(void);
 @end
 
 @interface AgendaEventCell : NSView
@@ -175,10 +188,24 @@ static const CGFloat kReminderFillGap = 1;
 - (void)reloadData
 {
     [_tv reloadData];
-    [_tv scrollRowToVisible:0];
+    [self scrollToTop];
     [[_tv enclosingScrollView] flashScrollers];
     [self.view setNeedsLayout:YES];
     [_popover close];
+}
+
+- (void)reloadDataKeepingScrollPosition
+{
+    // NSTableView keeps its scroll position when it reloads, and the
+    // scroll view clamps it if the rows got shorter.
+    [_tv reloadData];
+    [self.view setNeedsLayout:YES];
+    [_popover close];
+}
+
+- (void)scrollToTop
+{
+    [_tv scrollRowToVisible:0];
 }
 
 #pragma mark -
@@ -338,6 +365,11 @@ static const CGFloat kReminderFillGap = 1;
 
 - (void)showPopover:(id)sender
 {
+    // Clicking the Overdue heading shows or hides the section.
+    if (_tv.clickedRow != -1 && [self.events[_tv.clickedRow] isKindOfClass:[AgendaOverdueHeading class]]) {
+        [self toggleOverdueSection];
+        return;
+    }
     if (_tv.clickedRow == -1 || [self tableView:_tv isGroupRow:_tv.clickedRow] ||
         [self tableView:_tv isEmptyEventRow:_tv.clickedRow]) return;
 
@@ -408,6 +440,22 @@ static const CGFloat kReminderFillGap = 1;
         }
         v = cell;
     }
+    else if ([obj isKindOfClass:[AgendaOverdueHeading class]]) {
+        AgendaOverdueHeading *heading = obj;
+        AgendaOverdueHeadingCell *cell = [_tv makeViewWithIdentifier:kOverdueHeadingCellIdentifier owner:self];
+        if (cell == nil) cell = [AgendaOverdueHeadingCell new];
+        NSString *count = [NSNumberFormatter localizedStringFromNumber:@(heading.count) numberStyle:NSNumberFormatterDecimalStyle];
+        cell.expanded = heading.expanded;
+        cell.dayTextField.stringValue = count;
+        // Red, like overdue reminders' titles, which a collapsed
+        // section hides.
+        cell.dayTextField.textColor = Theme.agendaOverdueTextColor;
+        cell.titleTextField.textColor = Theme.agendaDOWTextColor;
+        cell.accessibilityLabel = [NSString stringWithFormat:NSLocalizedString(@"%@, %@", @"VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders"), cell.titleTextField.stringValue, count];
+        __weak typeof(self) weakSelf = self;
+        cell.toggleBlock = ^{ [weakSelf toggleOverdueSection]; };
+        v = cell;
+    }
     else {
         EventInfo *info = obj;
         AgendaEventCell *cell = [_tv makeViewWithIdentifier:kEventCellIdentifier owner:self];
@@ -444,7 +492,16 @@ static const CGFloat kReminderFillGap = 1;
 
 - (BOOL)tableView:(NSTableView *)tableView isGroupRow:(NSInteger)row
 {
-    return [self.events[row] isKindOfClass:[NSDate class]];
+    // Date headings and the Overdue heading, which float.
+    id obj = self.events[row];
+    return [obj isKindOfClass:[NSDate class]] || [obj isKindOfClass:[AgendaOverdueHeading class]];
+}
+
+- (void)toggleOverdueSection
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(agendaWantsToToggleOverdueSection)]) {
+        [self.delegate agendaWantsToToggleOverdueSection];
+    }
 }
 
 - (BOOL)tableView:(NSTableView *)tableView isEmptyEventRow:(NSInteger)row
@@ -579,6 +636,21 @@ static const CGFloat kReminderFillGap = 1;
     return [dateFormatter stringFromDate:date];
 }
 
+// A reminder's due date for the Overdue section, e.g. "Oct 19" or
+// "Oct 19, 9 AM", with the year if it isn't this year.
+- (NSString *)dueDateStringForInfo:(EventInfo *)info
+{
+    static NSDateFormatter *formatter = nil;
+    if (formatter == nil) formatter = [NSDateFormatter new];
+    formatter.timeZone = [NSTimeZone localTimeZone];
+    formatter.locale = NSLocale.currentLocale;
+    BOOL thisYear = [self.nsCal isDate:info.dueDate equalToDate:NSDate.date toUnitGranularity:NSCalendarUnitYear];
+    NSString *template = thisYear ? @"MMMd" : @"yMMMd";
+    if (!info.isAllDay) template = [template stringByAppendingString:@"jmm"];
+    [formatter setLocalizedDateFormatFromTemplate:template];
+    return StringByStrippingZeroMinutes([formatter stringFromDate:info.dueDate]);
+}
+
 - (void)populateEventCell:(AgendaEventCell *)cell withInfo:(EventInfo *)info
 {
     static NSDateFormatter *timeFormatter = nil;
@@ -642,10 +714,15 @@ static const CGFloat kReminderFillGap = 1;
     // Hide location row IF !self.showLocation OR there's no location string.
     [cell.grid rowAtIndex:1].hidden = (!self.showLocation || location.length == 0);
     
-    // Hide duration row for all day events.
-    [cell.grid rowAtIndex:2].hidden = info.isAllDay;
+    // Hide duration row for all day events, except in the Overdue
+    // section, where it shows the due date.
+    [cell.grid rowAtIndex:2].hidden = info.isAllDay && !info.isInOverdueSection;
     
-    if (info.isAllDay == NO) {
+    if (info.isInOverdueSection) {
+        // Not under a day's heading, so show the due date (and time).
+        duration = [self dueDateStringForInfo:info];
+    }
+    else if (info.isAllDay == NO) {
         if (info.reminder) {
             // A reminder with a time shows when it's due.
             duration = [timeFormatter stringFromDate:info.dueDate];
@@ -763,6 +840,13 @@ static const CGFloat kReminderFillGap = 1;
 #pragma mark Agenda Row View
 
 // =========================================================================
+// AgendaOverdueHeading
+// =========================================================================
+
+// Properties auto-synthesized.
+@implementation AgendaOverdueHeading @end
+
+// =========================================================================
 // AgendaRowView
 // =========================================================================
 
@@ -840,6 +924,79 @@ static const CGFloat kReminderFillGap = 1;
     NSRect r = NSMakeRect(10, self.bounds.size.height - 4, self.bounds.size.width - 20, 1);
     [Theme.agendaDividerColor set];
     NSRectFillUsingOperation(r, NSCompositingOperationSourceOver);
+}
+
+@end
+
+// =========================================================================
+// AgendaOverdueHeadingCell
+// =========================================================================
+
+@implementation AgendaOverdueHeadingCell {
+    NSLayoutConstraint *_chevronWidthConstraint;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.identifier = kOverdueHeadingCellIdentifier;
+        // The date cell's day-of-week label gives way to a chevron and
+        // "Overdue". Its date label (dayTextField) shows the count.
+        self.DOWTextField.hidden = YES;
+        _chevron = [NSImageView new];
+        _chevron.translatesAutoresizingMaskIntoConstraints = NO;
+        _chevron.imageScaling = NSImageScaleNone;
+        _chevron.accessibilityElement = NO;
+        _titleTextField = [NSTextField labelWithString:NSLocalizedString(@"Overdue", @"Heading of the agenda's section of overdue reminders")];
+        _titleTextField.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addSubview:_chevron];
+        [self addSubview:_titleTextField];
+        [_chevron.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:6].active = YES;
+        [_chevron.centerYAnchor constraintEqualToAnchor:_titleTextField.centerYAnchor].active = YES;
+        // A fixed width, so the title doesn't move when the chevron turns.
+        _chevronWidthConstraint = [_chevron.widthAnchor constraintEqualToConstant:SizePref.fontSize];
+        _chevronWidthConstraint.active = YES;
+        [_titleTextField.leadingAnchor constraintEqualToAnchor:_chevron.trailingAnchor constant:2].active = YES;
+        [_titleTextField.lastBaselineAnchor constraintEqualToAnchor:self.dayTextField.lastBaselineAnchor].active = YES;
+        [self.dayTextField.leadingAnchor constraintGreaterThanOrEqualToAnchor:_titleTextField.trailingAnchor constant:4].active = YES;
+        // To VoiceOver, the cell is the disclosure triangle, labeled
+        // with the title and count; its labels aren't read again.
+        self.accessibilityElement = YES;
+        self.accessibilityRole = NSAccessibilityDisclosureTriangleRole;
+        _titleTextField.accessibilityElement = NO;
+        self.dayTextField.accessibilityElement = NO;
+        [self updateFontsAndChevron];
+    }
+    return self;
+}
+
+- (void)setExpanded:(BOOL)expanded
+{
+    _expanded = expanded;
+    [self updateFontsAndChevron];
+    self.accessibilityValue = @(expanded);
+}
+
+- (void)updateFontsAndChevron
+{
+    _titleTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
+    _chevronWidthConstraint.constant = SizePref.fontSize;
+    NSImageSymbolConfiguration *config = [NSImageSymbolConfiguration configurationWithPointSize:SizePref.fontSize - 2 weight:NSFontWeightBlack];
+    _chevron.image = [[NSImage imageWithSystemSymbolName:(_expanded ? @"chevron.down" : @"chevron.right") accessibilityDescription:nil] imageWithSymbolConfiguration:config];
+    _chevron.contentTintColor = Theme.agendaDOWTextColor;
+}
+
+- (void)sizeChanged:(id)sender
+{
+    [super sizeChanged:sender];
+    [self updateFontsAndChevron];
+}
+
+- (BOOL)accessibilityPerformPress
+{
+    if (self.toggleBlock) self.toggleBlock();
+    return YES;
 }
 
 @end

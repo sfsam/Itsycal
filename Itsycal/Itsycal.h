@@ -34,6 +34,8 @@ extern NSString * const kEnableMeetingButtonIndefinitely;
 extern NSString * const kDoNotDrawOutlineAroundCurrentMonth;
 extern NSString * const kShowDaysWithNoEventsInAgenda;
 extern NSString * const kShowCompletedReminders;
+extern NSString * const kShowOverdueReminders;
+extern NSString * const kOverdueSectionExpanded;
 extern NSString * const kShowEventPopoverOnHover;
 extern NSString * const kDoNotCheckLoginItemStatus;
 extern NSString * const kWindowPosition;

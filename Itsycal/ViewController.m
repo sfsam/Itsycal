@@ -32,7 +32,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 {
     return @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon,
               kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon,
-              kBaselineOffset, kClockFormat, kWindowPosition, kShowCompletedReminders];
+              kBaselineOffset, kClockFormat, kWindowPosition, kShowCompletedReminders,
+              kShowOverdueReminders];
 }
 
 @implementation ViewController
@@ -978,6 +979,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 {
     [[NSApplication sharedApplication] unhideWithoutActivation];
     [self positionItsycalWindowForInitialPresentation:YES];
+    [_agendaVC scrollToTop];
     [self.itsycalWindow makeKeyAndOrderFront:self];
     [self.itsycalWindow makeFirstResponder:_moCal];
     _inactiveTime = 0;
@@ -1216,7 +1218,9 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     //os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
     _filteredEventsForDate = [_ec filteredEventsForDate];
     [_moCal reloadData];
-    [self updateAgenda];
+    // Only the data changed. While the user is looking, keep their place.
+    // (The agenda scrolls to the top when the window opens.)
+    [self updateAgendaKeepingScrollPosition:self.itsycalWindow.isVisible];
 }
 
 - (MoDate)fetchStartDate
@@ -1243,10 +1247,52 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 - (void)updateAgenda
 {
+    [self updateAgendaKeepingScrollPosition:NO];
+}
+
+// Keep the scroll position when only the data changed, so the user
+// doesn't lose their place, e.g. checking off reminders in a long list.
+// Otherwise (a new date, a setting) start from the top.
+- (void)updateAgendaKeepingScrollPosition:(BOOL)keepScrollPosition
+{
     NSInteger days = [self daysToShowInAgenda];
-    _agendaVC.events = [self datesAndEventsForDate:_moCal.selectedDate days:days];
-    [_agendaVC reloadData];
+    NSArray *datesAndEvents = [self datesAndEventsForDate:_moCal.selectedDate days:days];
+    _agendaVC.events = [[self overdueRowsForAgendaDays:days] arrayByAddingObjectsFromArray:datesAndEvents];
+    if (keepScrollPosition) {
+        [_agendaVC reloadDataKeepingScrollPosition];
+    }
+    else {
+        [_agendaVC reloadData];
+    }
     [self showMeetingIndicatorIfNecessary];
+}
+
+// The Overdue section at the top of the agenda: a heading with the
+// number of reminders due before today and, if the user expanded it,
+// those reminders, most recently due first. It's shown only for today
+// (it's about now) and if the agenda shows any days. It starts
+// collapsed, and remembers whether it's expanded.
+- (NSArray *)overdueRowsForAgendaDays:(NSInteger)days
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if (days == 0 ||
+        CompareDates(_moCal.selectedDate, [self todayDate]) != 0 ||
+        ![defaults boolForKey:kShowOverdueReminders]) {
+        return @[];
+    }
+    NSArray *overdue = [_ec remindersDueBeforeDate:[_nsCal startOfDayForDate:[NSDate new]]];
+    if (overdue.count == 0) return @[];
+    AgendaOverdueHeading *heading = [AgendaOverdueHeading new];
+    heading.count = overdue.count;
+    heading.expanded = [defaults boolForKey:kOverdueSectionExpanded];
+    return heading.expanded ? [@[heading] arrayByAddingObjectsFromArray:overdue] : @[heading];
+}
+
+- (void)agendaWantsToToggleOverdueSection
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setBool:![defaults boolForKey:kOverdueSectionExpanded] forKey:kOverdueSectionExpanded];
+    [self updateAgenda];
 }
 
 #pragma mark -
@@ -1464,9 +1510,15 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     token = [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (!strongSelf) return;
+        MoDate selectedDate = strongSelf->_moCal.selectedDate;
         [strongSelf resetCalendarToToday];
         [strongSelf updateMenubarIcon];
         [strongSelf updateTimer];
+        // Reminders due yesterday are now overdue. Changing the selected
+        // date rebuilds the agenda; if it didn't change, rebuild it here.
+        if (CompareDates(selectedDate, strongSelf->_moCal.selectedDate) == 0) {
+            [strongSelf updateAgenda];
+        }
     }];
     [_notificationTokens addObject:token];
 
@@ -1521,7 +1573,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
 {
     if ([keyPath isEqualToString:kShowEventDays] ||
-        [keyPath isEqualToString:kShowDaysWithNoEventsInAgenda]) {
+        [keyPath isEqualToString:kShowDaysWithNoEventsInAgenda] ||
+        [keyPath isEqualToString:kShowOverdueReminders]) {
         [self updateAgenda];
     }
     else if ([keyPath isEqualToString:kMenuBarIconType] ||

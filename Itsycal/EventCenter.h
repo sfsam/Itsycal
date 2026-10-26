@@ -16,6 +16,7 @@
 // =========================================================================
 
 @protocol EventCenterDelegate;
+@class EventInfo;
 
 @interface EventCenter : NSObject
 
@@ -72,6 +73,12 @@
 // Only contains events for user's selected (i.e. filtered) calendars.
 - (NSDictionary *)filteredEventsForDate;
 
+// Reminders from selected lists whose current occurrence is due before
+// date, for the agenda's Overdue section: incomplete ones, and ones
+// checked off a moment ago, which linger briefly. Most recently due
+// first. Their EventInfos have isInOverdueSection set.
+- (NSArray<EventInfo *> *)remindersDueBeforeDate:(NSDate *)date;
+
 // When the user selects/unselects calendars in Prefs, we update
 // the list of selected calendars.
 - (void)updateSelectedCalendarsForIdentifier:(NSString *)identifier selected:(BOOL)selected;
@@ -127,6 +134,9 @@
 // current occurrence. Its dueDate is this occurrence's date. Calendar
 // shows these dimmed, and they can't be checked off.
 @property (nonatomic) BOOL isFutureOccurrence;
+// Listed in the agenda's Overdue section, not under a day, so the
+// agenda shows its due date.
+@property (nonatomic) BOOL isInOverdueSection;
 // event or reminder, for the properties they share
 // (title, calendar, location, notes, URL, recurrence rules).
 @property (nonatomic, readonly) EKCalendarItem *item;

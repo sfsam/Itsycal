@@ -1,5 +1,7 @@
 /* Heading for a source's reminder lists in Settings, e.g. iCloud Reminders */
 "%@ Reminders" = "%@ 提醒事项";
+/* VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders */
+"%@, %@" = "%@，%@";
 "1 day" = "1 天";
 "1 day before" = "1 天前";
 "1 day before (9 AM)" = "1 天前（上午9时）";
@@ -128,6 +130,8 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Outline current month" = "为当前月份显示轮廓";
 /* Accessibility description for menu bar icon with the date in an outlined square */
 "Outlined date" = "空心日期";
+/* Heading of the agenda's section of overdue reminders */
+"Overdue" = "已过期";
 "Pin Itsycal   P" = "固定 Itsycal   P";
 "Quit Itsycal" = "退出 Itsycal";
 /* Heading in Settings before reminders access is granted */
@@ -144,6 +148,8 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Show event dots" = "显示事件圆点";
 "Show event location" = "显示事件位置";
 "Show month in icon" = "在图标中显示月份";
+/* Settings checkbox for the agenda's Overdue section */
+"Show overdue reminders at the top" = "在顶部显示已过期的提醒事项";
 "Show Reminders…" = "显示提醒事项…";
 /* Label for how many days the event list shows */
 "Show:" = "显示：";

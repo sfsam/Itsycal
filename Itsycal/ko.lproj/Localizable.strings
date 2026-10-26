@@ -1,5 +1,7 @@
 /* Heading for a source's reminder lists in Settings, e.g. iCloud Reminders */
 "%@ Reminders" = "%@ 미리 알림";
+/* VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders */
+"%@, %@" = "%@, %@";
 "1 day" = "1일";
 "1 day before" = "1일 전";
 "1 day before (9 AM)" = "1일 전 (오전 9시)";
@@ -128,6 +130,8 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Outline current month" = "현재 월 외곽선 표시";
 /* Accessibility description for menu bar icon with the date in an outlined square */
 "Outlined date" = "윤곽선 날짜";
+/* Heading of the agenda's section of overdue reminders */
+"Overdue" = "기한 지남";
 "Pin Itsycal   P" = "Itsycal 고정하기   P";
 "Quit Itsycal" = "Itsycal 종료";
 /* Heading in Settings before reminders access is granted */
@@ -144,6 +148,8 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Show event dots" = "이벤트 점 표시";
 "Show event location" = "이벤트 위치 표시";
 "Show month in icon" = "아이콘에 월 표시";
+/* Settings checkbox for the agenda's Overdue section */
+"Show overdue reminders at the top" = "기한이 지난 미리 알림을 맨 위에 표시";
 "Show Reminders…" = "미리 알림 보기…";
 /* Label for how many days the event list shows */
 "Show:" = "표시:";
