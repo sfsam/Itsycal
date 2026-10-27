@@ -36,13 +36,15 @@ static const CGFloat kReminderFillGap = 1;
 @property (nonatomic) NSTextField *dayTextField;
 @property (nonatomic) NSTextField *DOWTextField;
 @property (nonatomic, weak) NSDate *date;
+@property (nonatomic) NSLayoutConstraint *dayTrailingConstraint;
 - (void)sizeChanged:(id)sender;
 @end
 
-// The Overdue section's heading: a date cell with a disclosure chevron
-// and "Overdue" in place of the day of the week, and the number of
-// overdue reminders in place of the date. Clicking it toggles the
-// section; to VoiceOver it's a disclosure triangle.
+// The Overdue section's heading: a date cell with "Overdue" in place
+// of the day of the week, and the number of overdue reminders and a
+// disclosure chevron in place of the date, like a section of Finder's
+// sidebar. Clicking it toggles the section; to VoiceOver it's a
+// disclosure triangle.
 @interface AgendaOverdueHeadingCell : AgendaDateCell
 @property (nonatomic) NSImageView *chevron;
 @property (nonatomic) NSTextField *titleTextField;
@@ -897,8 +899,10 @@ static const CGFloat kReminderFillGap = 1;
         [self addSubview:_dayTextField];
         [self addSubview:_DOWTextField];
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_dayTextField, _DOWTextField)];
-        [vfl :@"H:|-10-[_DOWTextField]-(>=4)-[_dayTextField]-10-|" :NSLayoutFormatAlignAllLastBaseline];
+        [vfl :@"H:|-10-[_DOWTextField]-(>=4)-[_dayTextField]" :NSLayoutFormatAlignAllLastBaseline];
         [vfl :@"V:|-6-[_dayTextField]-1-|"];
+        _dayTrailingConstraint = [self.trailingAnchor constraintEqualToAnchor:_dayTextField.trailingAnchor constant:10];
+        _dayTrailingConstraint.active = YES;
         
         REGISTER_FOR_SIZE_CHANGE;
     }
@@ -941,24 +945,29 @@ static const CGFloat kReminderFillGap = 1;
     self = [super init];
     if (self) {
         self.identifier = kOverdueHeadingCellIdentifier;
-        // The date cell's day-of-week label gives way to a chevron and
-        // "Overdue". Its date label (dayTextField) shows the count.
+        // The date cell's day-of-week label gives way to "Overdue". Its
+        // date label (dayTextField) shows the count, moved over to make
+        // room for the chevron after it.
         self.DOWTextField.hidden = YES;
         _chevron = [NSImageView new];
         _chevron.translatesAutoresizingMaskIntoConstraints = NO;
         _chevron.imageScaling = NSImageScaleNone;
+        _chevron.imageAlignment = NSImageAlignRight;
         _chevron.accessibilityElement = NO;
         _titleTextField = [NSTextField labelWithString:NSLocalizedString(@"Overdue", @"Heading of the agenda's section of overdue reminders")];
         _titleTextField.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:_chevron];
         [self addSubview:_titleTextField];
-        [_chevron.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:6].active = YES;
+        [_titleTextField.leadingAnchor constraintEqualToAnchor:self.DOWTextField.leadingAnchor].active = YES;
+        [_titleTextField.lastBaselineAnchor constraintEqualToAnchor:self.dayTextField.lastBaselineAnchor].active = YES;
+        // Right-aligned, a little inside the end of the divider.
+        [_chevron.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-11].active = YES;
         [_chevron.centerYAnchor constraintEqualToAnchor:_titleTextField.centerYAnchor].active = YES;
-        // A fixed width, so the title doesn't move when the chevron turns.
+        // A fixed width, so the count doesn't move when the chevron turns.
         _chevronWidthConstraint = [_chevron.widthAnchor constraintEqualToConstant:SizePref.fontSize];
         _chevronWidthConstraint.active = YES;
-        [_titleTextField.leadingAnchor constraintEqualToAnchor:_chevron.trailingAnchor constant:2].active = YES;
-        [_titleTextField.lastBaselineAnchor constraintEqualToAnchor:self.dayTextField.lastBaselineAnchor].active = YES;
+        self.dayTrailingConstraint.active = NO;
+        [self.dayTextField.trailingAnchor constraintEqualToAnchor:_chevron.leadingAnchor constant:-2].active = YES;
         [self.dayTextField.leadingAnchor constraintGreaterThanOrEqualToAnchor:_titleTextField.trailingAnchor constant:4].active = YES;
         // To VoiceOver, the cell is the disclosure triangle, labeled
         // with the title and count; its labels aren't read again.
@@ -982,9 +991,9 @@ static const CGFloat kReminderFillGap = 1;
 {
     _titleTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
     _chevronWidthConstraint.constant = SizePref.fontSize;
-    NSImageSymbolConfiguration *config = [NSImageSymbolConfiguration configurationWithPointSize:SizePref.fontSize - 2 weight:NSFontWeightBlack];
+    NSImageSymbolConfiguration *config = [NSImageSymbolConfiguration configurationWithPointSize:SizePref.fontSize - 2 weight:NSFontWeightSemibold];
     _chevron.image = [[NSImage imageWithSystemSymbolName:(_expanded ? @"chevron.down" : @"chevron.right") accessibilityDescription:nil] imageWithSymbolConfiguration:config];
-    _chevron.contentTintColor = Theme.agendaDOWTextColor;
+    _chevron.contentTintColor = Theme.agendaEventDateTextColor;
 }
 
 - (void)sizeChanged:(id)sender
