@@ -141,6 +141,9 @@
 // event or reminder, for the properties they share
 // (title, calendar, location, notes, URL, recurrence rules).
 @property (nonatomic, readonly) EKCalendarItem *item;
+// item's location without surrounding whitespace, or nil if that
+// leaves nothing.
+@property (nonatomic, readonly) NSString *location;
 // The event's start and end dates, or the reminder's due date.
 @property (nonatomic, readonly) NSDate *startDate;
 @property (nonatomic, readonly) NSDate *endDate;

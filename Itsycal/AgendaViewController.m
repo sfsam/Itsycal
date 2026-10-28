@@ -688,7 +688,7 @@ static const CGFloat kReminderFillGap = 1;
             // them into a single space.
             title = [[info.item.title componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] componentsJoinedByString:@" "];
         }
-        if (info.item.location) location = info.item.location;
+        if (info.location) location = info.location;
     }
     
     // Hide location row IF !self.showLocation OR there's no location string.

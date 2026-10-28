@@ -192,7 +192,7 @@
     }
     
     // Hide location row IF there's no location string.
-    [_grid rowAtIndex:1].hidden = !item.location;
+    [_grid rowAtIndex:1].hidden = !info.location;
     
     // Hide recurrence row IF there's no recurrence rule.
     [_grid rowAtIndex:4].hidden = !item.hasRecurrenceRules;
@@ -266,16 +266,10 @@
     }
     
     // Location
-    if (item.location) {
-        NSString *trimmedLoc = [item.location stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if ([trimmedLoc isEqualToString:@""]) {
-            [_grid rowAtIndex:1].hidden = YES;
-        }
-        else {
-            // Append a space to force correct height calc on first display.
-            // Same technique used for the URL field below.
-            [self populateTextView:_location withString:[trimmedLoc stringByAppendingString:@" "] heightConstraint:_locHeight];
-        }
+    if (info.location) {
+        // Append a space to force correct height calc on first display.
+        // Same technique used for the URL field below.
+        [self populateTextView:_location withString:[info.location stringByAppendingString:@" "] heightConstraint:_locHeight];
     }
     
     // Attendees

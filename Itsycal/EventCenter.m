@@ -31,6 +31,11 @@ static const NSTimeInterval kCompletedReminderLinger = 1;
 @implementation CalendarInfo @end
 @implementation EventInfo
 - (EKCalendarItem *)item { return _event ?: _reminder; }
+- (NSString *)location
+{
+    NSString *location = [self.item.location stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    return location.length > 0 ? location : nil;
+}
 - (NSDate *)startDate { return _reminder ? _dueDate : _event.startDate; }
 - (NSDate *)endDate { return _reminder ? _dueDate : _event.endDate; }
 - (BOOL)isRealAllDay { return _reminder ? _isAllDay : _event.isAllDay; }
