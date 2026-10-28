@@ -71,6 +71,10 @@ Sizer *SizePref = nil;
     return SML_MED_LRG(6, 7, 8);
 }
 
+- (CGFloat)agendaPopoverSectionSpacing {
+    return SML_MED_LRG(4, 6, 8);
+}
+
 - (CGFloat)agendaEventLeadingMargin {
     return SML_MED_LRG(21, 22, 24);
 }

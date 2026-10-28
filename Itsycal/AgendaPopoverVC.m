@@ -11,6 +11,64 @@
 #import "Sizer.h"
 #import "Themer.h"
 
+#define POPOVER_TEXT_WIDTH 280
+
+#pragma mark -
+#pragma mark AgendaPopoverSection
+
+// =========================================================================
+// AgendaPopoverSection
+// =========================================================================
+
+// A group of rows in the popover, below a separator unless it's the
+// first. -updateHidden hides it, separator and all, when all its rows
+// are hidden.
+@interface AgendaPopoverSection : NSStackView
+- (instancetype)initWithRows:(NSArray<NSView *> *)rows separator:(BOOL)separator;
+- (void)updateHidden;
+@end
+
+@implementation AgendaPopoverSection
+{
+    NSArray<NSView *> *_rows;
+}
+
+- (instancetype)initWithRows:(NSArray<NSView *> *)rows separator:(BOOL)separator
+{
+    self = [super initWithFrame:NSZeroRect];
+    if (self) {
+        _rows = rows;
+        self.orientation = NSUserInterfaceLayoutOrientationVertical;
+        self.alignment = NSLayoutAttributeLeading;
+        if (separator) {
+            NSBox *box = [NSBox new];
+            box.boxType = NSBoxSeparator;
+            [self addArrangedSubview:box];
+        }
+        for (NSView *row in rows) {
+            [self addArrangedSubview:row];
+        }
+        // Rows and separator are as wide as the popover's text.
+        for (NSView *view in self.arrangedSubviews) {
+            [view.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
+        }
+    }
+    return self;
+}
+
+- (void)updateHidden
+{
+    self.hidden = YES;
+    for (NSView *row in _rows) {
+        if (!row.hidden) {
+            self.hidden = NO;
+            break;
+        }
+    }
+}
+
+@end
+
 #pragma mark -
 #pragma mark AgendaPopoverVC
 
@@ -18,11 +76,10 @@
 // AgendaPopoverVC
 // =========================================================================
 
-#define POPOVER_TEXT_WIDTH 280
-
 @implementation AgendaPopoverVC
 {
-    NSGridView  *_grid;
+    NSStackView *_content;
+    NSArray<AgendaPopoverSection *> *_sections;
     NSTextField *_title;
     NSTextField *_duration;
     NSTextField *_recurrence;
@@ -49,12 +106,6 @@
         lbl.textColor = Theme.currentMonthTextColor;
         [lbl setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
         return lbl;
-    };
-    NSBox* (^separator)(void) = ^NSBox* {
-        // Need a big width for separator to show up reliably in NSGridView.
-        NSBox *separator = [[NSBox alloc] initWithFrame:NSMakeRect(0, 0, 999, 1)];
-        separator.boxType = NSBoxSeparator;
-        return separator;
     };
     NSTextView* (^textview)(void) = ^NSTextView* {
         NSTextView *txtview = [NSTextView new];
@@ -87,8 +138,7 @@
         MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:titleHolder metrics:nil views:NSDictionaryOfVariableBindings(_title, _btnDelete)];
         [vfl :@"H:|[_title]-(>=10)-[_btnDelete]|" :NSLayoutFormatAlignAllCenterY];
         [vfl :@"V:|[_title]|"];
-        [titleHolder.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
-        
+
         _attendees = [NSStackView new];
         _attendees.orientation = NSUserInterfaceLayoutOrientationVertical;
         _attendees.alignment = NSLayoutAttributeLeft;
@@ -96,27 +146,21 @@
         _attendees.detachesHiddenViews = NO;
         [_attendees setClippingResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationVertical];
         
-        _grid = [NSGridView gridViewWithViews:@[@[titleHolder],  // row 0
-                                                @[_location],    // 1
-                                                @[separator()],  // 2
-                                                @[_duration],    // 3
-                                                @[_recurrence],  // 4
-                                                @[separator()],  // 5
-                                                @[_attendees],   // 6
-                                                @[separator()],  // 7
-                                                @[_note],        // 8
-                                                @[_URL]]];       // 9
-        _grid.rowSpacing = 8;
-        _grid.translatesAutoresizingMaskIntoConstraints = NO;
-        [_grid cellForView:_btnDelete].xPlacement = NSGridCellPlacementCenter;
-        [_grid columnAtIndex:0].width = POPOVER_TEXT_WIDTH;
-        [_grid columnAtIndex:0].leadingPadding  = 10;
-        [_grid columnAtIndex:0].trailingPadding = 14;
+        _sections = @[[[AgendaPopoverSection alloc] initWithRows:@[titleHolder, _location] separator:NO],
+                      [[AgendaPopoverSection alloc] initWithRows:@[_duration, _recurrence] separator:YES],
+                      [[AgendaPopoverSection alloc] initWithRows:@[_attendees] separator:YES],
+                      [[AgendaPopoverSection alloc] initWithRows:@[_note, _URL] separator:YES]];
+
+        _content = [NSStackView stackViewWithViews:_sections];
+        _content.orientation = NSUserInterfaceLayoutOrientationVertical;
+        _content.alignment = NSLayoutAttributeLeading;
+        _content.edgeInsets = NSEdgeInsetsMake(0, 10, 0, 14);
+        _content.translatesAutoresizingMaskIntoConstraints = NO;
 
         _scrollView = [NSScrollView new];
         _scrollView.drawsBackground = NO;
         _scrollView.hasVerticalScroller = YES;
-        _scrollView.documentView = _grid;
+        _scrollView.documentView = _content;
         _scrollView.verticalScroller = [ThemedScroller new];
 
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
@@ -166,8 +210,8 @@
     // Also take into account the safe area.
     CGFloat h = self.view.safeAreaInsets.left + self.view.safeAreaInsets.right;
     CGFloat v = self.view.safeAreaInsets.top + self.view.safeAreaInsets.bottom;
-    return NSMakeSize(_grid.fittingSize.width + h,
-                      _grid.fittingSize.height + v + 16);
+    return NSMakeSize(_content.fittingSize.width + h,
+                      _content.fittingSize.height + v + 16);
 }
 
 - (void)scrollToTopAndFlashScrollers
@@ -177,8 +221,28 @@
     [_scrollView flashScrollers];
 }
 
+// Size the text and spacing to the agenda's text size setting.
+- (void)updateSizes
+{
+    // Space above and below a separator, and between a section's rows.
+    CGFloat spacing = SizePref.agendaPopoverSectionSpacing;
+    _content.spacing = spacing;
+    for (AgendaPopoverSection *section in _sections) {
+        section.spacing = spacing;
+    }
+
+    CGFloat fontSize = SizePref.fontSize;
+    NSFont *font = [NSFont systemFontOfSize:fontSize];
+    _title.font = [NSFont systemFontOfSize:fontSize weight:NSFontWeightSemibold];
+    _duration.font = font;
+    _recurrence.font = font;
+    _btnDelete.font = [NSFont systemFontOfSize:fontSize + 3];
+}
+
 - (void)populateWithEventInfo:(EventInfo *)info
 {
+    [self updateSizes];
+
     NSString *title = @"";
     NSString *duration = @"";
     NSString *recurrence = @"";
@@ -194,23 +258,18 @@
     if (info && item) {
         if (item.title) title = item.title;
     }
-    
-    // Hide location row IF there's no location string.
-    [_grid rowAtIndex:1].hidden = !info.location;
-    
-    // Hide recurrence row IF there's no recurrence rule.
-    [_grid rowAtIndex:4].hidden = !item.hasRecurrenceRules;
-    
-    // Hide attendees row and separator above it IF there are no attendees.
-    [_grid rowAtIndex:5].hidden = !info.event.hasAttendees;
-    [_grid rowAtIndex:6].hidden = !info.event.hasAttendees;
+    NSString *notes = [item.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
-    // Hide note row and separator row above it IF there's no note AND no URL.
-    [_grid rowAtIndex:7].hidden = !item.hasNotes && !item.URL;
-    [_grid rowAtIndex:8].hidden = !item.hasNotes;
-    
-    // Hide URL row IF there's no URL.
-    [_grid rowAtIndex:9].hidden = !item.URL;
+    // Hide the rows with nothing to show, then the sections with
+    // no rows showing. The title and duration always show.
+    _location.hidden = !info.location;
+    _recurrence.hidden = !item.hasRecurrenceRules;
+    _attendees.hidden = !info.event.hasAttendees;
+    _note.hidden = notes.length == 0;
+    _URL.hidden = !item.URL;
+    for (AgendaPopoverSection *section in _sections) {
+        [section updateHidden];
+    }
 
     // Hide delete button IF event doesn't allow modification.
     _btnDelete.hidden = !info.event.calendar.allowsContentModifications;
@@ -363,23 +422,15 @@
     }
 
     // Notes
-    if (item.hasNotes) {
-        NSString *trimmedNotes = [item.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if ([trimmedNotes isEqualToString:@""]) {
-            // Hide note row and separator row above it, provided no URL.
-            [_grid rowAtIndex:7].hidden = !item.URL;
-            [_grid rowAtIndex:8].hidden = YES;
-        }
-        else {
-            // Notes are plain text, except those made in a rich text
-            // editor (like Google Calendar's), which are HTML. Parsing
-            // plain text as HTML would drop anything in <angle brackets>
-            // and change text like &copy, so only parse notes with tags.
-            BOOL isHTML = [_htmlTagRegex firstMatchInString:trimmedNotes options:kNilOptions range:NSMakeRange(0, trimmedNotes.length)] != nil;
-            // Append a space to force correct height calc on first display.
-            // Same technique used for the URL field below.
-            [self populateTextView:_note withString:[trimmedNotes stringByAppendingString:@" "] isHTML:isHTML heightConstraint:_noteHeight];
-        }
+    if (notes.length > 0) {
+        // Notes are plain text, except those made in a rich text
+        // editor (like Google Calendar's), which are HTML. Parsing
+        // plain text as HTML would drop anything in <angle brackets>
+        // and change text like &copy, so only parse notes with tags.
+        BOOL isHTML = [_htmlTagRegex firstMatchInString:notes options:kNilOptions range:NSMakeRange(0, notes.length)] != nil;
+        // Append a space to force correct height calc on first display.
+        // Same technique used for the URL field below.
+        [self populateTextView:_note withString:[notes stringByAppendingString:@" "] isHTML:isHTML heightConstraint:_noteHeight];
     }
 
     // URL
@@ -394,11 +445,6 @@
     _duration.stringValue = duration;
     _recurrence.stringValue = recurrence;
     
-    _title.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
-    _duration.font = [NSFont systemFontOfSize:SizePref.fontSize];
-    _recurrence.font = _duration.font;
-    _btnDelete.font  = [NSFont systemFontOfSize:SizePref.fontSize+3];
-
     _title.textColor = Theme.agendaEventTextColor;
     _duration.textColor = Theme.agendaEventTextColor;
     _recurrence.textColor = Theme.agendaEventTextColor;
