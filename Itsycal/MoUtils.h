@@ -35,6 +35,14 @@ NSString *StringByStrippingZeroMinutes(NSString *duration);
 NSLocale *DateIntervalFormatterLocale(void);
 
 /**
+ * The date range from start to end, with medium dates and short times,
+ * e.g. "Oct 15, 2026, 10 AM – 12 PM". No times if allDay. Just one date
+ * (and time) if start and end are the same, as for a reminder.
+ * Call on the main thread.
+ */
+NSString *DateRangeString(NSDate *start, NSDate *end, BOOL allDay);
+
+/**
  * The date at which a virtual meeting becomes joinable: 15 minutes prior
  * to an event's start.
  */

@@ -175,17 +175,10 @@
 
 - (void)populateWithEventInfo:(EventInfo *)info
 {
-    static NSDateIntervalFormatter *intervalFormatter = nil;
-    if (intervalFormatter == nil) {
-        intervalFormatter = [NSDateIntervalFormatter new];
-        intervalFormatter.dateStyle = NSDateIntervalFormatterMediumStyle;
-    }
     NSString *title = @"";
     NSString *duration = @"";
     NSString *recurrence = @"";
-    intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
-    intervalFormatter.locale = DateIntervalFormatterLocale();
-    
+
     // info.item is the event or the reminder. Only events have
     // attendees and can be deleted here. A reminder has just a
     // due date, which may have no time, like an all-day event.
@@ -218,19 +211,13 @@
     // Hide delete button IF event doesn't allow modification.
     _btnDelete.hidden = !info.event.calendar.allowsContentModifications;
 
-    // All-day events don't show time.
-    intervalFormatter.timeStyle = isAllDay
-        ? NSDateIntervalFormatterNoStyle
-        : NSDateIntervalFormatterShortStyle;
-    // Interval formatter just prints single date when from == to.
-    duration = [intervalFormatter stringFromDate:startDate toDate:endDate];
-    duration = StringByStrippingZeroMinutes(duration);
+    duration = DateRangeString(startDate, endDate, isAllDay);
     // If the event is not All-day and the start and end dates are
     // different, put them on different lines.
     // The – is U+2013 (en-dash) and the space is U+2009 (thin space)
     if (!isAllDay) {
-        NSDateComponents *start = [intervalFormatter.calendar components:NSCalendarUnitMonth | NSCalendarUnitDay fromDate:startDate];
-        NSDateComponents *end = [intervalFormatter.calendar components:NSCalendarUnitMonth | NSCalendarUnitDay fromDate:endDate];
+        NSDateComponents *start = [NSCalendar.currentCalendar components:NSCalendarUnitMonth | NSCalendarUnitDay fromDate:startDate];
+        NSDateComponents *end = [NSCalendar.currentCalendar components:NSCalendarUnitMonth | NSCalendarUnitDay fromDate:endDate];
         if (start.day != end.day || start.month != end.month) {
             duration = [duration stringByReplacingOccurrencesOfString:@"– " withString:@"–\n"];
         }
@@ -267,8 +254,8 @@
         recurrence = [recurrence stringByAppendingString:frequency];
         if (rule.recurrenceEnd) {
             if (rule.recurrenceEnd.endDate) {
-                intervalFormatter.timeStyle = NSDateIntervalFormatterNoStyle;
-                NSString *endRecurrence = [NSString stringWithFormat:@"\n%@ %@", NSLocalizedString(@"End Repeat:", nil), [intervalFormatter stringFromDate:rule.recurrenceEnd.endDate toDate:rule.recurrenceEnd.endDate]];
+                NSDate *repeatEnd = rule.recurrenceEnd.endDate;
+                NSString *endRecurrence = [NSString stringWithFormat:@"\n%@ %@", NSLocalizedString(@"End Repeat:", nil), DateRangeString(repeatEnd, repeatEnd, YES)];
                 recurrence = [recurrence stringByAppendingString:endRecurrence];
             }
             if (rule.recurrenceEnd.occurrenceCount) {

@@ -264,27 +264,12 @@ static const CGFloat kReminderFillGap = 1;
 
 - (NSString *)pasteboardTextForEventRow:(NSInteger)row
 {
-    static NSDateIntervalFormatter *intervalFormatter = nil;
-    if (intervalFormatter == nil) {
-        intervalFormatter = [NSDateIntervalFormatter new];
-        intervalFormatter.dateStyle = NSDateIntervalFormatterMediumStyle;
-    }
-    
     AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
-    
+
     if (cell == nil) return nil; // should not happen
-    
-    intervalFormatter.timeZone  = [NSTimeZone localTimeZone];
-    intervalFormatter.locale = DateIntervalFormatterLocale();
-    // All-day events don't show time.
+
     EventInfo *info = cell.eventInfo;
-    intervalFormatter.timeStyle = info.isRealAllDay
-        ? NSDateIntervalFormatterNoStyle
-        : NSDateIntervalFormatterShortStyle;
-    // Interval formatter just prints single date when from == to,
-    // as for a reminder, which has just a due date.
-    NSString *duration = [intervalFormatter stringFromDate:info.startDate toDate:info.endDate];
-    duration = StringByStrippingZeroMinutes(duration);
+    NSString *duration = DateRangeString(info.startDate, info.endDate, info.isRealAllDay);
     NSString *eventText = [NSString stringWithFormat:@"%@\n%@\n%@%@",
                            cell.titleTextField.stringValue,
                            duration,

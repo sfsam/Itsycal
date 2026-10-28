@@ -65,6 +65,21 @@ NSLocale *DateIntervalFormatterLocale(void)
     return formatterLocale;
 }
 
+NSString *DateRangeString(NSDate *start, NSDate *end, BOOL allDay)
+{
+    static NSDateIntervalFormatter *formatter = nil;
+    if (formatter == nil) {
+        formatter = [NSDateIntervalFormatter new];
+        formatter.dateStyle = NSDateIntervalFormatterMediumStyle;
+    }
+    formatter.timeZone = [NSTimeZone localTimeZone];
+    formatter.locale = DateIntervalFormatterLocale();
+    formatter.timeStyle = allDay
+        ? NSDateIntervalFormatterNoStyle
+        : NSDateIntervalFormatterShortStyle;
+    return StringByStrippingZeroMinutes([formatter stringFromDate:start toDate:end]);
+}
+
 NSDate *MeetingJoinableThreshold(EKEvent *event, NSCalendar *calendar)
 {
     return [calendar dateByAddingUnit:NSCalendarUnitSecond value:-(15 * 60 + 30) toDate:event.startDate options:0];

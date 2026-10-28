@@ -1068,16 +1068,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
     
     // Make a string showing the event title and duration.
-    static NSDateIntervalFormatter *durationFormatter = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        durationFormatter = [NSDateIntervalFormatter new];
-        durationFormatter.dateStyle = NSDateIntervalFormatterMediumStyle;
-    });
-    durationFormatter.locale = DateIntervalFormatterLocale();
-    durationFormatter.timeStyle = event.isAllDay ? NSDateIntervalFormatterNoStyle : NSDateIntervalFormatterShortStyle;
     NSString *title = event.title == nil ? @"" : event.title;
-    NSString *duration = [durationFormatter stringFromDate:event.startDate toDate:event.endDate];
+    NSString *duration = DateRangeString(event.startDate, event.endDate, event.isAllDay);
     NSString *eventString = [NSString stringWithFormat:@"%@\n%@", title, duration];
 
     BOOL eventRepeats = event.hasRecurrenceRules;
