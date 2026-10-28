@@ -34,6 +34,7 @@
     NSDataDetector *_linkDetector;
     NSRegularExpression *_hiddenLinksRegex;
     NSRegularExpression *_messageLinksRegex;
+    NSRegularExpression *_htmlTagRegex;
     NSLayoutConstraint *_locHeight;
     NSLayoutConstraint *_noteHeight;
     NSLayoutConstraint *_URLHeight;
@@ -121,6 +122,9 @@
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
         _hiddenLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"<((https?|rdar):\\/\\/[^\\s]+)>" options:NSRegularExpressionCaseInsensitive error:NULL];
         _messageLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"message:%3\\S+" options:NSRegularExpressionCaseInsensitive error:NULL];
+        // An opening or closing tag a rich text editor would write,
+        // e.g. <br>, <a href="...">, </p>. Not <https://...>.
+        _htmlTagRegex = [NSRegularExpression regularExpressionWithPattern:@"</?(a|b|i|u|s|em|strong|br|p|div|span|ul|ol|li|font|h[1-6]|table|thead|tbody|tr|th|td|hr|img|blockquote|pre|code|sup|sub|strike|center|html|html-blob|body)(\\s[^<>]*)?/?>" options:NSRegularExpressionCaseInsensitive error:NULL];
         
         _locHeight = [_location.heightAnchor constraintEqualToConstant:100];
         _locHeight.active = YES;
@@ -269,7 +273,7 @@
     if (info.location) {
         // Append a space to force correct height calc on first display.
         // Same technique used for the URL field below.
-        [self populateTextView:_location withString:[info.location stringByAppendingString:@" "] heightConstraint:_locHeight];
+        [self populateTextView:_location withString:[info.location stringByAppendingString:@" "] isHTML:NO heightConstraint:_locHeight];
     }
     
     // Attendees
@@ -367,9 +371,14 @@
             [_grid rowAtIndex:8].hidden = YES;
         }
         else {
+            // Notes are plain text, except those made in a rich text
+            // editor (like Google Calendar's), which are HTML. Parsing
+            // plain text as HTML would drop anything in <angle brackets>
+            // and change text like &copy, so only parse notes with tags.
+            BOOL isHTML = [_htmlTagRegex firstMatchInString:trimmedNotes options:kNilOptions range:NSMakeRange(0, trimmedNotes.length)] != nil;
             // Append a space to force correct height calc on first display.
             // Same technique used for the URL field below.
-            [self populateTextView:_note withString:[trimmedNotes stringByAppendingString:@" "] heightConstraint:_noteHeight];
+            [self populateTextView:_note withString:[trimmedNotes stringByAppendingString:@" "] isHTML:isHTML heightConstraint:_noteHeight];
         }
     }
 
@@ -378,7 +387,7 @@
         // HACK: append a space at end of URL to force correct height calc. Without
         // this, height is sometimes wrong on first display.
         NSString *absURL = [NSString stringWithFormat:@"%@ ", item.URL.absoluteString];
-        [self populateTextView:_URL withString:absURL heightConstraint:_URLHeight];
+        [self populateTextView:_URL withString:absURL isHTML:NO heightConstraint:_URLHeight];
     }
     
     _title.stringValue = title;
@@ -395,7 +404,7 @@
     _recurrence.textColor = Theme.agendaEventTextColor;
 }
 
-- (void)populateTextView:(NSTextView *)textView withString:(NSString *)string heightConstraint:(NSLayoutConstraint *)constraint
+- (void)populateTextView:(NSTextView *)textView withString:(NSString *)string isHTML:(BOOL)isHTML heightConstraint:(NSLayoutConstraint *)constraint
 {
     // We will detect mail message URLs with _messageLinksRegex. These URLs
     // link directly to specific messages. They may contain fragments that look
@@ -404,15 +413,21 @@
     // we go to match standard URLs, we will only match those whose NSRanges
     // don't intersect (overlap) with message URLs.
     NSMutableArray *messageLinkRanges = [NSMutableArray new];
-    
-    // Ugly hack to deal with Microsoft's insane habit of putting links
-    // in angle brackets, making them invisible when rendereed as HTML.
-    string = [_hiddenLinksRegex stringByReplacingMatchesInString:string options:kNilOptions range:NSMakeRange(0, string.length) withTemplate:@"&lt;$1&gt;"];
 
-    string = [string stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"];
-    NSData *htmlData = [string dataUsingEncoding:NSUnicodeStringEncoding];
-    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithHTML:htmlData documentAttributes:nil];
-    
+    NSMutableAttributedString *attrString;
+    if (isHTML) {
+        // Ugly hack to deal with Microsoft's insane habit of putting links
+        // in angle brackets, making them invisible when rendereed as HTML.
+        string = [_hiddenLinksRegex stringByReplacingMatchesInString:string options:kNilOptions range:NSMakeRange(0, string.length) withTemplate:@"&lt;$1&gt;"];
+
+        string = [string stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"];
+        NSData *htmlData = [string dataUsingEncoding:NSUnicodeStringEncoding];
+        attrString = [[NSMutableAttributedString alloc] initWithHTML:htmlData documentAttributes:nil];
+    }
+    else {
+        attrString = [[NSMutableAttributedString alloc] initWithString:string];
+    }
+
     [attrString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:SizePref.fontSize] range:NSMakeRange(0, attrString.length)];
     [attrString addAttribute:NSForegroundColorAttributeName value:Theme.agendaEventTextColor range:NSMakeRange(0, attrString.length)];
     [_messageLinksRegex enumerateMatchesInString:attrString.string options:kNilOptions range:NSMakeRange(0, attrString.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
