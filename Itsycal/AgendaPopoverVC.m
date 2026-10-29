@@ -11,7 +11,8 @@
 #import "Sizer.h"
 #import "Themer.h"
 
-#define POPOVER_TEXT_WIDTH 280
+// The width of the popover's text.
+static const CGFloat kTextWidth = 280;
 
 // Rows for many attendees take long to lay out: about 40 ms for 50,
 // seconds for 500. Show at most this many lines: all the attendees if
@@ -44,7 +45,7 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
 @interface AgendaPopoverSection : NSStackView
 - (instancetype)initWithRows:(NSArray<NSView *> *)rows;
 - (void)updateHidden;
-// Set the width of the section's rows. POPOVER_TEXT_WIDTH to start.
+// Set the width of the section's rows. kTextWidth to start.
 - (void)setRowWidth:(CGFloat)rowWidth;
 // If set, the section's corners are concentric with the popover's
 // corners, and this is called with the radius they resolve to.
@@ -70,7 +71,7 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
         NSMutableArray *rowWidths = [NSMutableArray new];
         for (NSView *row in rows) {
             [self addArrangedSubview:row];
-            NSLayoutConstraint *rowWidth = [row.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH];
+            NSLayoutConstraint *rowWidth = [row.widthAnchor constraintEqualToConstant:kTextWidth];
             rowWidth.active = YES;
             [rowWidths addObject:rowWidth];
         }
@@ -164,7 +165,7 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
         txtview.selectable = YES;
         txtview.drawsBackground = NO;
         txtview.textContainer.lineFragmentPadding = 0;
-        txtview.textContainer.size = NSMakeSize(POPOVER_TEXT_WIDTH, FLT_MAX);
+        txtview.textContainer.size = NSMakeSize(kTextWidth, FLT_MAX);
         return txtview;
     };
     self = [super init];
@@ -326,7 +327,7 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
     if (_scrollView.hidden || _scrollView.scrollerStyle != NSScrollerStyleLegacy) return;
     [self.view layoutSubtreeIfNeeded];
     if (NSHeight(_body.frame) <= NSHeight(_scrollView.contentView.bounds)) return;
-    [self setBodyWidth:POPOVER_TEXT_WIDTH - [NSScroller scrollerWidthForControlSize:NSControlSizeRegular scrollerStyle:NSScrollerStyleLegacy]];
+    [self setBodyWidth:kTextWidth - [NSScroller scrollerWidthForControlSize:NSControlSizeRegular scrollerStyle:NSScrollerStyleLegacy]];
     // The text is taller now. Measure it again, and lay the body out
     // at its new height, so -popoverDidShow scrolls to its real top.
     [self setHeightConstraint:_locHeight forTextView:_location];
@@ -398,7 +399,7 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
 
     // Full width, unless the body turns out to need room for a
     // scroller. See -makeRoomForScroller.
-    [self setBodyWidth:POPOVER_TEXT_WIDTH];
+    [self setBodyWidth:kTextWidth];
 
     // Hide delete button IF event doesn't allow modification.
     _btnDelete.hidden = !info.event.calendar.allowsContentModifications;
