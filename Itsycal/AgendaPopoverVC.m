@@ -19,9 +19,8 @@ static const CGFloat kTextWidth = 280;
 // they fit, or one fewer and a line saying how many more.
 static const NSUInteger kMaxAttendeeLines = 50;
 
-// Space between the popover's edge and its sections, between
-// sections, and between a section's edge and its rows.
-static const CGFloat kInset = 10;
+// Space between the popover's edge and its content.
+static const CGFloat kInset = 14;
 
 // The popover is at most this tall, about as tall as Calendar's event
 // popover can be, and the body scrolls. (NSPopover keeps it on screen.)
@@ -49,23 +48,46 @@ static NSImage *CalendarDotImage(NSColor *color)
 }
 
 #pragma mark -
+#pragma mark AgendaPopoverSeparator
+
+// =========================================================================
+// AgendaPopoverSeparator
+// =========================================================================
+
+// A line between sections, drawn like the agenda's dividers.
+@interface AgendaPopoverSeparator : NSView
+@end
+
+@implementation AgendaPopoverSeparator
+
+- (NSSize)intrinsicContentSize
+{
+    return NSMakeSize(NSViewNoIntrinsicMetric, 1);
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    [Theme.agendaDividerColor set];
+    NSRectFillUsingOperation(self.bounds, NSCompositingOperationSourceOver);
+}
+
+@end
+
+#pragma mark -
 #pragma mark AgendaPopoverSection
 
 // =========================================================================
 // AgendaPopoverSection
 // =========================================================================
 
-// A section of the popover, like those of Calendar's event popover:
-// rows on a rounded, filled background. -updateHidden hides it when
-// all its rows are hidden.
+// A section of the popover: rows, below a separator unless it's the
+// title. -updateHidden hides it, separator and all, when all its rows
+// are hidden.
 @interface AgendaPopoverSection : NSStackView
-- (instancetype)initWithRows:(NSArray<NSView *> *)rows;
+- (instancetype)initWithRows:(NSArray<NSView *> *)rows separator:(BOOL)separator;
 - (void)updateHidden;
 // Set the width of the section's rows. kTextWidth to start.
 - (void)setRowWidth:(CGFloat)rowWidth;
-// If set, the section's corners are concentric with the popover's
-// corners, and this is called with the radius they resolve to.
-@property (nonatomic, copy) void (^concentricRadiusChanged)(CGFloat radius);
 @end
 
 @implementation AgendaPopoverSection
@@ -74,20 +96,21 @@ static NSImage *CalendarDotImage(NSColor *color)
     NSArray<NSLayoutConstraint *> *_rowWidths;
 }
 
-- (instancetype)initWithRows:(NSArray<NSView *> *)rows
+- (instancetype)initWithRows:(NSArray<NSView *> *)rows separator:(BOOL)separator
 {
     self = [super initWithFrame:NSZeroRect];
     if (self) {
         _rows = rows;
         self.orientation = NSUserInterfaceLayoutOrientationVertical;
         self.alignment = NSLayoutAttributeLeading;
-        self.edgeInsets = NSEdgeInsetsMake(kInset, kInset, kInset, kInset);
-        self.wantsLayer = YES;
-        self.layer.cornerCurve = kCACornerCurveContinuous;
+        NSMutableArray<NSView *> *views = [rows mutableCopy];
+        if (separator) {
+            [views insertObject:[AgendaPopoverSeparator new] atIndex:0];
+        }
         NSMutableArray *rowWidths = [NSMutableArray new];
-        for (NSView *row in rows) {
-            [self addArrangedSubview:row];
-            NSLayoutConstraint *rowWidth = [row.widthAnchor constraintEqualToConstant:kTextWidth];
+        for (NSView *view in views) {
+            [self addArrangedSubview:view];
+            NSLayoutConstraint *rowWidth = [view.widthAnchor constraintEqualToConstant:kTextWidth];
             rowWidth.active = YES;
             [rowWidths addObject:rowWidth];
         }
@@ -105,31 +128,6 @@ static NSImage *CalendarDotImage(NSColor *color)
 {
     for (NSLayoutConstraint *constraint in _rowWidths) {
         constraint.constant = rowWidth;
-    }
-}
-
-- (BOOL)wantsUpdateLayer
-{
-    return YES;
-}
-
-- (void)updateLayer
-{
-    self.layer.backgroundColor = Theme.popoverSectionColor.CGColor;
-}
-
-- (NSViewCornerConfiguration *)cornerConfiguration
-{
-    if (self.concentricRadiusChanged == nil) return [super cornerConfiguration];
-    // One radius for all four corners: the largest they resolve to.
-    return [NSViewCornerConfiguration configurationWithUniformRadius:NSViewCornerRadius.containerConcentricRadius];
-}
-
-- (void)viewDidChangeEffectiveCornerRadii
-{
-    [super viewDidChangeEffectiveCornerRadii];
-    if (self.concentricRadiusChanged) {
-        self.concentricRadiusChanged(self.effectiveCornerRadii.topLeft);
     }
 }
 
@@ -205,7 +203,6 @@ static NSImage *CalendarDotImage(NSColor *color)
     NSStackView *_header; // pinned at the top
     NSStackView *_body;   // scrolls below the header
     NSArray<AgendaPopoverSection *> *_sections;
-    AgendaPopoverSection *_titleSection; // its corners set the others'
     NSTextField *_title;
     NSButton *_btnDelete;
     NSTextField *_duration;
@@ -258,7 +255,8 @@ static NSImage *CalendarDotImage(NSColor *color)
         _btnDelete.title = @"";
         _btnDelete.focusRingType = NSFocusRingTypeNone;
         _btnDelete.bordered = NO;
-        _btnDelete.contentTintColor = NSColor.secondaryLabelColor;
+        _btnDelete.contentTintColor = NSColor.systemRedColor;
+        _btnDelete.hasDestructiveAction = YES;
         _btnDelete.target = self;
         _btnDelete.action = @selector(deleteClicked:);
         unichar backspaceKey = NSBackspaceCharacter;
@@ -311,7 +309,6 @@ static NSImage *CalendarDotImage(NSColor *color)
             NSStackView *stack = [NSStackView stackViewWithViews:views];
             stack.orientation = NSUserInterfaceLayoutOrientationVertical;
             stack.alignment = NSLayoutAttributeLeading;
-            stack.spacing = kInset;
             stack.edgeInsets = insets;
             stack.translatesAutoresizingMaskIntoConstraints = NO;
             return stack;
@@ -319,33 +316,17 @@ static NSImage *CalendarDotImage(NSColor *color)
 
         // Like Calendar, the title and time stay at the top and
         // the other sections scroll below them.
-        _titleSection = [[AgendaPopoverSection alloc] initWithRows:@[titleHolder]];
-        _header = stack(@[_titleSection,
-                          [[AgendaPopoverSection alloc] initWithRows:@[_duration, _recurrence]]],
+        _header = stack(@[[[AgendaPopoverSection alloc] initWithRows:@[titleHolder] separator:NO],
+                          [[AgendaPopoverSection alloc] initWithRows:@[_duration, _recurrence] separator:YES]],
                         NSEdgeInsetsMake(kInset, kInset, kInset, kInset));
-        _body = stack(@[[[AgendaPopoverSection alloc] initWithRows:@[_location]],
-                        [[AgendaPopoverSection alloc] initWithRows:@[_meetingRow]],
-                        [[AgendaPopoverSection alloc] initWithRows:@[_attendees]],
-                        [[AgendaPopoverSection alloc] initWithRows:@[_calendarRow]],
-                        [[AgendaPopoverSection alloc] initWithRows:@[_note]],
-                        [[AgendaPopoverSection alloc] initWithRows:@[_URL]]],
+        _body = stack(@[[[AgendaPopoverSection alloc] initWithRows:@[_location] separator:YES],
+                        [[AgendaPopoverSection alloc] initWithRows:@[_meetingRow] separator:YES],
+                        [[AgendaPopoverSection alloc] initWithRows:@[_attendees] separator:YES],
+                        [[AgendaPopoverSection alloc] initWithRows:@[_calendarRow] separator:YES],
+                        [[AgendaPopoverSection alloc] initWithRows:@[_note] separator:YES],
+                        [[AgendaPopoverSection alloc] initWithRows:@[_URL] separator:YES]],
                       NSEdgeInsetsMake(0, kInset, kInset, kInset));
         _sections = [_header.arrangedSubviews arrayByAddingObjectsFromArray:_body.arrangedSubviews];
-
-        // The title section sits by the popover's top corners, so its
-        // corners can be concentric with them. All sections use the
-        // radius that gives. (Sections in the scroll view can't work
-        // it out themselves: the scroll view is a container with its
-        // own corners, and they aren't worked out again as it scrolls.)
-        // See also -popoverDidShow.
-        __weak AgendaPopoverVC *weakSelf = self;
-        _titleSection.concentricRadiusChanged = ^(CGFloat radius) {
-            AgendaPopoverVC *strongSelf = weakSelf;
-            if (strongSelf == nil) return;
-            for (AgendaPopoverSection *section in strongSelf->_sections) {
-                section.layer.cornerRadius = radius;
-            }
-        };
 
         _scrollView = [NSScrollView new];
         _scrollView.drawsBackground = NO;
@@ -402,12 +383,6 @@ static NSImage *CalendarDotImage(NSColor *color)
 
 - (void)popoverDidShow
 {
-    // AppKit works out the title section's corners before the popover
-    // has its final size, and doesn't do it again after (on macOS 27).
-    // So the radius is often 0 or nearly the popover's. Have it worked
-    // out again now.
-    [_titleSection invalidateCornerConfiguration];
-
     [self makeRoomForScroller];
 
     NSView *docView = _scrollView.documentView;
@@ -457,6 +432,8 @@ static NSImage *CalendarDotImage(NSColor *color)
 {
     // Space above and below a separator, and between a section's rows.
     CGFloat spacing = SizePref.agendaPopoverSectionSpacing;
+    _header.spacing = spacing;
+    _body.spacing = spacing;
     for (AgendaPopoverSection *section in _sections) {
         section.spacing = spacing;
     }
@@ -468,10 +445,10 @@ static NSImage *CalendarDotImage(NSColor *color)
     _recurrence.font = font;
     _meetingHost.font = font;
     _calendarName.font = font;
-    // The same size as the ⌫ character it replaced, and the meeting
-    // icon's weight.
-    _btnDelete.symbolConfiguration = [NSImageSymbolConfiguration configurationWithPointSize:fontSize + 3 weight:NSFontWeightMedium];
-    _meetingIcon.symbolConfiguration = [NSImageSymbolConfiguration configurationWithPointSize:fontSize weight:NSFontWeightMedium];
+    // The size of the text, and the meeting icon's weight.
+    NSImageSymbolConfiguration *iconSize = [NSImageSymbolConfiguration configurationWithPointSize:fontSize weight:NSFontWeightMedium];
+    _btnDelete.symbolConfiguration = iconSize;
+    _meetingIcon.symbolConfiguration = iconSize;
 }
 
 - (void)populateWithEventInfo:(EventInfo *)info
@@ -508,6 +485,9 @@ static NSImage *CalendarDotImage(NSColor *color)
         [section updateHidden];
     }
     _scrollView.hidden = !AnyViewShows(_body.arrangedSubviews);
+    // Below the header: the space above the body's first separator, or
+    // the popover's edge if there's no body.
+    _header.edgeInsets = NSEdgeInsetsMake(kInset, kInset, _scrollView.hidden ? kInset : SizePref.agendaPopoverSectionSpacing, kInset);
 
     // Full width, unless the body turns out to need room for a
     // scroller. See -makeRoomForScroller.

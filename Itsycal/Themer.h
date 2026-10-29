@@ -37,7 +37,6 @@ extern Themer *Theme;
 @property (nonatomic, readonly) NSColor *monthTextColor;
 @property (nonatomic, readonly) NSColor *noncurrentMonthTextColor;
 @property (nonatomic, readonly) NSColor *pendingBackgroundColor;
-@property (nonatomic, readonly) NSColor *popoverSectionColor;
 @property (nonatomic, readonly) NSColor *resizeHandleBackgroundColor;
 @property (nonatomic, readonly) NSColor *resizeHandleForegroundColor;
 @property (nonatomic, readonly) NSColor *selectedCellColor;
