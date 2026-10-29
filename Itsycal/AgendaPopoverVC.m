@@ -32,6 +32,18 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
     return NO;
 }
 
+// A dot in a calendar's color, the size of the agenda's. Gray if the
+// calendar has no color.
+static NSImage *CalendarDotImage(NSColor *color)
+{
+    CGFloat side = SizePref.agendaDotWidth;
+    return [NSImage imageWithSize:NSMakeSize(side, side) flipped:NO drawingHandler:^BOOL(NSRect rect) {
+        [(color ?: NSColor.secondaryLabelColor) setFill];
+        [[NSBezierPath bezierPathWithOvalInRect:rect] fill];
+        return YES;
+    }];
+}
+
 #pragma mark -
 #pragma mark AgendaPopoverSection
 
@@ -139,6 +151,9 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
     NSTextView *_note;
     NSTextView *_URL;
     NSStackView *_attendees;
+    NSStackView *_calendarRow; // the calendar's dot and name
+    NSImageView *_calendarDot;
+    NSTextField *_calendarName;
     NSScrollView *_scrollView;
     NSDataDetector *_linkDetector;
     NSRegularExpression *_hiddenLinksRegex;
@@ -201,6 +216,17 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
         _attendees.spacing = 4;
         _attendees.detachesHiddenViews = NO;
         [_attendees setClippingResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationVertical];
+
+        // The calendar (or a reminder's list): its color as a dot and
+        // its name, like Calendar.
+        _calendarDot = [NSImageView new];
+        _calendarDot.accessibilityElement = NO;
+        _calendarName = [NSTextField labelWithString:@""];
+        _calendarName.lineBreakMode = NSLineBreakByTruncatingTail;
+        [_calendarName setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
+        _calendarRow = [NSStackView stackViewWithViews:@[_calendarDot, _calendarName]];
+        _calendarRow.alignment = NSLayoutAttributeCenterY;
+        _calendarRow.spacing = 7;
         
         NSStackView* (^stack)(NSArray<NSView *> *, NSEdgeInsets) = ^NSStackView* (NSArray<NSView *> *views, NSEdgeInsets insets) {
             NSStackView *stack = [NSStackView stackViewWithViews:views];
@@ -220,6 +246,7 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
                         NSEdgeInsetsMake(kInset, kInset, kInset, kInset));
         _body = stack(@[[[AgendaPopoverSection alloc] initWithRows:@[_location]],
                         [[AgendaPopoverSection alloc] initWithRows:@[_attendees]],
+                        [[AgendaPopoverSection alloc] initWithRows:@[_calendarRow]],
                         [[AgendaPopoverSection alloc] initWithRows:@[_note]],
                         [[AgendaPopoverSection alloc] initWithRows:@[_URL]]],
                       NSEdgeInsetsMake(0, kInset, kInset, kInset));
@@ -361,6 +388,7 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
     _title.font = [NSFont systemFontOfSize:fontSize weight:NSFontWeightSemibold];
     _duration.font = font;
     _recurrence.font = font;
+    _calendarName.font = font;
     _btnDelete.font = [NSFont systemFontOfSize:fontSize + 3];
 }
 
@@ -390,6 +418,7 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
     _location.hidden = !info.location;
     _recurrence.hidden = !item.hasRecurrenceRules;
     _attendees.hidden = !info.event.hasAttendees;
+    _calendarRow.hidden = item.calendar == nil;
     _note.hidden = notes == nil;
     _URL.hidden = !item.URL;
     for (AgendaPopoverSection *section in _sections) {
@@ -588,6 +617,10 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
     _title.textColor = Theme.agendaEventTextColor;
     _duration.textColor = Theme.agendaEventTextColor;
     _recurrence.textColor = Theme.agendaEventTextColor;
+
+    _calendarDot.image = CalendarDotImage(item.calendar.color);
+    _calendarName.stringValue = item.calendar.title ?: @"";
+    _calendarName.textColor = Theme.agendaEventTextColor;
 }
 
 // The item's notes as text to show, or nil if there's nothing to show.
