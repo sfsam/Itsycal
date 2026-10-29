@@ -203,7 +203,9 @@ static NSImage *CalendarDotImage(NSColor *color)
         _URL = textview();
         
         _btnDelete = [NSButton new];
-        _btnDelete.title = @"⌫";
+        _btnDelete.image = [NSImage imageWithSystemSymbolName:@"delete.backward" accessibilityDescription:NSLocalizedString(@"Delete This Event", @"")];
+        _btnDelete.imagePosition = NSImageOnly;
+        _btnDelete.title = @"";
         _btnDelete.focusRingType = NSFocusRingTypeNone;
         _btnDelete.bordered = NO;
         _btnDelete.contentTintColor = NSColor.secondaryLabelColor;
@@ -432,7 +434,9 @@ static NSImage *CalendarDotImage(NSColor *color)
     _recurrence.font = font;
     _meetingHost.font = font;
     _calendarName.font = font;
-    _btnDelete.font = [NSFont systemFontOfSize:fontSize + 3];
+    // The same size as the ⌫ character it replaced, and the meeting
+    // icon's weight.
+    _btnDelete.symbolConfiguration = [NSImageSymbolConfiguration configurationWithPointSize:fontSize + 3 weight:NSFontWeightMedium];
     _meetingIcon.symbolConfiguration = [NSImageSymbolConfiguration configurationWithPointSize:fontSize weight:NSFontWeightMedium];
 }
 
