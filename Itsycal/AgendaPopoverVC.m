@@ -23,6 +23,10 @@ static const NSUInteger kMaxAttendeeLines = 50;
 // sections, and between a section's edge and its rows.
 static const CGFloat kInset = 10;
 
+// The popover is at most this tall, about as tall as Calendar's event
+// popover can be, and the body scrolls. (NSPopover keeps it on screen.)
+static const CGFloat kMaxPopoverHeight = 800;
+
 // YES if any of views isn't hidden.
 static BOOL AnyViewShows(NSArray<NSView *> *views)
 {
@@ -393,7 +397,7 @@ static NSImage *CalendarDotImage(NSColor *color)
     CGFloat v = self.view.safeAreaInsets.top + self.view.safeAreaInsets.bottom;
     NSSize header = _header.fittingSize;
     CGFloat bodyHeight = _scrollView.hidden ? 0 : _body.fittingSize.height;
-    return NSMakeSize(header.width + h, header.height + bodyHeight + v);
+    return NSMakeSize(header.width + h, MIN(header.height + bodyHeight + v, kMaxPopoverHeight));
 }
 
 - (void)popoverDidShow
