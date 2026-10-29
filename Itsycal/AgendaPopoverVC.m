@@ -145,6 +145,7 @@ static NSImage *CalendarDotImage(NSColor *color)
     NSArray<AgendaPopoverSection *> *_sections;
     AgendaPopoverSection *_titleSection; // its corners set the others'
     NSTextField *_title;
+    NSButton *_btnDelete;
     NSTextField *_duration;
     NSTextField *_recurrence;
     NSTextView *_location;
@@ -206,6 +207,10 @@ static NSImage *CalendarDotImage(NSColor *color)
         _btnDelete.focusRingType = NSFocusRingTypeNone;
         _btnDelete.bordered = NO;
         _btnDelete.contentTintColor = NSColor.secondaryLabelColor;
+        _btnDelete.target = self;
+        _btnDelete.action = @selector(deleteClicked:);
+        unichar backspaceKey = NSBackspaceCharacter;
+        _btnDelete.keyEquivalent = [NSString stringWithCharacters:&backspaceKey length:1];
         
         NSView *titleHolder = [NSView new];
         [titleHolder addSubview:_title];
@@ -363,6 +368,20 @@ static NSImage *CalendarDotImage(NSColor *color)
     NSView *docView = _scrollView.documentView;
     [docView scrollPoint:NSMakePoint(0, NSHeight(docView.bounds))];
     [_scrollView flashScrollers];
+
+    // Prevent _note from eating key presses (like esc and delete).
+    [self.view.window makeFirstResponder:_btnDelete];
+}
+
+- (void)deleteClicked:(NSButton *)sender
+{
+    // The delete button disappears(?!?!) after being clicked (macOS 11).
+    // It's actually still there. You can click it. But it isn't drawn.
+    // This bizarre buggy behavior seems to affect borderless buttons.
+    // So we insanely toggle bordered on/off to make sure the button shows.
+    sender.bordered = YES;
+    sender.bordered = NO;
+    if (self.deleteHandler) self.deleteHandler();
 }
 
 - (void)makeRoomForScroller

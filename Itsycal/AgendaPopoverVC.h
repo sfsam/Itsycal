@@ -8,8 +8,9 @@
 @class EventInfo;
 
 @interface AgendaPopoverVC : NSViewController
-@property (nonatomic, weak) NSCalendar *nsCal;
-@property (nonatomic) NSButton *btnDelete;
+// Called when the user clicks the delete button or presses delete.
+// The button only shows for an event whose calendar can be changed.
+@property (nonatomic, copy) void (^deleteHandler)(void);
 - (void)populateWithEventInfo:(EventInfo *)info;
 // Call once the popover is shown at its final size.
 - (void)popoverDidShow;

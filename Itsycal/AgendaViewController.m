@@ -300,34 +300,32 @@ static const CGFloat kReminderFillGap = 1;
     if (row == -1 || [self tableView:_tv isGroupRow:row] ||
         [self tableView:_tv isEmptyEventRow:row]) return;
 
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        self->_popover = [MoPopover new];
-        self->_popover.contentViewController = [AgendaPopoverVC new];
-        self->_popover.behavior = NSPopoverBehaviorTransient;
-        self->_popover.animates = NO;
+    if (!_popover) {
+        AgendaPopoverVC *popoverVC = [AgendaPopoverVC new];
+        __weak AgendaViewController *weakSelf = self;
+        popoverVC.deleteHandler = ^{
+            AgendaViewController *strongSelf = weakSelf;
+            if (strongSelf == nil) return;
+            [strongSelf deleteEventInfo:strongSelf->_popoverEventInfo];
+        };
+        _popover = [MoPopover new];
+        _popover.contentViewController = popoverVC;
+        _popover.behavior = NSPopoverBehaviorTransient;
+        _popover.animates = NO;
         // Enable coloring the full background including the arrow.
         // See AgendaPopoverVC -loadView.
-        self->_popover.hasFullSizeContent = YES;
-    });
+        _popover.hasFullSizeContent = YES;
+    }
     
     AgendaEventCell *cell = [_tv viewAtColumn:0 row:row makeIfNecessary:NO];
     
     if (!cell) return; // should never happen
     
     AgendaPopoverVC *popoverVC = (AgendaPopoverVC *)_popover.contentViewController;
-    [popoverVC setNsCal:self.nsCal];
     [popoverVC populateWithEventInfo:cell.eventInfo];
     // Keep the event itself, not its row. self.events can be replaced
-    // while the popover is open. See -deleteEvent:.
+    // while the popover is open. See -deleteEventInfo:.
     _popoverEventInfo = cell.eventInfo;
-    
-    if (cell.eventInfo.event.calendar.allowsContentModifications) {
-        popoverVC.btnDelete.target = self;
-        popoverVC.btnDelete.action = @selector(deleteEvent:);
-        unichar backspaceKey = NSBackspaceCharacter;
-        popoverVC.btnDelete.keyEquivalent = [NSString stringWithCharacters:&backspaceKey length:1];
-    }
     
     NSRect positionRect = NSInsetRect([_tv rectOfRow:row], 8, 0);
     [_popover showRelativeToRect:positionRect ofView:_tv preferredEdge:NSRectEdgeMinX];
@@ -338,9 +336,6 @@ static const CGFloat kReminderFillGap = 1;
     [popoverVC.view layoutSubtreeIfNeeded];
     [_popover setContentSize:popoverVC.size];
     [popoverVC popoverDidShow];
-    
-    // Prevent popoverVC's _note from eating key presses (like esc and delete).
-    [popoverVC.view.window makeFirstResponder:popoverVC.btnDelete];
 }
 
 - (void)showPopover:(id)sender
@@ -525,23 +520,15 @@ static const CGFloat kReminderFillGap = 1;
 #pragma mark -
 #pragma mark Delete event
 
-- (void)deleteEvent:(id)sender
+- (void)deleteEvent:(NSMenuItem *)sender
+{
+    [self deleteEventInfo:sender.representedObject];
+}
+
+- (void)deleteEventInfo:(EventInfo *)info
 {
     // Act on a captured EventInfo, not a row index. self.events can be
     // replaced while the menu or popover is open.
-    EventInfo *info = nil;
-    if ([sender isKindOfClass:[NSButton class]]) {
-        NSButton *button = (NSButton *)sender;
-        // The delete button disappears(?!?!) after being clicked (macOS 11).
-        // It's actually still there. You can click it. But it isn't drawn.
-        // This bizarre buggy behavior seems to affect borderless buttons.
-        // So we insanely toggle bordered on/off to make sure the button shows.
-        button.bordered = YES;
-        button.bordered = NO;
-        info = _popoverEventInfo;
-    } else if ([sender isKindOfClass:[NSMenuItem class]]) {
-        info = [(NSMenuItem *)sender representedObject];
-    }
     if (info.event == nil || !info.event.calendar.allowsContentModifications) return;
     // The event may have changed or been deleted elsewhere since the menu
     // or popover opened. Refresh it; NO means it no longer exists.
@@ -556,7 +543,7 @@ static const CGFloat kReminderFillGap = 1;
 
 - (void)toggleReminderCompleted:(id)sender
 {
-    // Act on a captured EventInfo, not a row index. See -deleteEvent:.
+    // Act on a captured EventInfo, not a row index. See -deleteEventInfo:.
     // The sender is a reminder's square (a button in its cell) or a
     // context menu item. Its tag is what to set the reminder to,
     // decided from what the user saw: 1 to check off, 0 to uncheck.
