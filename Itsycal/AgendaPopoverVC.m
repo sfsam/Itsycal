@@ -151,6 +151,10 @@ static NSImage *CalendarDotImage(NSColor *color)
     NSTextView *_note;
     NSTextView *_URL;
     NSStackView *_attendees;
+    NSStackView *_meetingRow;  // video icon, host and Join button
+    NSImageView *_meetingIcon;
+    NSTextField *_meetingHost;
+    NSURL *_meetingURL;
     NSStackView *_calendarRow; // the calendar's dot and name
     NSImageView *_calendarDot;
     NSTextField *_calendarName;
@@ -217,6 +221,24 @@ static NSImage *CalendarDotImage(NSColor *color)
         _attendees.detachesHiddenViews = NO;
         [_attendees setClippingResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationVertical];
 
+        // A video meeting (Zoom, Teams, etc.): an icon, the meeting's
+        // host and a button to join it, like Calendar.
+        _meetingIcon = [NSImageView imageViewWithImage:[NSImage imageWithSystemSymbolName:@"video" accessibilityDescription:nil]];
+        _meetingIcon.accessibilityElement = NO;
+        _meetingIcon.contentTintColor = Theme.agendaEventTextColor;
+        _meetingHost = [NSTextField labelWithString:@""];
+        _meetingHost.lineBreakMode = NSLineBreakByTruncatingTail;
+        [_meetingHost setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
+        NSButton *joinButton = [NSButton buttonWithTitle:NSLocalizedString(@"Join", @"Button in the event popover that joins the event's video meeting (Zoom, Teams, etc.)") target:self action:@selector(joinMeeting:)];
+        joinButton.controlSize = NSControlSizeSmall;
+        joinButton.font = [NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSControlSizeSmall]];
+        // The blue of the agenda's video button when it's enabled.
+        joinButton.bezelColor = Theme.todayCellColor;
+        _meetingRow = [NSStackView stackViewWithViews:@[_meetingIcon, _meetingHost]];
+        [_meetingRow addView:joinButton inGravity:NSStackViewGravityTrailing];
+        _meetingRow.alignment = NSLayoutAttributeCenterY;
+        _meetingRow.spacing = 7;
+
         // The calendar (or a reminder's list): its color as a dot and
         // its name, like Calendar.
         _calendarDot = [NSImageView new];
@@ -245,6 +267,7 @@ static NSImage *CalendarDotImage(NSColor *color)
                           [[AgendaPopoverSection alloc] initWithRows:@[_duration, _recurrence]]],
                         NSEdgeInsetsMake(kInset, kInset, kInset, kInset));
         _body = stack(@[[[AgendaPopoverSection alloc] initWithRows:@[_location]],
+                        [[AgendaPopoverSection alloc] initWithRows:@[_meetingRow]],
                         [[AgendaPopoverSection alloc] initWithRows:@[_attendees]],
                         [[AgendaPopoverSection alloc] initWithRows:@[_calendarRow]],
                         [[AgendaPopoverSection alloc] initWithRows:@[_note]],
@@ -374,7 +397,7 @@ static NSImage *CalendarDotImage(NSColor *color)
     }
 }
 
-// Size the text and spacing to the agenda's text size setting.
+// Size the text, icons and spacing to the agenda's text size setting.
 - (void)updateSizes
 {
     // Space above and below a separator, and between a section's rows.
@@ -388,8 +411,10 @@ static NSImage *CalendarDotImage(NSColor *color)
     _title.font = [NSFont systemFontOfSize:fontSize weight:NSFontWeightSemibold];
     _duration.font = font;
     _recurrence.font = font;
+    _meetingHost.font = font;
     _calendarName.font = font;
     _btnDelete.font = [NSFont systemFontOfSize:fontSize + 3];
+    _meetingIcon.symbolConfiguration = [NSImageSymbolConfiguration configurationWithPointSize:fontSize weight:NSFontWeightMedium];
 }
 
 - (void)populateWithEventInfo:(EventInfo *)info
@@ -418,6 +443,7 @@ static NSImage *CalendarDotImage(NSColor *color)
     _location.hidden = !info.location;
     _recurrence.hidden = !item.hasRecurrenceRules;
     _attendees.hidden = !info.event.hasAttendees;
+    _meetingRow.hidden = info.meetingURL == nil;
     _calendarRow.hidden = item.calendar == nil;
     _note.hidden = notes == nil;
     _URL.hidden = !item.URL;
@@ -618,9 +644,23 @@ static NSImage *CalendarDotImage(NSColor *color)
     _duration.textColor = Theme.agendaEventTextColor;
     _recurrence.textColor = Theme.agendaEventTextColor;
 
+    // Only events have meetings. Show the host, like teams.microsoft.com.
+    _meetingURL = info.meetingURL;
+    NSString *host = _meetingURL.host.lowercaseString;
+    if ([host hasPrefix:@"www."]) host = [host substringFromIndex:4];
+    _meetingHost.stringValue = host ?: _meetingURL.absoluteString ?: @"";
+    _meetingHost.textColor = Theme.agendaEventTextColor;
+
     _calendarDot.image = CalendarDotImage(item.calendar.color);
     _calendarName.stringValue = item.calendar.title ?: @"";
     _calendarName.textColor = Theme.agendaEventTextColor;
+}
+
+- (void)joinMeeting:(id)sender
+{
+    // Open the meeting in its app if it's installed, like the
+    // agenda's video button.
+    if (_meetingURL) [NSWorkspace.sharedWorkspace openURL:AppLinkForMeetingURL(_meetingURL)];
 }
 
 // The item's notes as text to show, or nil if there's nothing to show.

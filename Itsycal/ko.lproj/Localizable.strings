@@ -99,6 +99,8 @@ Itsycal은 캘린더 이벤트를 보여줄 수 있을 때 더 유용해요.";
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsycal을 제대로 쓰려면 응용 프로그램 폴더로 옮겨 주세요.
 
 Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 주세요.";
+/* Button in the event popover that joins the event's video meeting (Zoom, Teams, etc.) */
+"Join" = "참여";
 "Keyboard shortcut" = "키보드 단축키";
 /* Large text size */
 "Large" = "크게";

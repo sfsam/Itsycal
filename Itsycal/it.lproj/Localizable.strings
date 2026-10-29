@@ -99,6 +99,8 @@ Itsycal è più utile quando è in grado di visualizzare eventi dai calendari. �
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsycal deve essere eseguito dalla cartella Applicazioni per poter funzionare correttamente.
 
 Si prega di esci da Itsycal, spostarlo nella cartella Applicazioni, e riavvia.";
+/* Button in the event popover that joins the event's video meeting (Zoom, Teams, etc.) */
+"Join" = "Partecipa";
 "Keyboard shortcut" = "Abbreviazione da tastiera";
 /* Large text size */
 "Large" = "Grande";

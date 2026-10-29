@@ -99,6 +99,8 @@ Itsycal is more useful when it can display events from your calendars. You can c
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "必须从应用程序文件夹运行 Itsycal 才能正常工作。
 
 请退出 Itsycal，将其移动到应用程序文件夹，然后重新启动。";
+/* Button in the event popover that joins the event's video meeting (Zoom, Teams, etc.) */
+"Join" = "加入";
 "Keyboard shortcut" = "键盘快捷键";
 /* Large text size */
 "Large" = "大";

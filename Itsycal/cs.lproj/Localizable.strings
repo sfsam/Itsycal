@@ -99,6 +99,8 @@ Itsycal je užitečnější, pokud může zobrazovat události z vašich kalend
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "Má-li Itsycal fungovat správně, je nutné jej spustit ze složky „Aplikace“.
 
 Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej spusťte.";
+/* Button in the event popover that joins the event's video meeting (Zoom, Teams, etc.) */
+"Join" = "Připojit";
 "Keyboard shortcut" = "Klávesová zkratka";
 /* Large text size */
 "Large" = "Velká";
