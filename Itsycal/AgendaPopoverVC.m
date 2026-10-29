@@ -420,12 +420,6 @@ static NSImage *CalendarDotImage(NSColor *color)
 
 - (void)deleteClicked:(NSButton *)sender
 {
-    // The delete button disappears(?!?!) after being clicked (macOS 11).
-    // It's actually still there. You can click it. But it isn't drawn.
-    // This bizarre buggy behavior seems to affect borderless buttons.
-    // So we insanely toggle bordered on/off to make sure the button shows.
-    sender.bordered = YES;
-    sender.bordered = NO;
     if (self.deleteHandler) self.deleteHandler();
 }
 
