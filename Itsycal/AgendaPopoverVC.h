@@ -11,6 +11,7 @@
 @property (nonatomic, weak) NSCalendar *nsCal;
 @property (nonatomic) NSButton *btnDelete;
 - (void)populateWithEventInfo:(EventInfo *)info;
-- (void)scrollToTopAndFlashScrollers;
+// Call once the popover is shown at its final size.
+- (void)popoverDidShow;
 - (NSSize)size;
 @end

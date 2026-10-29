@@ -137,6 +137,13 @@ Themer *Theme = nil;
     return NSColor.secondarySystemFillColor;
 }
 
+- (NSColor *)popoverSectionColor {
+    // A little darker than the background in Light Mode and
+    // lighter in Dark Mode, like the sections of Calendar's
+    // event popover.
+    return NSColor.tertiarySystemFillColor;
+}
+
 - (NSColor *)resizeHandleBackgroundColor {
     return [self highlightedDOWBackgroundColor];
 }

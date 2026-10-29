@@ -13,6 +13,19 @@
 
 #define POPOVER_TEXT_WIDTH 280
 
+// Space between the popover's edge and its sections, between
+// sections, and between a section's edge and its rows.
+static const CGFloat kInset = 10;
+
+// YES if any of views isn't hidden.
+static BOOL AnyViewShows(NSArray<NSView *> *views)
+{
+    for (NSView *view in views) {
+        if (!view.hidden) return YES;
+    }
+    return NO;
+}
+
 #pragma mark -
 #pragma mark AgendaPopoverSection
 
@@ -20,50 +33,81 @@
 // AgendaPopoverSection
 // =========================================================================
 
-// A group of rows in the popover, below a separator unless it's the
-// first. -updateHidden hides it, separator and all, when all its rows
-// are hidden.
+// A section of the popover, like those of Calendar's event popover:
+// rows on a rounded, filled background. -updateHidden hides it when
+// all its rows are hidden.
 @interface AgendaPopoverSection : NSStackView
-- (instancetype)initWithRows:(NSArray<NSView *> *)rows separator:(BOOL)separator;
+- (instancetype)initWithRows:(NSArray<NSView *> *)rows;
 - (void)updateHidden;
+// Set the width of the section's rows. POPOVER_TEXT_WIDTH to start.
+- (void)setRowWidth:(CGFloat)rowWidth;
+// If set, the section's corners are concentric with the popover's
+// corners, and this is called with the radius they resolve to.
+@property (nonatomic, copy) void (^concentricRadiusChanged)(CGFloat radius);
 @end
 
 @implementation AgendaPopoverSection
 {
     NSArray<NSView *> *_rows;
+    NSArray<NSLayoutConstraint *> *_rowWidths;
 }
 
-- (instancetype)initWithRows:(NSArray<NSView *> *)rows separator:(BOOL)separator
+- (instancetype)initWithRows:(NSArray<NSView *> *)rows
 {
     self = [super initWithFrame:NSZeroRect];
     if (self) {
         _rows = rows;
         self.orientation = NSUserInterfaceLayoutOrientationVertical;
         self.alignment = NSLayoutAttributeLeading;
-        if (separator) {
-            NSBox *box = [NSBox new];
-            box.boxType = NSBoxSeparator;
-            [self addArrangedSubview:box];
-        }
+        self.edgeInsets = NSEdgeInsetsMake(kInset, kInset, kInset, kInset);
+        self.wantsLayer = YES;
+        self.layer.cornerCurve = kCACornerCurveContinuous;
+        NSMutableArray *rowWidths = [NSMutableArray new];
         for (NSView *row in rows) {
             [self addArrangedSubview:row];
+            NSLayoutConstraint *rowWidth = [row.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH];
+            rowWidth.active = YES;
+            [rowWidths addObject:rowWidth];
         }
-        // Rows and separator are as wide as the popover's text.
-        for (NSView *view in self.arrangedSubviews) {
-            [view.widthAnchor constraintEqualToConstant:POPOVER_TEXT_WIDTH].active = YES;
-        }
+        _rowWidths = rowWidths;
     }
     return self;
 }
 
 - (void)updateHidden
 {
-    self.hidden = YES;
-    for (NSView *row in _rows) {
-        if (!row.hidden) {
-            self.hidden = NO;
-            break;
-        }
+    self.hidden = !AnyViewShows(_rows);
+}
+
+- (void)setRowWidth:(CGFloat)rowWidth
+{
+    for (NSLayoutConstraint *constraint in _rowWidths) {
+        constraint.constant = rowWidth;
+    }
+}
+
+- (BOOL)wantsUpdateLayer
+{
+    return YES;
+}
+
+- (void)updateLayer
+{
+    self.layer.backgroundColor = Theme.popoverSectionColor.CGColor;
+}
+
+- (NSViewCornerConfiguration *)cornerConfiguration
+{
+    if (self.concentricRadiusChanged == nil) return [super cornerConfiguration];
+    // One radius for all four corners: the largest they resolve to.
+    return [NSViewCornerConfiguration configurationWithUniformRadius:NSViewCornerRadius.containerConcentricRadius];
+}
+
+- (void)viewDidChangeEffectiveCornerRadii
+{
+    [super viewDidChangeEffectiveCornerRadii];
+    if (self.concentricRadiusChanged) {
+        self.concentricRadiusChanged(self.effectiveCornerRadii.topLeft);
     }
 }
 
@@ -78,8 +122,10 @@
 
 @implementation AgendaPopoverVC
 {
-    NSStackView *_content;
+    NSStackView *_header; // pinned at the top
+    NSStackView *_body;   // scrolls below the header
     NSArray<AgendaPopoverSection *> *_sections;
+    AgendaPopoverSection *_titleSection; // its corners set the others'
     NSTextField *_title;
     NSTextField *_duration;
     NSTextField *_recurrence;
@@ -121,6 +167,10 @@
         _title = label();
         _duration = label();
         _recurrence = label();
+        // The title is pinned above the scroll view, so a very long one
+        // could push everything else out of the popover. Cap it.
+        _title.maximumNumberOfLines = 5;
+        _title.cell.truncatesLastVisibleLine = YES;
         
         _location = textview();
         _note = textview();
@@ -146,22 +196,49 @@
         _attendees.detachesHiddenViews = NO;
         [_attendees setClippingResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationVertical];
         
-        _sections = @[[[AgendaPopoverSection alloc] initWithRows:@[titleHolder, _location] separator:NO],
-                      [[AgendaPopoverSection alloc] initWithRows:@[_duration, _recurrence] separator:YES],
-                      [[AgendaPopoverSection alloc] initWithRows:@[_attendees] separator:YES],
-                      [[AgendaPopoverSection alloc] initWithRows:@[_note, _URL] separator:YES]];
+        NSStackView* (^stack)(NSArray<NSView *> *, NSEdgeInsets) = ^NSStackView* (NSArray<NSView *> *views, NSEdgeInsets insets) {
+            NSStackView *stack = [NSStackView stackViewWithViews:views];
+            stack.orientation = NSUserInterfaceLayoutOrientationVertical;
+            stack.alignment = NSLayoutAttributeLeading;
+            stack.spacing = kInset;
+            stack.edgeInsets = insets;
+            stack.translatesAutoresizingMaskIntoConstraints = NO;
+            return stack;
+        };
 
-        _content = [NSStackView stackViewWithViews:_sections];
-        _content.orientation = NSUserInterfaceLayoutOrientationVertical;
-        _content.alignment = NSLayoutAttributeLeading;
-        _content.edgeInsets = NSEdgeInsetsMake(0, 10, 0, 14);
-        _content.translatesAutoresizingMaskIntoConstraints = NO;
+        // Like Calendar, the title and time stay at the top and
+        // the other sections scroll below them.
+        _titleSection = [[AgendaPopoverSection alloc] initWithRows:@[titleHolder]];
+        _header = stack(@[_titleSection,
+                          [[AgendaPopoverSection alloc] initWithRows:@[_duration, _recurrence]]],
+                        NSEdgeInsetsMake(kInset, kInset, kInset, kInset));
+        _body = stack(@[[[AgendaPopoverSection alloc] initWithRows:@[_location]],
+                        [[AgendaPopoverSection alloc] initWithRows:@[_attendees]],
+                        [[AgendaPopoverSection alloc] initWithRows:@[_note]],
+                        [[AgendaPopoverSection alloc] initWithRows:@[_URL]]],
+                      NSEdgeInsetsMake(0, kInset, kInset, kInset));
+        _sections = [_header.arrangedSubviews arrayByAddingObjectsFromArray:_body.arrangedSubviews];
+
+        // The title section sits by the popover's top corners, so its
+        // corners can be concentric with them. All sections use the
+        // radius that gives. (Sections in the scroll view can't work
+        // it out themselves: the scroll view is a container with its
+        // own corners, and they aren't worked out again as it scrolls.)
+        // See also -popoverDidShow.
+        __weak AgendaPopoverVC *weakSelf = self;
+        _titleSection.concentricRadiusChanged = ^(CGFloat radius) {
+            AgendaPopoverVC *strongSelf = weakSelf;
+            if (strongSelf == nil) return;
+            for (AgendaPopoverSection *section in strongSelf->_sections) {
+                section.layer.cornerRadius = radius;
+            }
+        };
 
         _scrollView = [NSScrollView new];
         _scrollView.drawsBackground = NO;
         _scrollView.hasVerticalScroller = YES;
-        _scrollView.documentView = _content;
-        _scrollView.verticalScroller = [ThemedScroller new];
+        _scrollView.autohidesScrollers = YES;
+        _scrollView.documentView = _body;
 
         _linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:NULL];
         _hiddenLinksRegex = [NSRegularExpression regularExpressionWithPattern:@"<((https?|rdar):\\/\\/[^\\s]+)>" options:NSRegularExpressionCaseInsensitive error:NULL];
@@ -183,10 +260,12 @@
 - (void)loadView
 {
     NSView *view = [NSView new];
+    [view addSubview:_header];
     [view addSubview:_scrollView];
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:view metrics:nil views:NSDictionaryOfVariableBindings(_scrollView)];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:view metrics:nil views:NSDictionaryOfVariableBindings(_header, _scrollView)];
+    [vfl :@"H:|[_header]|"];
     [vfl :@"H:|[_scrollView]|"];
-    [vfl :@"V:|-8-[_scrollView]-8-|"];
+    [vfl :@"V:|[_header][_scrollView]|"];
 
     // The popover has hasFullSizeContent=YES. Use the
     // safeAreaLayoutGuide of a view that paints its background
@@ -206,19 +285,60 @@
 
 - (NSSize)size
 {
-    // See -loadView. Vertial padding top+bottom = 16.
-    // Also take into account the safe area.
+    // The header and body (see -loadView), plus the safe area. The
+    // body is hidden when none of its sections show.
     CGFloat h = self.view.safeAreaInsets.left + self.view.safeAreaInsets.right;
     CGFloat v = self.view.safeAreaInsets.top + self.view.safeAreaInsets.bottom;
-    return NSMakeSize(_content.fittingSize.width + h,
-                      _content.fittingSize.height + v + 16);
+    NSSize header = _header.fittingSize;
+    CGFloat bodyHeight = _scrollView.hidden ? 0 : _body.fittingSize.height;
+    return NSMakeSize(header.width + h, header.height + bodyHeight + v);
 }
 
-- (void)scrollToTopAndFlashScrollers
+- (void)popoverDidShow
 {
+    // AppKit works out the title section's corners before the popover
+    // has its final size, and doesn't do it again after (on macOS 27).
+    // So the radius is often 0 or nearly the popover's. Have it worked
+    // out again now.
+    [_titleSection invalidateCornerConfiguration];
+
+    [self makeRoomForScroller];
+
     NSView *docView = _scrollView.documentView;
     [docView scrollPoint:NSMakePoint(0, NSHeight(docView.bounds))];
     [_scrollView flashScrollers];
+}
+
+- (void)makeRoomForScroller
+{
+    // When scroll bars always show, the scroller sits beside the body
+    // instead of over it, and only when the body has to scroll, that
+    // is, when the popover is as tall as it can be. Then, like
+    // Calendar, narrow the body's sections to make room, and keep the
+    // header full width. (On macOS 27, +scrollerWidthForControlSize:
+    // scrollerStyle: is 17 for overlay scrollers too, so check the
+    // style.)
+    if (_scrollView.hidden || _scrollView.scrollerStyle != NSScrollerStyleLegacy) return;
+    [self.view layoutSubtreeIfNeeded];
+    if (NSHeight(_body.frame) <= NSHeight(_scrollView.contentView.bounds)) return;
+    [self setBodyWidth:POPOVER_TEXT_WIDTH - [NSScroller scrollerWidthForControlSize:NSControlSizeRegular scrollerStyle:NSScrollerStyleLegacy]];
+    // The text is taller now. Measure it again, and lay the body out
+    // at its new height, so -popoverDidShow scrolls to its real top.
+    [self setHeightConstraint:_locHeight forTextView:_location];
+    [self setHeightConstraint:_noteHeight forTextView:_note];
+    [self setHeightConstraint:_URLHeight forTextView:_URL];
+    [self.view layoutSubtreeIfNeeded];
+}
+
+// Set the width of the body's rows and the width its text wraps to.
+- (void)setBodyWidth:(CGFloat)width
+{
+    for (AgendaPopoverSection *section in _body.arrangedSubviews) {
+        [section setRowWidth:width];
+    }
+    for (NSTextView *textView in @[_location, _note, _URL]) {
+        textView.textContainer.size = NSMakeSize(width, FLT_MAX);
+    }
 }
 
 // Size the text and spacing to the agenda's text size setting.
@@ -226,7 +346,6 @@
 {
     // Space above and below a separator, and between a section's rows.
     CGFloat spacing = SizePref.agendaPopoverSectionSpacing;
-    _content.spacing = spacing;
     for (AgendaPopoverSection *section in _sections) {
         section.spacing = spacing;
     }
@@ -258,18 +377,23 @@
     if (info && item) {
         if (item.title) title = item.title;
     }
-    NSString *notes = [item.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSAttributedString *notes = [self notesTextOfItem:item];
 
     // Hide the rows with nothing to show, then the sections with
     // no rows showing. The title and duration always show.
     _location.hidden = !info.location;
     _recurrence.hidden = !item.hasRecurrenceRules;
     _attendees.hidden = !info.event.hasAttendees;
-    _note.hidden = notes.length == 0;
+    _note.hidden = notes == nil;
     _URL.hidden = !item.URL;
     for (AgendaPopoverSection *section in _sections) {
         [section updateHidden];
     }
+    _scrollView.hidden = !AnyViewShows(_body.arrangedSubviews);
+
+    // Full width, unless the body turns out to need room for a
+    // scroller. See -makeRoomForScroller.
+    [self setBodyWidth:POPOVER_TEXT_WIDTH];
 
     // Hide delete button IF event doesn't allow modification.
     _btnDelete.hidden = !info.event.calendar.allowsContentModifications;
@@ -332,7 +456,7 @@
     if (info.location) {
         // Append a space to force correct height calc on first display.
         // Same technique used for the URL field below.
-        [self populateTextView:_location withString:[info.location stringByAppendingString:@" "] isHTML:NO heightConstraint:_locHeight];
+        [self populateTextView:_location withText:[self textWithString:[info.location stringByAppendingString:@" "] isHTML:NO] heightConstraint:_locHeight];
     }
     
     // Attendees
@@ -422,15 +546,8 @@
     }
 
     // Notes
-    if (notes.length > 0) {
-        // Notes are plain text, except those made in a rich text
-        // editor (like Google Calendar's), which are HTML. Parsing
-        // plain text as HTML would drop anything in <angle brackets>
-        // and change text like &copy, so only parse notes with tags.
-        BOOL isHTML = [_htmlTagRegex firstMatchInString:notes options:kNilOptions range:NSMakeRange(0, notes.length)] != nil;
-        // Append a space to force correct height calc on first display.
-        // Same technique used for the URL field below.
-        [self populateTextView:_note withString:[notes stringByAppendingString:@" "] isHTML:isHTML heightConstraint:_noteHeight];
+    if (notes) {
+        [self populateTextView:_note withText:notes heightConstraint:_noteHeight];
     }
 
     // URL
@@ -438,7 +555,7 @@
         // HACK: append a space at end of URL to force correct height calc. Without
         // this, height is sometimes wrong on first display.
         NSString *absURL = [NSString stringWithFormat:@"%@ ", item.URL.absoluteString];
-        [self populateTextView:_URL withString:absURL isHTML:NO heightConstraint:_URLHeight];
+        [self populateTextView:_URL withText:[self textWithString:absURL isHTML:NO] heightConstraint:_URLHeight];
     }
     
     _title.stringValue = title;
@@ -450,7 +567,33 @@
     _recurrence.textColor = Theme.agendaEventTextColor;
 }
 
-- (void)populateTextView:(NSTextView *)textView withString:(NSString *)string isHTML:(BOOL)isHTML heightConstraint:(NSLayoutConstraint *)constraint
+// The item's notes as text to show, or nil if there's nothing to show.
+- (NSAttributedString *)notesTextOfItem:(EKCalendarItem *)item
+{
+    NSString *notes = [item.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (notes.length == 0) return nil;
+    // Notes are plain text, except those made in a rich text
+    // editor (like Google Calendar's), which are HTML. Parsing
+    // plain text as HTML would drop anything in <angle brackets>
+    // and change text like &copy, so only parse notes with tags.
+    BOOL isHTML = [_htmlTagRegex firstMatchInString:notes options:kNilOptions range:NSMakeRange(0, notes.length)] != nil;
+    // Append a space to force correct height calc on first display.
+    // Same technique used for the location and URL.
+    NSAttributedString *text = [self textWithString:[notes stringByAppendingString:@" "] isHTML:isHTML];
+    // HTML can show nothing, like the <br> Google Calendar can leave
+    // when a description is cleared.
+    NSString *shown = [text.string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return shown.length > 0 ? text : nil;
+}
+
+- (void)populateTextView:(NSTextView *)textView withText:(NSAttributedString *)text heightConstraint:(NSLayoutConstraint *)constraint
+{
+    textView.textStorage.attributedString = text;
+    [self setHeightConstraint:constraint forTextView:textView];
+}
+
+// The string as text to show, with links.
+- (NSAttributedString *)textWithString:(NSString *)string isHTML:(BOOL)isHTML
 {
     // We will detect mail message URLs with _messageLinksRegex. These URLs
     // link directly to specific messages. They may contain fragments that look
@@ -496,8 +639,7 @@
             [attrString addAttribute:NSLinkAttributeName value:result.URL.absoluteString range:result.range];
         }
     }];
-    textView.textStorage.attributedString = attrString;
-    [self setHeightConstraint:constraint forTextView:textView];
+    return attrString;
 }
 
 - (void)setHeightConstraint:(NSLayoutConstraint *)constraint forTextView:(NSTextView *)textView

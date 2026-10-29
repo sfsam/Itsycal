@@ -337,7 +337,7 @@ static const CGFloat kReminderFillGap = 1;
     // first display (second display would have been correct without this).
     [popoverVC.view layoutSubtreeIfNeeded];
     [_popover setContentSize:popoverVC.size];
-    [popoverVC scrollToTopAndFlashScrollers];
+    [popoverVC popoverDidShow];
     
     // Prevent popoverVC's _note from eating key presses (like esc and delete).
     [popoverVC.view.window makeFirstResponder:popoverVC.btnDelete];
