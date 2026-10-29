@@ -132,6 +132,64 @@ static NSImage *CalendarDotImage(NSColor *color)
 @end
 
 #pragma mark -
+#pragma mark AgendaPopoverTextView
+
+// =========================================================================
+// AgendaPopoverTextView
+// =========================================================================
+
+// Selectable text with links, as tall as its text. It uses TextKit 1
+// from the start. (A plain NSTextView starts with TextKit 2 and
+// switches to TextKit 1 the first time its layoutManager is used.)
+@interface AgendaPopoverTextView : NSTextView
+// Set the width the text wraps to. kTextWidth to start.
+- (void)setWrapWidth:(CGFloat)width;
+- (void)setAttributedText:(NSAttributedString *)text;
+@end
+
+@implementation AgendaPopoverTextView
+
+- (instancetype)init
+{
+    self = [super initUsingTextLayoutManager:NO];
+    if (self) {
+        self.editable = NO;
+        self.selectable = YES;
+        self.drawsBackground = NO;
+        // Auto Layout sizes the view, from -intrinsicContentSize.
+        self.verticallyResizable = NO;
+        self.horizontallyResizable = NO;
+        self.textContainer.widthTracksTextView = NO;
+        self.textContainer.lineFragmentPadding = 0;
+        [self setContentHuggingPriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationVertical];
+        [self setContentCompressionResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationVertical];
+        [self setWrapWidth:kTextWidth];
+    }
+    return self;
+}
+
+- (void)setWrapWidth:(CGFloat)width
+{
+    self.textContainer.size = NSMakeSize(width, CGFLOAT_MAX);
+    [self invalidateIntrinsicContentSize];
+}
+
+- (void)setAttributedText:(NSAttributedString *)text
+{
+    [self.textStorage setAttributedString:text];
+    [self invalidateIntrinsicContentSize];
+}
+
+- (NSSize)intrinsicContentSize
+{
+    [self.layoutManager ensureLayoutForTextContainer:self.textContainer];
+    CGFloat height = NSHeight([self.layoutManager usedRectForTextContainer:self.textContainer]);
+    return NSMakeSize(NSViewNoIntrinsicMetric, height);
+}
+
+@end
+
+#pragma mark -
 #pragma mark AgendaPopoverVC
 
 // =========================================================================
@@ -148,9 +206,9 @@ static NSImage *CalendarDotImage(NSColor *color)
     NSButton *_btnDelete;
     NSTextField *_duration;
     NSTextField *_recurrence;
-    NSTextView *_location;
-    NSTextView *_note;
-    NSTextView *_URL;
+    AgendaPopoverTextView *_location;
+    AgendaPopoverTextView *_note;
+    AgendaPopoverTextView *_URL;
     NSStackView *_attendees;
     NSStackView *_meetingRow;  // video icon, host and Join button
     NSImageView *_meetingIcon;
@@ -164,9 +222,6 @@ static NSImage *CalendarDotImage(NSColor *color)
     NSRegularExpression *_hiddenLinksRegex;
     NSRegularExpression *_messageLinksRegex;
     NSRegularExpression *_htmlTagRegex;
-    NSLayoutConstraint *_locHeight;
-    NSLayoutConstraint *_noteHeight;
-    NSLayoutConstraint *_URLHeight;
 }
 
 - (instancetype)init
@@ -179,15 +234,6 @@ static NSImage *CalendarDotImage(NSColor *color)
         [lbl setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
         return lbl;
     };
-    NSTextView* (^textview)(void) = ^NSTextView* {
-        NSTextView *txtview = [NSTextView new];
-        txtview.editable = NO;
-        txtview.selectable = YES;
-        txtview.drawsBackground = NO;
-        txtview.textContainer.lineFragmentPadding = 0;
-        txtview.textContainer.size = NSMakeSize(kTextWidth, FLT_MAX);
-        return txtview;
-    };
     self = [super init];
     if (self) {
         _title = label();
@@ -198,9 +244,9 @@ static NSImage *CalendarDotImage(NSColor *color)
         _title.maximumNumberOfLines = 5;
         _title.cell.truncatesLastVisibleLine = YES;
         
-        _location = textview();
-        _note = textview();
-        _URL = textview();
+        _location = [AgendaPopoverTextView new];
+        _note = [AgendaPopoverTextView new];
+        _URL = [AgendaPopoverTextView new];
         
         _btnDelete = [NSButton new];
         _btnDelete.image = [NSImage imageWithSystemSymbolName:@"delete.backward" accessibilityDescription:NSLocalizedString(@"Delete This Event", @"")];
@@ -309,13 +355,6 @@ static NSImage *CalendarDotImage(NSColor *color)
         // An opening or closing tag a rich text editor would write,
         // e.g. <br>, <a href="...">, </p>. Not <https://...>.
         _htmlTagRegex = [NSRegularExpression regularExpressionWithPattern:@"</?(a|b|i|u|s|em|strong|br|p|div|span|ul|ol|li|font|h[1-6]|table|thead|tbody|tr|th|td|hr|img|blockquote|pre|code|sup|sub|strike|center|html|html-blob|body)(\\s[^<>]*)?/?>" options:NSRegularExpressionCaseInsensitive error:NULL];
-        
-        _locHeight = [_location.heightAnchor constraintEqualToConstant:100];
-        _locHeight.active = YES;
-        _noteHeight = [_note.heightAnchor constraintEqualToConstant:100];
-        _noteHeight.active = YES;
-        _URLHeight = [_URL.heightAnchor constraintEqualToConstant:100];
-        _URLHeight.active = YES;
     }
     return self;
 }
@@ -399,11 +438,8 @@ static NSImage *CalendarDotImage(NSColor *color)
     [self.view layoutSubtreeIfNeeded];
     if (NSHeight(_body.frame) <= NSHeight(_scrollView.contentView.bounds)) return;
     [self setBodyWidth:kTextWidth - [NSScroller scrollerWidthForControlSize:NSControlSizeRegular scrollerStyle:NSScrollerStyleLegacy]];
-    // The text is taller now. Measure it again, and lay the body out
-    // at its new height, so -popoverDidShow scrolls to its real top.
-    [self setHeightConstraint:_locHeight forTextView:_location];
-    [self setHeightConstraint:_noteHeight forTextView:_note];
-    [self setHeightConstraint:_URLHeight forTextView:_URL];
+    // The text is taller now. Lay the body out at its new height, so
+    // -popoverDidShow scrolls to its real top.
     [self.view layoutSubtreeIfNeeded];
 }
 
@@ -413,8 +449,8 @@ static NSImage *CalendarDotImage(NSColor *color)
     for (AgendaPopoverSection *section in _body.arrangedSubviews) {
         [section setRowWidth:width];
     }
-    for (NSTextView *textView in @[_location, _note, _URL]) {
-        textView.textContainer.size = NSMakeSize(width, FLT_MAX);
+    for (AgendaPopoverTextView *textView in @[_location, _note, _URL]) {
+        [textView setWrapWidth:width];
     }
 }
 
@@ -538,9 +574,7 @@ static NSImage *CalendarDotImage(NSColor *color)
     
     // Location
     if (info.location) {
-        // Append a space to force correct height calc on first display.
-        // Same technique used for the URL field below.
-        [self populateTextView:_location withText:[self textWithString:[info.location stringByAppendingString:@" "] isHTML:NO] heightConstraint:_locHeight];
+        [_location setAttributedText:[self textWithString:info.location isHTML:NO]];
     }
     
     // Attendees
@@ -648,15 +682,12 @@ static NSImage *CalendarDotImage(NSColor *color)
 
     // Notes
     if (notes) {
-        [self populateTextView:_note withText:notes heightConstraint:_noteHeight];
+        [_note setAttributedText:notes];
     }
 
     // URL
     if (item.URL) {
-        // HACK: append a space at end of URL to force correct height calc. Without
-        // this, height is sometimes wrong on first display.
-        NSString *absURL = [NSString stringWithFormat:@"%@ ", item.URL.absoluteString];
-        [self populateTextView:_URL withText:[self textWithString:absURL isHTML:NO] heightConstraint:_URLHeight];
+        [_URL setAttributedText:[self textWithString:item.URL.absoluteString isHTML:NO]];
     }
     
     _title.stringValue = title;
@@ -696,19 +727,11 @@ static NSImage *CalendarDotImage(NSColor *color)
     // plain text as HTML would drop anything in <angle brackets>
     // and change text like &copy, so only parse notes with tags.
     BOOL isHTML = [_htmlTagRegex firstMatchInString:notes options:kNilOptions range:NSMakeRange(0, notes.length)] != nil;
-    // Append a space to force correct height calc on first display.
-    // Same technique used for the location and URL.
-    NSAttributedString *text = [self textWithString:[notes stringByAppendingString:@" "] isHTML:isHTML];
+    NSAttributedString *text = [self textWithString:notes isHTML:isHTML];
     // HTML can show nothing, like the <br> Google Calendar can leave
     // when a description is cleared.
     NSString *shown = [text.string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     return shown.length > 0 ? text : nil;
-}
-
-- (void)populateTextView:(NSTextView *)textView withText:(NSAttributedString *)text heightConstraint:(NSLayoutConstraint *)constraint
-{
-    textView.textStorage.attributedString = text;
-    [self setHeightConstraint:constraint forTextView:textView];
 }
 
 // The string as text to show, with links.
@@ -759,15 +782,6 @@ static NSImage *CalendarDotImage(NSColor *color)
         }
     }];
     return attrString;
-}
-
-- (void)setHeightConstraint:(NSLayoutConstraint *)constraint forTextView:(NSTextView *)textView
-{
-    // Force layout and then calculate text height.
-    // stackoverflow.com/a/44969138/111418
-    (void) [textView.layoutManager glyphRangeForTextContainer:textView.textContainer];
-    NSRect textRect = [textView.layoutManager usedRectForTextContainer:textView.textContainer];
-    constraint.constant = textRect.size.height;
 }
 
 @end
