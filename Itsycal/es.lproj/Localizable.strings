@@ -1,5 +1,7 @@
 /* Heading for a source's reminder lists in Settings, e.g. iCloud Reminders */
 "%@ Reminders" = "Recordatorios de %@";
+/* Last line of a long list of invitees in the event popover: the number of invitees not shown, e.g. 1,650 more */
+"%@ more" = "%@ más";
 /* VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders */
 "%@, %@" = "%@, %@";
 "1 day" = "1 día";

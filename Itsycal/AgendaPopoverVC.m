@@ -13,6 +13,11 @@
 
 #define POPOVER_TEXT_WIDTH 280
 
+// Rows for many attendees take long to lay out: about 40 ms for 50,
+// seconds for 500. Show at most this many lines: all the attendees if
+// they fit, or one fewer and a line saying how many more.
+static const NSUInteger kMaxAttendeeLines = 50;
+
 // Space between the popover's edge and its sections, between
 // sections, and between a section's edge and its rows.
 static const CGFloat kInset = 10;
@@ -480,18 +485,27 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
                 [participants addObject:p];
             }
         }
-        // Sort participants with organizer first, then accepted, pending, declined.
-        NSArray<EKParticipant *> *sortedParticipants = [participants sortedArrayUsingComparator:^NSComparisonResult(EKParticipant * p1, EKParticipant *p2) {
-            if (ParticipantIsOrganizer(p1, info.event.organizer)) return NSOrderedAscending;
-            if (ParticipantIsOrganizer(p2, info.event.organizer)) return NSOrderedDescending;
-            if (p1.participantStatus == EKParticipantStatusAccepted) return NSOrderedAscending;
-            if (p2.participantStatus == EKParticipantStatusAccepted) return NSOrderedDescending;
-            if (p1.participantStatus == EKParticipantStatusPending) return NSOrderedAscending;
-            if (p2.participantStatus == EKParticipantStatusPending) return NSOrderedDescending;
-            return NSOrderedDescending;
+        // Sort participants with organizer first, then accepted, pending,
+        // and the rest (like declined). The sort is stable, so participants
+        // with the same rank stay in the event's order.
+        NSInteger (^Rank)(EKParticipant *) = ^NSInteger(EKParticipant *participant) {
+            if (ParticipantIsOrganizer(participant, info.event.organizer)) return 0;
+            if (participant.participantStatus == EKParticipantStatusAccepted) return 1;
+            if (participant.participantStatus == EKParticipantStatusPending) return 2;
+            return 3;
+        };
+        NSArray<EKParticipant *> *sortedParticipants = [participants sortedArrayWithOptions:NSSortStable usingComparator:^NSComparisonResult(EKParticipant *p1, EKParticipant *p2) {
+            NSInteger rank1 = Rank(p1), rank2 = Rank(p2);
+            return rank1 < rank2 ? NSOrderedAscending : rank1 > rank2 ? NSOrderedDescending : NSOrderedSame;
         }];
-        NSMutableArray<NSStackView *> *attendeesArray = [NSMutableArray new];
-        for (EKParticipant *participant in sortedParticipants) {
+        // Too many to show? Leave room for the line saying how many more,
+        // which is then at least 2, never "1 more".
+        NSArray<EKParticipant *> *shownParticipants = sortedParticipants;
+        if (sortedParticipants.count > kMaxAttendeeLines) {
+            shownParticipants = [sortedParticipants subarrayWithRange:NSMakeRange(0, kMaxAttendeeLines - 1)];
+        }
+        NSMutableArray<NSView *> *attendeesArray = [NSMutableArray new];
+        for (EKParticipant *participant in shownParticipants) {
             NSString *orgIcon = ParticipantIsOrganizer(participant, info.event.organizer) ? @"•" : @"";
             NSString *statusIcon = @"􀁜"; // questionmark.circle (Requires SF fonts to see)
             NSColor *textColor = Theme.agendaEventDateTextColor;
@@ -540,6 +554,14 @@ static BOOL AnyViewShows(NSArray<NSView *> *views)
             [attendee setHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
             [attendee setClippingResistancePriority:NSLayoutPriorityRequired forOrientation:NSLayoutConstraintOrientationHorizontal];
             [attendeesArray addObject:attendee];
+        }
+        // Say how many attendees aren't shown.
+        if (shownParticipants.count < sortedParticipants.count) {
+            NSString *count = [NSNumberFormatter localizedStringFromNumber:@(sortedParticipants.count - shownParticipants.count) numberStyle:NSNumberFormatterDecimalStyle];
+            NSTextField *moreLabel = [NSTextField labelWithString:[NSString stringWithFormat:NSLocalizedString(@"%@ more", @"Last line of a long list of invitees in the event popover: the number of invitees not shown, e.g. 1,650 more"), count]];
+            moreLabel.textColor = Theme.agendaEventDateTextColor;
+            moreLabel.font = [NSFont systemFontOfSize:SizePref.fontSize];
+            [attendeesArray addObject:moreLabel];
         }
         // Vertically stack attendees.
         [_attendees setViews:attendeesArray inGravity:NSStackViewGravityBottom];
