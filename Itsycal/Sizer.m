@@ -79,8 +79,4 @@ Sizer *SizePref = nil;
     return SML_MED_LRG(21, 22, 24);
 }
 
-- (NSString *)videoImageName {
-    return SML_MED_LRG(@"video14", @"video16", @"video18");
-}
-
 @end

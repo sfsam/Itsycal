@@ -1006,8 +1006,7 @@ static const CGFloat kReminderFillGap = 1;
         
         _btnVideo = [MoButton new];
         _btnVideo.bordered = 0;
-        _btnVideo.image = [NSImage imageNamed:SizePref.videoImageName];
-        _btnVideo.image.template = YES;
+        [self updateVideoImage];
         
         /*
          Outer box = self
@@ -1092,12 +1091,28 @@ static const CGFloat kReminderFillGap = 1;
     _btnCompleteTopConstraint.constant = squareTop + side/2 - kCompleteButtonSize/2;
 }
 
+- (void)updateVideoImage
+{
+    // Size the symbol to the text. MoButton sizes itself to its image,
+    // so the size goes in the image, not in the button's symbolConfiguration.
+    NSImageSymbolConfiguration *config = [NSImageSymbolConfiguration configurationWithPointSize:SizePref.fontSize weight:NSFontWeightBold];
+    NSImage *symbol = [[NSImage imageWithSystemSymbolName:@"video" accessibilityDescription:nil] imageWithSymbolConfiguration:config];
+    // Draw the symbol into a plain image. A button lays out a symbol
+    // by its baseline, which puts it over half a point above the time at
+    // the medium size. A plain image is centered on the time.
+    NSImage *image = [NSImage imageWithSize:symbol.size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+        [symbol drawInRect:dstRect];
+        return YES;
+    }];
+    image.template = YES;
+    _btnVideo.image = image;
+}
+
 - (void)sizeChanged:(id)sender
 {
     [self positionCompleteButton];
     _gridLeadingConstraint.constant = SizePref.agendaEventLeadingMargin;
-    _btnVideo.image = [NSImage imageNamed:SizePref.videoImageName];
-    _btnVideo.image.template = YES;
+    [self updateVideoImage];
     _titleTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
     _locationTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
     _durationTextField.font = [NSFont systemFontOfSize:SizePref.fontSize];
