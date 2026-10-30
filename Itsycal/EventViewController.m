@@ -208,8 +208,7 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
     _notesScrollView.borderType = NSNoBorder;
     _notesScrollView.verticalScrollElasticity = NSScrollElasticityNone;
     _notesScrollView.drawsBackground = NO;
-    _notesScrollView.hasVerticalScroller = YES;
-    _notesScrollView.verticalScroller = [ThemedScroller new];
+    _notesScrollView.hasVerticalScroller = NO; // see -textDidChange:
     [v addSubview:_notesScrollView];
 
     NSSize noteContentSize = _notesScrollView.contentSize;
@@ -665,12 +664,15 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
         idx = NSMaxRange(lineRange);
     }
     
-    // Disable elasticity if all lines are visible
-    if (numberOfLines <= maxVisibleLines) {
-        _notesScrollView.verticalScrollElasticity = NSScrollElasticityNone;
-    }
-    else {
-        _notesScrollView.verticalScrollElasticity = NSScrollElasticityAutomatic;
+    // Elasticity and a scroller only if not all lines are visible.
+    // Not autohiding: it would show the scroller for a moment each
+    // time _notes grows, before _notesScrollView does. The scroller
+    // changes the text's width, so measure again when it changes.
+    BOOL scrolls = numberOfLines > maxVisibleLines;
+    _notesScrollView.verticalScrollElasticity = scrolls ? NSScrollElasticityAutomatic : NSScrollElasticityNone;
+    if (_notesScrollView.hasVerticalScroller != scrolls) {
+        _notesScrollView.hasVerticalScroller = scrolls;
+        [self textDidChange:notification];
     }
 }
 

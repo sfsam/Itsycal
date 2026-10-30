@@ -12,7 +12,6 @@
 #import "EventCenter.h"
 #import "MoButton.h"
 #import "MoPopover.h"
-#import "MoThemeView.h"
 #import "MoUtils.h"
 #import "MoVFLHelper.h"
 #import "Themer.h"
@@ -75,6 +74,7 @@ static const CGFloat kReminderFillGap = 1;
 {
     NSPopover *_popover;
     EventInfo *_popoverEventInfo; // event shown in _popover
+    BOOL _flashScrollers; // after the next layout, if the agenda scrolls
 }
 
 - (void)loadView
@@ -104,9 +104,8 @@ static const CGFloat kReminderFillGap = 1;
     NSScrollView *tvContainer = [NSScrollView new];
     tvContainer.translatesAutoresizingMaskIntoConstraints = NO;
     tvContainer.drawsBackground = NO;
-    tvContainer.hasVerticalScroller = YES;
+    tvContainer.hasVerticalScroller = NO; // see -viewDidLayout
     tvContainer.documentView = _tv;
-    tvContainer.verticalScroller = [ThemedScroller new];
     
     [v addSubview:tvContainer];
     [v addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tv]|" options:0 metrics:nil views:@{@"tv": tvContainer}]];
@@ -132,8 +131,19 @@ static const CGFloat kReminderFillGap = 1;
     }
     if ([self.identifier isEqualToString:@"AgendaVC"]) {
         // Limit height so everything fits on the screen.
-        height = MIN(height, [self.delegate agendaMaxPossibleHeight]);
+        CGFloat maxHeight = [self.delegate agendaMaxPossibleHeight];
+        // Show the scroller only when the agenda scrolls, i.e. when it's
+        // limited. Not autohiding: the view only gets its new height
+        // later (see the hack below), so autohiding would show the
+        // scroller for a moment whenever the rows outgrow the old height.
+        NSScrollView *scrollView = _tv.enclosingScrollView;
+        scrollView.hasVerticalScroller = height > maxHeight;
+        if (_flashScrollers && scrollView.hasVerticalScroller) {
+            [scrollView flashScrollers];
+        }
+        height = MIN(height, maxHeight);
     }
+    _flashScrollers = NO;
     // If height is 0, we make it 0.001 which is effectively the
     // same dimension. When preferredContentSize is zero, it is
     // ignored, so we use a non-zero value that has the same
@@ -184,7 +194,7 @@ static const CGFloat kReminderFillGap = 1;
 {
     [_tv reloadData];
     [self scrollToTop];
-    [[_tv enclosingScrollView] flashScrollers];
+    _flashScrollers = YES; // in -viewDidLayout
     [self.view setNeedsLayout:YES];
     [_popover close];
 }

@@ -19,22 +19,3 @@
 }
 
 @end
-
-// =========================================================================
-// ThemedScroller
-// =========================================================================
-
-@implementation ThemedScroller
-
-+ (BOOL)isCompatibleWithOverlayScrollers
-{
-    return self == [ThemedScroller class];
-}
-
-- (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)flag
-{
-    [Theme.mainBackgroundColor set];
-    NSRectFill(slotRect);
-}
-
-@end
