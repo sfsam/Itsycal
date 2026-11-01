@@ -2,6 +2,8 @@
 "%@ Reminders" = "%@ – připomínky";
 /* Last line of a long list of invitees in the event popover: the number of invitees not shown, e.g. 1,650 more */
 "%@ more" = "Další: %@";
+/* Last row of a calendar day's tooltip when not all of the day's events fit: the number of events not shown, e.g. 3 more */
+"%@ more events" = "Další: %@";
 /* VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders */
 "%@, %@" = "%@, %@";
 "1 day" = "1 den";
@@ -121,7 +123,8 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 /* Repeat ends never */
 "Never" = "Nikdy";
 "New Event" = "Nová událost";
-"New Event   ⌘N" = "Nová událost   ⌘N";
+/* Tooltip for the calendar's button that shows the next month */
+"Next Month" = "Následující měsíc";
 "No events" = "Žádné události";
 /* Alert none
    Repeat none */
@@ -129,14 +132,16 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "On Date" = "K datu";
 "On day of event (9 AM)" = "V den události (9 AM)";
 "Open Calendar" = "Otevřít kalendář";
-"Open Calendar   ⌘O" = "Otevřít kalendář   ⌘O";
 "Options" = "Volby";
 "Outline current month" = "Ohraničit aktuální měsíc";
 /* Accessibility description for menu bar icon with the date in an outlined square */
 "Outlined date" = "Datum s obrysem";
 /* Heading of the agenda's section of overdue reminders */
 "Overdue" = "Po termínu";
-"Pin Itsycal   P" = "Přišpendlit Itsycal   P";
+/* Tooltip for the pin button, which keeps Itsycal's window open */
+"Pin Itsycal" = "Přišpendlit Itsycal";
+/* Tooltip for the calendar's button that shows the previous month */
+"Previous Month" = "Předchozí měsíc";
 "Quit Itsycal" = "Ukončit Itsycal";
 /* Heading in Settings before reminders access is granted */
 "Reminders" = "Připomínky";
@@ -161,6 +166,8 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Size" = "Velikost";
 /* Small text size */
 "Small" = "Malá";
+/* The space bar's name in a tooltip's keyboard shortcut, e.g. the Today button's */
+"Space" = "Mezerník";
 "Starts:" = "Začíná:";
 "Sunday" = "neděle";
 /* System theme name */
@@ -169,8 +176,12 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "The Calendar application could not be found." = "Aplikaci Kalendář se nepodařilo najít.";
 "There are no modifiable calendars." = "Neexistují žádné kalendáře, které by bylo možné upravovat.";
 "Thursday" = "čtvrtek";
+/* Tooltip for the calendar's button that shows today */
+"Today" = "Dnes";
 "Top right of screen" = "Vpravo nahoře na obrazovce";
 "Tuesday" = "úterý";
+/* Tooltip for the pin button while Itsycal is pinned */
+"Unpin Itsycal" = "Odšpendlit Itsycal";
 "Use colored dots" = "Používat barevné tečky";
 "Wednesday" = "středa";
 "Window position:" = "Umístění okna:";

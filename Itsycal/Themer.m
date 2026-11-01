@@ -154,7 +154,7 @@ Themer *Theme = nil;
 }
 
 - (NSColor *)tooltipBackgroundColor {
-    return [self mainBackgroundColor];
+    return LightDarkColor (NSColor.windowBackgroundColor, [NSColor colorWithWhite:0.17 alpha:1]);
 }
 
 - (NSColor *)weekTextColor {

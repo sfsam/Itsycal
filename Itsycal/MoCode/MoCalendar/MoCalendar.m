@@ -12,6 +12,7 @@
 #import "MoButton.h"
 #import "MoVFLHelper.h"
 #import "MoCalResizeHandle.h"
+#import "TooltipController.h"
 #import "Themer.h"
 #import "Sizer.h"
 
@@ -24,7 +25,6 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     MoCalGrid *_dateGrid;
     MoCalGrid *_weekGrid;
     MoCalGrid *_dowGrid;
-    MoCalToolTipWC *_tooltipWC;
     MoButton *_btnPrev, *_btnNext, *_btnToday;
     NSLayoutConstraint *_weeksConstraint;
     __weak MoCalCell *_hoveredCell;
@@ -58,7 +58,6 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 - (void)commonInitForMoCalendar
 {
     _formatter = [NSDateFormatter new];
-    _tooltipWC = [MoCalToolTipWC new];
 
     _monthLabel = [NSTextField labelWithString:@""];
     _monthLabel.font = [NSFont systemFontOfSize:SizePref.calendarTitleFontSize weight:NSFontWeightSemibold];
@@ -139,6 +138,28 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 - (BOOL)isOpaque
 {
     return YES;
+}
+
+- (void)viewDidMoveToWindow
+{
+    [super viewDidMoveToWindow];
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc removeObserver:self name:NSWindowDidChangeOcclusionStateNotification object:nil];
+    if (self.window) {
+        [nc addObserver:self selector:@selector(windowDidChangeOcclusionState:) name:NSWindowDidChangeOcclusionStateNotification object:self.window];
+    }
+}
+
+- (void)windowDidChangeOcclusionState:(NSNotification *)notification
+{
+    // When the window hides, the pointer doesn't report leaving the
+    // day it's over. Forget it, so resting on that day after the window
+    // shows again gets its tooltip (and the day isn't left hovered).
+    // (The tooltip controller hides the tooltip itself.)
+    if (!(self.window.occlusionState & NSWindowOcclusionStateVisible) && _hoveredCell) {
+        _hoveredCell.isHovered = NO;
+        _hoveredCell = nil;
+    }
 }
 
 #pragma mark
@@ -245,24 +266,20 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     [self setNeedsDisplay:YES];
 }
 
-- (void)setTooltipVC:(NSViewController<MoCalTooltipProvider> *)tooltipVC
+- (void)setTooltipController:(TooltipController *)tooltipController
 {
-    _tooltipVC = tooltipVC;
-    _tooltipWC.vc = tooltipVC;
-
-    NSView *contentView = _tooltipWC.window.contentView;
-    
-    // Remove all subviews of tooltip window's contentView.
-    [contentView setSubviews:@[]];
-
-    // Add the tooltopVC's view as a subview of the tooltip
-    // window's contentView.
-    if (tooltipVC != nil) {
-        tooltipVC.view.translatesAutoresizingMaskIntoConstraints = NO;
-        [contentView addSubview:tooltipVC.view];
-        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(-3)-[v]-(-3)-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
-        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-2-[v]-2-|" options:0 metrics:nil views:@{@"v":_tooltipVC.view}]];
-    }
+    _tooltipController = tooltipController;
+    // The buttons' shortcuts are handled in -keyDown:, not as the
+    // buttons' key equivalents, so give the badges' text.
+    [tooltipController addTooltipToView:_btnPrev label:^NSString *{
+        return NSLocalizedString(@"Previous Month", @"Tooltip for the calendar's button that shows the previous month");
+    } shortcut:@"←"];
+    [tooltipController addTooltipToView:_btnToday label:^NSString *{
+        return NSLocalizedString(@"Today", @"Tooltip for the calendar's button that shows today");
+    } shortcut:NSLocalizedString(@"Space", @"The space bar's name in a tooltip's keyboard shortcut, e.g. the Today button's")];
+    [tooltipController addTooltipToView:_btnNext label:^NSString *{
+        return NSLocalizedString(@"Next Month", @"Tooltip for the calendar's button that shows the next month");
+    } shortcut:@"→"];
 }
 
 - (IBAction)showPreviousMonth:(id)sender
@@ -306,6 +323,9 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
          : Theme.DOWTextColor];
     }
     
+    // The first date shown, to tell whether the dates change.
+    MoDate oldFirstDate = self.firstDate;
+
     // Get the first of the month.
     MoDate firstOfMonth = MakeDate(self.monthDate.year, self.monthDate.month, 1);
     
@@ -348,7 +368,16 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         }
     }
     [self setNeedsDisplay:YES];
-    
+
+    // The day under the pointer is now a different day: hide its
+    // tooltip, and start the delay for the new day's.
+    if (CompareDates(oldFirstDate, self.firstDate) != 0) {
+        [self.tooltipController hideImmediately];
+        if (_hoveredCell) {
+            [self pointerEnteredCellForTooltip:_hoveredCell];
+        }
+    }
+
     [self.delegate calendarUpdated:self];
 }
 
@@ -359,7 +388,8 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
             ? [self.delegate dotColorsForDate:c.date useColor:self.useColoredDots]
             : nil;
     }
-    [_tooltipWC endTooltip];
+    // The events changed.
+    [self.tooltipController reloadContent];
 }
 
 - (void)highlightCellsFromDate:(MoDate)startDate toDate:(MoDate)endDate withColor:(NSColor *)color
@@ -472,7 +502,6 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     else {
         [super keyDown:theEvent];
     }
-    [_tooltipWC endTooltip];
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
@@ -512,13 +541,11 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         if (clickedCell && clickedCell != _selectedCell) {
             [self setMonthDate:self.monthDate selectedDate:clickedCell.date];
         }
-        [_tooltipWC hideTooltip];
     }
     else if ([theEvent clickCount] == 2) {
         if (self.target && self.doubleAction) {
             [NSApp sendAction:self.doubleAction to:self.target from:self];
         }
-        [_tooltipWC endTooltip];
     }
 }
 
@@ -539,19 +566,24 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
     NSPoint locationInDates  = [_dateGrid convertPoint:locationInWindow fromView:nil];
     MoCalCell *hoveredCell   = [_dateGrid cellAtPoint:locationInDates];
     if (hoveredCell && hoveredCell != _hoveredCell) {
+        if (_hoveredCell) {
+            [self.tooltipController pointerExitedTarget:_hoveredCell];
+        }
         _hoveredCell.isHovered = NO;
         _hoveredCell = hoveredCell;
         _hoveredCell.isHovered = YES;
-        
-        if (_tooltipWC.vc != nil) {
-            NSRect rect = [_dateGrid convertRect:_hoveredCell.frame toView:nil];
-            rect = [self.window convertRectToScreen:rect];
-            [_tooltipWC showTooltipForDate:_hoveredCell.date relativeToRect:rect screenFrame:[[NSScreen mainScreen] frame]];
-        }
-        else {
-            [_tooltipWC hideTooltip];
-        }
+        [self pointerEnteredCellForTooltip:_hoveredCell];
     }
+}
+
+- (void)pointerEnteredCellForTooltip:(MoCalCell *)cell
+{
+    // The day is a target only if it has events.
+    MoDate date = cell.date;
+    __weak typeof(self) weakSelf = self;
+    [self.tooltipController pointerEnteredTarget:cell content:^id<TooltipContent>{
+        return [weakSelf.delegate tooltipContentForDate:date];
+    }];
 }
 
 - (void)mouseEntered:(NSEvent *)theEvent
@@ -567,9 +599,11 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         [_resizeHandle dim:YES];
     }
     else { // userData[area] == "dateGrid"
+        if (_hoveredCell) {
+            [self.tooltipController pointerExitedTarget:_hoveredCell];
+        }
         _hoveredCell.isHovered = NO;
         _hoveredCell = nil;
-        [_tooltipWC hideTooltip];
         [self setNeedsDisplay:YES];
     }
 }

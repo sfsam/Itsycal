@@ -8,7 +8,9 @@
 
 #import <AppKit/AppKit.h>
 #import "MoDate.h"
-#import "MoCalToolTipWC.h"
+
+@class TooltipController;
+@protocol TooltipContent;
 
 // A bit mask for days-of-the-week.
 // Used to select columns to highlight.
@@ -66,8 +68,8 @@ typedef NS_OPTIONS(NSInteger, DOWMask) {
 // Should calendar draw an outline around the current month?
 @property (nonatomic) BOOL doNotDrawOutlineAroundCurrentMonth;
 
-// An optional view controller for tooltips.
-@property (nonatomic) NSViewController<MoCalTooltipProvider> *tooltipVC;
+// Shows tooltips for days with events and for the calendar's buttons.
+@property (nonatomic, weak) TooltipController *tooltipController;
 
 @property (nonatomic, weak) id<MoCalendarDelegate> delegate;
 
@@ -98,6 +100,9 @@ typedef NS_OPTIONS(NSInteger, DOWMask) {
 // - An empty array means there is a single dot in the default theme color.
 // - Otherwise, there are up to 3 dots with the given colors.
 - (NSArray<NSColor *> *)dotColorsForDate:(MoDate)date useColor:(BOOL)useColor;
+
+// The tooltip for a day, or nil if the day has no events.
+- (id<TooltipContent>)tooltipContentForDate:(MoDate)date;
 
 @end
 

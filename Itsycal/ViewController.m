@@ -15,6 +15,8 @@
 #import "DatePickerVC.h"
 #import "SBCalendar.h"
 #import "EventViewController.h"
+#import "TooltipController.h"
+#import "TooltipViewController.h"
 #import "PrefsVC.h"
 #import "PrefsGeneralVC.h"
 #import "PrefsAppearanceVC.h"
@@ -46,6 +48,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     MoButton      *_btnAdd, *_btnCal, *_btnOpt, *_btnPin;
     NSWindowController    *_prefsWC;
     AgendaViewController  *_agendaVC;
+    TooltipController     *_tooltips;
+    TooltipViewController *_tooltipVC;
     NSDateFormatter       *_iconDateFormatter;
     NSTimeInterval         _inactiveTime;
     NSDictionary          *_filteredEventsForDate;
@@ -86,19 +90,22 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     NSView *v = [NSView new];
     v.translatesAutoresizingMaskIntoConstraints = NO;
     
+    // Tooltips for the calendar's days and the window's buttons
+    _tooltips = [TooltipController new];
+
     // MoCalendar
     _moCal = [MoCalendar new];
     _moCal.delegate = self;
     _moCal.target = self;
     _moCal.doubleAction = @selector(addCalendarEvent:);
+    _moCal.tooltipController = _tooltips;
     [v addSubview:_moCal];
     
     // Convenience function to config buttons.
-    MoButton* (^btn)(NSString*, NSString*, NSString*, SEL) = ^MoButton* (NSString *imageName, NSString *tip, NSString *key, SEL action) {
+    MoButton* (^btn)(NSString*, NSString*, SEL) = ^MoButton* (NSString *imageName, NSString *key, SEL action) {
         MoButton *btn = [MoButton new];
         [btn setTarget:self];
         [btn setAction:action];
-        [btn setToolTip:tip];
         [btn setImage:[NSImage imageNamed:imageName]];
         [btn setKeyEquivalent:key];
         [btn setKeyEquivalentModifierMask:NSEventModifierFlagCommand];
@@ -107,13 +114,30 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     };
 
     // Add event, Calendar.app, and Options buttons
-    _btnAdd = btn(@"btnAdd", NSLocalizedString(@"New Event   ⌘N", @""), @"n", @selector(addCalendarEvent:));
-    _btnCal = btn(@"btnCal", NSLocalizedString(@"Open Calendar   ⌘O", @""), @"o", @selector(showCalendarApp:));
-    _btnOpt = btn(@"btnOpt", NSLocalizedString(@"Options", @""), @"", @selector(showOptionsMenu:));
-    _btnPin = btn(@"btnPin", NSLocalizedString(@"Pin Itsycal   P", @""), @"p", @selector(pin:));
+    _btnAdd = btn(@"btnAdd", @"n", @selector(addCalendarEvent:));
+    _btnCal = btn(@"btnCal", @"o", @selector(showCalendarApp:));
+    _btnOpt = btn(@"btnOpt", @"", @selector(showOptionsMenu:));
+    _btnPin = btn(@"btnPin", @"p", @selector(pin:));
     _btnPin.keyEquivalentModifierMask = 0;
     _btnPin.alternateImage = [NSImage imageNamed:@"btnPinAlt"];
     [_btnPin setButtonType:NSButtonTypeToggle];
+
+    // The buttons' tooltips. Their badges show the key equivalents.
+    [_tooltips addTooltipToView:_btnAdd label:^NSString *{
+        return NSLocalizedString(@"New Event", @"");
+    } shortcut:nil];
+    [_tooltips addTooltipToView:_btnCal label:^NSString *{
+        return NSLocalizedString(@"Open Calendar", @"");
+    } shortcut:nil];
+    [_tooltips addTooltipToView:_btnOpt label:^NSString *{
+        return NSLocalizedString(@"Options", @"");
+    } shortcut:nil];
+    __weak MoButton *btnPin = _btnPin;
+    [_tooltips addTooltipToView:_btnPin label:^NSString *{
+        return btnPin.state == NSControlStateValueOn
+            ? NSLocalizedString(@"Unpin Itsycal", @"Tooltip for the pin button while Itsycal is pinned")
+            : NSLocalizedString(@"Pin Itsycal", @"Tooltip for the pin button, which keeps Itsycal's window open");
+    } shortcut:nil];
     
     // Agenda
     _agendaVC = [AgendaViewController new];
@@ -154,9 +178,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     
     _ec = [[EventCenter alloc] initWithCalendar:_nsCal delegate:self];
     
-    TooltipViewController *tooltipVC = [TooltipViewController new];
-    tooltipVC.tooltipDelegate = self;
-    _moCal.tooltipVC = tooltipVC;
+    _tooltipVC = [TooltipViewController new];
+    _tooltipVC.nsCal = _nsCal;
 
     [self updateTimer];
     
@@ -987,6 +1010,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 - (void)hideItsycalWindow
 {
+    [_tooltips hideImmediately];
     [self.itsycalWindow orderOut:self];
     [_newEventPopover close];
     _inactiveTime = MonotonicClockTime();
@@ -1140,6 +1164,13 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 - (void)calendarSelectionChanged:(MoCalendar *)cal
 {
     [self updateAgenda];
+}
+
+- (id<TooltipContent>)tooltipContentForDate:(MoDate)date
+{
+    NSArray *events = [self eventsForDate:date];
+    if (events.count == 0) return nil;
+    return [_tooltipVC tooltipContentForEvents:events];
 }
 
 - (NSArray<NSColor *> *)dotColorsForDate:(MoDate)date useColor:(BOOL)useColor

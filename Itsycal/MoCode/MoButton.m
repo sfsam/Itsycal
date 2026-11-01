@@ -11,6 +11,7 @@
 @implementation MoButton
 {
     NSBox *_hoverBox;
+    NSTrackingArea *_hoverArea;
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
@@ -79,11 +80,12 @@
 
 - (void)updateTrackingAreas
 {
-    for (NSTrackingArea *area in self.trackingAreas) {
-        [self removeTrackingArea:area];
+    // Replace only our own area. Others (a tooltip's) manage theirs.
+    if (_hoverArea) {
+        [self removeTrackingArea:_hoverArea];
     }
-    NSTrackingArea *area = [[NSTrackingArea alloc] initWithRect:self.bounds options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways) owner:self userInfo:nil];
-    [self addTrackingArea:area];
+    _hoverArea = [[NSTrackingArea alloc] initWithRect:self.bounds options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways) owner:self userInfo:nil];
+    [self addTrackingArea:_hoverArea];
     [self evaluateHover];
     [super updateTrackingAreas];
 }

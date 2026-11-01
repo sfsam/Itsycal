@@ -2,6 +2,8 @@
 "%@ Reminders" = "%@ 提醒事项";
 /* Last line of a long list of invitees in the event popover: the number of invitees not shown, e.g. 1,650 more */
 "%@ more" = "还有 %@ 人";
+/* Last row of a calendar day's tooltip when not all of the day's events fit: the number of events not shown, e.g. 3 more */
+"%@ more events" = "还有 %@ 个";
 /* VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders */
 "%@, %@" = "%@，%@";
 "1 day" = "1 天";
@@ -121,7 +123,8 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 /* Repeat ends never */
 "Never" = "从不";
 "New Event" = "新事件";
-"New Event   ⌘N" = "新事件   ⌘N";
+/* Tooltip for the calendar's button that shows the next month */
+"Next Month" = "下个月";
 "No events" = "不显示";
 /* Alert none
    Repeat none */
@@ -129,14 +132,16 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "On Date" = "时间到了";
 "On day of event (9 AM)" = "日程发生当天（上午9时）";
 "Open Calendar" = "打开日历";
-"Open Calendar   ⌘O" = "打开日历   ⌘O";
 "Options" = "选项";
 "Outline current month" = "为当前月份显示轮廓";
 /* Accessibility description for menu bar icon with the date in an outlined square */
 "Outlined date" = "空心日期";
 /* Heading of the agenda's section of overdue reminders */
 "Overdue" = "已过期";
-"Pin Itsycal   P" = "固定 Itsycal   P";
+/* Tooltip for the pin button, which keeps Itsycal's window open */
+"Pin Itsycal" = "固定 Itsycal";
+/* Tooltip for the calendar's button that shows the previous month */
+"Previous Month" = "上个月";
 "Quit Itsycal" = "退出 Itsycal";
 /* Heading in Settings before reminders access is granted */
 "Reminders" = "提醒事项";
@@ -161,6 +166,8 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Size" = "大小";
 /* Small text size */
 "Small" = "小";
+/* The space bar's name in a tooltip's keyboard shortcut, e.g. the Today button's */
+"Space" = "空格";
 "Starts:" = "开始：";
 "Sunday" = "星期天";
 /* System theme name */
@@ -169,8 +176,12 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "The Calendar application could not be found." = "找不到日历应用程序。";
 "There are no modifiable calendars." = "没有可修改的日历。";
 "Thursday" = "星期四";
+/* Tooltip for the calendar's button that shows today */
+"Today" = "今天";
 "Top right of screen" = "屏幕右上角";
 "Tuesday" = "星期二";
+/* Tooltip for the pin button while Itsycal is pinned */
+"Unpin Itsycal" = "取消固定 Itsycal";
 "Use colored dots" = "使用彩色圆点";
 "Wednesday" = "星期三";
 "Window position:" = "窗口位置：";

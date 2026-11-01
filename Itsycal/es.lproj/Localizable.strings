@@ -2,6 +2,8 @@
 "%@ Reminders" = "Recordatorios de %@";
 /* Last line of a long list of invitees in the event popover: the number of invitees not shown, e.g. 1,650 more */
 "%@ more" = "%@ más";
+/* Last row of a calendar day's tooltip when not all of the day's events fit: the number of events not shown, e.g. 3 more */
+"%@ more events" = "%@ más";
 /* VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders */
 "%@, %@" = "%@, %@";
 "1 day" = "1 día";
@@ -121,7 +123,8 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 /* Repeat ends never */
 "Never" = "Nunca";
 "New Event" = "Nuevo evento";
-"New Event   ⌘N" = "Nuevo evento   ⌘N";
+/* Tooltip for the calendar's button that shows the next month */
+"Next Month" = "Mes siguiente";
 "No events" = "Nada";
 /* Alert none
    Repeat none */
@@ -129,14 +132,16 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "On Date" = "En la fecha";
 "On day of event (9 AM)" = "El día del evento (9:00)";
 "Open Calendar" = "Abrir La aplicación del calendario";
-"Open Calendar   ⌘O" = "Abrir La aplicación del calendario   ⌘O";
 "Options" = "Opciones";
 "Outline current month" = "Delinear el mes actual";
 /* Accessibility description for menu bar icon with the date in an outlined square */
 "Outlined date" = "Fecha con contorno";
 /* Heading of the agenda's section of overdue reminders */
 "Overdue" = "Vencidos";
-"Pin Itsycal   P" = "Mantener Itsycal   P";
+/* Tooltip for the pin button, which keeps Itsycal's window open */
+"Pin Itsycal" = "Mantener Itsycal";
+/* Tooltip for the calendar's button that shows the previous month */
+"Previous Month" = "Mes anterior";
 "Quit Itsycal" = "Salir de Itsycal";
 /* Heading in Settings before reminders access is granted */
 "Reminders" = "Recordatorios";
@@ -161,6 +166,8 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "Size" = "Tamaño";
 /* Small text size */
 "Small" = "Pequeño";
+/* The space bar's name in a tooltip's keyboard shortcut, e.g. the Today button's */
+"Space" = "Espacio";
 "Starts:" = "Empieza:";
 "Sunday" = "Domingo";
 /* System theme name */
@@ -169,8 +176,12 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "The Calendar application could not be found." = "La aplicación del calendario no se pudo encontrar.";
 "There are no modifiable calendars." = "No hay calendarios modificables.";
 "Thursday" = "Jueves";
+/* Tooltip for the calendar's button that shows today */
+"Today" = "Hoy";
 "Top right of screen" = "Arriba a la derecha de la pantalla";
 "Tuesday" = "Martes";
+/* Tooltip for the pin button while Itsycal is pinned */
+"Unpin Itsycal" = "Dejar de mantener Itsycal";
 "Use colored dots" = "Usar puntos de colores";
 "Wednesday" = "Miércoles";
 "Window position:" = "Posición de la ventana:";

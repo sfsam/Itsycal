@@ -2,6 +2,8 @@
 "%@ Reminders" = "%@ 미리 알림";
 /* Last line of a long list of invitees in the event popover: the number of invitees not shown, e.g. 1,650 more */
 "%@ more" = "외 %@명";
+/* Last row of a calendar day's tooltip when not all of the day's events fit: the number of events not shown, e.g. 3 more */
+"%@ more events" = "외 %@개";
 /* VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders */
 "%@, %@" = "%@, %@";
 "1 day" = "1일";
@@ -121,7 +123,8 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 /* Repeat ends never */
 "Never" = "안 함";
 "New Event" = "새 이벤트";
-"New Event   ⌘N" = "새 이벤트   ⌘N";
+/* Tooltip for the calendar's button that shows the next month */
+"Next Month" = "다음 달";
 "No events" = "이벤트 없음";
 /* Alert none
    Repeat none */
@@ -129,14 +132,16 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "On Date" = "날짜 지정";
 "On day of event (9 AM)" = "이벤트 당일 (오전 9시)";
 "Open Calendar" = "캘린더 열기";
-"Open Calendar   ⌘O" = "캘린더 열기   ⌘O";
 "Options" = "옵션";
 "Outline current month" = "현재 월 외곽선 표시";
 /* Accessibility description for menu bar icon with the date in an outlined square */
 "Outlined date" = "윤곽선 날짜";
 /* Heading of the agenda's section of overdue reminders */
 "Overdue" = "기한 지남";
-"Pin Itsycal   P" = "Itsycal 고정하기   P";
+/* Tooltip for the pin button, which keeps Itsycal's window open */
+"Pin Itsycal" = "Itsycal 고정하기";
+/* Tooltip for the calendar's button that shows the previous month */
+"Previous Month" = "이전 달";
 "Quit Itsycal" = "Itsycal 종료";
 /* Heading in Settings before reminders access is granted */
 "Reminders" = "미리 알림";
@@ -161,6 +166,8 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "Size" = "크기";
 /* Small text size */
 "Small" = "작게";
+/* The space bar's name in a tooltip's keyboard shortcut, e.g. the Today button's */
+"Space" = "스페이스";
 "Starts:" = "시작:";
 "Sunday" = "일요일";
 /* System theme name */
@@ -169,8 +176,12 @@ Itsycal을 종료한 뒤 응용 프로그램 폴더로 옮기고 다시 열어 �
 "The Calendar application could not be found." = "캘린더 앱을 찾을 수 없어요.";
 "There are no modifiable calendars." = "수정할 수 있는 캘린더가 없어요.";
 "Thursday" = "목요일";
+/* Tooltip for the calendar's button that shows today */
+"Today" = "오늘";
 "Top right of screen" = "화면 오른쪽 상단";
 "Tuesday" = "화요일";
+/* Tooltip for the pin button while Itsycal is pinned */
+"Unpin Itsycal" = "Itsycal 고정 해제하기";
 "Use colored dots" = "색상 있는 점 사용";
 "Wednesday" = "수요일";
 "Window position:" = "창 위치:";
