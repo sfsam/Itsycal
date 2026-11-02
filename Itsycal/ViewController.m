@@ -1269,7 +1269,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 // The Overdue section at the top of the agenda: a heading with the
 // number of reminders due before today and, if the user expanded it,
-// those reminders, most recently due first. It's shown only for today
+// those reminders, most recent day first. It's shown only for today
 // (it's about now) and if the agenda shows any days. It starts
 // collapsed, and remembers whether it's expanded.
 - (NSArray *)overdueRowsForAgendaDays:(NSInteger)days

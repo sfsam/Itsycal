@@ -39,6 +39,7 @@ static const NSTimeInterval kCompletedReminderLinger = 1;
 static NSURL *MeetingURLForEvent(EKEvent *event); // see below
 static NSDate *DueDateForReminder(EKReminder *reminder, BOOL *hasTime, NSCalendar **calendar); // see below
 static NSArray<NSDictionary *> *AlarmValuesOfReminder(EKReminder *reminder); // see below
+static NSComparisonResult CompareItemsOnDay(EventInfo *e1, EventInfo *e2); // see below
 
 // The parts of a reminder that checking it off can change, kept as
 // plain values (not EventKit objects, which -[EKEventStore reset]
@@ -246,7 +247,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     dispatch_sync(_queueIsol, ^{
         candidates = self->_filteredOverdueCandidates;
     });
-    // Already sorted, most recently due first. See -_filterEvents.
+    // Already sorted. See -_filterEvents.
     NSMutableArray<EventInfo *> *reminders = [NSMutableArray new];
     for (EventInfo *info in candidates) {
         if ([info.dueDate compare:date] == NSOrderedAscending) [reminders addObject:info];
@@ -738,38 +739,10 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     _overdueCandidates = overdueCandidates;
 
     // eventsForDate is a dict that maps dates to an array of EventInfo objects.
-    // Sort those arrays so that AllDay events are first, the sort by startTime.
-    // All-day events are sorted by calendar title with real all-day events before
-    // spanning all-day events. Reminders without a time sort like real all-day
-    // events, and reminders with a time sort by their due date.
-    // As in Calendar, a completed reminder goes after the incomplete items at
-    // the same time (or among the all-day items), but never after a later item.
-    // Remaining ties go by title, so the order doesn't change between fetches.
-    NSComparisonResult (^completedLast)(EventInfo *, EventInfo *) = ^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
-        BOOL c1 = e1.reminder.isCompleted, c2 = e2.reminder.isCompleted;
-        if (c1 == c2) return NSOrderedSame;
-        return c1 ? NSOrderedDescending : NSOrderedAscending;
-    };
-    NSComparisonResult (^byTitle)(EventInfo *, EventInfo *) = ^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
-        return [e1.item.title ?: @"" localizedStandardCompare:e2.item.title ?: @""];
-    };
+    // Sort each day's items. See CompareItemsOnDay().
     for (NSDate *date in eventsForDate) {
         [eventsForDate[date] sortUsingComparator:^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
-            NSComparisonResult result;
-            if (e1.isRealAllDay && e2.isRealAllDay) {
-                result = completedLast(e1, e2);
-                if (result == NSOrderedSame) result = [e1.item.calendar.title compare:e2.item.calendar.title];
-            }
-            else if (e1.isRealAllDay && !e2.isRealAllDay) { return NSOrderedAscending; }
-            else if (!e1.isRealAllDay && e2.isRealAllDay) { return NSOrderedDescending; }
-            else if (e1.isAllDay && e2.isAllDay) { result = [e1.item.calendar.title compare:e2.item.calendar.title];}
-            else if (e1.isAllDay) { return NSOrderedAscending;  }
-            else if (e2.isAllDay) { return NSOrderedDescending; }
-            else {
-                result = [e1.startDate compare:e2.startDate];
-                if (result == NSOrderedSame) result = completedLast(e1, e2);
-            }
-            return result != NSOrderedSame ? result : byTitle(e1, e2);
+            return CompareItemsOnDay(e1, e2);
         }];
     }
     
@@ -977,7 +950,8 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     //os_log(OS_LOG_DEFAULT, " %s", __FUNCTION__);
     NSMutableDictionary *filteredEventsForDate = [NSMutableDictionary new];
     NSArray *selectedCalendars = [[NSUserDefaults standardUserDefaults] arrayForKey:kSelectedCalendars];
-    // Overdue candidates, most recently due first, then by title.
+    // Overdue candidates, most recent day first, then in the same order
+    // as a day's items.
     NSMutableArray *filteredOverdueCandidates = [NSMutableArray new];
     for (EventInfo *info in _overdueCandidates) {
         if ([selectedCalendars containsObject:info.item.calendar.calendarIdentifier]) {
@@ -985,8 +959,8 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
         }
     }
     [filteredOverdueCandidates sortUsingComparator:^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
-        NSComparisonResult result = [e2.dueDate compare:e1.dueDate];
-        return result != NSOrderedSame ? result : [e1.item.title ?: @"" localizedStandardCompare:e2.item.title ?: @""];
+        NSComparisonResult result = [e2.date compare:e1.date];
+        return result != NSOrderedSame ? result : CompareItemsOnDay(e1, e2);
     }];
     for (NSDate *date in _eventsForDate) {
         for (EventInfo *info in _eventsForDate[date]) {
@@ -1022,6 +996,45 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
 }
 
 @end
+
+// =========================================================================
+// Sorting
+// =========================================================================
+
+// A completed reminder after an incomplete item.
+static NSComparisonResult CompletedLast(EventInfo *e1, EventInfo *e2)
+{
+    BOOL c1 = e1.reminder.isCompleted, c2 = e2.reminder.isCompleted;
+    if (c1 == c2) return NSOrderedSame;
+    return c1 ? NSOrderedDescending : NSOrderedAscending;
+}
+
+// The order of items on the same day: all-day items first, then by
+// start time. All-day events are sorted by calendar title with real
+// all-day events before spanning all-day events. Reminders without a
+// time sort like real all-day events, and reminders with a time sort
+// by their due date.
+// As in Calendar, a completed reminder goes after the incomplete items at
+// the same time (or among the all-day items), but never after a later item.
+// Remaining ties go by title, so the order doesn't change between fetches.
+static NSComparisonResult CompareItemsOnDay(EventInfo *e1, EventInfo *e2)
+{
+    NSComparisonResult result;
+    if (e1.isRealAllDay && e2.isRealAllDay) {
+        result = CompletedLast(e1, e2);
+        if (result == NSOrderedSame) result = [e1.item.calendar.title compare:e2.item.calendar.title];
+    }
+    else if (e1.isRealAllDay && !e2.isRealAllDay) { return NSOrderedAscending; }
+    else if (!e1.isRealAllDay && e2.isRealAllDay) { return NSOrderedDescending; }
+    else if (e1.isAllDay && e2.isAllDay) { result = [e1.item.calendar.title compare:e2.item.calendar.title];}
+    else if (e1.isAllDay) { return NSOrderedAscending;  }
+    else if (e2.isAllDay) { return NSOrderedDescending; }
+    else {
+        result = [e1.startDate compare:e2.startDate];
+        if (result == NSOrderedSame) result = CompletedLast(e1, e2);
+    }
+    return result != NSOrderedSame ? result : [e1.item.title ?: @"" localizedStandardCompare:e2.item.title ?: @""];
+}
 
 // =========================================================================
 // Reminders

@@ -75,8 +75,9 @@
 
 // Reminders from selected lists whose current occurrence is due before
 // date, for the agenda's Overdue section: incomplete ones, and ones
-// checked off a moment ago, which linger briefly. Most recently due
-// first. Their EventInfos have isInOverdueSection set.
+// checked off a moment ago, which linger briefly. Most recent day
+// first, and each day in the same order as filteredEventsForDate.
+// Their EventInfos have isInOverdueSection set.
 - (NSArray<EventInfo *> *)remindersDueBeforeDate:(NSDate *)date;
 
 // When the user selects/unselects calendars in Prefs, we update
