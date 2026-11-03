@@ -36,7 +36,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     return @[kShowEventDays, kMenuBarIconType, kShowMonthInIcon, kShowDayOfWeekInIcon,
               kShowDaysWithNoEventsInAgenda, kShowMeetingIndicator, kHideIcon,
               kBaselineOffset, kClockFormat, kWindowPosition, kShowCompletedReminders,
-              kShowOverdueReminders];
+              kShowOverdueReminders, kWeekStartDOW];
 }
 
 @implementation ViewController
@@ -59,6 +59,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     BOOL       _clockUsesSeconds;
     BOOL       _clockUsesTime;
     BOOL       _shouldShowMeetingIndicator;
+    BOOL       _showWidgetDay;
     NSRect     _screenFrame;
     NSRect     _fallbackAnchor;
     BOOL       _usesFallbackPosition;
@@ -1016,6 +1017,11 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     [self.itsycalWindow orderOut:self];
     [_newEventPopover close];
     _inactiveTime = MonotonicClockTime();
+    // The one-day agenda from a widget tap lasts until the window closes.
+    if (_showWidgetDay) {
+        _showWidgetDay = NO;
+        [self updateAgenda];
+    }
 }
 
 - (void)cancel:(id)sender
@@ -1048,6 +1054,22 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     // The user hit the keyboard shortcut. This is the same
     // as if the user had clicked the menubar icon.
     [self statusItemClicked:self];
+}
+
+- (void)widgetDateReceived:(NSDate *)showDate
+{
+    [self dateURLReceived:showDate];
+    _showWidgetDay = YES;
+    [_ec refetchAll];
+    [self updateAgenda];
+    // On a cold launch the calendar list is still empty until the fetch runs.
+    __weak typeof(self) weakSelf = self;
+    [_ec afterPendingFetches:^{
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        EventCenter *ec = strongSelf->_ec;
+        if (!ec.calendarAccessGranted || !ec.hasSelectedCalendars) [strongSelf showPrefs:strongSelf];
+    }];
 }
 
 - (void)dateURLReceived:(NSDate *)showDate
@@ -1165,6 +1187,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 - (void)calendarSelectionChanged:(MoCalendar *)cal
 {
+    _showWidgetDay = NO;
     [self updateAgenda];
 }
 
@@ -1280,7 +1303,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 // Otherwise (a new date, a setting) start from the top.
 - (void)updateAgendaKeepingScrollPosition:(BOOL)keepScrollPosition
 {
-    NSInteger days = [self daysToShowInAgenda];
+    NSInteger days = _showWidgetDay ? 1 : [self daysToShowInAgenda];
     NSArray *datesAndEvents = [self datesAndEventsForDate:_moCal.selectedDate days:days];
     _agendaVC.events = [[self overdueRowsForAgendaDays:days] arrayByAddingObjectsFromArray:datesAndEvents];
     if (keepScrollPosition) {
@@ -1544,6 +1567,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         if (CompareDates(selectedDate, strongSelf->_moCal.selectedDate) == 0) {
             [strongSelf updateAgenda];
         }
+        [strongSelf->_ec refetchAll];
     }];
     [_notificationTokens addObject:token];
 
@@ -1583,6 +1607,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         if (!strongSelf) return;
         [strongSelf updateMenubarIcon];
         [strongSelf updateTimer];
+        [strongSelf->_ec refetchAll];
     }];
     [_notificationTokens addObject:token];
 
@@ -1600,6 +1625,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     if ([keyPath isEqualToString:kShowEventDays] ||
         [keyPath isEqualToString:kShowDaysWithNoEventsInAgenda] ||
         [keyPath isEqualToString:kShowOverdueReminders]) {
+        _showWidgetDay = NO;
         [self updateAgenda];
     }
     else if ([keyPath isEqualToString:kMenuBarIconType] ||
@@ -1622,6 +1648,10 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         if (self.itsycalWindow.isVisible) {
             [self positionItsycalWindowForInitialPresentation:YES];
         }
+    }
+    else if ([keyPath isEqualToString:kWeekStartDOW]) {
+        // The widget snapshot is aligned to the first day of the week.
+        [_ec refetchAll];
     }
 }
 

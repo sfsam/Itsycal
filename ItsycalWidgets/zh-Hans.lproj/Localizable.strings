@@ -1,0 +1,55 @@
+/* Desktop widgets (week and month). */
+
+"This Week" = "本周";
+"Next Week" = "下周";
+"This Month" = "本月";
+"Next Month" = "下月";
+"Back to this week" = "回到本周";
+"Show next week" = "查看下周";
+"Back to this month" = "回到本月";
+"Show next month" = "查看下月";
+"%lld events" = "%lld 项日程";
+"%lld more" = "还有 %lld 项";
+"No events" = "无日程";
+"All day" = "全天";
+"Ongoing" = "跨日";
+"%@, today" = "%@，今天";
+"Open Itsycal to allow calendar access" = "打开 Itsycal，允许访问日历";
+"Choose calendars to show in Itsycal" = "在 Itsycal 中选择要显示的日历";
+"Open Itsycal to update events" = "打开 Itsycal 更新日程";
+"Time zone changed. Open Itsycal to update events" = "时区已改变，打开 Itsycal 更新日程";
+"Open Itsycal to load this week" = "打开 Itsycal 获取这一周的日程";
+"Open Itsycal to load this month" = "打开 Itsycal 获取这个月的日程";
+"Open Itsycal to set up events" = "打开 Itsycal 设置日程";
+"Events may be out of date. Open Itsycal to update" = "日程可能已过期，打开 Itsycal 更新";
+"Week Calendar" = "本周日程";
+"Month Calendar" = "本月日程";
+"Week" = "周";
+"Month" = "月";
+"Your events for each day of the week." = "按一周起始日查看每天的安排。";
+"The whole month with each day's events." = "整月日历与每天的安排。";
+"Switch Period" = "切换周期";
+"Period" = "周期";
+"Show Next" = "显示下一周期";
+
+/* Sample events shown in the widget gallery. */
+"Project review" = "项目复盘";
+"Weekly plan" = "整理本周计划";
+"Design sync" = "设计讨论";
+"Team meeting" = "团队例会";
+"Product review" = "产品评审";
+"Focus time" = "专注工作";
+"Client call" = "与客户沟通";
+"Design walkthrough" = "设计走查";
+"Proposal review" = "方案评审";
+"Feedback" = "整理反馈";
+"Reading" = "阅读";
+"Weekly review" = "周度回顾";
+"Plan next week" = "下周计划";
+"Requirements review" = "需求评审";
+"Release" = "版本发布";
+"Family dinner" = "家庭聚餐";
+"Gym" = "健身";
+"Book club" = "读书会";
+"Dentist" = "牙医预约";
+"Business trip" = "出差";

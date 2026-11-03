@@ -6,6 +6,20 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7A3C21E52F0B4C1800D9A6E1 /* ItsycalWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 7A3C21E82F0B4C1800D9A6E1 /* ItsycalWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7A3C21E62F0B4C1800D9A6E1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9242A5541A82A136005AA4B3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7A3C21EC2F0B4C1800D9A6E1;
+			remoteInfo = ItsycalWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		9252DF361AFD3557007B079F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -21,11 +35,21 @@
 			files = (
 			);
 		};
+		7A3C21E72F0B4C1800D9A6E1 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+				7A3C21E52F0B4C1800D9A6E1 /* ItsycalWidgets.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		9242A55C1A82A136005AA4B3 /* Itsycal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Itsycal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92CF00001A82A136005AA4B3 /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = SOURCE_ROOT; };
+		7A3C21E82F0B4C1800D9A6E1 /* ItsycalWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ItsycalWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -36,6 +60,14 @@
 				Info.plist,
 			);
 			target = 9242A55B1A82A136005AA4B3 /* Itsycal */;
+		};
+		7A3C21E92F0B4C1800D9A6E1 /* Exceptions for "ItsycalWidgets" folder in "ItsycalWidgets" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				ItsycalWidgets.entitlements,
+			);
+			target = 7A3C21EC2F0B4C1800D9A6E1 /* ItsycalWidgets */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -72,10 +104,23 @@
 			path = Itsycal;
 			sourceTree = "<group>";
 		};
+		7A3C21EA2F0B4C1800D9A6E1 /* ItsycalWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7A3C21E92F0B4C1800D9A6E1 /* Exceptions for "ItsycalWidgets" folder in "ItsycalWidgets" target */,
+			);
+			path = ItsycalWidgets;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		9242A5591A82A136005AA4B3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		7A3C21EB2F0B4C1800D9A6E1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
 			);
@@ -87,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				92488FB93072079D00E9229D /* Itsycal */,
+				7A3C21EA2F0B4C1800D9A6E1 /* ItsycalWidgets */,
 				9242A55D1A82A136005AA4B3 /* Products */,
 				92CF00001A82A136005AA4B3 /* Local.xcconfig */,
 			);
@@ -96,6 +142,7 @@
 			isa = PBXGroup;
 			children = (
 				9242A55C1A82A136005AA4B3 /* Itsycal.app */,
+				7A3C21E82F0B4C1800D9A6E1 /* ItsycalWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -112,9 +159,13 @@
 				9242A55A1A82A136005AA4B3 /* Resources */,
 				9252DF361AFD3557007B079F /* CopyFiles */,
 				9291F8AB2AE2126B00E80F14 /* CopyFiles */,
+				7A3C21E72F0B4C1800D9A6E1 /* Embed App Extensions */,
 				921949F4225D287F00223258 /* ShellScript */,
 			);
 			buildRules = (
+			);
+			dependencies = (
+				7A3C21EF2F0B4C1800D9A6E1 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				92488FB93072079D00E9229D /* Itsycal */,
@@ -123,6 +174,24 @@
 			productName = Moon;
 			productReference = 9242A55C1A82A136005AA4B3 /* Itsycal.app */;
 			productType = "com.apple.product-type.application";
+		};
+		7A3C21EC2F0B4C1800D9A6E1 /* ItsycalWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7A3C21F02F0B4C1800D9A6E1 /* Build configuration list for PBXNativeTarget "ItsycalWidgets" */;
+			buildPhases = (
+				7A3C21EE2F0B4C1800D9A6E1 /* Sources */,
+				7A3C21EB2F0B4C1800D9A6E1 /* Frameworks */,
+				7A3C21ED2F0B4C1800D9A6E1 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				7A3C21EA2F0B4C1800D9A6E1 /* ItsycalWidgets */,
+			);
+			name = ItsycalWidgets;
+			productName = ItsycalWidgets;
+			productReference = 7A3C21E82F0B4C1800D9A6E1 /* ItsycalWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -134,6 +203,9 @@
 				LastUpgradeCheck = 2620;
 				ORGANIZATIONNAME = mowglii.com;
 				TargetAttributes = {
+					7A3C21EC2F0B4C1800D9A6E1 = {
+						CreatedOnToolsVersion = 27.1;
+					};
 					9242A55B1A82A136005AA4B3 = {
 						CreatedOnToolsVersion = 6.1.1;
 						SystemCapabilities = {
@@ -165,12 +237,18 @@
 			projectRoot = "";
 			targets = (
 				9242A55B1A82A136005AA4B3 /* Itsycal */,
+				7A3C21EC2F0B4C1800D9A6E1 /* ItsycalWidgets */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		9242A55A1A82A136005AA4B3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		7A3C21ED2F0B4C1800D9A6E1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -201,7 +279,20 @@
 			files = (
 			);
 		};
+		7A3C21EE2F0B4C1800D9A6E1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7A3C21EF2F0B4C1800D9A6E1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7A3C21EC2F0B4C1800D9A6E1 /* ItsycalWidgets */;
+			targetProxy = 7A3C21E62F0B4C1800D9A6E1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		9242A5771A82A136005AA4B3 /* Debug configuration for PBXProject "Itsycal" */ = {
@@ -236,6 +327,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 7006;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = NO;
@@ -257,6 +349,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 0.28.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -295,6 +388,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = YES;
+				CURRENT_PROJECT_VERSION = 7006;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
@@ -310,6 +404,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 0.28.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
@@ -323,7 +418,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Itsycal/Itsycal.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7006;
 				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -334,10 +428,10 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.28.0;
 				OTHER_LDFLAGS = "-Wl,-rpath,@loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mowglii.$(PRODUCT_NAME:rfc1034identifier)App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -349,7 +443,6 @@
 				CODE_SIGN_ENTITLEMENTS = Itsycal/Itsycal.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7006;
 				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -360,16 +453,62 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.28.0;
 				OTHER_LDFLAGS = "-Wl,-rpath,@loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mowglii.$(PRODUCT_NAME:rfc1034identifier)App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		7A3C21F12F0B4C1800D9A6E1 /* Debug configuration for PBXNativeTarget "ItsycalWidgets" */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92CF00001A82A136005AA4B3 /* Local.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ItsycalWidgets/ItsycalWidgets.entitlements;
+				INFOPLIST_FILE = ItsycalWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mowglii.ItsycalApp.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		7A3C21F22F0B4C1800D9A6E1 /* Release configuration for PBXNativeTarget "ItsycalWidgets" */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92CF00001A82A136005AA4B3 /* Local.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ItsycalWidgets/ItsycalWidgets.entitlements;
+				INFOPLIST_FILE = ItsycalWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mowglii.ItsycalApp.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		7A3C21F02F0B4C1800D9A6E1 /* Build configuration list for PBXNativeTarget "ItsycalWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7A3C21F12F0B4C1800D9A6E1 /* Debug configuration for PBXNativeTarget "ItsycalWidgets" */,
+				7A3C21F22F0B4C1800D9A6E1 /* Release configuration for PBXNativeTarget "ItsycalWidgets" */,
+			);
+			defaultConfigurationName = Release;
+		};
 		9242A5571A82A136005AA4B3 /* Build configuration list for PBXProject "Itsycal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

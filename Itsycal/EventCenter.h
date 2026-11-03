@@ -69,6 +69,12 @@
 // "iCloud Reminders". Datasource for Prefs tableview.
 - (NSArray *)sourcesAndCalendars;
 
+// At least one existing calendar is selected, as of the last calendar fetch.
+- (BOOL)hasSelectedCalendars;
+
+// Run block on the main queue after every fetch requested before this call.
+- (void)afterPendingFetches:(dispatch_block_t)block;
+
 // A dict that maps dates to an array of EventInfo objects.
 // Only contains events for user's selected (i.e. filtered) calendars.
 - (NSDictionary *)filteredEventsForDate;

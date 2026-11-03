@@ -20,6 +20,7 @@
 {
     NSWindowController *_wc;
     ViewController *_vc;
+    NSArray<NSURL *> *_pendingURLs; // URLs that arrive before _vc exists (launch by URL).
 }
 
 + (void)initialize
@@ -151,6 +152,16 @@
     // is created because Theme instantiation relies on checking a
     // property on the window to determine its appearance.
     [Theme bind:@"themePreference" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kThemePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+
+    // A launch-by-URL delivers the URL before this method; handle it once
+    // the status item exists.
+    if (_pendingURLs) {
+        NSArray<NSURL *> *urls = _pendingURLs;
+        _pendingURLs = nil;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self application:NSApp openURLs:urls];
+        });
+    }
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
@@ -161,22 +172,32 @@
 
 - (void)application:(NSApplication *)application openURLs:(NSArray<NSURL *> *)urls
 {
+    if (!_vc) {
+        _pendingURLs = urls;
+        return;
+    }
     if (urls.count >= 1) {
         // We can only handle showing one date at a time, so we pick the first one
         NSURL *url = urls[0];
         if ([url.host isEqualToString:@"date"] && url.pathComponents.count == 2) {
             NSString *dateString = url.pathComponents[1];
             
-            if ([dateString isEqualToString:@"now"]) {
-                [_vc dateURLReceived:[NSDate new]];
-            } else {
-                NSDateFormatter *format = [NSDateFormatter new];
-                format.dateFormat = @"yyyy-MM-dd";
-                NSDate *date = [format dateFromString:dateString];
-                
-                if (date) {
-                    [_vc dateURLReceived:date];
+            // Widget links are local yyyy-MM-dd dates on the Gregorian calendar.
+            NSDateFormatter *format = [NSDateFormatter new];
+            format.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+            format.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+            format.timeZone = NSTimeZone.localTimeZone;
+            format.dateFormat = @"yyyy-MM-dd";
+            format.lenient = NO;
+            NSDate *date = [dateString isEqualToString:@"now"] ? NSDate.date : [format dateFromString:dateString];
+            if (date) {
+                // itsycal://date/yyyy-MM-dd?widget=1 comes from a desktop widget.
+                BOOL widget = NO;
+                for (NSURLQueryItem *item in [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO].queryItems) {
+                    if ([item.name isEqualToString:@"widget"] && [item.value isEqualToString:@"1"]) widget = YES;
                 }
+                if (widget) [_vc widgetDateReceived:date];
+                else [_vc dateURLReceived:date];
             }
         }
     }

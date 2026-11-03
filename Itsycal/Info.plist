@@ -53,6 +53,8 @@
 	<string>Itsycal can display your reminders alongside your events. You can change this setting in System Settings › Privacy &amp; Security › Reminders</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2012 − 2026 mowglii.com</string>
+	<key>ItsycalAppGroup</key>
+	<string>$(DEVELOPMENT_TEAM).com.mowglii.ItsycalApp</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>SUAllowsAutomaticUpdates</key>
