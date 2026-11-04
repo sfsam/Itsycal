@@ -94,6 +94,10 @@ Themer *Theme = nil;
     return NSColor.systemRedColor;
 }
 
+- (NSColor *)buttonTintColor {
+    return LightDarkColor([NSColor colorWithWhite:0.45 alpha:1], [NSColor colorWithWhite:0.55 alpha:1]);
+}
+
 - (NSColor *)currentMonthOutlineColor {
     return LightDarkColor(NSColor.labelColor, NSColor.secondaryLabelColor);
 }

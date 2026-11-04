@@ -74,6 +74,7 @@ NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
         MoButton *btn = [MoButton new];
         [btn setImage:[NSImage imageNamed:imageName]];
         [btn setAlternateImage:[NSImage imageNamed:[imageName stringByAppendingString:@"Alt"]]];
+        [btn setContentTintColor:Theme.buttonTintColor];
         [btn setTarget:self];
         [btn setAction:action];
         [self addSubview:btn];

@@ -27,6 +27,7 @@
 #import "MoVFLHelper.h"
 #import "MoUtils.h"
 #import "Sparkle/SUUpdater.h"
+#import "Themer.h"
 
 // Keys observed in NSUserDefaults for preference changes. Registered in
 // -fileNotifications and unregistered in -dealloc.
@@ -106,6 +107,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         MoButton *btn = [MoButton new];
         [btn setTarget:self];
         [btn setAction:action];
+        [btn setContentTintColor:Theme.buttonTintColor];
         [btn setImage:[NSImage imageNamed:imageName]];
         [btn setKeyEquivalent:key];
         [btn setKeyEquivalentModifierMask:NSEventModifierFlagCommand];
