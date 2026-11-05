@@ -51,6 +51,8 @@ Itsycal je užitečnější, pokud může zobrazovat události z vašich kalend
 /* Accessibility description for menu bar icon showing a grid of days */
 "Calendar grid" = "Mřížka kalendáře";
 "Cancel" = "Zrušit";
+/* Timer menu item; %@ is the time left, like 7:42 */
+"Cancel: %@" = "Zrušit: %@";
 "Check for Updates…" = "Vyhledat aktualizace…";
 /* Accessibility label for a reminder's checkbox in the event list */
 "Completed" = "Vyřízeno";
@@ -168,6 +170,8 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "Small" = "Malá";
 /* The space bar's name in a tooltip's keyboard shortcut, e.g. the Today button's */
 "Space" = "Mezerník";
+/* Timer menu item; %@ is a duration, like 12 min */
+"Start: %@" = "Spustit: %@";
 "Starts:" = "Začíná:";
 "Sunday" = "neděle";
 /* System theme name */
@@ -176,6 +180,10 @@ Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej
 "The Calendar application could not be found." = "Aplikaci Kalendář se nepodařilo najít.";
 "There are no modifiable calendars." = "Neexistují žádné kalendáře, které by bylo možné upravovat.";
 "Thursday" = "čtvrtek";
+/* Menu section header for the countdown timer */
+"Timer" = "Časovač";
+/* Accessibility label for the timer's minutes slider */
+"Timer Duration" = "Délka časovače";
 /* Tooltip for the calendar's button that shows today */
 "Today" = "Dnes";
 "Top right of screen" = "Vpravo nahoře na obrazovce";

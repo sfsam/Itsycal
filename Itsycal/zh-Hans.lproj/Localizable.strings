@@ -51,6 +51,8 @@ Itsycal is more useful when it can display events from your calendars. You can c
 /* Accessibility description for menu bar icon showing a grid of days */
 "Calendar grid" = "日历网格";
 "Cancel" = "取消";
+/* Timer menu item; %@ is the time left, like 7:42 */
+"Cancel: %@" = "取消：%@";
 "Check for Updates…" = "检查更新…";
 /* Accessibility label for a reminder's checkbox in the event list */
 "Completed" = "已完成";
@@ -168,6 +170,8 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "Small" = "小";
 /* The space bar's name in a tooltip's keyboard shortcut, e.g. the Today button's */
 "Space" = "空格";
+/* Timer menu item; %@ is a duration, like 12 min */
+"Start: %@" = "开始：%@";
 "Starts:" = "开始：";
 "Sunday" = "星期天";
 /* System theme name */
@@ -176,6 +180,10 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "The Calendar application could not be found." = "找不到日历应用程序。";
 "There are no modifiable calendars." = "没有可修改的日历。";
 "Thursday" = "星期四";
+/* Menu section header for the countdown timer */
+"Timer" = "计时器";
+/* Accessibility label for the timer's minutes slider */
+"Timer Duration" = "计时器时长";
 /* Tooltip for the calendar's button that shows today */
 "Today" = "今天";
 "Top right of screen" = "屏幕右上角";

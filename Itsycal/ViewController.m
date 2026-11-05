@@ -28,6 +28,7 @@
 #import "MoUtils.h"
 #import "Sparkle/SUUpdater.h"
 #import "Themer.h"
+#import "MenuTimer.h"
 
 // Keys observed in NSUserDefaults for preference changes. Registered in
 // -fileNotifications and unregistered in -dealloc.
@@ -64,6 +65,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     BOOL       _usesFallbackPosition;
     NSPopover *_newEventPopover;
     NSMutableArray *_notificationTokens;
+    MenuTimer *_menuTimer;
 }
 
 - (void)dealloc
@@ -176,6 +178,10 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     _moCal.todayDate = today;
     _moCal.selectedDate = today;
     
+    // Create the timer now so a timer saved before quitting resumes,
+    // and before the status item, whose context menu includes it.
+    _menuTimer = [MenuTimer new];
+
     [self createStatusItem];
     
     _ec = [[EventCenter alloc] initWithCalendar:_nsCal delegate:self];
@@ -558,6 +564,10 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     NSMenu *menu = [[NSMenu alloc] init];
     menu.delegate = self;
 
+    for (NSMenuItem *item in [_menuTimer menuItems]) {
+        [menu addItem:item];
+    }
+    [menu addItem:[NSMenuItem separatorItem]];
     NSMenuItem *item = [menu addItemWithTitle:NSLocalizedString(@"Settings…", @"") action:@selector(showPrefs:) keyEquivalent:@""];
     item.target = self;
     item = [menu addItemWithTitle:NSLocalizedString(@"Date & Time…", @"") action:@selector(openDateAndTimePrefs:) keyEquivalent:@""];
@@ -989,6 +999,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     // See -createStatusItem for more info.
     if (_statusItem.menu == menu) {
         _statusItem.menu = nil;
+        [_menuTimer menuDidClose];
     }
 }
 

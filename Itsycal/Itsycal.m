@@ -36,6 +36,8 @@ NSString * const kOverdueSectionExpanded = @"OverdueSectionExpanded";
 NSString * const kShowEventPopoverOnHover = @"ShowEventPopoverOnHover";
 NSString * const kDoNotCheckLoginItemStatus = @"DoNotCheckLoginItemStatus";
 NSString * const kWindowPosition = @"WindowPosition";
+NSString * const kTimerEndDate = @"TimerEndDate";
+NSString * const kTimerRecentMinutes = @"TimerRecentMinutes";
 
 @implementation NSDate (HasNoEvents)
 

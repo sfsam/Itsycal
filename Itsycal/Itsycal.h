@@ -39,6 +39,8 @@ extern NSString * const kOverdueSectionExpanded;
 extern NSString * const kShowEventPopoverOnHover;
 extern NSString * const kDoNotCheckLoginItemStatus;
 extern NSString * const kWindowPosition;
+extern NSString * const kTimerEndDate;
+extern NSString * const kTimerRecentMinutes;
 
 typedef NS_ENUM(NSInteger, WindowPosition) {
     WindowPositionBelowMenuBarIcon = 0,

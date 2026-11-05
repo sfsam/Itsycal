@@ -51,6 +51,8 @@ Itsycal est plus utile quand il peut afficher les événements de vos calendrier
 /* Accessibility description for menu bar icon showing a grid of days */
 "Calendar grid" = "Grille de calendrier";
 "Cancel" = "Annuler";
+/* Timer menu item; %@ is the time left, like 7:42 */
+"Cancel: %@" = "Annuler : %@";
 "Check for Updates…" = "Rechercher les mises à jour…";
 /* Accessibility label for a reminder's checkbox in the event list */
 "Completed" = "Terminé";
@@ -168,6 +170,8 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "Small" = "Petite";
 /* The space bar's name in a tooltip's keyboard shortcut, e.g. the Today button's */
 "Space" = "Espace";
+/* Timer menu item; %@ is a duration, like 12 min */
+"Start: %@" = "Démarrer : %@";
 "Starts:" = "Commence :";
 "Sunday" = "dimanche";
 /* System theme name */
@@ -176,6 +180,10 @@ S'il vous plaît quitter Itsycal, le déplacer dans le dossier Applications, et 
 "The Calendar application could not be found." = "L'application Calendrier est introuvable.";
 "There are no modifiable calendars." = "Aucun calendrier n’est modifiable.";
 "Thursday" = "jeudi";
+/* Menu section header for the countdown timer */
+"Timer" = "Minuteur";
+/* Accessibility label for the timer's minutes slider */
+"Timer Duration" = "Durée du minuteur";
 /* Tooltip for the calendar's button that shows today */
 "Today" = "Aujourd'hui";
 "Top right of screen" = "En haut à droite de l'écran";
