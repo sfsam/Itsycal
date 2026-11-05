@@ -22,12 +22,12 @@ static const CGFloat kScreenInset = 6;  // from the edges of the screen's visibl
 static const CGFloat kCornerRadius = 10;
 
 // A label tooltip's layout
-static const CGFloat kLabelPaddingH = 10;
+static const CGFloat kLabelPaddingH = 4;
 static const CGFloat kLabelPaddingV = 4;
 static const CGFloat kBadgeGap = 8;
 static const CGFloat kBadgePaddingH = 4;
 static const CGFloat kBadgePaddingV = 1;
-static const CGFloat kBadgeCornerRadius = 4;
+static const CGFloat kBadgeCornerRadius = 6;
 
 typedef NS_ENUM(NSInteger, TooltipState) {
     TooltipStateCold,      // nothing shown
