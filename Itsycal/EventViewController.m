@@ -64,6 +64,8 @@ const NSTimeInterval kAlertRegularRelativeOffsets[kAlertRegularNumOffsets] = {
 // Toggling All-day converts alerts like Calendar.app (0 == no alert).
 const NSInteger kAlertAllDayIndexForRegular[kAlertRegularNumOffsets] = {0, 1, 1, 1, 1, 1, 1, 1, 2, 3};
 const NSInteger kAlertRegularIndexForAllDay[kAlertAllDayNumOffsets] = {0, 1, 8, 9, 0};
+// Itsycal adds at most this many alerts to an event.
+const NSUInteger kAlertMaxCount = 3;
 
 @implementation EventViewController
 {
@@ -546,13 +548,14 @@ const NSInteger kAlertRegularIndexForAllDay[kAlertAllDayNumOffsets] = {0, 1, 8, 
 
 - (void)showAlertIndexes:(NSArray<NSNumber *> *)alertIndexes
 {
-    while (_alertPopups.count > MAX(alertIndexes.count, 1)) {
+    NSUInteger count = MIN(MAX(alertIndexes.count, 1), kAlertMaxCount);
+    while (_alertPopups.count > count) {
         [_alertLabels.lastObject removeFromSuperview];
         [_alertPopups.lastObject removeFromSuperview];
         [_alertLabels removeLastObject];
         [_alertPopups removeLastObject];
     }
-    while (_alertPopups.count < alertIndexes.count) {
+    while (_alertPopups.count < count) {
         [self addAlertClicked:nil];
     }
     for (NSUInteger i = 0; i < _alertPopups.count; i++) {
@@ -621,7 +624,14 @@ const NSInteger kAlertRegularIndexForAllDay[kAlertAllDayNumOffsets] = {0, 1, 8, 
 {
     // Add the new default alert if the user kept the old one.
     if (_defaultAlertKept && _defaultAlertIndex > 0) {
-        alertIndexes = [alertIndexes arrayByAddingObject:@(_defaultAlertIndex)];
+        if (alertIndexes.count < kAlertMaxCount) {
+            alertIndexes = [alertIndexes arrayByAddingObject:@(_defaultAlertIndex)];
+        }
+        else {
+            // No default was added. Don't treat a user-selected alert
+            // as the default just because the times match.
+            _defaultAlertIndex = 0;
+        }
     }
     [self showAlertIndexes:[alertIndexes sortedArrayUsingSelector:@selector(compare:)]];
 }
@@ -629,12 +639,12 @@ const NSInteger kAlertRegularIndexForAllDay[kAlertAllDayNumOffsets] = {0, 1, 8, 
 - (void)updateAddAlertButton
 {
     // Keep the add button beside the last row. The notes follow it.
-    // Hide it if that row is 'None'.
+    // Hide it if the last row is set to 'None' or the row limit is reached.
     NSPopUpButton *lastPopup = _alertPopups.lastObject;
     _addAlertButtonTopConstraint.active = NO;
     _addAlertButtonTopConstraint = [_addAlertButton.topAnchor constraintEqualToAnchor:lastPopup.topAnchor];
     _addAlertButtonTopConstraint.active = YES;
-    _addAlertButton.hidden = [lastPopup indexOfItem:lastPopup.selectedItem] == 0;
+    _addAlertButton.hidden = _alertPopups.count >= kAlertMaxCount || [lastPopup indexOfItem:lastPopup.selectedItem] == 0;
 }
 
 - (void)saveEvent:(id)sender
