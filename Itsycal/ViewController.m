@@ -40,6 +40,17 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
               kShowOverdueReminders];
 }
 
+// One of a day's dot colors, for -dotColorsForDate:useColor:.
+@interface DotColor : NSObject
+@property (nonatomic) NSColor *color;
+@property (nonatomic) NSUInteger index; // first in agenda order
+@property (nonatomic) NSUInteger count; // items with this color
+@property (nonatomic) NSInteger rank; // of its best item
+@end
+
+@implementation DotColor
+@end
+
 @implementation ViewController
 {
     EventCenter   *_ec;
@@ -1191,17 +1202,51 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     NSArray<EventInfo *> *events = [self eventsForDate:date];
     if (!events || events.count == 0) return nil;
     if (!useColor) return @[];
-    NSMutableOrderedSet *colors = [NSMutableOrderedSet new];
-    for (EventInfo *eventInfo in events) {
-        [colors addObject:eventInfo.item.calendar.color];
-        if (colors.count == 3) break;
+
+    // A dot for each color, up to 3; calendars with the same color share
+    // a dot. When there are more than 3 colors, a color ranks by its best
+    // item: first an open item in a writable calendar, so read-only ones
+    // (holidays, birthdays, other subscriptions) can't crowd out the
+    // user's own; then an open item in a read-only calendar or a later
+    // occurrence of a repeating reminder; last a completed reminder.
+    // Then colors with more items, then the earlier in the agenda.
+    NSMutableArray<DotColor *> *dots = [NSMutableArray new]; // agenda order
+    NSMutableDictionary<NSColor *, DotColor *> *dotsByColor = [NSMutableDictionary new];
+    for (EventInfo *info in events) {
+        EKCalendar *calendar = info.item.calendar;
+        NSColor *color = calendar.color;
+        if (color == nil) continue;
+        NSInteger rank = info.reminder.isCompleted ? 0
+            : (calendar.allowsContentModifications && !info.isFutureOccurrence) ? 2 : 1;
+        DotColor *dot = dotsByColor[color];
+        if (dot == nil) {
+            dot = [DotColor new];
+            dot.color = color;
+            dot.index = dots.count;
+            dot.rank = rank;
+            [dots addObject:dot];
+            dotsByColor[color] = dot;
+        }
+        dot.count++;
+        dot.rank = MAX(dot.rank, rank);
     }
-    switch (colors.count) {
-        case 1: return @[colors[0]];
-        case 2: return @[colors[0], colors[1]];
-        case 3: return @[colors[0], colors[1], colors[2]];
-        default: return nil;
+    if (dots.count == 0) return @[]; // a plain dot
+
+    // Pick the 3 that rank highest, then draw them in agenda order.
+    if (dots.count > 3) {
+        [dots sortUsingComparator:^NSComparisonResult(DotColor *d1, DotColor *d2) {
+            if (d1.rank  != d2.rank)  return d1.rank  > d2.rank  ? NSOrderedAscending : NSOrderedDescending;
+            if (d1.count != d2.count) return d1.count > d2.count ? NSOrderedAscending : NSOrderedDescending;
+            return d1.index < d2.index ? NSOrderedAscending : NSOrderedDescending;
+        }];
+        [dots removeObjectsInRange:NSMakeRange(3, dots.count - 3)];
+        [dots sortUsingComparator:^NSComparisonResult(DotColor *d1, DotColor *d2) {
+            return d1.index < d2.index ? NSOrderedAscending : NSOrderedDescending;
+        }];
     }
+    NSMutableArray<NSColor *> *dotColors = [NSMutableArray new];
+    for (DotColor *dot in dots) [dotColors addObject:dot.color];
+    return dotColors;
 }
 
 #pragma mark - Events
