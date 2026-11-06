@@ -603,25 +603,21 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
         _incompleteReminders = nil;
         _completedReminders = nil;
     }
-    // Return immediately if we've already fetched for this date range.
+    // The range [startMoDate, endMoDate) is half-open. Return immediately
+    // if we've already fetched all of it.
     NSRange dateRange = NSMakeRange(startMoDate.julian, endMoDate.julian - startMoDate.julian);
-    if ([_previouslyFetchedDates containsIndexesInRange:dateRange])  {
+    NSMutableIndexSet *notYetFetchedDates = [NSMutableIndexSet indexSetWithIndexesInRange:dateRange];
+    [notYetFetchedDates removeIndexes:_previouslyFetchedDates];
+    if (notYetFetchedDates.count == 0) {
         //os_log(OS_LOG_DEFAULT, "SKIPPING: %@ - %@", NSStringFromMoDate(startMoDate), NSStringFromMoDate(endMoDate));
         return;
     }
-    
-    // Reduce the range [startMoDate, endMoDate] based on dates previously fetched.
-    NSMutableIndexSet *notYetFetchedDates = [NSMutableIndexSet new];
-    for (NSInteger julian = startMoDate.julian; julian <= endMoDate.julian; julian++) {
-        if (![_previouslyFetchedDates containsIndex:julian]) {
-            [notYetFetchedDates addIndex:julian];
-        }
-    }
-    if (notYetFetchedDates.count > 0) {
-        startMoDate = MakeGregorian(notYetFetchedDates.firstIndex);
-        endMoDate   = MakeGregorian(notYetFetchedDates.lastIndex);
-    }
-    
+
+    // Reduce the range to the dates not yet fetched. endMoDate is
+    // exclusive, so it is one past the last unfetched date.
+    startMoDate = MakeGregorian(notYetFetchedDates.firstIndex);
+    endMoDate   = MakeGregorian(notYetFetchedDates.lastIndex + 1);
+
     // Update _previouslyFetchedDates for this fetch.
     [_previouslyFetchedDates addIndexesInRange:dateRange];
     

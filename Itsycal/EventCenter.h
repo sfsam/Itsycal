@@ -100,7 +100,7 @@
 
 - (void)eventCenterEventsChanged;
 - (MoDate)fetchStartDate;
-- (MoDate)fetchEndDate;
+- (MoDate)fetchEndDate; // Exclusive
 
 @end
 

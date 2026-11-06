@@ -1266,7 +1266,9 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 - (MoDate)fetchEndDate
 {
-    return AddDaysToDate([self daysToShowInAgenda], _moCal.lastDate);
+    // The end date is exclusive. Cover the calendar's last date and an
+    // agenda that starts on it, which ends `days` days later.
+    return AddDaysToDate(MAX([self daysToShowInAgenda], 1), _moCal.lastDate);
 }
 
 #pragma mark -
@@ -1608,8 +1610,13 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:kShowEventDays] ||
-        [keyPath isEqualToString:kShowDaysWithNoEventsInAgenda] ||
+    if ([keyPath isEqualToString:kShowEventDays]) {
+        // More agenda days can extend the fetch range (see -fetchEndDate).
+        // Fetching does nothing if those days are already cached.
+        [self updateAgenda];
+        [_ec fetchEvents];
+    }
+    else if ([keyPath isEqualToString:kShowDaysWithNoEventsInAgenda] ||
         [keyPath isEqualToString:kShowOverdueReminders]) {
         [self updateAgenda];
     }
