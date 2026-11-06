@@ -58,6 +58,19 @@ static const CGFloat kVerticalPadding = 11;
     return YES;
 }
 
+- (void)sendEvent:(NSEvent *)event
+{
+    // When Itsycal is pinned and the user clicks in another app,
+    // our window resigns key. AppKit then uses the next click in
+    // our window to make it key and swallows that click unless the
+    // view under it accepts first mouse. Become key first so the
+    // click goes through to whatever view the user clicked.
+    if (event.type == NSEventTypeLeftMouseDown && !self.isKeyWindow) {
+        [self makeKeyWindow];
+    }
+    [super sendEvent:event];
+}
+
 - (void)positionRelativeToRect:(NSRect)rect screenMaxX:(CGFloat)screenMaxX
 {
     // Calculate window's top left point.

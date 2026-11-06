@@ -42,11 +42,6 @@
     return self;
 }
 
-- (BOOL)acceptsFirstMouse:(NSEvent *)event
-{
-    return YES;
-}
-
 - (void)dim:(BOOL)shouldDim
 {
     _bkg.animator.alphaValue = shouldDim ? 0 : 1;
