@@ -212,7 +212,17 @@ const NSUInteger kAlertMaxCount = 3;
     [_alertPopup addItemsWithTitles:_alertRegularStrings];
     _alertLabels = [NSMutableArray arrayWithObject:alertLabel];
     _alertPopups = [NSMutableArray arrayWithObject:_alertPopup];
-    _addAlertButton = [NSButton buttonWithImage:[NSImage imageNamed:NSImageNameAddTemplate] target:self action:@selector(addAlertClicked:)];
+    // Draw the '+' into a plain image so NSButton doesn't shift it
+    // down to align with text. The 12x12 image can be centered in
+    // this button without a half-point offset.
+    NSImage *plus = [[NSImage imageWithSystemSymbolName:@"plus" accessibilityDescription:nil] imageWithSymbolConfiguration:[NSImageSymbolConfiguration configurationWithPointSize:12 weight:NSFontWeightRegular]];
+    NSImage *plusImage = [NSImage imageWithSize:plus.size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+        [plus drawInRect:dstRect];
+        return YES;
+    }];
+    plusImage.template = YES;
+    plusImage.accessibilityDescription = plus.accessibilityDescription;
+    _addAlertButton = [NSButton buttonWithImage:plusImage target:self action:@selector(addAlertClicked:)];
     [v addSubview:_addAlertButton];
 
     // Notes (NSTextView embedded in NSScrollView)
