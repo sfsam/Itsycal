@@ -101,6 +101,7 @@
 - (void)eventCenterEventsChanged;
 - (MoDate)fetchStartDate;
 - (MoDate)fetchEndDate; // Exclusive
+- (MoDate)todayDate;    // Also fetched, for the meeting indicator
 
 @end
 

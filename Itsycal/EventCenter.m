@@ -217,7 +217,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     [[NSUserDefaults standardUserDefaults] setObject:selectedCalendars forKey:kSelectedCalendars];
     
     // Reminders are only fetched from selected lists (see
-    // -_fetchRemindersWithStartDate:endDate:), so refetch.
+    // -_fetchRemindersReturningLingeringIDs:), so refetch.
     if (isReminderList) {
         [self refetchAll];
         return;
@@ -262,26 +262,30 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
 
 - (void)fetchEvents {
     //os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
-    MoDate startMoDate = [self.delegate fetchStartDate];
-    MoDate endMoDate   = [self.delegate fetchEndDate];
-    dispatch_async(_queueWork, ^{
-        @autoreleasepool {
-            [self _fetchEventsWithStartDate:startMoDate endDate:endMoDate refetch:NO];
-        }
-    });
+    [self _fetchClearingCache:NO];
 }
 
 - (void)refetchAll {
     //os_log(OS_LOG_DEFAULT, "%s", __FUNCTION__);
     // Either the system told us the event store has changed or
     // we were called by the main controller. Clear the cache
-    // and refetch everything.
+    // and refetch the calendar's dates and today.
+    [self _fetchClearingCache:YES];
+}
+
+// Read the dates to fetch from the delegate, here on the main thread,
+// then fetch on _queueWork. If clearCache, refetch the calendars and
+// clear the cache first.
+- (void)_fetchClearingCache:(BOOL)clearCache {
     MoDate startMoDate = [self.delegate fetchStartDate];
     MoDate endMoDate   = [self.delegate fetchEndDate];
+    MoDate today       = [self.delegate todayDate];
     dispatch_async(_queueWork, ^{
         @autoreleasepool {
-            [self _fetchSourcesAndCalendars];
-            [self _fetchEventsWithStartDate:startMoDate endDate:endMoDate refetch:YES];
+            if (clearCache) {
+                [self _fetchSourcesAndCalendars];
+            }
+            [self _fetchEventsWithStartDate:startMoDate endDate:endMoDate today:today clearCache:clearCache];
         }
     });
 }
@@ -594,39 +598,56 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
     return calendars;
 }
 
-- (void)_fetchEventsWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate refetch:(BOOL)refetch
+// Fetch the dates in [startMoDate, endMoDate) and today that aren't
+// cached. Today may be outside the range when the calendar shows another
+// month, and the meeting indicator needs today's events. Events are
+// queried for each run of consecutive uncached dates, so cached dates
+// between runs aren't queried again; reminders are fetched once.
+- (void)_fetchEventsWithStartDate:(MoDate)startMoDate endDate:(MoDate)endMoDate today:(MoDate)today clearCache:(BOOL)clearCache
 {
     //os_log(OS_LOG_DEFAULT, " %s", __FUNCTION__);
-    if (refetch) {
+    if (clearCache) {
         _previouslyFetchedDates = [NSMutableIndexSet new];
         _eventsForDate = [NSMutableDictionary new];
         _incompleteReminders = nil;
         _completedReminders = nil;
     }
-    // The range [startMoDate, endMoDate) is half-open. Return immediately
-    // if we've already fetched all of it.
-    NSRange dateRange = NSMakeRange(startMoDate.julian, endMoDate.julian - startMoDate.julian);
-    NSMutableIndexSet *notYetFetchedDates = [NSMutableIndexSet indexSetWithIndexesInRange:dateRange];
+    NSMutableIndexSet *notYetFetchedDates = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(startMoDate.julian, endMoDate.julian - startMoDate.julian)];
+    [notYetFetchedDates addIndex:today.julian];
     [notYetFetchedDates removeIndexes:_previouslyFetchedDates];
+    // Return immediately if we've already fetched all of them.
     if (notYetFetchedDates.count == 0) {
         //os_log(OS_LOG_DEFAULT, "SKIPPING: %@ - %@", NSStringFromMoDate(startMoDate), NSStringFromMoDate(endMoDate));
         return;
     }
+    [_previouslyFetchedDates addIndexes:notYetFetchedDates];
 
-    // Reduce the range to the dates not yet fetched. endMoDate is
-    // exclusive, so it is one past the last unfetched date.
-    startMoDate = MakeGregorian(notYetFetchedDates.firstIndex);
-    endMoDate   = MakeGregorian(notYetFetchedDates.lastIndex + 1);
-
-    // Update _previouslyFetchedDates for this fetch.
-    [_previouslyFetchedDates addIndexesInRange:dateRange];
-    
-    NSDate *startDate = MakeNSDateWithDate(startMoDate, _cal);
-    NSDate *endDate   = MakeNSDateWithDate(endMoDate,   _cal);
+    NSMutableDictionary *eventsForDate = [NSMutableDictionary new];
     NSArray *cals = [self _validCalendarsForEntityMask:EKEntityMaskEvent];
+    [notYetFetchedDates enumerateRangesUsingBlock:^(NSRange run, BOOL *stop) {
+        NSDate *start = MakeNSDateWithDate(MakeGregorian(run.location),   self->_cal);
+        NSDate *end   = MakeNSDateWithDate(MakeGregorian(NSMaxRange(run)), self->_cal);
+        [self _addEventsWithStartDate:start endDate:end calendars:cals toEventsForDate:eventsForDate];
+    }];
+    [self _addRemindersForDates:notYetFetchedDates toEventsForDate:eventsForDate];
+
+    // eventsForDate is a dict that maps dates to an array of EventInfo objects.
+    // Sort each day's items. See CompareItemsOnDay().
+    for (NSDate *date in eventsForDate) {
+        [eventsForDate[date] sortUsingComparator:^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
+            return CompareItemsOnDay(e1, e2);
+        }];
+    }
+
+    [_eventsForDate addEntriesFromDictionary:eventsForDate];
+    [self _filterEvents];
+}
+
+// Add the events in [startDate, endDate) from cals to eventsForDate.
+- (void)_addEventsWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate calendars:(NSArray *)cals toEventsForDate:(NSMutableDictionary *)eventsForDate
+{
     NSPredicate *predicate = [_store predicateForEventsWithStartDate:startDate endDate:endDate calendars:cals];
     NSArray *events = [_store eventsMatchingPredicate:predicate];
-    NSMutableDictionary *eventsForDate = [NSMutableDictionary new];
     
     // Does EKEvent still respond to the private 'participationStatus'
     // selector? Check once instead of risking an NSUndefinedKeyException
@@ -686,15 +707,22 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
             date = nextDate;
         }
     }
-    
-    // Add reminders that are due between startDate and endDate, and
-    // the later occurrences of repeating reminders that fall there.
-    // Also collect each incomplete reminder's current occurrence (and
-    // lingering completed ones) for the agenda's Overdue section. The
-    // main thread picks those due before today when it builds the
-    // agenda, so the section is right after midnight too.
+}
+
+// Add reminders that are due on dates (julian days), and the later
+// occurrences of repeating reminders that fall on them, to
+// eventsForDate. Also collect each incomplete reminder's current
+// occurrence (and lingering completed ones) for the agenda's Overdue
+// section. The main thread picks those due before today when it builds
+// the agenda, so the section is right after midnight too.
+- (void)_addRemindersForDates:(NSIndexSet *)dates toEventsForDate:(NSMutableDictionary *)eventsForDate
+{
+    // Expand repeating reminders once over the span of dates, then keep
+    // the occurrences that fall on one of them.
+    NSDate *spanStart = MakeNSDateWithDate(MakeGregorian(dates.firstIndex),    _cal);
+    NSDate *spanEnd   = MakeNSDateWithDate(MakeGregorian(dates.lastIndex + 1), _cal);
     NSSet<NSString *> *lingeringIDs;
-    NSArray<EKReminder *> *reminders = [self _fetchRemindersWithStartDate:startDate endDate:endDate lingering:&lingeringIDs];
+    NSArray<EKReminder *> *reminders = [self _fetchRemindersReturningLingeringIDs:&lingeringIDs];
     NSMutableArray<EventInfo *> *overdueCandidates = [NSMutableArray new];
     for (EKReminder *reminder in reminders) {
         // Only reminders with a due date belong on the calendar.
@@ -714,13 +742,12 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
         }
         NSMutableArray<NSDate *> *occurrences = [NSMutableArray arrayWithObject:dueDate];
         if (!reminder.isCompleted && reminder.hasRecurrenceRules) {
-            NSArray *later = RecurrenceDates(reminder.recurrenceRules.firstObject, dueDate, dueCalendar, startDate, endDate);
+            NSArray *later = RecurrenceDates(reminder.recurrenceRules.firstObject, dueDate, dueCalendar, spanStart, spanEnd);
             if (later) [occurrences addObjectsFromArray:later];
         }
         for (NSDate *occurrence in occurrences) {
             NSDate *date = [_cal startOfDayForDate:occurrence];
-            if ([date compare:startDate] == NSOrderedAscending ||
-                [date compare:endDate] != NSOrderedAscending) {
+            if (![dates containsIndex:MakeDateWithNSDate(date, _cal).julian]) {
                 continue;
             }
             EventInfo *info = [EventInfo new];
@@ -738,23 +765,12 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
         }
     }
     _overdueCandidates = overdueCandidates;
-
-    // eventsForDate is a dict that maps dates to an array of EventInfo objects.
-    // Sort each day's items. See CompareItemsOnDay().
-    for (NSDate *date in eventsForDate) {
-        [eventsForDate[date] sortUsingComparator:^NSComparisonResult(EventInfo *e1, EventInfo *e2) {
-            return CompareItemsOnDay(e1, e2);
-        }];
-    }
-    
-    [_eventsForDate addEntriesFromDictionary:eventsForDate];
-    [self _filterEvents];
 }
 
 // The reminders to show: incomplete ones, and completed ones if the user
 // shows them, or else just those still lingering after being checked
 // off. *lingeringIDs is set to the identifiers of lingering ones.
-- (NSArray<EKReminder *> *)_fetchRemindersWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate lingering:(NSSet<NSString *> **)lingeringIDs
+- (NSArray<EKReminder *> *)_fetchRemindersReturningLingeringIDs:(NSSet<NSString *> **)lingeringIDs
 {
     *lingeringIDs = [NSSet set];
 
