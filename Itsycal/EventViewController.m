@@ -320,6 +320,8 @@ const NSInteger kAlertRegularIndexForAllDay[kAlertAllDayNumOffsets] = {0, 1, 8, 
     [super viewWillAppear];
 
     self.view.window.defaultButtonCell = _saveButton.cell;
+    // Update the Tab order when alert rows are added or removed.
+    self.view.window.autorecalculatesKeyViewLoop = YES;
     
     // If self.calSelectedDate is today, the initialStart is set to
     // the next whole hour. Otherwise, 8am of self.calselectedDate.
@@ -574,6 +576,10 @@ const NSInteger kAlertRegularIndexForAllDay[kAlertAllDayNumOffsets] = {0, 1, 8, 
     [vfl :@"H:[alertLabel]-[alertPopup]" :NSLayoutFormatAlignAllBaseline];
     [_alertLabels addObject:alertLabel];
     [_alertPopups addObject:alertPopup];
+    // Move focus from the add button to the new row before hiding the button.
+    if (_addAlertButton.window.firstResponder == _addAlertButton) {
+        [_addAlertButton.window makeFirstResponder:alertPopup];
+    }
     [self updateAddAlertButton];
 }
 
@@ -748,7 +754,9 @@ const NSInteger kAlertRegularIndexForAllDay[kAlertAllDayNumOffsets] = {0, 1, 8, 
         return YES;
     }
     else if (aSelector == @selector(insertBacktab:)) {
-        [_notes.window makeFirstResponder:_alertPopup];
+        // The key view before the notes can change as alert rows are added
+        // or removed.
+        [_notes.window selectKeyViewPrecedingView:_notes];
         return YES;
     }
     return NO;
