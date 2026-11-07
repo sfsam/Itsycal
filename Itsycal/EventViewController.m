@@ -74,7 +74,8 @@ const NSUInteger kAlertMaxCount = 3;
     NSDatePicker *_startDate, *_endDate, *_repEndDate;
     NSPopUpButton *_repPopup, *_repEndPopup, *_alertPopup, *_calPopup;
     NSArray<NSString *> *_alertAllDayStrings, *_alertRegularStrings;
-    NSMutableArray *_alertLabels, *_alertPopups;
+    NSMutableArray<NSTextField *> *_alertLabels;
+    NSMutableArray<NSPopUpButton *> *_alertPopups;
     NSButton *_addAlertButton;
     NSLayoutConstraint *_addAlertButtonTopConstraint;
     NSInteger _defaultAlertIndex;
@@ -212,9 +213,8 @@ const NSUInteger kAlertMaxCount = 3;
     [_alertPopup addItemsWithTitles:_alertRegularStrings];
     _alertLabels = [NSMutableArray arrayWithObject:alertLabel];
     _alertPopups = [NSMutableArray arrayWithObject:_alertPopup];
-    // Draw the '+' into a plain image so NSButton doesn't shift it
-    // down to align with text. The 12x12 image can be centered in
-    // this button without a half-point offset.
+    // Draw the '+' into a plain image so NSButton centers it instead
+    // of shifting it down to align with text.
     NSImage *plus = [[NSImage imageWithSystemSymbolName:@"plus" accessibilityDescription:nil] imageWithSymbolConfiguration:[NSImageSymbolConfiguration configurationWithPointSize:12 weight:NSFontWeightRegular]];
     NSImage *plusImage = [NSImage imageWithSize:plus.size flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
         [plus drawInRect:dstRect];
@@ -282,7 +282,7 @@ const NSUInteger kAlertMaxCount = 3;
     [vfl :@"H:|-[allDayLabel]-[_allDayCheckbox]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[startsLabel]-[_startDate]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[endsLabel]-[_endDate]-|" :NSLayoutFormatAlignAllBaseline];
-    [vfl :@"H:|-[repLabel]-[_repPopup]-|" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-[repLabel]-[_repPopup]" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[_repEndLabel]-[_repEndPopup]-[_repEndDate]-|" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:|-[alertLabel]-[_alertPopup]" :NSLayoutFormatAlignAllBaseline];
     [vfl :@"H:[_alertPopup]-[_addAlertButton]-|"];
@@ -290,6 +290,8 @@ const NSUInteger kAlertMaxCount = 3;
     [vfl :@"H:|-[_url]-|"];
     [vfl :@"H:[cancelButton]-[_saveButton]-|" :NSLayoutFormatAlignAllCenterY];
     [_addAlertButton.widthAnchor constraintEqualToAnchor:_addAlertButton.heightAnchor].active = YES;
+    // End the Repeat popup where the Alert popups end, beside the add button.
+    [_repPopup.trailingAnchor constraintEqualToAnchor:_alertPopup.trailingAnchor].active = YES;
     [self updateAddAlertButton];
     
     // Get height of one line in _notes
@@ -567,34 +569,55 @@ const NSUInteger kAlertMaxCount = 3;
         [_alertPopups removeLastObject];
     }
     while (_alertPopups.count < count) {
-        [self addAlertClicked:nil];
+        [self addAlertRow];
     }
     for (NSUInteger i = 0; i < _alertPopups.count; i++) {
         [_alertPopups[i] selectItemAtIndex:i < alertIndexes.count ? alertIndexes[i].integerValue : 0];
     }
+    [self updateAlertItems];
     [self updateAddAlertButton];
+}
+
+- (void)updateAlertItems
+{
+    // Disable alerts selected in other rows so an alert can't be
+    // selected twice. 'None' and the row's own alert stay enabled.
+    NSArray<NSNumber *> *alertIndexes = [self alertIndexes];
+    for (NSPopUpButton *alertPopup in _alertPopups) {
+        NSInteger selectedIndex = [alertPopup indexOfItem:alertPopup.selectedItem];
+        for (NSInteger i = 0; i < alertPopup.numberOfItems; i++) {
+            [alertPopup itemAtIndex:i].enabled = i == selectedIndex || ![alertIndexes containsObject:@(i)];
+        }
+    }
 }
 
 - (void)addAlertClicked:(id)sender
 {
+    // The add button only shows when every row has an alert and
+    // there's room for another, so this adds a row set to 'None'.
+    [self showAlertIndexes:[[self alertIndexes] arrayByAddingObject:@0]];
+}
+
+- (void)addAlertRow
+{
+    // Add a row below the last one, set up like the first row
+    // in -loadView, with 'None' selected.
+    NSView *v = _alertPopup.superview;
     NSPopUpButton *lastPopup = _alertPopups.lastObject;
     NSTextField *alertLabel = [NSTextField labelWithString:NSLocalizedString(@"Alert:", @"")];
+    alertLabel.alignment = NSTextAlignmentRight;
     NSPopUpButton *alertPopup = [NSPopUpButton new];
     alertPopup.target = self;
     alertPopup.action = @selector(alertPopupChanged:);
+    alertPopup.menu.autoenablesItems = NO;
     [alertPopup addItemsWithTitles:_alertPopup.itemTitles];
-    [_alertPopup.superview addSubview:alertLabel];
-    [_alertPopup.superview addSubview:alertPopup];
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:_alertPopup.superview metrics:nil views:NSDictionaryOfVariableBindings(lastPopup, alertLabel, alertPopup)];
+    [v addSubview:alertLabel];
+    [v addSubview:alertPopup];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(lastPopup, alertLabel, alertPopup)];
     [vfl :@"V:[lastPopup]-[alertPopup]" :NSLayoutFormatAlignAllLeading | NSLayoutFormatAlignAllTrailing];
-    [vfl :@"H:[alertLabel]-[alertPopup]" :NSLayoutFormatAlignAllBaseline];
+    [vfl :@"H:|-[alertLabel]-[alertPopup]" :NSLayoutFormatAlignAllBaseline];
     [_alertLabels addObject:alertLabel];
     [_alertPopups addObject:alertPopup];
-    // Move focus from the add button to the new row before hiding the button.
-    if (_addAlertButton.window.firstResponder == _addAlertButton) {
-        [_addAlertButton.window makeFirstResponder:alertPopup];
-    }
-    [self updateAddAlertButton];
 }
 
 - (void)alertPopupChanged:(id)sender
@@ -613,12 +636,14 @@ const NSUInteger kAlertMaxCount = 3;
 
 - (NSMutableArray<NSNumber *> *)alertIndexes
 {
-    NSMutableArray<NSNumber *> *alertIndexes = [NSMutableArray new];
+    // The selected alerts, each once, without 'None'. (Alerts
+    // selected in other rows are disabled; see -updateAlertItems.)
+    NSMutableOrderedSet<NSNumber *> *alertIndexes = [NSMutableOrderedSet new];
     for (NSPopUpButton *alertPopup in _alertPopups) {
         [alertIndexes addObject:@([alertPopup indexOfItem:alertPopup.selectedItem])];
     }
     [alertIndexes removeObject:@0];
-    return alertIndexes;
+    return [alertIndexes.array mutableCopy];
 }
 
 - (NSArray<NSNumber *> *)alertIndexesWithoutDefault
@@ -635,11 +660,12 @@ const NSUInteger kAlertMaxCount = 3;
 {
     // Add the new default alert if the user kept the old one.
     if (_defaultAlertKept && _defaultAlertIndex > 0) {
-        if (alertIndexes.count < kAlertMaxCount) {
+        if (alertIndexes.count < kAlertMaxCount && ![alertIndexes containsObject:@(_defaultAlertIndex)]) {
             alertIndexes = [alertIndexes arrayByAddingObject:@(_defaultAlertIndex)];
         }
         else {
-            // No default was added. Don't treat a user-selected alert
+            // No default was added: the rows are full, or the user already
+            // selected the same alert. Don't treat a user-selected alert
             // as the default just because the times match.
             _defaultAlertIndex = 0;
         }
@@ -655,7 +681,12 @@ const NSUInteger kAlertMaxCount = 3;
     _addAlertButtonTopConstraint.active = NO;
     _addAlertButtonTopConstraint = [_addAlertButton.topAnchor constraintEqualToAnchor:lastPopup.topAnchor];
     _addAlertButtonTopConstraint.active = YES;
-    _addAlertButton.hidden = _alertPopups.count >= kAlertMaxCount || [lastPopup indexOfItem:lastPopup.selectedItem] == 0;
+    BOOL hidden = _alertPopups.count >= kAlertMaxCount || [lastPopup indexOfItem:lastPopup.selectedItem] == 0;
+    // Move focus from the add button to the last row before hiding the button.
+    if (hidden && _addAlertButton.window.firstResponder == _addAlertButton) {
+        [_addAlertButton.window makeFirstResponder:lastPopup];
+    }
+    _addAlertButton.hidden = hidden;
 }
 
 - (void)saveEvent:(id)sender
@@ -729,15 +760,15 @@ const NSUInteger kAlertMaxCount = 3;
     }
     
     // Remove default alert(s) set on this event. We only add the
-    // alert the user has selected - which may be the default alert
-    // since we tried to set it in -populateAlertPopup. This avoids
-    // having the default alert set twice.
+    // alerts the user has selected - which may include the default
+    // alert since we tried to set it in -populateAlertPopup. This
+    // avoids having the default alert set twice.
     for (EKAlarm *alarm in event.alarms) {
         [event removeAlarm:alarm];
     }
     // Set the alerts that were selected in the alert popups.
-    for (NSPopUpButton *alertPopup in _alertPopups) {
-        NSInteger alertIndex = [alertPopup indexOfItem:alertPopup.selectedItem];
+    for (NSNumber *alertIndexNumber in [self alertIndexes]) {
+        NSInteger alertIndex = alertIndexNumber.integerValue;
         NSTimeInterval offset = MAXFLOAT;
         if (event.isAllDay && alertIndex < kAlertAllDayNumOffsets) {
             offset = kAlertAllDayRelativeOffsets[alertIndex];
