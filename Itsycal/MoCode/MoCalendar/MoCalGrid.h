@@ -50,6 +50,14 @@
 - (NSRect)cellsRect;
 
 //
+// The grid's height with a number of rows, and the number of
+// rows, maybe fractional, that fit in a height. The grid can be
+// shorter than its rows; the cells that don't fit are clipped.
+//
+- (CGFloat)heightForRows:(NSUInteger)rows;
+- (CGFloat)rowsForHeight:(CGFloat)height;
+
+//
 // Resize grid.
 //
 - (void)sizeChanged:(id)sender;
