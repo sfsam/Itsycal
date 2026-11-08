@@ -31,8 +31,30 @@ MoDate MakeDate(NSInteger year, NSInteger month, NSInteger day)
     return date;
 }
 
+// A calendar with Gregorian years, months and days, in the time zone of
+// calendar. MoDates are Gregorian, but the user's calendar can be
+// Buddhist, Japanese, Hebrew, etc. (Language & Region), which gives other
+// years, months and days for the same day.
+static NSCalendar *GregorianCalendarLike(NSCalendar *calendar)
+{
+    // ISO 8601 has the same years, months and days as Gregorian; only
+    // its weeks differ. So in the common case, use calendar as is.
+    NSCalendarIdentifier identifier = calendar.calendarIdentifier;
+    if ([identifier isEqualToString:NSCalendarIdentifierGregorian] ||
+        [identifier isEqualToString:NSCalendarIdentifierISO8601]) {
+        return calendar;
+    }
+    // A new calendar each time, so this is safe on any thread. Copy the
+    // time zone rather than keeping a Gregorian calendar around: only an
+    // autoupdating calendar (the usual argument) follows time zone changes.
+    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    gregorian.timeZone = calendar.timeZone;
+    return gregorian;
+}
+
 MoDate MakeDateWithNSDate(NSDate *nsDate, NSCalendar *calendar)
 {
+    calendar = GregorianCalendarLike(calendar);
     NSInteger year, month, day;
     [calendar getEra:NULL year:&year month:&month day:&day fromDate:nsDate];
     return MakeDate(year, month-1, day);
@@ -40,6 +62,7 @@ MoDate MakeDateWithNSDate(NSDate *nsDate, NSCalendar *calendar)
 
 NSDate *MakeNSDateWithDate(MoDate moDate, NSCalendar *calendar)
 {
+    calendar = GregorianCalendarLike(calendar);
     NSDate *nsDate = [calendar dateWithEra:1 year:moDate.year month:moDate.month+1 day:moDate.day hour:0 minute:0 second:0 nanosecond:0];
     return [calendar startOfDayForDate:nsDate];
 }

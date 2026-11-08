@@ -30,6 +30,7 @@ static const CFTimeInterval kSnapDuration = 0.15;
 @implementation MoCalendar
 {
     NSDateFormatter *_formatter;
+    NSDateFormatter *_titleFormatter; // see -monthTitle
     NSTextField *_monthLabel;
     MoCalGrid *_dateGrid;
     MoCalGrid *_weekGrid;
@@ -75,7 +76,7 @@ static const CFTimeInterval kSnapDuration = 0.15;
 
 - (void)commonInitForMoCalendar
 {
-    _formatter = [NSDateFormatter new];
+    [self makeFormatters];
 
     _monthLabel = [NSTextField labelWithString:@""];
     _monthLabel.font = [NSFont systemFontOfSize:SizePref.calendarTitleFontSize weight:NSFontWeightSemibold];
@@ -709,8 +710,33 @@ static const CFTimeInterval kSnapDuration = 0.15;
 
 - (NSString *)monthTitle
 {
-    NSArray *months = [_formatter shortMonthSymbols];
-    NSString *title = [NSString stringWithFormat:@"%@ %zd", months[self.monthDate.month], self.monthDate.year];
+    NSString *title;
+    NSCalendarIdentifier identifier = NSCalendar.currentCalendar.calendarIdentifier;
+    if ([identifier isEqualToString:NSCalendarIdentifierBuddhist] ||
+        [identifier isEqualToString:NSCalendarIdentifierJapanese] ||
+        [identifier isEqualToString:NSCalendarIdentifierRepublicOfChina]) {
+        // These calendars have Gregorian months and days; only the year
+        // (and era) is written differently. Let the system write it in
+        // the user's calendar: "Apr 2569 BE", "เม.ย. 2569", "令和8年4月",
+        // "民國 115年4月". The Japanese era can change mid-month, so
+        // this shows the era of the 1st, like Calendar.app.
+        if (_titleFormatter == nil) {
+            _titleFormatter = [NSDateFormatter new];
+            _titleFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+            _titleFormatter.formattingContext = NSFormattingContextStandalone;
+            [_titleFormatter setLocalizedDateFormatFromTemplate:@"MMMy"];
+        }
+        NSCalendar *gregorian = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
+        gregorian.timeZone = _titleFormatter.timeZone;
+        NSDate *first = [gregorian dateWithEra:1 year:self.monthDate.year month:self.monthDate.month+1 day:1 hour:12 minute:0 second:0 nanosecond:0];
+        title = [_titleFormatter stringFromDate:first];
+    }
+    else {
+        // Gregorian, ISO 8601, or a calendar whose months don't line up
+        // with the grid (Hebrew, Islamic, ...): Gregorian month and year.
+        NSArray *months = [_formatter shortMonthSymbols];
+        title = [NSString stringWithFormat:@"%@ %zd", months[self.monthDate.month], self.monthDate.year];
+    }
 #ifdef DEBUG
     // Mark debug builds so they're easy to tell apart from release builds.
     title = [title stringByAppendingString:@" ✱"];
@@ -758,8 +784,22 @@ static const CFTimeInterval kSnapDuration = 0.15;
 
 - (void)handleLocaleNotification:(NSNotification *)notification
 {
-    // Redraw calendar with locale-specific month and DOW headers
+    // Redraw calendar with locale-specific month and DOW headers.
+    [self makeFormatters];
     [self updateCalendar];
+}
+
+- (void)makeFormatters
+{
+    // A formatter keeps the locale it was made with, so make new ones
+    // when the user's language, region or calendar changes.
+    _formatter = [NSDateFormatter new];
+    // The grid is Gregorian, so its month names must be too. With, say,
+    // Hebrew as the user's calendar, -shortMonthSymbols would otherwise
+    // return the Hebrew calendar's months.
+    _formatter.calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
+    // Made on demand in -monthTitle.
+    _titleFormatter = nil;
 }
 
 // Helper function to determine if a given column in the

@@ -69,7 +69,7 @@ static EventMaker EventMakerForEvent(EKEvent *event); // see below
 
 @implementation EventCenter {                      // Accessed on:
     EKEventStore         *_store;
-    NSCalendar           *_cal;
+    NSCalendar           *_cal; // user's calendar; see _nsCal in ViewController.m
     NSMutableDictionary  *_eventsForDate;          // _queueWork
     NSDictionary         *_filteredEventsForDate;  // _queueIsol
     NSMutableIndexSet    *_previouslyFetchedDates; // _queueWork

@@ -159,6 +159,32 @@
     [[MASShortcutMonitor sharedMonitor] unregisterAllShortcuts];
 }
 
+// Return the start of the day given by a Gregorian yyyy-MM-dd string,
+// or nil if it isn't a valid date. The numbers are read directly rather
+// than with NSDateFormatter, which would (1) read them in the user's
+// calendar, so with Buddhist, 2026 is Buddhist year 2026 (Gregorian
+// 1483), and (2) return nil for a day whose midnight is skipped by a
+// DST change, as in Santiago.
+static NSDate *DateFromURLDateString(NSString *string)
+{
+    NSArray<NSString *> *parts = [string componentsSeparatedByString:@"-"];
+    if (parts.count != 3) return nil;
+    // ASCII digits only; a 4-digit year and a 1- or 2-digit month and
+    // day, so MakeDate's arithmetic can't overflow.
+    NSCharacterSet *nonDigits = [NSCharacterSet characterSetWithCharactersInString:@"0123456789"].invertedSet;
+    NSUInteger maxLengths[3] = {4, 2, 2};
+    for (NSUInteger i = 0; i < 3; i++) {
+        NSString *part = parts[i];
+        if (part.length == 0 || part.length > maxLengths[i] ||
+            [part rangeOfCharacterFromSet:nonDigits].location != NSNotFound) {
+            return nil;
+        }
+    }
+    MoDate date = MakeDate(parts[0].integerValue, parts[1].integerValue - 1, parts[2].integerValue);
+    if (!IsValidDate(date)) return nil;
+    return MakeNSDateWithDate(date, [NSCalendar autoupdatingCurrentCalendar]);
+}
+
 - (void)application:(NSApplication *)application openURLs:(NSArray<NSURL *> *)urls
 {
     if (urls.count >= 1) {
@@ -170,10 +196,7 @@
             if ([dateString isEqualToString:@"now"]) {
                 [_vc dateURLReceived:[NSDate new]];
             } else {
-                NSDateFormatter *format = [NSDateFormatter new];
-                format.dateFormat = @"yyyy-MM-dd";
-                NSDate *date = [format dateFromString:dateString];
-                
+                NSDate *date = DateFromURLDateString(dateString);
                 if (date) {
                     [_vc dateURLReceived:date];
                 }

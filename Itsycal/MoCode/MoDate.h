@@ -59,16 +59,21 @@ MoDate MakeDate(NSInteger year, NSInteger month, NSInteger day);
 
 /**
  * Make a MoDate corresponding to the given NSDate and calendar.
+ * MoDates are Gregorian whatever the calendar is (Buddhist, Japanese,
+ * Hebrew, etc.); only the calendar's time zone is used.
  * @param   nsDate    The NSDate to be converted.
- * @param   calendar  The calendar used to interpret nsDate.
+ * @param   calendar  The calendar whose time zone is used to interpret nsDate.
  * @return  A MoDate including the Julian Day.
  */
 MoDate MakeDateWithNSDate(NSDate *nsDate, NSCalendar *calendar);
 
 /**
  * Make an NSDate corresponding to the given MoDate and calendar.
+ * MoDates are Gregorian whatever the calendar is (Buddhist, Japanese,
+ * Hebrew, etc.); only the calendar's time zone is used.
  * @param   moDate    The MoDate to be converted.
- * @param   calendar  The calendar with which to create the resulting NSDate.
+ * @param   calendar  The calendar whose time zone is used to create the
+ *                    resulting NSDate.
  * @return  An NSDate.
  */
 NSDate *MakeNSDateWithDate(MoDate moDate, NSCalendar *calendar);

@@ -55,6 +55,11 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 {
     EventCenter   *_ec;
     MoCalendar    *_moCal;
+    // The user's calendar (autoupdating, so it follows time zone changes),
+    // which can be Buddhist, Japanese, Hebrew, etc. Use it for start of
+    // day, adding days, and hours/minutes/seconds, but don't read a year,
+    // month or day from it: use MakeDateWithNSDate(), whose MoDates are
+    // always Gregorian.
     NSCalendar    *_nsCal;
     NSStatusItem  *_statusItem;
     id             _rightClickMonitor;
@@ -400,8 +405,9 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 {
     // url is of the form: urlScheme/yyyy-MM-dd
     // For example: x-fantastical2://show/calendar/2011-05-22
-    NSDateComponents *comp = [_nsCal components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
-    NSString *url = [NSString stringWithFormat:@"%@/%04zd-%02zd-%02zd", urlScheme, comp.year, comp.month, comp.day];
+    // The date is Gregorian whatever the user's calendar is, as MoDates are.
+    MoDate moDate = MakeDateWithNSDate(date, _nsCal);
+    NSString *url = [NSString stringWithFormat:@"%@/%04zd-%02zd-%02zd", urlScheme, moDate.year, moDate.month+1, moDate.day];
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
 }
 
@@ -1383,8 +1389,7 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
 
 - (MoDate)todayDate
 {
-    NSDateComponents *c = [_nsCal components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:[NSDate new]];
-    return MakeDate(c.year, c.month-1, c.day);
+    return MakeDateWithNSDate([NSDate new], _nsCal);
 }
 
 - (void)resetCalendarToToday
