@@ -276,7 +276,9 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
         [_ec refresh];
     }
     else if (keyChar == 'j' && cmdFlag) {
-        if (![_agendaVC clickFirstActiveZoomButton]) NSBeep();
+        // Hide after joining, even when pinned, like 'esc'.
+        if ([_agendaVC clickFirstActiveZoomButton]) [self hideItsycalWindow];
+        else NSBeep();
     }
     else {
         [super keyDown:theEvent];
