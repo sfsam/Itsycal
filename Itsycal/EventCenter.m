@@ -1223,6 +1223,28 @@ static BOOL HostIs(NSString *host, NSString *domain)
     return [host isEqualToString:domain] || [host hasSuffix:[@"." stringByAppendingString:domain]];
 }
 
+// Return the link that a Microsoft Safe Links link wraps, or url
+// unchanged if it isn't one. Organizations using Safe Links (Microsoft
+// Defender for Office 365) get email with each link rewritten to
+// https://<region>.safelinks.protection.outlook.com/?url=<link>&data=...
+// so meeting invites they receive have their join links wrapped. Only
+// one level is unwrapped, and the link must still pass the checks in
+// MeetingURLInText(). Returns url itself (not a copy) when it isn't
+// unwrapped, which MeetingURLInText() relies on.
+static NSURL *UnwrappedSafeLinksURL(NSURL *url)
+{
+    if (!HostIs(url.host.lowercaseString ?: @"", @"safelinks.protection.outlook.com")) return url;
+    NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+    for (NSURLQueryItem *item in components.queryItems) {
+        if ([item.name isEqualToString:@"url"]) {
+            // NSURLQueryItem's value is already percent-decoded.
+            NSURL *wrapped = item.value ? [NSURL URLWithString:item.value] : nil;
+            return wrapped ?: url;
+        }
+    }
+    return url;
+}
+
 // Return the first virtual meeting (e.g. Zoom) link in text, or nil.
 static NSURL *MeetingURLInText(NSString *text)
 {
@@ -1233,7 +1255,11 @@ static NSURL *MeetingURLInText(NSString *text)
     });
     __block NSURL *meetingURL = nil;
     [linkDetector enumerateMatchesInString:text options:kNilOptions range:NSMakeRange(0, text.length) usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
-        NSURL *url = result.URL;
+        NSURL *url = UnwrappedSafeLinksURL(result.URL);
+        // An unwrapped link is opened without the click-time check Safe
+        // Links would have done, so it must match a named service; the
+        // self-hosted BigBlueButton rule below matches any host.
+        BOOL unwrapped = url != result.URL;
         // Match on the URL's host (and scheme, for app-link URIs), not on
         // the raw URL string. A substring check like
         // [link containsString:@"zoom.us/j/"] would also match a hostile
@@ -1261,7 +1287,7 @@ static NSURL *MeetingURLInText(NSString *text)
             || (hostIs(@"gotomeeting.com") && [path hasPrefix:@"/join"])
             || (hostIs(@"ringcentral.com") && [path hasPrefix:@"/j"])
             || (hostIs(@"bigbluebutton.org") && [path hasPrefix:@"/gl"])
-            || ([scheme isEqualToString:@"https"] && (hostHasPrefix(@"bigbluebutton.") || hostHasPrefix(@"bbb.")))
+            || (!unwrapped && [scheme isEqualToString:@"https"] && (hostHasPrefix(@"bigbluebutton.") || hostHasPrefix(@"bbb.")))
             || hostIs(@"meet.jit.si")
             || hostIs(@"indigo.collocall.de")
             || hostIs(@"public.senfcall.de")
