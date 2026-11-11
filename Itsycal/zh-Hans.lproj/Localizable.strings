@@ -1,3 +1,11 @@
+/* Heading for a source's reminder lists in Settings, e.g. iCloud Reminders */
+"%@ Reminders" = "%@ 提醒事项";
+/* Last line of a long list of invitees in the event popover: the number of invitees not shown, e.g. 1,650 more */
+"%@ more" = "还有 %@ 人";
+/* Last row of a calendar day's tooltip when not all of the day's events fit: the number of events not shown, e.g. 3 more */
+"%@ more events" = "还有 %@ 个";
+/* VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders */
+"%@, %@" = "%@，%@";
 "1 day" = "1 天";
 "1 day before" = "1 天前";
 "1 day before (9 AM)" = "1 天前（上午9时）";
@@ -32,18 +40,26 @@
 "At time of event" = "在事件开始时";
 "Automatically check for updates" = "自动检查更新";
 "Beep beep on the hour" = "整点报时";
+"Below menu bar icon" = "菜单栏图标下方";
 "Calendar" = "日历";
 "Calendar access denied.
 
-Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "日历访问被拒绝。
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Settings › Privacy & Security › Calendars" = "日历访问被拒绝。
 
-当 Itsycal 可以显示你的日历事件时会更好用。你可以在 “系统偏好设置>安全隐私>隐私” 中更改此设置。";
+当 Itsycal 可以显示你的日历事件时会更好用。你可以在 “系统设置 › 隐私与安全 › 日历” 中更改此设置。";
 "Calendar access was denied." = "日历访问被拒绝。";
+/* Accessibility description for menu bar icon showing a grid of days */
+"Calendar grid" = "日历网格";
 "Cancel" = "取消";
+/* Timer menu item; %@ is the time left, like 7:42 */
+"Cancel: %@" = "取消：%@";
 "Check for Updates…" = "检查更新…";
+/* Accessibility label for a reminder's checkbox in the event list */
+"Completed" = "已完成";
 "Copy" = "复制";
+"Copy Meeting Link" = "复制会议链接";
 /* Dark theme name */
-"Dark" = "深色";
+"Dark Theme" = "深色主题";
 "Date & Time…" = "日期与时间…";
 "Datetime pattern" = "日期时间模式";
 "Delete…" = "删除…";
@@ -54,7 +70,9 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Donate" = "捐";
 "End Repeat:" = "结束重复：";
 "Ends:" = "结束时间：";
-"Event list shows:" = "显示事件列表：";
+"Event List" = "事件列表";
+/* Events prefs tab label */
+"Events" = "事件";
 "Every %zd Days" = "每 %zd 天";
 "Every %zd Months" = "每 %zd 月";
 "Every %zd Weeks" = "每 %zd 周";
@@ -63,6 +81,8 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Every Month" = "每月";
 "Every Week" = "每周";
 "Every Year" = "每年";
+/* Accessibility description for menu bar icon with the date in a filled square */
+"Filled date" = "实心日期";
 "First day of week:" = "星期开始于：";
 "Follow" = "Follow";
 "Friday" = "星期五";
@@ -75,23 +95,38 @@ Itsycal is more useful when it can display events from your calendars. You can c
 "Hide icon" = "隐藏图标";
 "Highlight:" = "高亮：";
 "Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "除非有至少一个有权限修改的日历，否则 Itsycal 无法创建新事件。";
-"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "当你允许 Itsycal 将事件添加到你的日历中时会更好用。 你可以在 “系统偏好设置>安全隐私>隐私” 中更改此设置。";
+/* Accessibility description for menu bar icon showing the Itsycal face */
+"Itsycal face" = "Itsycal 笑脸";
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Settings › Privacy & Security › Calendars." = "当你允许 Itsycal 将事件添加到你的日历中时会更好用。你可以在 “系统设置 › 隐私与安全 › 日历” 中更改此设置。";
 "Itsycal must be run from the Applications folder in order to work properly.
 
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "必须从应用程序文件夹运行 Itsycal 才能正常工作。
 
 请退出 Itsycal，将其移动到应用程序文件夹，然后重新启动。";
+/* Button in the event popover that joins the event's video meeting (Zoom, Teams, etc.) */
+"Join" = "加入";
 "Keyboard shortcut" = "键盘快捷键";
+/* Large text size */
+"Large" = "大";
 "Launch at login" = "登录时启动";
 /* Light theme name */
-"Light" = "浅色";
+"Light Theme" = "浅色主题";
+"Mark as Completed" = "标记为完成";
+"Mark as Incomplete" = "标记为未完成";
+/* Medium text size */
+"Medium" = "中";
 "Menu Bar" = "菜单栏";
+/* Accessibility label for menu bar datetime pattern text field */
+"Menu bar date and time pattern" = "菜单栏日期时间模式";
+/* Accessibility label for menu bar icon picker */
+"Menu bar icon" = "菜单栏图标";
 "Monday" = "星期一";
 "Move Itsycal to the Applications folder" = "将 Itsycal 移动到应用程序文件夹";
 /* Repeat ends never */
 "Never" = "从不";
 "New Event" = "新事件";
-"New Event   ⌘N" = "新事件   ⌘N";
+/* Tooltip for the calendar's button that shows the next month */
+"Next Month" = "下个月";
 "No events" = "不显示";
 /* Alert none
    Repeat none */
@@ -99,34 +134,65 @@ Please quit Itsycal, move it to the Applications folder, and relaunch." = "必�
 "On Date" = "时间到了";
 "On day of event (9 AM)" = "日程发生当天（上午9时）";
 "Open Calendar" = "打开日历";
-"Open Calendar   ⌘O" = "打开日历   ⌘O";
 "Options" = "选项";
-"or" = "or";
-"Pin Itsycal   P" = "固定 Itsycal   P";
-"Preferences…" = "偏好设置…";
+"Outline current month" = "为当前月份显示轮廓";
+/* Accessibility description for menu bar icon with the date in an outlined square */
+"Outlined date" = "空心日期";
+/* Heading of the agenda's section of overdue reminders */
+"Overdue" = "已过期";
+/* Tooltip for the pin button, which keeps Itsycal's window open */
+"Pin Itsycal" = "固定 Itsycal";
+/* Tooltip for the calendar's button that shows the previous month */
+"Previous Month" = "上个月";
 "Quit Itsycal" = "退出 Itsycal";
+/* Heading in Settings before reminders access is granted */
+"Reminders" = "提醒事项";
+"Reminders access denied. You can change this setting in System Settings › Privacy & Security › Reminders" = "提醒事项访问被拒绝。你可以在 “系统设置 › 隐私与安全 › 提醒事项” 中更改此设置。";
 "Repeat:" = "重复：";
 "Saturday" = "星期六";
 "Settings…" = "设置…";
 "Save Event" = "保存事件";
 "Show calendar weeks" = "显示日历周";
+"Show completed reminders" = "显示已完成的提醒事项";
 "Show day of week in icon" = "在图标中显示星期几";
 "Show days with no events" = "显示没有活动的日子";
 "Show event dots" = "显示事件圆点";
 "Show event location" = "显示事件位置";
 "Show month in icon" = "在图标中显示月份";
+/* Settings checkbox for the agenda's Overdue section */
+"Show overdue reminders at the top" = "在顶部显示已过期的提醒事项";
+"Show Reminders…" = "显示提醒事项…";
+/* Label for how many days the event list shows */
+"Show:" = "显示：";
+/* Accessibility label for text size control */
+"Size" = "大小";
+/* Small text size */
+"Small" = "小";
+/* The space bar's name in a tooltip's keyboard shortcut, e.g. the Today button's */
+"Space" = "空格";
+/* Timer menu item; %@ is a duration, like 12 min */
+"Start: %@" = "开始：%@";
 "Starts:" = "开始：";
 "Sunday" = "星期天";
 /* System theme name */
-"System" = "系统";
+"System Theme" = "系统主题";
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "找不到日历应用程序。";
-"Theme:" = "主题：";
 "There are no modifiable calendars." = "没有可修改的日历。";
 "Thursday" = "星期四";
+/* Menu section header for the countdown timer */
+"Timer" = "计时器";
+/* Accessibility label for the timer's minutes slider */
+"Timer Duration" = "计时器时长";
+/* Tooltip for the calendar's button that shows today */
+"Today" = "今天";
+"Top right of screen" = "屏幕右上角";
 "Tuesday" = "星期二";
+/* Tooltip for the pin button while Itsycal is pinned */
+"Unpin Itsycal" = "取消固定 Itsycal";
 "Use colored dots" = "使用彩色圆点";
 "Wednesday" = "星期三";
+"Window position:" = "窗口位置：";
 "You're deleting an event." = "你正在删除事件。";
 /* Spanning event ends */
 "ends" = "结束时间";

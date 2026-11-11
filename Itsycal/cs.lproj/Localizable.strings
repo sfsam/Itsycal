@@ -1,0 +1,198 @@
+/* Heading for a source's reminder lists in Settings, e.g. iCloud Reminders */
+"%@ Reminders" = "%@ – připomínky";
+/* Last line of a long list of invitees in the event popover: the number of invitees not shown, e.g. 1,650 more */
+"%@ more" = "Další: %@";
+/* Last row of a calendar day's tooltip when not all of the day's events fit: the number of events not shown, e.g. 3 more */
+"%@ more events" = "Další: %@";
+/* VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders */
+"%@, %@" = "%@, %@";
+"1 day" = "1 den";
+"1 day before" = "1 den před";
+"1 day before (9 AM)" = "1 den před (9 AM)";
+"1 hour before" = "1 hodinu před";
+"1 week before" = "1 týden předem";
+"2 days" = "2 dny";
+"2 days before" = "2 dny předem";
+"2 days before (9 AM)" = "2 dny předem (9 AM)";
+"2 hours before" = "2 hodiny předem";
+"3 days" = "3 dny";
+"4 days" = "4 dny";
+"5 days" = "5 dnů";
+"5 minutes before" = "5 minut předem";
+"6 days" = "6 dnů";
+"7 days" = "7 dnů";
+"10 minutes before" = "10 minut předem";
+"14 days" = "14 dnů";
+"15 minutes before" = "15 minut předem";
+"30 minutes before" = "30 minut předem";
+"31 days" = "31 dnů";
+"About Itsycal" = "O aplikaci Itsycal";
+/* About prefs tab label */
+"About" = "O aplikaci";
+"Add Location or Video Call" = "Přidejte místo nebo videohovor";
+"Add Notes" = "Přidat poznámky";
+"Add URL" = "Přidat URL";
+"Alert:" = "Upozornění:";
+"All-day:" = "Celý den:";
+/* Appearance prefs tab label */
+"Appearance" = "Vzhled";
+"Are you sure you want to delete this event?" = "Opravdu chcete tuto událost smazat?";
+"At time of event" = "V čase události";
+"Automatically check for updates" = "Automaticky vyhledávat aktualizace";
+"Beep beep on the hour" = "Zapípat každou hodinu";
+"Below menu bar icon" = "Pod ikonou v řádku nabídek";
+"Calendar" = "Kalendář";
+"Calendar access denied.
+
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Settings › Privacy & Security › Calendars" = "Přístup ke kalendáři byl odepřen.
+
+Itsycal je užitečnější, pokud může zobrazovat události z vašich kalendářů. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Kalendáře";
+"Calendar access was denied." = "Přístup ke kalendáři byl odepřen.";
+/* Accessibility description for menu bar icon showing a grid of days */
+"Calendar grid" = "Mřížka kalendáře";
+"Cancel" = "Zrušit";
+/* Timer menu item; %@ is the time left, like 7:42 */
+"Cancel: %@" = "Zrušit: %@";
+"Check for Updates…" = "Vyhledat aktualizace…";
+/* Accessibility label for a reminder's checkbox in the event list */
+"Completed" = "Vyřízeno";
+"Copy" = "Kopírovat";
+"Copy Meeting Link" = "Kopírovat odkaz na schůzku";
+/* Dark theme name */
+"Dark Theme" = "Tmavé téma";
+"Date & Time…" = "Datum a čas…";
+"Datetime pattern" = "Formát data a času";
+"Delete…" = "Smazat…";
+"Delete All Future Events" = "Smazat všechny budoucí události";
+"Delete Only This Event" = "Smazat pouze tuto událost";
+"Delete This Event" = "Smazat tuto událost";
+"Do you want to delete this and all future occurrences of this event, or only the selected occurrence?" = "Chcete smazat všechny výskyty této události nebo pouze vybranou událost?";
+"Donate" = "Darovat";
+"End Repeat:" = "Konec opakování:";
+"Ends:" = "Končí:";
+"Event List" = "Seznam událostí";
+/* Events prefs tab label */
+"Events" = "Události";
+"Every %zd Days" = "Každých %zd dní";
+"Every %zd Months" = "Každých %zd měsíců";
+"Every %zd Weeks" = "Každých %zd týdnů";
+"Every %zd Years" = "Každých %zd let";
+"Every Day" = "Každý den";
+"Every Month" = "Každý měsíc";
+"Every Week" = "Každý týden";
+"Every Year" = "Každý rok";
+/* Accessibility description for menu bar icon with the date in a filled square */
+"Filled date" = "Datum s výplní";
+"First day of week:" = "První den týdne:";
+"Follow" = "Sledovat";
+"Friday" = "pátek";
+/* General prefs tab label */
+"General" = "Obecné";
+"Go to Date…" = "Přejít na datum…";
+"Go to date" = "Přejít na datum";
+"Help" = "Nápověda";
+"Help…" = "Nápověda…";
+"Hide icon" = "Skrýt ikonu";
+"Highlight:" = "Zvýraznit:";
+"Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal nemůže vytvořit novou událost, pokud nemáte oprávnění k úpravám alespoň v jednom kalendáři.";
+/* Accessibility description for menu bar icon showing the Itsycal face */
+"Itsycal face" = "Obličej Itsycal";
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Settings › Privacy & Security › Calendars." = "Itsycal je užitečnější, pokud mu povolíte přidávat události do vašich kalendářů. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Kalendáře.";
+"Itsycal must be run from the Applications folder in order to work properly.
+
+Please quit Itsycal, move it to the Applications folder, and relaunch." = "Má-li Itsycal fungovat správně, je nutné jej spustit ze složky „Aplikace“.
+
+Ukončete prosím Itsycal, přesuňte jej do složky „Aplikace“ a znovu jej spusťte.";
+/* Button in the event popover that joins the event's video meeting (Zoom, Teams, etc.) */
+"Join" = "Připojit";
+"Keyboard shortcut" = "Klávesová zkratka";
+/* Large text size */
+"Large" = "Velká";
+"Launch at login" = "Otevřít při přihlášení";
+/* Light theme name */
+"Light Theme" = "Světlé téma";
+"Mark as Completed" = "Označit jako vyřízené";
+"Mark as Incomplete" = "Označit jako nevyřízené";
+/* Medium text size */
+"Medium" = "Střední";
+"Menu Bar" = "Řádek nabídek";
+/* Accessibility label for menu bar datetime pattern text field */
+"Menu bar date and time pattern" = "Formát data a času v řádku nabídek";
+/* Accessibility label for menu bar icon picker */
+"Menu bar icon" = "Ikona v řádku nabídek";
+"Monday" = "pondělí";
+"Move Itsycal to the Applications folder" = "Přesuňte Itsycal do složky Aplikace";
+/* Repeat ends never */
+"Never" = "Nikdy";
+"New Event" = "Nová událost";
+/* Tooltip for the calendar's button that shows the next month */
+"Next Month" = "Následující měsíc";
+"No events" = "Žádné události";
+/* Alert none
+   Repeat none */
+"None" = "Žádné";
+"On Date" = "K datu";
+"On day of event (9 AM)" = "V den události (9 AM)";
+"Open Calendar" = "Otevřít kalendář";
+"Options" = "Volby";
+"Outline current month" = "Ohraničit aktuální měsíc";
+/* Accessibility description for menu bar icon with the date in an outlined square */
+"Outlined date" = "Datum s obrysem";
+/* Heading of the agenda's section of overdue reminders */
+"Overdue" = "Po termínu";
+/* Tooltip for the pin button, which keeps Itsycal's window open */
+"Pin Itsycal" = "Přišpendlit Itsycal";
+/* Tooltip for the calendar's button that shows the previous month */
+"Previous Month" = "Předchozí měsíc";
+"Quit Itsycal" = "Ukončit Itsycal";
+/* Heading in Settings before reminders access is granted */
+"Reminders" = "Připomínky";
+"Reminders access denied. You can change this setting in System Settings › Privacy & Security › Reminders" = "Přístup k připomínkám byl odepřen. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Připomínky";
+"Repeat:" = "Opakovat:";
+"Saturday" = "sobota";
+"Save Event" = "Uložit událost";
+"Settings…" = "Nastavení…";
+"Show calendar weeks" = "Zobrazovat kalendářní týdny";
+"Show completed reminders" = "Zobrazovat vyřízené připomínky";
+"Show day of week in icon" = "Zobrazovat den týdne v ikoně";
+"Show days with no events" = "Zobrazovat dny bez událostí";
+"Show event dots" = "Zobrazovat tečky událostí";
+"Show event location" = "Zobrazovat místo události";
+"Show month in icon" = "Zobrazovat měsíc v ikoně";
+/* Settings checkbox for the agenda's Overdue section */
+"Show overdue reminders at the top" = "Zobrazovat připomínky po termínu nahoře";
+"Show Reminders…" = "Zobrazit připomínky…";
+/* Label for how many days the event list shows */
+"Show:" = "Zobrazit:";
+/* Accessibility label for text size control */
+"Size" = "Velikost";
+/* Small text size */
+"Small" = "Malá";
+/* The space bar's name in a tooltip's keyboard shortcut, e.g. the Today button's */
+"Space" = "Mezerník";
+/* Timer menu item; %@ is a duration, like 12 min */
+"Start: %@" = "Spustit: %@";
+"Starts:" = "Začíná:";
+"Sunday" = "neděle";
+/* System theme name */
+"System Theme" = "Systémové téma";
+/* Alert box message when we fail to launch the Calendar application */
+"The Calendar application could not be found." = "Aplikaci Kalendář se nepodařilo najít.";
+"There are no modifiable calendars." = "Neexistují žádné kalendáře, které by bylo možné upravovat.";
+"Thursday" = "čtvrtek";
+/* Menu section header for the countdown timer */
+"Timer" = "Časovač";
+/* Accessibility label for the timer's minutes slider */
+"Timer Duration" = "Délka časovače";
+/* Tooltip for the calendar's button that shows today */
+"Today" = "Dnes";
+"Top right of screen" = "Vpravo nahoře na obrazovce";
+"Tuesday" = "úterý";
+/* Tooltip for the pin button while Itsycal is pinned */
+"Unpin Itsycal" = "Odšpendlit Itsycal";
+"Use colored dots" = "Používat barevné tečky";
+"Wednesday" = "středa";
+"Window position:" = "Umístění okna:";
+"You're deleting an event." = "Mažete událost.";
+/* Spanning event ends */
+"ends" = "končí";

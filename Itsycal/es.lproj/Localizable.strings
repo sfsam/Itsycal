@@ -1,3 +1,11 @@
+/* Heading for a source's reminder lists in Settings, e.g. iCloud Reminders */
+"%@ Reminders" = "Recordatorios de %@";
+/* Last line of a long list of invitees in the event popover: the number of invitees not shown, e.g. 1,650 more */
+"%@ more" = "%@ más";
+/* Last row of a calendar day's tooltip when not all of the day's events fit: the number of events not shown, e.g. 3 more */
+"%@ more events" = "%@ más";
+/* VoiceOver label for the agenda's Overdue heading: Overdue, then the number of overdue reminders */
+"%@, %@" = "%@, %@";
 "1 day" = "1 día";
 "1 day before" = "1 día antes";
 "1 day before (9 AM)" = "1 día antes (9:00)";
@@ -32,18 +40,26 @@
 "At time of event" = "A la hora del evento";
 "Automatically check for updates" = "Buscar actualizaciones automáticamente";
 "Beep beep on the hour" = "Emita zumbidos a cada hora";
+"Below menu bar icon" = "Debajo del icono de la barra de menús";
 "Calendar" = "Calendario";
 "Calendar access denied.
 
-Itsycal is more useful when it can display events from your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy" = "Acceso denegado.
+Itsycal is more useful when it can display events from your calendars. You can change this setting in System Settings › Privacy & Security › Calendars" = "Acceso denegado.
 
-Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad";
+Itsycal es más útil cuando puede mostrar los eventos de sus calendarios. Puede cambiar esta configuración en Ajustes del Sistema › Privacidad y seguridad › Calendarios";
 "Calendar access was denied." = "Acceso denegado.";
+/* Accessibility description for menu bar icon showing a grid of days */
+"Calendar grid" = "Cuadrícula de calendario";
 "Cancel" = "Cancelar";
+/* Timer menu item; %@ is the time left, like 7:42 */
+"Cancel: %@" = "Cancelar: %@";
 "Check for Updates…" = "Buscar actualizaciones…";
+/* Accessibility label for a reminder's checkbox in the event list */
+"Completed" = "Completado";
 "Copy" = "Copiar";
+"Copy Meeting Link" = "Copiar enlace de la reunión";
 /* Dark theme name */
-"Dark" = "Tema oscuro";
+"Dark Theme" = "Tema oscuro";
 "Date & Time…" = "Fecha y hora…";
 "Datetime pattern" = "Patrón de fecha y hora";
 "Delete…" = "Eliminar…";
@@ -54,7 +70,9 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
 "Donate" = "Donar";
 "End Repeat:" = "Terminar:";
 "Ends:" = "Termina:";
-"Event list shows:" = "La lista de eventos muestra:";
+"Event List" = "Lista de eventos";
+/* Events prefs tab label */
+"Events" = "Eventos";
 "Every %zd Days" = "Cada %zd días";
 "Every %zd Months" = "Cada %zd meses";
 "Every %zd Weeks" = "Cada %zd semanas";
@@ -63,6 +81,8 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
 "Every Month" = "Todos los meses";
 "Every Week" = "Todas las semanas";
 "Every Year" = "Todos los años";
+/* Accessibility description for menu bar icon with the date in a filled square */
+"Filled date" = "Fecha con relleno";
 "First day of week:" = "Primer día de la semana:";
 "Follow" = "Sigue a";
 "Friday" = "Viernes";
@@ -75,23 +95,38 @@ Itsycal es más útil cuando se puede mostrar eventos de su calendario. Puede ca
 "Hide icon" = "Ocultar icono";
 "Highlight:" = "Resaltar:";
 "Itsycal cannot create a new event unless there is at least one calendar you have permission to modify." = "Itsycal no puede crear un nuevo evento si no hay al menos un calendario con permisos para ser modificado.";
-"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Preferences › Security & Privacy › Privacy." = "Itsycal es más útil cuando usted lo permite para agregar eventos a su calendario. Puede cambiar esta configuración en Preferencias del Sistema › Seguridad y privacidad › Privacidad.";
+/* Accessibility description for menu bar icon showing the Itsycal face */
+"Itsycal face" = "Cara de Itsycal";
+"Itsycal is more useful when you allow it to add events to your calendars. You can change this setting in System Settings › Privacy & Security › Calendars." = "Itsycal es más útil cuando le permite agregar eventos a sus calendarios. Puede cambiar esta configuración en Ajustes del Sistema › Privacidad y seguridad › Calendarios.";
 "Itsycal must be run from the Applications folder in order to work properly.
 
 Please quit Itsycal, move it to the Applications folder, and relaunch." = "Itsycal se debe ejecutar desde la carpeta Aplicaciones con el fin de funcionar correctamente.
 
 Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arrancar.";
+/* Button in the event popover that joins the event's video meeting (Zoom, Teams, etc.) */
+"Join" = "Unirse";
 "Keyboard shortcut" = "Atajo de teclado";
+/* Large text size */
+"Large" = "Grande";
 "Launch at login" = "Abrir automáticamente al iniciar sesión";
 /* Light theme name */
-"Light" = "Tema claro";
+"Light Theme" = "Tema claro";
+"Mark as Completed" = "Marcar como completado";
+"Mark as Incomplete" = "Marcar como no completado";
+/* Medium text size */
+"Medium" = "Mediano";
 "Menu Bar" = "Barra de Menús";
+/* Accessibility label for menu bar datetime pattern text field */
+"Menu bar date and time pattern" = "Patrón de fecha y hora de la barra de menús";
+/* Accessibility label for menu bar icon picker */
+"Menu bar icon" = "Icono de la barra de menús";
 "Monday" = "Lunes";
 "Move Itsycal to the Applications folder" = "Trasladar Itsycal a la carpeta Aplicaciones";
 /* Repeat ends never */
 "Never" = "Nunca";
 "New Event" = "Nuevo evento";
-"New Event   ⌘N" = "Nuevo evento   ⌘N";
+/* Tooltip for the calendar's button that shows the next month */
+"Next Month" = "Mes siguiente";
 "No events" = "Nada";
 /* Alert none
    Repeat none */
@@ -99,34 +134,65 @@ Por favor, cerrar Itsycal, trasladar a la carpeta Aplicaciones, y volver a arran
 "On Date" = "En la fecha";
 "On day of event (9 AM)" = "El día del evento (9:00)";
 "Open Calendar" = "Abrir La aplicación del calendario";
-"Open Calendar   ⌘O" = "Abrir La aplicación del calendario   ⌘O";
 "Options" = "Opciones";
-"or" = "o";
-"Pin Itsycal   P" = "Mantener Itsycal   P";
-"Preferences…" = "Preferencias…";
+"Outline current month" = "Delinear el mes actual";
+/* Accessibility description for menu bar icon with the date in an outlined square */
+"Outlined date" = "Fecha con contorno";
+/* Heading of the agenda's section of overdue reminders */
+"Overdue" = "Vencidos";
+/* Tooltip for the pin button, which keeps Itsycal's window open */
+"Pin Itsycal" = "Mantener Itsycal";
+/* Tooltip for the calendar's button that shows the previous month */
+"Previous Month" = "Mes anterior";
 "Quit Itsycal" = "Salir de Itsycal";
+/* Heading in Settings before reminders access is granted */
+"Reminders" = "Recordatorios";
+"Reminders access denied. You can change this setting in System Settings › Privacy & Security › Reminders" = "Acceso a Recordatorios denegado. Puede cambiar esta configuración en Ajustes del Sistema › Privacidad y seguridad › Recordatorios";
 "Repeat:" = "Repetir:";
 "Saturday" = "Sábado";
 "Save Event" = "Salvar Evento";
-"Settings…" = "Configuración…";
+"Settings…" = "Ajustes…";
 "Show calendar weeks" = "Mostrar semanas del calendario";
+"Show completed reminders" = "Mostrar recordatorios completados";
 "Show day of week in icon" = "El icono muestra día de la semana";
 "Show days with no events" = "Mostrar días sin eventos";
 "Show event dots" = "Mostrar puntos para eventos";
 "Show event location" = "Mostrar ubicación del evento";
 "Show month in icon" = "El icono muestra mes";
+/* Settings checkbox for the agenda's Overdue section */
+"Show overdue reminders at the top" = "Mostrar recordatorios vencidos arriba";
+"Show Reminders…" = "Mostrar recordatorios…";
+/* Label for how many days the event list shows */
+"Show:" = "Mostrar:";
+/* Accessibility label for text size control */
+"Size" = "Tamaño";
+/* Small text size */
+"Small" = "Pequeño";
+/* The space bar's name in a tooltip's keyboard shortcut, e.g. the Today button's */
+"Space" = "Espacio";
+/* Timer menu item; %@ is a duration, like 12 min */
+"Start: %@" = "Iniciar: %@";
 "Starts:" = "Empieza:";
 "Sunday" = "Domingo";
 /* System theme name */
-"System" = "Sistema";
+"System Theme" = "Tema del sistema";
 /* Alert box message when we fail to launch the Calendar application */
 "The Calendar application could not be found." = "La aplicación del calendario no se pudo encontrar.";
-"Theme:" = "Tema:";
 "There are no modifiable calendars." = "No hay calendarios modificables.";
 "Thursday" = "Jueves";
+/* Menu section header for the countdown timer */
+"Timer" = "Temporizador";
+/* Accessibility label for the timer's minutes slider */
+"Timer Duration" = "Duración del temporizador";
+/* Tooltip for the calendar's button that shows today */
+"Today" = "Hoy";
+"Top right of screen" = "Arriba a la derecha de la pantalla";
 "Tuesday" = "Martes";
+/* Tooltip for the pin button while Itsycal is pinned */
+"Unpin Itsycal" = "Dejar de mantener Itsycal";
 "Use colored dots" = "Usar puntos de colores";
 "Wednesday" = "Miércoles";
+"Window position:" = "Posición de la ventana:";
 "You're deleting an event." = "Está eliminando un evento.";
 /* Spanning event ends */
 "ends" = "finaliza a las";

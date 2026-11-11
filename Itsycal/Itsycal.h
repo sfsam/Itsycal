@@ -17,7 +17,8 @@ extern NSString * const kShowWeeks;
 extern NSString * const kWeekStartDOW;
 extern NSString * const kHighlightedDOWs;
 extern NSString * const kKeyboardShortcut;
-extern NSString * const kMenuBarIconType;
+extern NSString * const kMenuBarIconType; // 0 = solid round rect (default), 1 = outlined round rect,
+                                          // 2 = generic calendar icon, 3 = Itsycal icon
 extern NSString * const kShowMonthInIcon;
 extern NSString * const kShowDayOfWeekInIcon;
 extern NSString * const kShowMeetingIndicator;
@@ -32,24 +33,23 @@ extern NSString * const kBaselineOffset;
 extern NSString * const kEnableMeetingButtonIndefinitely;
 extern NSString * const kDoNotDrawOutlineAroundCurrentMonth;
 extern NSString * const kShowDaysWithNoEventsInAgenda;
+extern NSString * const kShowCompletedReminders;
+extern NSString * const kShowOverdueReminders;
+extern NSString * const kOverdueSectionExpanded;
 extern NSString * const kShowEventPopoverOnHover;
-extern NSString * const kEnableTahoeMenuIcons;
+extern NSString * const kDoNotCheckLoginItemStatus;
+extern NSString * const kWindowPosition;
+extern NSString * const kTimerEndDate;
+extern NSString * const kTimerRecentMinutes;
+
+typedef NS_ENUM(NSInteger, WindowPosition) {
+    WindowPositionBelowMenuBarIcon = 0,
+    WindowPositionTopRightOfScreen = 1
+};
 
 // Set an associated object on NSDate to indicate
 // whether of not this date has events.
 // https://stackoverflow.com/a/16708352
 @interface NSDate (HasNoEvents)
-@end
-
-@implementation NSDate (HasNoEvents)
-
-- (BOOL)hasNoEvents {
-    NSNumber *num = objc_getAssociatedObject(self, @selector(hasNoEvents));
-    return [num boolValue];
-}
-
-- (void)setHasNoEvents:(BOOL)hasNoEvents {
-    objc_setAssociatedObject(self, @selector(hasNoEvents), @(hasNoEvents), OBJC_ASSOCIATION_RETAIN);
-}
-
+@property (nonatomic) BOOL hasNoEvents;
 @end

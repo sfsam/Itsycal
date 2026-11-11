@@ -60,7 +60,7 @@ Sizer *SizePref = nil;
 }
 
 - (CGFloat)cellRadius {
-    return SML_MED_LRG(2, 3, 4);
+    return SML_MED_LRG(3, 4, 5);
 }
 
 - (CGFloat)tooltipWidth {
@@ -71,12 +71,12 @@ Sizer *SizePref = nil;
     return SML_MED_LRG(6, 7, 8);
 }
 
-- (CGFloat)agendaEventLeadingMargin {
-    return SML_MED_LRG(21, 22, 24);
+- (CGFloat)agendaPopoverSectionSpacing {
+    return SML_MED_LRG(4, 6, 8);
 }
 
-- (NSString *)videoImageName {
-    return SML_MED_LRG(@"video14", @"video16", @"video18");
+- (CGFloat)agendaEventLeadingMargin {
+    return SML_MED_LRG(21, 22, 24);
 }
 
 @end

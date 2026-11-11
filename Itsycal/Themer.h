@@ -8,11 +8,11 @@
 // NSUserDefaults key
 extern NSString * const kThemePreference;
 
-typedef enum : NSInteger {
+typedef NS_ENUM(NSInteger, ThemePreference) {
     ThemePreferenceSystem = 0,
     ThemePreferenceLight = 1,
     ThemePreferenceDark  = 2
-} ThemePreference;
+};
 
 @interface Themer : NSObject
 
@@ -26,6 +26,8 @@ extern Themer *Theme;
 @property (nonatomic, readonly) NSColor *agendaEventDateTextColor;
 @property (nonatomic, readonly) NSColor *agendaEventTextColor;
 @property (nonatomic, readonly) NSColor *agendaHoverColor;
+@property (nonatomic, readonly) NSColor *agendaOverdueTextColor;
+@property (nonatomic, readonly) NSColor *buttonTintColor;
 @property (nonatomic, readonly) NSColor *currentMonthOutlineColor;
 @property (nonatomic, readonly) NSColor *currentMonthTextColor;
 @property (nonatomic, readonly) NSColor *DOWTextColor;
@@ -42,7 +44,6 @@ extern Themer *Theme;
 @property (nonatomic, readonly) NSColor *todayCellColor;
 @property (nonatomic, readonly) NSColor *tooltipBackgroundColor;
 @property (nonatomic, readonly) NSColor *weekTextColor;
-@property (nonatomic, readonly) NSColor *windowBorderColor;
 
 + (instancetype)shared;
 

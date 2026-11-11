@@ -14,11 +14,12 @@
 #import "Sizer.h"
 #import "MoUtils.h"
 #import "MASShortcut/Shortcut.h"
-#import "NSMenuItem+NoImages.h"
+#import "Sparkle/SUUpdater.h"
 
 @implementation AppDelegate
 {
     NSWindowController *_wc;
+    ViewController *_vc;
 }
 
 + (void)initialize
@@ -42,29 +43,53 @@
         kThemePreference:      @0, // System=0, Light=1, Dark=2
         kHideIcon:             @(NO),
         kShowLocation:         @(NO),
-        kEnableTahoeMenuIcons: @(NO),
-        kDoNotDrawOutlineAroundCurrentMonth: @(NO)
+        kSizePreference:       @0, // Small=0, Medium=1, Large=2
+        kShowDaysWithNoEventsInAgenda: @(NO),
+        kShowCompletedReminders: @(YES), // Calendar's default
+        kShowOverdueReminders: @(YES),
+        kOverdueSectionExpanded: @(NO),
+        kDoNotDrawOutlineAroundCurrentMonth: @(NO),
+        kShowMeetingIndicator: @(NO),
+        kBaselineOffset:       @0,  // Clamped to -2.0...2.0
+        kEnableMeetingButtonIndefinitely: @(NO),
+        kShowEventPopoverOnHover: @(NO),
+        kAllowOutsideApplicationsFolder: @(NO),
+        kDoNotCheckLoginItemStatus: @(NO),
+        kWindowPosition:       @(WindowPositionBelowMenuBarIcon),
+        // Disable AppKit's scroll edge effect (macOS 27), which draws a
+        // hairline under the floating date header in the agenda.
+        @"NSScrollPocketEnabled": @(NO),
     }];
     
     // Constrain kShowEventDays to values 0...9 in (unlikely) case it is invalid.
     NSInteger validDays = MIN(MAX([defaults integerForKey:kShowEventDays], 0), 9);
     [defaults setInteger:validDays forKey:kShowEventDays];
     
-    // Set kThemePreference to defaultThemePref in the unlikely case it's invalid.
+    // Set kThemePreference to system in the unlikely case it's invalid.
     NSInteger themePref = [defaults integerForKey:kThemePreference];
-    if (themePref < 0 || themePref > 2) {
-        [defaults setInteger:0 forKey:kThemePreference];
+    if (themePref < ThemePreferenceSystem || themePref > ThemePreferenceDark) {
+        [defaults setInteger:ThemePreferenceSystem forKey:kThemePreference];
+    }
+
+    // Set kSizePreference to small in the unlikely case it's invalid.
+    NSInteger sizePref = [defaults integerForKey:kSizePreference];
+    if (sizePref < SizePreferenceSmall || sizePref > SizePreferenceLarge) {
+        [defaults setInteger:SizePreferenceSmall forKey:kSizePreference];
+    }
+
+    // Set kWindowPosition to below menu bar icon in the unlikely case it's invalid.
+    NSInteger windowPosition = [defaults integerForKey:kWindowPosition];
+    if (windowPosition != WindowPositionBelowMenuBarIcon && windowPosition != WindowPositionTopRightOfScreen) {
+        [defaults setInteger:WindowPositionBelowMenuBarIcon forKey:kWindowPosition];
     }
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification
 {
-    // macOS 26 Tahoe pollutes menus with superflous icons. Disable them
-    // unless the user explicitly opts-in.
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if (![defaults boolForKey:kEnableTahoeMenuIcons]) {
-        [NSMenuItem rs_disableImages];
-    }
+    NSApp.mainMenu = [self mainMenu];
+
+    // Create Sparkle's updater. This starts its update cycle.
+    [SUUpdater sharedUpdater];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -94,23 +119,10 @@
         [[NSFileManager defaultManager] createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:NULL];
     }
 
-    // 0.11.1 introduced a new way to highlight columns in the calendar.
-    [self weekendHighlightFixup];
-    
-    // 0.11.11 uses a new theme preference scheme that enables following
-    // the system's appearance.
-    [self themeFixup];
-
-    // 0.13.2 uses an NSDictionary instead of NSData to store the shortcut.
-    [self shortcutFixup];
-
-    // 0.14.1 introduces more menu bar icon types
-    [self menuBarIconTypeFixup];
-
     // Register keyboard shortcut.
     [[MASShortcutBinder sharedBinder] setBindingOptions:@{NSValueTransformerNameBindingOption: MASDictionaryTransformerName}];
     [[MASShortcutBinder sharedBinder] bindShortcutWithDefaultsKey:kKeyboardShortcut toAction:^{
-         [(ViewController *)self->_wc.contentViewController keyboardShortcutActivated];
+         [self->_vc keyboardShortcutActivated];
      }];
 
     // Establish the binding to NSUserDefaultsController. This call
@@ -118,10 +130,21 @@
     // used when initializing views.
     [SizePref bind:@"sizePreference" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
-    ViewController *vc = [ViewController new];
+    // The window's contentView draws the window, so put the view
+    // controller's view inside it rather than setting the window's
+    // contentViewController (which would replace the contentView).
+    _vc = [ViewController new];
     _wc = [[NSWindowController alloc] initWithWindow:[ItsycalWindow  new]];
-    _wc.contentViewController = vc;
-    _wc.window.delegate = vc;
+    NSView *contentView = _wc.window.contentView;
+    NSLayoutGuide *safeArea = contentView.safeAreaLayoutGuide;
+    [contentView addSubview:_vc.view];
+    [NSLayoutConstraint activateConstraints:@[
+        [_vc.view.topAnchor constraintEqualToAnchor:safeArea.topAnchor],
+        [_vc.view.leadingAnchor constraintEqualToAnchor:safeArea.leadingAnchor],
+        [_vc.view.trailingAnchor constraintEqualToAnchor:safeArea.trailingAnchor],
+        [_vc.view.bottomAnchor constraintEqualToAnchor:safeArea.bottomAnchor],
+    ]];
+    _wc.window.delegate = _vc;
     
     // Establish the binding to NSUserDefaultsController. On macOS
     // 10.14+, it is crucial for this call to be made AFTER the window
@@ -132,8 +155,34 @@
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
-    [(ViewController *)_wc.contentViewController removeStatusItem];
+    [_vc removeStatusItem];
     [[MASShortcutMonitor sharedMonitor] unregisterAllShortcuts];
+}
+
+// Return the start of the day given by a Gregorian yyyy-MM-dd string,
+// or nil if it isn't a valid date. The numbers are read directly rather
+// than with NSDateFormatter, which would (1) read them in the user's
+// calendar, so with Buddhist, 2026 is Buddhist year 2026 (Gregorian
+// 1483), and (2) return nil for a day whose midnight is skipped by a
+// DST change, as in Santiago.
+static NSDate *DateFromURLDateString(NSString *string)
+{
+    NSArray<NSString *> *parts = [string componentsSeparatedByString:@"-"];
+    if (parts.count != 3) return nil;
+    // ASCII digits only; a 4-digit year and a 1- or 2-digit month and
+    // day, so MakeDate's arithmetic can't overflow.
+    NSCharacterSet *nonDigits = [NSCharacterSet characterSetWithCharactersInString:@"0123456789"].invertedSet;
+    NSUInteger maxLengths[3] = {4, 2, 2};
+    for (NSUInteger i = 0; i < 3; i++) {
+        NSString *part = parts[i];
+        if (part.length == 0 || part.length > maxLengths[i] ||
+            [part rangeOfCharacterFromSet:nonDigits].location != NSNotFound) {
+            return nil;
+        }
+    }
+    MoDate date = MakeDate(parts[0].integerValue, parts[1].integerValue - 1, parts[2].integerValue);
+    if (!IsValidDate(date)) return nil;
+    return MakeNSDateWithDate(date, [NSCalendar autoupdatingCurrentCalendar]);
 }
 
 - (void)application:(NSApplication *)application openURLs:(NSArray<NSURL *> *)urls
@@ -145,14 +194,11 @@
             NSString *dateString = url.pathComponents[1];
             
             if ([dateString isEqualToString:@"now"]) {
-                [(ViewController *)_wc.contentViewController dateURLReceived:[NSDate new]];
+                [_vc dateURLReceived:[NSDate new]];
             } else {
-                NSDateFormatter *format = [NSDateFormatter new];
-                format.dateFormat = @"yyyy-MM-dd";
-                NSDate *date = [format dateFromString:dateString];
-                
+                NSDate *date = DateFromURLDateString(dateString);
                 if (date) {
-                    [(ViewController *)_wc.contentViewController dateURLReceived:date];
+                    [_vc dateURLReceived:date];
                 }
             }
         }
@@ -188,84 +234,39 @@
     [NSApp terminate:nil];
 }
 
+#pragma mark -
+#pragma mark Main menu
+
+// Itsycal is a menu bar app, so its main menu is never shown. But
+// AppKit uses the main menu to handle standard keyboard shortcuts
+// like ⌘C, ⌘V, ⌘Z, ⌘A, ⌘W, and ⌘Q. Since it's never shown, all the
+// items go in a single submenu, and the titles aren't localized.
+- (NSMenu *)mainMenu
+{
+    NSMenu *menu = [NSMenu new];
+    [menu addItemWithTitle:@"Quit Itsycal" action:@selector(terminate:) keyEquivalent:@"q"];
+    [menu addItemWithTitle:@"Close" action:@selector(performClose:) keyEquivalent:@"w"];
+    // AppKit implements undo: and redo: (in NSWindow and NSTextView),
+    // but no public header declares them, so look them up by name.
+    [menu addItemWithTitle:@"Undo" action:NSSelectorFromString(@"undo:") keyEquivalent:@"z"];
+    [menu addItemWithTitle:@"Redo" action:NSSelectorFromString(@"redo:") keyEquivalent:@"Z"];
+    [menu addItemWithTitle:@"Cut" action:@selector(cut:) keyEquivalent:@"x"];
+    [menu addItemWithTitle:@"Copy" action:@selector(copy:) keyEquivalent:@"c"];
+    [menu addItemWithTitle:@"Paste" action:@selector(paste:) keyEquivalent:@"v"];
+    NSMenuItem *pasteAsPlainText = [menu addItemWithTitle:@"Paste and Match Style" action:@selector(pasteAsPlainText:) keyEquivalent:@"v"];
+    pasteAsPlainText.keyEquivalentModifierMask = NSEventModifierFlagOption | NSEventModifierFlagShift | NSEventModifierFlagCommand;
+    [menu addItemWithTitle:@"Select All" action:@selector(selectAll:) keyEquivalent:@"a"];
+
+    NSMenu *mainMenu = [NSMenu new];
+    [mainMenu addItemWithTitle:@"" action:NULL keyEquivalent:@""].submenu = menu;
+    return mainMenu;
+}
+
 - (BOOL)alertShowHelp:(NSAlert *)alert
 {
     NSURL *url = [NSURL URLWithString:@"https://mowglii.com/itsycal/appfolder.html"];
     [[NSWorkspace sharedWorkspace] openURL:url];
     return YES;
-}
-
-#pragma mark -
-#pragma mark Weekend highlight fixup
-
-// Itsycal 0.11.1 moves away from using a trio of possible defaults
-// (HighlightWeekend, WeekendIsFridaySaturday, WeekendIsSaturdaySunday) and
-// a hardcoded list of countries with Fri/Sat weekends to the method
-// of allowing the user to specify highlighted DOWs. If the user had
-// HighlightWeekend == YES, migrate their highlight settings. In either
-// case, remove the old default keys.
-- (void)weekendHighlightFixup
-{
-    NSArray *countriesWithFridaySaturdayWeekend = @[
-        @"AF", @"DZ", @"BH", @"BD", @"EG", @"IQ", @"JO", @"KW", @"LY",
-        @"MV", @"OM", @"PS", @"QA", @"SA", @"SD", @"SY", @"AE", @"YE"];
-    NSString *countryCode = [NSLocale currentLocale].countryCode;
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if ([defaults boolForKey:@"HighlightWeekend"]) {
-        if ([defaults boolForKey:@"WeekendIsFridaySaturday"] ||
-            [countriesWithFridaySaturdayWeekend containsObject:countryCode]) {
-            // Fri + Sat = (1<<5) + (1<<6) = 32 + 64 = 96
-            [defaults setInteger:96 forKey:kHighlightedDOWs];
-        }
-        else {
-            // Sat + Sun = (1<<6) + (1<<0) = 64 + 1 = 65
-            [defaults setInteger:65 forKey:kHighlightedDOWs];
-        }
-    }
-    [defaults removeObjectForKey:@"HighlightWeekend"];
-    [defaults removeObjectForKey:@"WeekendIsFridaySaturday"];
-    [defaults removeObjectForKey:@"WeekendIsSaturdaySunday"];
-}
-
-// Itsycal 0.11.11 uses ThemePreference instead of ThemeIndex to
-// express the user's theme preference. ThemePreference can be
-// System in addition to explicitly Light or Dark.
-- (void)themeFixup
-{
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"ThemeIndex"];
-}
-
-// 0.13.2 uses an NSDictionary instead of NSData to store the shortcut.
-// Apple deprecated NSKeyedUnarchiveFromDataTransformer so now we use
-// MASDictionaryTransformer instead. This conversion also has the nice
-// effect of making the stored value human-readable.
-- (void)shortcutFixup
-{
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSData *data = [defaults dataForKey:@"KeyboardShortcut"];
-    [defaults removeObjectForKey:@"KeyboardShortcut"];
-    if (!data) return;
-    MASShortcut *shortcut = [NSKeyedUnarchiver unarchivedObjectOfClass:[MASShortcut class] fromData:data error:NULL];
-    if (!shortcut) return;
-    MASDictionaryTransformer *transformer = [MASDictionaryTransformer new];
-    [defaults setObject:[transformer reverseTransformedValue:shortcut] forKey:kKeyboardShortcut];
-}
-
-// 0.14.1 introduces a couple new menu bar icon types
-// represented by kMenuBarIconType:
-//   0 == solid round rect (default)
-//   1 == outlined round rect (formerly kUseOutlineIcon == YES)
-//   2 == generic calendar icon (new)
-//   3 == Itsycal icon (new)
-// As a result, kUseOutlineIcon is no longer used.
-- (void)menuBarIconTypeFixup
-{
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    BOOL useOutlineIcon = [defaults boolForKey:@"UseOutlineIcon"];
-    [defaults removeObjectForKey:@"UseOutlineIcon"];
-    if (useOutlineIcon) {
-        [defaults setInteger:1 forKey:kMenuBarIconType];
-    }
 }
 
 @end

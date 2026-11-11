@@ -4,6 +4,16 @@ GREEN="\033[0;32m"
 RED="\033[0;31m"
 NC="\033[0m" # No Color
 
+# Legacy version for macOS 11+. It is no longer built, so its appcast
+# item is hardcoded here and written alongside the current version's.
+# Sparkle offers each Mac the newest item its macOS supports.
+LEGACY_SHORT_VERSION_STRING="0.15.15"
+LEGACY_VERSION="2400"
+LEGACY_MINIMUM_SYSTEM_VERSION="11.0"
+LEGACY_DATE="Fri Sep 25 00:18:54 GMT 2026"
+LEGACY_EDDSA_AND_FILESIZE='sparkle:edSignature="WtAzCI8Zmiez2QdXRTZJWRahGSFTs43DqP1wxaHADOZcJjV8Nk+Dp7C18wmQttle8UpOGkEftVQmtVu+iXblDg==" length="1074708"'
+LEGACY_RELEASE_NOTES_LINK="https://itsycal.s3.amazonaws.com/releasenotes-macos11.html"
+
 # If Itsycal.app is not found on the Desktop, quit.
 APP_PATH="${HOME}/Desktop/Itsycal.app"
 if [ ! -d "${APP_PATH}" ]
@@ -20,6 +30,18 @@ fi
 PLIST_FILE="${APP_PATH}/Contents/Info.plist"
 VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" ${PLIST_FILE})
 SHORT_VERSION_STRING=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" ${PLIST_FILE})
+MINIMUM_SYSTEM_VERSION=$(/usr/libexec/PlistBuddy -c "Print LSMinimumSystemVersion" ${PLIST_FILE})
+
+# The app must be the current version, not a legacy build.
+if [ "${MINIMUM_SYSTEM_VERSION}" = "${LEGACY_MINIMUM_SYSTEM_VERSION}" ] || [ "${VERSION}" -le "${LEGACY_VERSION}" ]
+then
+    echo "\n"
+    echo "  + ${RED}LEGACY BUILD:${NC} ${SHORT_VERSION_STRING} (${VERSION}), macOS ${MINIMUM_SYSTEM_VERSION}+"
+    echo "  + This script only makes zips for the current version."
+    echo "  + The legacy ${LEGACY_SHORT_VERSION_STRING} item is hardcoded at the top of the script."
+    echo "\n"
+    exit 1
+fi
 
 # Set up file names and paths.
 ZIP_NAME="Itsycal-${SHORT_VERSION_STRING}.zip"
@@ -76,7 +98,7 @@ cat > "${XML_PATH}" <<EOF
     <language>en</language>
     <item>
       <title>Version ${SHORT_VERSION_STRING}</title>
-      <sparkle:minimumSystemVersion>11.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>${MINIMUM_SYSTEM_VERSION}</sparkle:minimumSystemVersion>
       <sparkle:releaseNotesLink>https://itsycal.s3.amazonaws.com/releasenotes.html</sparkle:releaseNotesLink>
       <pubDate>${DATE} +0000</pubDate>
       <enclosure
@@ -84,6 +106,18 @@ cat > "${XML_PATH}" <<EOF
           ${EDDSA_AND_FILESIZE}
           sparkle:version="${VERSION}"
           sparkle:shortVersionString="${SHORT_VERSION_STRING}"
+          type="application/octet-stream" />
+    </item>
+    <item>
+      <title>Version ${LEGACY_SHORT_VERSION_STRING}</title>
+      <sparkle:minimumSystemVersion>${LEGACY_MINIMUM_SYSTEM_VERSION}</sparkle:minimumSystemVersion>
+      <sparkle:releaseNotesLink>${LEGACY_RELEASE_NOTES_LINK}</sparkle:releaseNotesLink>
+      <pubDate>${LEGACY_DATE} +0000</pubDate>
+      <enclosure
+          url="https://s3.amazonaws.com/itsycal/Itsycal-${LEGACY_SHORT_VERSION_STRING}.zip"
+          ${LEGACY_EDDSA_AND_FILESIZE}
+          sparkle:version="${LEGACY_VERSION}"
+          sparkle:shortVersionString="${LEGACY_SHORT_VERSION_STRING}"
           type="application/octet-stream" />
     </item>
   </channel>

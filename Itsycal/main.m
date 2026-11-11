@@ -7,7 +7,14 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "AppDelegate.h"
 
 int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        // NSApplication's delegate is weak, so keep a strong reference.
+        static AppDelegate *appDelegate;
+        appDelegate = [AppDelegate new];
+        NSApplication.sharedApplication.delegate = appDelegate;
+    }
     return NSApplicationMain(argc, argv);
 }

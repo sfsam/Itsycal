@@ -4,8 +4,8 @@
 //
 
 #import "DatePickerVC.h"
+#import "MoThemeView.h"
 #import "MoVFLHelper.h"
-#import "Themer.h"
 
 @implementation DatePickerVC
 {
@@ -51,31 +51,36 @@
     [vfl :@"H:|-10-[_picker]-[btn]-10-|" :NSLayoutFormatAlignAllLastBaseline];
     [vfl :@"V:|-10-[label]-[_picker]-10-|" :NSLayoutFormatAlignAllLeading];
 
-    self.view = v;
-}
-
-- (void)viewDidAppear
-{
-    // Add a colored subview at the bottom the of popover's
-    // window's frameView's view hierarchy. This should color
-    // the popover including the arrow.
-    NSView *frameView = self.view.window.contentView.superview;
-    if (!frameView) return;
-    if (frameView.subviews.count > 0
-        && [frameView.subviews[0].identifier isEqualToString:@"popoverBackgroundBox"]) return;
-    NSBox *backgroundColorView = [[NSBox alloc] initWithFrame:frameView.bounds];
-    backgroundColorView.identifier = @"popoverBackgroundBox";
-    backgroundColorView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-    backgroundColorView.boxType = NSBoxCustom;
-    backgroundColorView.borderWidth = 0;
-    backgroundColorView.fillColor = Theme.mainBackgroundColor;
-    [frameView addSubview:backgroundColorView positioned:NSWindowBelow relativeTo:nil];
+    // The popover has hasFullSizeContent=YES. Use the
+    // safeAreaLayoutGuide of a view that paints its background
+    // according to the Theme to inset our content. This paints
+    // the popover's full background.
+    v.translatesAutoresizingMaskIntoConstraints = NO;
+    MoThemeView *view = [MoThemeView new];
+    [view addSubview:v];
+    [NSLayoutConstraint activateConstraints:@[
+        [v.topAnchor constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor],
+        [v.bottomAnchor constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor],
+        [v.leftAnchor constraintEqualToAnchor:view.safeAreaLayoutGuide.leftAnchor],
+        [v.rightAnchor constraintEqualToAnchor:view.safeAreaLayoutGuide.rightAnchor],
+    ]];
+    self.view = view;
 }
 
 - (void)buttonAction:(id)sender
 {
-    _moCal.selectedDate = MakeDateWithNSDate(_picker.dateValue, _nsCal);
-    [self.enclosingPopover close];
+    // Close the popover before changing the date, and without animation
+    // so it detaches from Itsycal's window right away. Changing the date
+    // resizes and then moves Itsycal's window, and while the popover is
+    // attached, the move can't happen in the same screen update as the
+    // resize, so the window visibly resizes and then jumps.
+    // Closing can deallocate us, so get what we need first.
+    MoCalendar *moCal = _moCal;
+    MoDate date = MakeDateWithNSDate(_picker.dateValue, _nsCal);
+    NSPopover *popover = self.enclosingPopover;
+    popover.animates = NO;
+    [popover close];
+    moCal.selectedDate = date;
 }
 
 @end

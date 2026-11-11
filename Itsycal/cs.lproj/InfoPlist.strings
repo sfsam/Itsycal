@@ -1,0 +1,5 @@
+"NSAppleEventsUsageDescription" = "Itsycal využívá AppleEvents k otevření vaší kalendářové aplikace na vybraný den. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Automatizace";
+
+"NSCalendarsFullAccessUsageDescription" = "Itsycal je užitečnější, pokud může zobrazovat události z vašich kalendářů. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Kalendáře";
+
+"NSRemindersFullAccessUsageDescription" = "Itsycal může zobrazovat vaše připomínky spolu s událostmi. Toto nastavení můžete změnit v Nastavení systému › Soukromí a zabezpečení › Připomínky";

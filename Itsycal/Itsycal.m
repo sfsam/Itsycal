@@ -30,5 +30,26 @@ NSString * const kBaselineOffset = @"BaselineOffset";
 NSString * const kEnableMeetingButtonIndefinitely = @"EnableMeetingButtonIndefinitely";
 NSString * const kDoNotDrawOutlineAroundCurrentMonth = @"DoNotDrawOutlineAroundCurrentMonth";
 NSString * const kShowDaysWithNoEventsInAgenda = @"ShowDaysWithNoEventsInAgenda";
+NSString * const kShowCompletedReminders = @"ShowCompletedReminders";
+NSString * const kShowOverdueReminders = @"ShowOverdueReminders";
+NSString * const kOverdueSectionExpanded = @"OverdueSectionExpanded";
 NSString * const kShowEventPopoverOnHover = @"ShowEventPopoverOnHover";
-NSString * const kEnableTahoeMenuIcons = @"EnableTahoeMenuIcons";
+NSString * const kDoNotCheckLoginItemStatus = @"DoNotCheckLoginItemStatus";
+NSString * const kWindowPosition = @"WindowPosition";
+NSString * const kTimerEndDate = @"TimerEndDate";
+NSString * const kTimerRecentMinutes = @"TimerRecentMinutes";
+
+@implementation NSDate (HasNoEvents)
+
+- (BOOL)hasNoEvents
+{
+    NSNumber *num = objc_getAssociatedObject(self, @selector(hasNoEvents));
+    return [num boolValue];
+}
+
+- (void)setHasNoEvents:(BOOL)hasNoEvents
+{
+    objc_setAssociatedObject(self, @selector(hasNoEvents), @(hasNoEvents), OBJC_ASSOCIATION_RETAIN);
+}
+
+@end
