@@ -1223,6 +1223,14 @@ static BOOL HostIs(NSString *host, NSString *domain)
     return [host isEqualToString:domain] || [host hasSuffix:[@"." stringByAppendingString:domain]];
 }
 
+// Whether host (lowercased) and path are a Teams meeting join link: a
+// work link (teams.microsoft.com) or a personal one (teams.live.com).
+static BOOL IsTeamsJoinLink(NSString *host, NSString *path)
+{
+    return (   (HostIs(host, @"teams.microsoft.com") && ([path hasPrefix:@"/l/meetup-join/"] || [path hasPrefix:@"/meet/"]))
+            || (HostIs(host, @"teams.live.com") && [path hasPrefix:@"/meet/"]));
+}
+
 // Return the link that a Microsoft Safe Links link wraps, or url
 // unchanged if it isn't one. Organizations using Safe Links (Microsoft
 // Defender for Office 365) get email with each link rewritten to
@@ -1276,7 +1284,7 @@ static NSURL *MeetingURLInText(NSString *text)
         if (   (   (hostIs(@"zoom.us") || hostIs(@"zoomgov.com"))
                 && ([path hasPrefix:@"/j/"] || [path hasPrefix:@"/s/"]
                     || [path hasPrefix:@"/w/"] || [path hasPrefix:@"/my/"]))
-            || (hostIs(@"teams.microsoft.com") && [path hasPrefix:@"/l/meetup-join/"])
+            || IsTeamsJoinLink(host, path)
             || hostIs(@"chime.aws")
             || [scheme isEqualToString:@"zoommtg"]
             || [scheme isEqualToString:@"msteams"]
@@ -1324,11 +1332,22 @@ NSURL *AppLinkForMeetingURL(NSURL *meetingURL)
             appLink = [NSURL URLWithString:link];
         }
     }
-    else if (HostIs(host, @"teams.microsoft.com") && [path hasPrefix:@"/l/meetup-join/"]) {
+    else if (IsTeamsJoinLink(host, path)) {
         // Test if user has the Teams app and, if so, create a Teams app link.
         if ([NSWorkspace.sharedWorkspace URLForApplicationToOpenURL:[NSURL URLWithString:@"msteams://"]]) {
-            link = [link stringByReplacingOccurrencesOfString:@"https://" withString:@"msteams://"];
-            appLink = [NSURL URLWithString:link];
+            // Work links become host-less (msteams:/l/..., msteams:/meet/...),
+            // the form Microsoft's browser join page uses; new Teams for Mac
+            // can ignore msteams://teams.microsoft.com/.... Personal links
+            // keep their host (msteams://teams.live.com/meet/...), which
+            // says the meeting is personal. NSURLComponents keeps the path
+            // and query percent-encoded as they were.
+            NSURLComponents *components = [NSURLComponents componentsWithURL:meetingURL resolvingAgainstBaseURL:NO];
+            components.scheme = @"msteams";
+            components.user = nil;
+            components.password = nil;
+            components.port = nil;
+            if (HostIs(host, @"teams.microsoft.com")) components.host = nil;
+            appLink = components.URL;
         }
     }
     else if (HostIs(host, @"chime.aws")) {
