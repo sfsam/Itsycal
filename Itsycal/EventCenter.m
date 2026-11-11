@@ -1296,7 +1296,7 @@ static NSURL *MeetingURLInText(NSString *text)
             || (hostIs(@"youcanbook.me") && [path hasPrefix:@"/zoom/"])
             || (hostIs(@"vk.com") && [path hasPrefix:@"/call/"])
             || (hostIs(@"max.ru") && [path hasPrefix:@"/joincall/"])
-            || (hostIs(@"ktalk.ru") {
+            || (hostIs(@"ktalk.ru") && ![host isEqualToString:@"ktalk.ru"] && url.pathComponents.count == 2)) {
             meetingURL = url;
             *stop = YES;
         }
