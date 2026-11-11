@@ -8,6 +8,7 @@
 
 #import "ItsycalWindow.h"
 #import <QuartzCore/QuartzCore.h>
+#import "Itsycal.h"
 #import "Themer.h"
 
 static const CGFloat kMinimumSpaceBetweenWindowAndScreenEdge = 10;
@@ -108,6 +109,8 @@ static const CGFloat kVerticalPadding = 11;
 {
     CALayer *_bodyMask;
     CAShapeLayer *_arrowMask;
+    NSVisualEffectView *_materialBackground;
+    BOOL _usesGlass;
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
@@ -129,8 +132,41 @@ static const CGFloat kVerticalPadding = 11;
         _arrowMask.fillColor = NSColor.blackColor.CGColor;
         [_bodyMask addSublayer:_arrowMask];
         self.layer.mask = _bodyMask;
+
+        _materialBackground = [NSVisualEffectView new];
+        _materialBackground.material = NSVisualEffectMaterialPopover;
+        _materialBackground.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+        _materialBackground.state = NSVisualEffectStateActive;
+        _materialBackground.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+        [self addSubview:_materialBackground positioned:NSWindowBelow relativeTo:nil];
+        [NSWorkspace.sharedWorkspace.notificationCenter addObserver:self selector:@selector(accessibilityOptionsChanged:) name:NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification object:nil];
+        [self bind:@"usesGlass" toObject:NSUserDefaultsController.sharedUserDefaultsController withKeyPath:[@"values." stringByAppendingString:kUseLiquidGlass] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [self unbind:@"usesGlass"];
+    [NSWorkspace.sharedWorkspace.notificationCenter removeObserver:self];
+}
+
+- (void)setUsesGlass:(BOOL)usesGlass
+{
+    _usesGlass = usesGlass;
+    [self updateBackground];
+}
+
+- (void)accessibilityOptionsChanged:(NSNotification *)notification
+{
+    [self updateBackground];
+}
+
+- (void)updateBackground
+{
+    BOOL showMaterial = _usesGlass && !NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceTransparency && !NSWorkspace.sharedWorkspace.accessibilityDisplayShouldIncreaseContrast;
+    _materialBackground.hidden = !showMaterial;
+    [self setNeedsDisplay:YES];
 }
 
 - (void)setArrowMidX:(CGFloat)arrowMidX
@@ -142,6 +178,7 @@ static const CGFloat kVerticalPadding = 11;
 - (void)layout
 {
     [super layout];
+    _materialBackground.frame = self.bounds;
     [self updateMask];
 }
 
@@ -152,7 +189,7 @@ static const CGFloat kVerticalPadding = 11;
 
 - (void)updateLayer
 {
-    self.layer.backgroundColor = Theme.mainBackgroundColor.CGColor;
+    self.layer.backgroundColor = _materialBackground.hidden ? Theme.mainBackgroundColor.CGColor : NSColor.clearColor.CGColor;
 }
 
 - (void)updateMask

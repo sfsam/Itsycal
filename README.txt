@@ -18,3 +18,7 @@ This project uses a local xcconfig file for signing -
 see CONTRIBUTING.md and Local.xcconfig.example
 
 MIT Licensed - see License file
+
+On macOS 27, Appearance settings include Use Liquid Glass for the calendar
+popup and its controls. Reduce Transparency and Increase Contrast use a
+solid background instead.

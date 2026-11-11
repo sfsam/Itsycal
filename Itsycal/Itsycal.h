@@ -38,6 +38,7 @@ extern NSString * const kShowOverdueReminders;
 extern NSString * const kOverdueSectionExpanded;
 extern NSString * const kShowEventPopoverOnHover;
 extern NSString * const kDoNotCheckLoginItemStatus;
+extern NSString * const kUseLiquidGlass;
 extern NSString * const kWindowPosition;
 extern NSString * const kTimerEndDate;
 extern NSString * const kTimerRecentMinutes;

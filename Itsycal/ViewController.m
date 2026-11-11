@@ -23,6 +23,7 @@
 #import "PrefsEventsVC.h"
 #import "PrefsAboutVC.h"
 #import "MoButton.h"
+#import "GlassButtonGroup.h"
 #import "MoPopover.h"
 #import "MoVFLHelper.h"
 #import "MoUtils.h"
@@ -141,6 +142,8 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     _btnPin.keyEquivalentModifierMask = 0;
     _btnPin.alternateImage = [NSImage imageNamed:@"btnPinAlt"];
     [_btnPin setButtonType:NSButtonTypeToggle];
+    GlassButtonGroup *actionGroup = [[GlassButtonGroup alloc] initWithButtons:@[_btnAdd, _btnPin, _btnCal, _btnOpt]];
+    [v addSubview:actionGroup];
 
     // The buttons' tooltips. Their badges show the key equivalents.
     [_tooltips addTooltipToView:_btnAdd label:^NSString *{
@@ -167,11 +170,11 @@ static NSArray<NSString *> *ObservedDefaultsKeys(void)
     [v addSubview:agenda];
 
     // Constraints
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_moCal, _btnAdd, _btnCal, _btnOpt, _btnPin, agenda)];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:nil views:NSDictionaryOfVariableBindings(_moCal, actionGroup, agenda)];
     [vfl :@"H:|-2-[_moCal]-2-|"];
     [vfl :@"H:|[agenda]|"];
-    [vfl :@"H:|-8-[_btnAdd]-(>=0)-[_btnPin]-6-[_btnCal]-6-[_btnOpt]-8-|" :NSLayoutFormatAlignAllCenterY];
-    [vfl :@"V:|[_moCal]-6-[_btnOpt(22)]-1-[agenda]-(-1)-|"];
+    [vfl :@"H:|-(>=8)-[actionGroup]-8-|" :NSLayoutFormatAlignAllCenterY];
+    [vfl :@"V:|[_moCal]-6-[actionGroup(26)]-1-[agenda]-(-1)-|"];
     
     self.view = v;
 }

@@ -41,6 +41,7 @@
         kShowEventDots:        @(YES),
         kUseColoredDots:       @(YES),
         kThemePreference:      @0, // System=0, Light=1, Dark=2
+        kUseLiquidGlass:       @(YES),
         kHideIcon:             @(NO),
         kShowLocation:         @(NO),
         kSizePreference:       @0, // Small=0, Medium=1, Large=2

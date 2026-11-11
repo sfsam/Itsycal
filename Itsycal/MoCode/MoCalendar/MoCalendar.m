@@ -16,6 +16,7 @@
 #import "TooltipController.h"
 #import "Themer.h"
 #import "Sizer.h"
+#import "GlassButtonGroup.h"
 
 NSString * const kMoCalendarNumRows = @"MoCalendarNumRows";
 
@@ -102,6 +103,8 @@ static const CFTimeInterval kSnapDuration = 0.15;
     _btnPrev  = btn(@"btnPrev",  @selector(showPreviousMonth:));
     _btnToday = btn(@"btnToday", @selector(showTodayMonth:));
     _btnNext  = btn(@"btnNext",  @selector(showNextMonth:));
+    GlassButtonGroup *headerGroup = [[GlassButtonGroup alloc] initWithViews:@[_monthLabel, _btnPrev, _btnToday, _btnNext]];
+    [self addSubview:headerGroup];
 
     NSInteger numRows = [[NSUserDefaults standardUserDefaults] integerForKey:kMoCalendarNumRows];
     numRows = MIN(MAX(numRows, kMinRows), kMaxRows);
@@ -118,18 +121,17 @@ static const CFTimeInterval kSnapDuration = 0.15;
     _resizeHandle = [MoCalResizeHandle new];
     [_resizeHandle dim:YES];
 
-    [self addSubview:_monthLabel];
     [self addSubview:_dateGrid];
     [self addSubview:_weekGrid];
     [self addSubview:_dowGrid];
     [self addSubview:_resizeHandle];
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(_monthLabel, _btnPrev, _btnToday, _btnNext, _dowGrid, _weekGrid, _dateGrid, _resizeHandle)];
-    [vfl :@"H:|-8-[_monthLabel]-4-[_btnPrev][_btnToday][_btnNext]-8-|" :NSLayoutFormatAlignAllCenterY];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:self metrics:nil views:NSDictionaryOfVariableBindings(headerGroup, _dowGrid, _weekGrid, _dateGrid, _resizeHandle)];
+    [vfl :@"H:|-8-[headerGroup]-8-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:[_dowGrid]|"];
     [vfl :@"H:[_weekGrid]-(-2)-[_dateGrid]|"];
     [vfl :@"H:|[_resizeHandle]|"];
-    [vfl :@"V:|-(-1)-[_monthLabel]-7-[_dowGrid]-(-6)-[_dateGrid]-5-|"];
+    [vfl :@"V:|[headerGroup(28)]-3-[_dowGrid]-(-6)-[_dateGrid]-5-|"];
     [vfl :@"V:[_weekGrid]-5-|"];
     [vfl :@"V:[_resizeHandle(8)]|"];
 

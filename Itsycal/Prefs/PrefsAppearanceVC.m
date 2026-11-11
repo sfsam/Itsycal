@@ -161,9 +161,10 @@
     NSButton *showEventDots = chkbx(NSLocalizedString(@"Show event dots", @""));
     NSButton *useColoredDots = chkbx(NSLocalizedString(@"Use colored dots", @""));
     NSButton *showWeeks = chkbx(NSLocalizedString(@"Show calendar weeks", @""));
+    NSButton *useGlass = chkbx(NSLocalizedString(@"Use Liquid Glass", @""));
 
-    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(themePopup, sizePicker, menubarLabel, calendarLabel, separator0, separator1, iconPicker, showMonth, showDayOfWeek, _dateTimeFormat, helpButton, _hideIcon, firstDayLabel, firstDayPopup, highlight, showWeeks, outlineMonth, showEventDots, useColoredDots)];
-    [vfl :@"V:|-m-[themePopup]-m-[menubarLabel]-10-[iconPicker]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[firstDayPopup]-m-[highlight]-m-[outlineMonth]-[showEventDots]-[useColoredDots]-[showWeeks]-m-|"];
+    MoVFLHelper *vfl = [[MoVFLHelper alloc] initWithSuperview:v metrics:@{@"m": @20, @"mm": @40} views:NSDictionaryOfVariableBindings(themePopup, sizePicker, menubarLabel, calendarLabel, separator0, separator1, iconPicker, showMonth, showDayOfWeek, _dateTimeFormat, helpButton, _hideIcon, firstDayLabel, firstDayPopup, highlight, showWeeks, outlineMonth, showEventDots, useColoredDots, useGlass)];
+    [vfl :@"V:|-m-[themePopup]-m-[menubarLabel]-10-[iconPicker]-[showMonth]-[showDayOfWeek]-[_dateTimeFormat]-[_hideIcon]-m-[calendarLabel]-10-[firstDayPopup]-m-[highlight]-m-[outlineMonth]-[showEventDots]-[useColoredDots]-[showWeeks]-[useGlass]-m-|"];
     [vfl :@"H:|-m-[themePopup]-(>=mm)-[sizePicker]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[menubarLabel]-[separator0]-m-|" :NSLayoutFormatAlignAllCenterY];
     [vfl :@"H:|-m-[calendarLabel]-[separator1]-m-|" :NSLayoutFormatAlignAllCenterY];
@@ -178,6 +179,7 @@
     [vfl :@"H:|-m-[showEventDots]-(>=m)-|"];
     [vfl :@"H:|-mm-[useColoredDots]-(>=m)-|"];
     [vfl :@"H:|-m-[showWeeks]-(>=m)-|"];
+    [vfl :@"H:|-m-[useGlass]-(>=m)-|"];
 
     // Binding for size preference. SizePreference values match segment indexes.
     [sizePicker bind:@"selectedIndex" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kSizePreference] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
@@ -221,6 +223,8 @@
 
     // Bindings for showWeeks preference
     [showWeeks bind:@"value" toObject:[NSUserDefaultsController sharedUserDefaultsController] withKeyPath:[@"values." stringByAppendingString:kShowWeeks] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
+
+    [useGlass bind:@"value" toObject:NSUserDefaultsController.sharedUserDefaultsController withKeyPath:[@"values." stringByAppendingString:kUseLiquidGlass] options:@{NSContinuouslyUpdatesValueBindingOption: @(YES)}];
 
     self.view = v;
 }
